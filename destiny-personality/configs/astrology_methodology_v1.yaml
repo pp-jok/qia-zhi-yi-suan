@@ -1,0 +1,36 @@
+methodology_version: "western-tropical-v1.0"
+
+core:
+  zodiac: tropical
+  reference: geocentric
+  house_system: placidus
+  node: true
+
+bodies:
+  planets: [Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto]
+  angles: [Ascendant, MC]
+
+aspects:
+  enabled: [conjunction, opposition, square, trine, sextile]
+  minor_aspects_enabled: false
+  max_orbs:
+    conjunction: 8
+    opposition: 8
+    square: 7
+    trine: 7
+    sextile: 5
+  luminary_orb_bonus: 1
+  angle_orb: 4
+
+salience_by_orb:
+  dominant_max: 1
+  strong_max: 3
+  moderate_max: 5
+
+dignity:
+  enabled: true
+  types: [domicile, detriment, exaltation, fall]
+  role: modifier_only
+
+outer_planets:
+  require_personal_or_angle_contact_for_high_weight: true

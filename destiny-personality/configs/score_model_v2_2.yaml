@@ -1,0 +1,22 @@
+score_model_version: "2.2"
+
+trait_salience:
+  min: 0
+  max: 4
+
+evidence_stability:
+  values: [high, medium, low, unstable]
+
+cross_system_relation:
+  values: [validation, complement, contextualization, tension, correction, single_system]
+
+synthesis_priority:
+  min: 0
+  max: 4
+  core_threshold: 3
+
+rules:
+  cross_system_validation_changes_trait_salience: false
+  tension_reduces_trait_salience: false
+  tension_can_raise_synthesis_priority: true
+  unknown_is_not_low: true
