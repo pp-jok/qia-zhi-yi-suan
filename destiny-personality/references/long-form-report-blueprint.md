@@ -1,8 +1,10 @@
 # Long-Form Personality Book Blueprint
 
-This blueprint fixes the report format and content dimensions while allowing
-chapter titles and prose to reflect the current fact basis. It is a rendering
-and coverage contract, not a source of chart facts or strict semantic values.
+This blueprint is `legacy-long-form-v2`. It fixes the historical report format
+and content dimensions while allowing chapter titles and prose to reflect the
+current fact basis. It is a legacy renderer and coverage contract, not a source
+of chart facts or strict semantic values. It must not provide Primitive,
+Signature, Dynamic, Theme, or Archetype inputs to the Core Profile pipeline.
 
 ## Chapter depth model
 
