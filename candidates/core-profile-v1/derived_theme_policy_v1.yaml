@@ -1,0 +1,9 @@
+review_status: approved
+review_refs:
+  - docs/domain/shadow-mature-fate-archetype-review-v1.md
+  - docs/domain/candidate-semantic-asset-approval-v1.md
+schema_version: candidate-derived-theme-policy-v1
+policy_version: disabled-candidate-v1
+mode: disabled
+limitations:
+  - D1 does not derive Fate Themes or Archetypes without approved Dynamic evidence.

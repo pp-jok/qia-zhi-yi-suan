@@ -8,6 +8,12 @@
 
 它不是排盘软件，也不把计算程序封装进 Skill。使用它的智能体会在运行时寻找并调用合格的外部计算能力；Skill 负责输入规范、方法校验、事实边界、推演许可、报告结构与最终审计。
 
+## 发布通道：v0.2.0 候选 Core Profile
+
+本版本额外包含一个可复现的候选 Core Profile 引擎与经审核的候选语义包。它能够基于已资格校验的事实，产出六个基础人格维度的结构化、可审计候选结果；十神来源、日主—月令环境、主相位与可用的修饰事实都会保留在审计引用中。
+
+候选包已经过设计集、校准与独立 Holdout 验证，但它**不是严格生产推演**：不会自动成为默认报告路径，也不替代外部排盘能力或专业判断。
+
 ## 它能做什么
 
 - 接受结构化出生资料或紧凑输入，例如：`2000.1.1.00:00 上海 未指定`
@@ -46,6 +52,7 @@
 ```bash
 git clone https://github.com/pp-jok/qia-zhi-yi-suan.git
 cp -R qia-zhi-yi-suan/destiny-personality ~/.codex/skills/
+pip install ./qia-zhi-yi-suan
 ```
 
 重新启动或刷新支持 Agent Skills 的运行环境后，即可通过 `$destiny-personality` 调用。
@@ -105,9 +112,15 @@ destiny-personality/
 ├── examples/           # 非生产配置模板
 ├── references/         # 能力协议、失败策略与长篇蓝图
 └── schemas/            # 输入、事实、推演与报告合同
+candidates/core-profile-v1/
+                        # 已批准的候选语义资产与校准策略
+src/destiny_personality/
+                        # 候选 Core Profile 引擎与校验器
+docs/domain/             # 候选资产批准、校准与 Holdout 审计记录
+pyproject.toml           # 最小 Python 安装元数据
 ```
 
-Skill 不包含可执行脚本、二进制文件、固定外部供应商或用户命盘资料。
+发布包不包含二进制文件、固定外部供应商、测试夹具或用户命盘资料。Python 模块只执行候选资产校验与候选画像构建；它不计算出生盘。
 
 ## 守夜人的规则
 

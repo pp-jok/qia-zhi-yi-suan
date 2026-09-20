@@ -16,6 +16,15 @@ Produce one report for `portrait`, `facts_only`, and `audit`.
 - `provenance`: list containing only accepted operations and their calculation-envelope references; use an empty list before any accepted operation.
 - `validated_facts`: a `fact_packet_ref` to a validated packet or the minimal validated packet itself; use an empty mapping when none passed.
 - `fact_assurance`: `project_verified`, `capability_reported`, or `none`.
+- `core_profile_ref`: validated `core-destiny-profile-v1` reference or
+  `not_applicable` when the Core Profile route did not run.
+- `semantic_model_assurance`: `project_semantic_verified`,
+  `project_semantic_partial`, `none`, or `not_applicable` outside the Core
+  Profile route.
+- `semantic_model_versions`: version references for Semantic Core assets
+  actually used; use an empty mapping when no Core Profile was built.
+- `report_plan_ref`: validated `report-plan-v1` reference or `not_applicable`
+  when no Core Profile renderer plan was built.
 - `analysis_basis`: references to the fact items that analytical claims may use; empty outside a controlled portrait.
 - `configuration_limitations`: safely bypassed advanced assets and the claims omitted because of them; empty in a complete strict execution.
 - `inference_disclosure`: the controlled profile's traditional, inferential, and non-diagnostic disclosure; `not_applicable` outside that profile.
@@ -35,5 +44,8 @@ Exclude raw sensitive payloads and credentials from the report. Refer to accepte
 - For `facts_only`, complete at `FACTS_VALIDATED`, keep both permission flags `false`, and omit personality IR and Narrative.
 - For `audit`, validate only the supplied object's claimed stages; never calculate, repair, or advance it.
 - For `portrait`, add personality IR only after `REASONING_ALLOWED` and Narrative only after `NARRATIVE_ALLOWED`.
+- A Core Profile route adds `core_profile_ref` only after
+  `CORE_PROFILE_VALIDATED`, and `report_plan_ref` only after
+  `REPORT_PLAN_VALIDATED`. Neither reference upgrades `fact_assurance`.
 - For a completed controlled portrait, set `reasoning_allowed: true`, `narrative_allowed: true`, and `current_stage: REPORT_VALIDATED` only after both controlled checklists pass. This permission is profile-scoped and does not claim `SEMANTIC_CONFIG_CHECKED` or strict rule approval.
 - A user-facing response may summarize the report, but retain the complete structure for audit.

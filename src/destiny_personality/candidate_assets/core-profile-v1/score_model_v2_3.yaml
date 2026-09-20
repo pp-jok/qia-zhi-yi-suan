@@ -1,0 +1,10 @@
+review_status: approved
+review_refs:
+  - docs/domain/core-profile-determinism-policy-v1.md
+  - docs/domain/candidate-semantic-asset-approval-v1.md
+schema_version: candidate-score-model-v2.3
+model_version: candidate-v2.3
+alignment_states: [validation, unresolved, non_comparable]
+limitations:
+  - Candidate alignment states are auditable labels, not score adjustments.
+  - No default semantic score is approved for D1.

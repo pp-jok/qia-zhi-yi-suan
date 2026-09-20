@@ -1,0 +1,9 @@
+review_status: approved
+review_refs:
+  - docs/domain/core-profile-determinism-policy-v1.md
+  - docs/domain/candidate-semantic-asset-approval-v1.md
+schema_version: candidate-signature-formation-policy-v1
+policy_version: disabled-candidate-v1
+mode: disabled
+limitations:
+  - D1 does not derive Dominant Signatures before a reviewed formation policy exists.

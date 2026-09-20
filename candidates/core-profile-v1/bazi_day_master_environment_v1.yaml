@@ -1,0 +1,32 @@
+review_status: approved
+review_refs:
+  - docs/domain/candidate-semantic-asset-approval-v1.md
+schema_version: candidate-bazi-day-master-environment-v1
+table_version: candidate-bazi-day-master-environment-v1
+stem_elements:
+  甲: wood
+  乙: wood
+  丙: fire
+  丁: fire
+  戊: earth
+  己: earth
+  庚: metal
+  辛: metal
+  壬: water
+  癸: water
+month_branch_seasons:
+  寅: spring
+  卯: spring
+  辰: spring
+  巳: summer
+  午: summer
+  未: summer
+  申: autumn
+  酉: autumn
+  戌: autumn
+  亥: winter
+  子: winter
+  丑: winter
+limitations:
+  - Describes day-stem element and month-branch season only.
+  - Does not infer strength, favorable elements, patterns, transits, or outcomes.

@@ -1,0 +1,76 @@
+review_status: approved
+review_refs:
+  - docs/domain/astrology-semantic-mapping-review-v1.md
+  - docs/domain/candidate-semantic-asset-approval-v1.md
+schema_version: candidate-context-aware-mapping-registry-v1
+registry_version: candidate-c2-astrology-v1
+source_system: astrology
+rules:
+  - rule_id: AS-C2B-01
+    primitive_id: P001
+    direction: high
+    requires_any_bodies: [Sun, Mars]
+    requires_aspect_pair: [Sun, Mars]
+    allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
+    max_orb: 8
+    dignity_modifier_any: [domicile, exaltation]
+    angular_body_any: [Sun, Mars]
+    house_context_any: [1, 10]
+    requires_known_time: true
+    context: decision_work
+  - rule_id: AS-C2B-02
+    primitive_id: P002
+    direction: high
+    requires_any_bodies: [Saturn]
+    requires_aspect_pair: [Saturn, Sun]
+    allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
+    max_orb: 8
+    requires_known_time: true
+    context: pressure_work
+  - rule_id: AS-C2B-03
+    primitive_id: P002
+    direction: low
+    requires_any_bodies: [Uranus]
+    requires_aspect_pair: [Uranus, Sun]
+    allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
+    max_orb: 8
+    requires_known_time: true
+    context: change_work
+  - rule_id: AS-C2B-04
+    primitive_id: P003
+    direction: high
+    requires_any_bodies: [Moon, Venus]
+    requires_aspect_pair: [Moon, Venus]
+    allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
+    max_orb: 8
+    requires_known_time: true
+    context: relationship
+  - rule_id: AS-C2B-05
+    primitive_id: P004
+    direction: high
+    requires_any_bodies: [Mars]
+    requires_aspect_pair: [Mars, Sun]
+    allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
+    max_orb: 8
+    requires_known_time: true
+    context: work_action
+  - rule_id: AS-C2B-06
+    primitive_id: P005
+    direction: high
+    requires_any_bodies: [Moon]
+    requires_aspect_pair: [Moon, Mercury]
+    allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
+    max_orb: 8
+    requires_known_time: true
+    context: pressure_relationship
+  - rule_id: AS-C2B-07
+    primitive_id: P006
+    direction: high
+    requires_any_bodies: [Mercury]
+    requires_aspect_pair: [Mercury, Saturn]
+    allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
+    max_orb: 8
+    requires_known_time: true
+    context: work_decision
+limitations:
+  - Candidate rules require later vocabulary, aspect, and orb validation.

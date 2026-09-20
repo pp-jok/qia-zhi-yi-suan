@@ -13,9 +13,15 @@ candidate -> validated -> reviewed -> approved -> promoted
 ## Candidate
 
 - Keep candidate assets outside `configs/` while they are being authored.
-- Treat examples as structure-only documentation. The agent must not generate
-  or infer business semantics, and must not repair missing semantics from
-  examples, model knowledge, or public conventions.
+- Treat examples as structure-only documentation. The agent must not infer or
+  repair missing production semantics from examples, model knowledge, or public
+  conventions. The agent must not repair an incomplete candidate into a
+  production rule. When the project owner explicitly authorizes a C-stage design
+  review, the agent may draft pending semantic proposals only in review
+  documents; every proposal must identify its assumptions, counterevidence,
+  sample-bias risk, and `review_status: pending`. A draft is not a Mapping,
+  score, threshold, or runtime rule. The agent must not generate production
+  semantic configuration or infer a production rule from the draft.
 - Record the source and project owner for every candidate asset.
 
 ## Validated

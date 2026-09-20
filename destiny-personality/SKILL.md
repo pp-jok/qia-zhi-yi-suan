@@ -51,6 +51,31 @@ The default controlled portrait branch continues:
 → REPORT_VALIDATED
 ```
 
+The future Core Profile branch is disabled until the approved Semantic Core
+assets are present. Once enabled, its route is:
+
+```text
+FACT_BASIS_VALIDATED
+→ CORE_PROFILE_VALIDATED
+→ REPORT_PLAN_VALIDATED
+→ REPORT_VALIDATED
+```
+
+Before `CORE_PROFILE_VALIDATED`, read the [Core Destiny Profile contract](schemas/core-destiny-profile.md)
+and run the [Core Profile checklist](checklists/core-profile.md). Before
+`REPORT_PLAN_VALIDATED`, read the [Report Plan contract](schemas/report-plan.md).
+This route does not authorize candidate assets, calculation, or strict semantic
+claims; it activates only after separately approved production assets pass their
+own gates.
+
+### Candidate Core Pipeline
+
+`Facts → Candidate Core Profile → Candidate Report Plan` is available for the
+**Design / Calibration Set only**. It validates candidate Profile containment
+and records stopped executions, but must not render a user-facing report, enter
+the default route, or substitute for the approved production Core Profile
+branch.
+
 The strict branch retains the original gates:
 
 ```text

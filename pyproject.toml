@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qia-zhi-yi-suan-candidate"
+version = "0.2.0"
+description = "Auditable candidate Core Profile engine for the Qia Zhi Yi Suan agent skill"
+requires-python = ">=3.9"
+dependencies = ["PyYAML>=6,<7"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<9"]
+
+[project.scripts]
+destiny-personality-reference-validate = "destiny_personality.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+destiny_personality = ["candidate_assets/core-profile-v1/*.yaml"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-ra"

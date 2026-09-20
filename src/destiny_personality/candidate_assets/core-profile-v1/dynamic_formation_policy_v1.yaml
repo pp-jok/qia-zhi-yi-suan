@@ -1,0 +1,9 @@
+review_status: approved
+review_refs:
+  - docs/domain/dynamic-formation-review-v1.md
+  - docs/domain/candidate-semantic-asset-approval-v1.md
+schema_version: candidate-dynamic-formation-policy-v1
+policy_version: disabled-candidate-v1
+mode: disabled
+limitations:
+  - C3 approved no default Dynamic relation family; D1 must emit zero Dynamics.

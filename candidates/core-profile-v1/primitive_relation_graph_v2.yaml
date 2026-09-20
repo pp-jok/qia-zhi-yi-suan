@@ -1,0 +1,9 @@
+review_status: approved
+review_refs:
+  - docs/domain/dynamic-formation-review-v1.md
+  - docs/domain/candidate-semantic-asset-approval-v1.md
+schema_version: candidate-primitive-relation-graph-v2
+graph_version: candidate-c3-v1
+relations: []
+limitations:
+  - C3 deliberately approves no default Dynamic relation family.

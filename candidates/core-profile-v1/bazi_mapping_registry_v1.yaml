@@ -1,0 +1,66 @@
+review_status: approved
+review_refs:
+  - docs/domain/bazi-semantic-mapping-review-v1.md
+  - docs/domain/candidate-semantic-asset-approval-v1.md
+schema_version: candidate-context-aware-mapping-registry-v1
+registry_version: candidate-c2-bazi-v1
+source_system: bazi
+rules:
+  - rule_id: BZ-C2B-01
+    primitive_id: P001
+    direction: high
+    requires_any_groups: [[比肩, 劫财], [食神, 伤官]]
+    minimum_distinct_pillars: 2
+    allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_day_master_environment: true
+    context: decision_work
+  - rule_id: BZ-C2B-02
+    primitive_id: P002
+    direction: high
+    requires_any_groups: [[正印, 偏印], [正官, 七杀]]
+    minimum_distinct_pillars: 2
+    allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_day_master_environment: true
+    context: pressure_work
+  - rule_id: BZ-C2B-03
+    primitive_id: P002
+    direction: low
+    requires_any_groups: [[食神, 伤官], [正财, 偏财]]
+    minimum_distinct_pillars: 2
+    allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_day_master_environment: true
+    context: change_work
+  - rule_id: BZ-C2B-04
+    primitive_id: P003
+    direction: high
+    requires_any_groups: [[正财, 偏财, 正官, 七杀], [比肩, 劫财, 正印, 偏印]]
+    minimum_distinct_pillars: 2
+    allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_day_master_environment: true
+    context: relationship
+  - rule_id: BZ-C2B-05
+    primitive_id: P004
+    direction: high
+    requires_any_groups: [[食神, 伤官], [正财, 偏财]]
+    minimum_distinct_pillars: 2
+    allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_day_master_environment: true
+    context: work_action
+  - rule_id: BZ-C2B-06
+    primitive_id: P005
+    direction: high
+    requires_any_groups: [[正印, 偏印], [正官, 七杀]]
+    minimum_distinct_pillars: 2
+    allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_day_master_environment: true
+    context: pressure
+  - rule_id: BZ-C2B-07
+    primitive_id: P006
+    direction: high
+    requires_any_groups: [[正印, 偏印], [正官, 七杀]]
+    minimum_distinct_pillars: 2
+    allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_day_master_environment: true
+    context: work_decision
+limitations:
+  - Candidate rules require later vocabulary and deterministic-table validation.

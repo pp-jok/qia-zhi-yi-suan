@@ -1,0 +1,13 @@
+review_status: approved
+review_refs:
+  - docs/domain/core-personality-ontology-review-v1.md
+  - docs/domain/candidate-semantic-asset-approval-v1.md
+schema_version: candidate-primitive-ontology-v1
+ontology_version: candidate-c1-v1
+primitives:
+  - {primitive_id: P001, canonical_name: Agentic Self-Direction}
+  - {primitive_id: P002, canonical_name: Predictability Orientation}
+  - {primitive_id: P003, canonical_name: Relational Attunement}
+  - {primitive_id: P004, canonical_name: Action Mobilization}
+  - {primitive_id: P005, canonical_name: Affective Regulation Orientation}
+  - {primitive_id: P006, canonical_name: Structuring Orientation}

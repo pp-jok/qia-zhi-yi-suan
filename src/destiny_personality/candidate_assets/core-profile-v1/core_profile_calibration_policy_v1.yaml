@@ -1,0 +1,30 @@
+review_status: approved
+review_refs:
+  - docs/domain/core-profile-calibration-review-v1.md
+  - docs/domain/core-profile-similarity-policy-v1.md
+  - docs/domain/candidate-semantic-asset-approval-v1.md
+schema_version: candidate-core-profile-calibration-policy-v1
+policy_version: c4b-candidate-v1
+bundle_fingerprint: 2e09e801b58fbd18cd5fa8b53a15041144cd6c1830b91d986473e476a161cfcd
+similarity_weights:
+  weighted_primitive_overlap: 1.0
+  signature_primitive_overlap: 0.0
+  dynamic_family_pole_overlap: 0.0
+  fate_theme_overlap: 0.0
+primitive_salience_weights:
+  P001: 1.0
+  P002: 1.0
+  P003: 1.0
+  P004: 1.0
+  P005: 1.0
+  P006: 1.0
+evidence_stability_weights:
+  bazi: 1.0
+  astrology: 1.0
+contrast_pair_thresholds:
+  default_max_similarity: 0.75
+  exception_policy: no_exceptions_in_d1
+unsupported_activation_frequency: 0
+limitations:
+  - Candidate-only C4b policy; it cannot enable a production route.
+  - Signature, Dynamic, and Fate components remain unavailable while their policies are disabled.
