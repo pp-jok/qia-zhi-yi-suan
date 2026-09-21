@@ -1,7 +1,7 @@
 # Core Personality Ontology Review v1
 
-**Stage:** C1 — Core Personality Ontology Review
-**Status:** C1 accepted for C2 review on 2026-09-18; no production approval
+**Stage:** C1 — Core Personality Ontology Review  
+**Status:** C1 accepted for C2 review on 2026-09-18; no production approval  
 **Scope:** system-neutral personality vocabulary before Bazi or Astrology mappings.
 
 ## Boundary

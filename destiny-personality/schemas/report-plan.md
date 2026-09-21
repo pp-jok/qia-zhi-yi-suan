@@ -1,7 +1,9 @@
 # Report Plan Contract
 
 `report-plan-v1` is an immutable rendering plan derived from one validated
-`core-destiny-profile-v1`. It is not a source of new personality inference.
+`core-destiny-profile-v1`. Candidate planning instead uses
+`candidate-report-plan-v1` derived from `candidate-core-profile-v1`; neither
+is a source of new personality inference.
 
 ## Root fields
 
@@ -24,7 +26,7 @@ selected topic, duplicate scope, or profile limitation.
 
 ## Renderer containment
 
-The planner accepts `CoreDestinyProfile` plus `renderer_profile`; it never
+The production planner accepts `CoreDestinyProfile` plus `renderer_profile`; it never
 accepts a bare Fact Packet. The renderer accepts `ReportPlan +
 CoreDestinyProfile` and must reject a core assertion that lacks a valid
 `profile_refs` reference.

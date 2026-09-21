@@ -4,9 +4,9 @@
 
 Use `input_profile: compact-or-structured-birth-input-v1` for a new portrait.
 Accept either explicit fields or one unambiguous compact line. For example,
-`2000.1.1.00:00 上海 未指定` is equivalent to a local Gregorian birth date of
-`2000-01-01`, a local civil birth time of `00:00`, birth place `上海`, and
-`sex: unspecified` with the original display label `未指定`.
+`1986.5.25.11:55 北京 男` is equivalent to a local Gregorian birth date of
+`1986-05-25`, a local civil birth time of `11:55`, birth place `北京`, and
+`sex: male` with the original display label `男`.
 
 For unambiguous compact input, normalize separators and field names silently;
 do not ask for confirmation merely because the user used dots, spaces, Chinese

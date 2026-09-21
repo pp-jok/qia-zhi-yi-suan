@@ -1,7 +1,7 @@
 # Shadow, Mature, Fate, and Archetype Review v1
 
-**Stage:** C3 — Derived-form review
-**Status:** accepted for C4 review on 2026-09-18; no production approval
+**Stage:** C3 — Derived-form review  
+**Status:** accepted for C4 review on 2026-09-18; no production approval  
 **Input:** only validated Core Dynamics; never raw chart facts or Archetype labels.
 
 ## Fixed derivation order

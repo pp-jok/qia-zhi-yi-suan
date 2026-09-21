@@ -1,6 +1,6 @@
 # Template Collapse Policy v1
 
-**Stage:** C4 — Calibration Review
+**Stage:** C4 — Calibration Review  
 **Status:** C4b candidate policy frozen for the named D1 Bundle on 2026-09-18; no production approval
 
 ## Required per-family metrics

@@ -1,0 +1,7 @@
+fixture_schema_version: candidate-core-profile-calibration-facts-v1
+case_id: high_rules_responsibility
+fact_assurance: capability_reported
+bazi_ten_gods: [偏印, 七杀]
+astrology:
+  known_birth_time: true
+  aspect_pairs: [[Mercury, Saturn], [Saturn, Sun]]

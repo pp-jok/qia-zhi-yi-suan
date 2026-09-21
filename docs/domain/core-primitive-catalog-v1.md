@@ -1,7 +1,7 @@
 # Core Primitive Catalog v1
 
-**Artifact type:** C1 candidate catalog
-**Review status:** `accepted_for_c2` for every entry; no production approval
+**Artifact type:** C1 candidate catalog  
+**Review status:** `accepted_for_c2` for every entry; no production approval  
 **Boundary:** review artifact only; not a production Ontology, Mapping Registry,
 score model, or runtime configuration.
 

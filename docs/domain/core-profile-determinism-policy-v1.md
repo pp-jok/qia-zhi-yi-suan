@@ -1,6 +1,6 @@
 # Core Profile Determinism Policy v1
 
-**Stage:** C4 — Calibration Review
+**Stage:** C4 — Calibration Review  
 **Status:** C4a accepted for D1 candidate execution on 2026-09-18; no runtime use
 
 ## Required invariant

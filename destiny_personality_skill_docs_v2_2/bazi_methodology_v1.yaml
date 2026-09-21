@@ -1,0 +1,41 @@
+methodology_version: "bazi-core-v1.0"
+
+calendar:
+  input_calendar: gregorian
+  month_boundary: solar_terms_jie
+  day_boundary: "00:00"
+  day_boundary_time_basis: true_solar_time
+
+time:
+  historical_timezone_required: true
+  dst_correction_required: true
+  true_solar_time_default: true
+  allow_standard_time_mode: true
+
+month_mapping:
+  立春: 寅
+  惊蛰: 卯
+  清明: 辰
+  立夏: 巳
+  芒种: 午
+  小暑: 未
+  立秋: 申
+  白露: 酉
+  寒露: 戌
+  立冬: 亥
+  大雪: 子
+  小寒: 丑
+
+relations:
+  heavenly_stem_combinations: true
+  six_combinations: true
+  three_harmonies: true
+  three_meetings: true
+  six_clashes: true
+  six_harms: true
+  three_punishments: true
+  self_punishments: [辰, 午, 酉, 亥]
+
+personality_scope:
+  include_luck_cycles: false
+  include_annual_transits: false

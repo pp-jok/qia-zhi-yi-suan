@@ -1,7 +1,7 @@
 # Dynamic Formation Review v1
 
-**Stage:** C3 — Dynamic Formation Review
-**Status:** accepted for C4 review on 2026-09-18; no production approval
+**Stage:** C3 — Dynamic Formation Review  
+**Status:** accepted for C4 review on 2026-09-18; no production approval  
 **Input:** C1 Primitive Catalog and C2's independently accepted mapping review.
 
 ## Governing principle

@@ -1,7 +1,7 @@
 # Mapping Review Record v1
 
-**Stage:** C2
-**Overall status:** accepted for C3 review on 2026-09-18; no production approval
+**Stage:** C2  
+**Overall status:** accepted for C3 review on 2026-09-18; no production approval  
 **Production effect:** none
 
 | Review area | Source document | Decision | Required evidence before promotion |

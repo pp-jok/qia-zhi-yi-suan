@@ -1,0 +1,27 @@
+relation_graph_version: "1.0"
+
+relations:
+  - left: P024
+    right: P022
+    relation: potential_tension
+    dynamic_family: stability_freedom
+
+  - left: P001
+    right: P044
+    relation: reinforcing
+    dynamic_family: autonomy_relational_independence
+
+  - left: P041
+    right: P027
+    relation: potential_tension
+    dynamic_family: ideal_reality
+
+  - left: P013
+    right: P019
+    relation: potential_tension
+    dynamic_family: validation_possibility
+
+  - left: P039
+    right: P044
+    relation: potential_tension
+    dynamic_family: intimacy_boundary

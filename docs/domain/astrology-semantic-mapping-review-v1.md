@@ -1,7 +1,7 @@
 # Astrology Semantic Mapping Review v1
 
-**Stage:** C2 — Astrology Semantic Mapping Review
-**Status:** accepted for C3 review on 2026-09-18; no production approval
+**Stage:** C2 — Astrology Semantic Mapping Review  
+**Status:** accepted for C3 review on 2026-09-18; no production approval  
 **Input:** C1 catalog entries `CP-CORE-01` through `CP-CORE-06`.
 
 ## Boundary and evidence standard

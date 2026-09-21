@@ -1,0 +1,7 @@
+fixture_schema_version: candidate-core-profile-calibration-facts-v1
+case_id: near_equal_primitive_signals
+fact_assurance: capability_reported
+bazi_ten_gods: [正印, 正官, 食神, 正财]
+astrology:
+  known_birth_time: true
+  aspect_pairs: [[Saturn, Sun], [Uranus, Sun]]

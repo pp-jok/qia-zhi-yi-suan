@@ -1,0 +1,7 @@
+fixture_schema_version: candidate-core-profile-calibration-facts-v1
+case_id: cross_system_tension
+fact_assurance: capability_reported
+bazi_ten_gods: [正印, 正官]
+astrology:
+  known_birth_time: true
+  aspect_pairs: [[Uranus, Sun]]
