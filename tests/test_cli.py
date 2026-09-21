@@ -8,6 +8,25 @@ from destiny_personality import ConfigError
 from destiny_personality.cli import main
 
 
+def test_render_core_portrait_cli(tmp_path, capsys, normalized_time, bazi_facts, astrology_facts):
+    from destiny_personality.calculation import DeterministicChartFacts
+    from destiny_personality.core_profile_builder import build_candidate_core_profile
+    from destiny_personality.core_profile_codec import write_candidate_profile
+
+    profile = build_candidate_core_profile(DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts), fact_assurance="capability_reported")
+    path = tmp_path / "profile.json"
+    write_candidate_profile(profile, path)
+    assert main(["render-core-portrait", str(path), "--mode", "core_concise"]) == 0
+    output = json.loads(capsys.readouterr().out)
+    assert output["mode"] == "core_concise"
+    assert len({section["section_id"] for section in output["sections"]}) == len(output["sections"])
+
+
+def test_profile_source_view_cli_rejects_invalid_profile(tmp_path, capsys):
+    exit_code = main(["profile-source-view", str(tmp_path / "missing.json"), "--view", "bazi"])
+    assert exit_code == 2
+
+
 def test_validate_config_prints_machine_readable_summary(
     valid_config_dir: Path, capsys
 ) -> None:

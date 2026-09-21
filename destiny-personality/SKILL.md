@@ -95,6 +95,17 @@ Ascendant, MC, houses, and angle-axis interpretation are unavailable. A request
 to explain an item must return its Primitive, contexts, facts, rule references,
 counterevidence, and limitations.
 
+Use the packaged runtime commands for a normalized Candidate Profile JSON:
+
+```text
+destiny-personality-reference-validate render-core-portrait PROFILE --mode core_concise
+destiny-personality-reference-validate explain-profile-item PROFILE primitive:P001
+destiny-personality-reference-validate profile-source-view PROFILE --view comparison
+destiny-personality-reference-validate profile-diff LEFT_PROFILE RIGHT_PROFILE
+```
+
+These commands consume qualified Profile facts; they do not calculate a birth chart.
+
 The strict branch retains the original gates:
 
 ```text

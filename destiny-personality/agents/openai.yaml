@@ -1,4 +1,4 @@
 interface:
   display_name: "Destiny Personality"
   short_description: "编排八字与西方占星人格画像、确定性事实校验和结果审计"
-  default_prompt: "Use $destiny-personality to validate my birth input and run the permitted personality workflow."
+  default_prompt: "Use $destiny-personality to validate my birth input and choose an appropriate Core Portrait preview or legacy personality workflow."

@@ -1,0 +1,2 @@
+[console_scripts]
+destiny-personality-reference-validate = destiny_personality.cli:main

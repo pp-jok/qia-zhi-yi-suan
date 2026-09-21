@@ -47,10 +47,18 @@ class CrossSystemAlignment:
 
 
 @dataclass(frozen=True)
+class CandidateFactScope:
+    birth_time_known: bool
+    astrology_time_mode: str
+    bazi_hour_available: bool
+
+
+@dataclass(frozen=True)
 class CandidateCoreProfile:
     schema_version: str
     candidate_profile_id: str
     fact_fingerprint: str
+    fact_scope: CandidateFactScope
     fact_assurance: str
     semantic_model_assurance: str
     semantic_capability_level: str

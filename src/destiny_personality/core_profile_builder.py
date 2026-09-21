@@ -10,6 +10,7 @@ from .candidate_assets import candidate_asset_root
 from .context_taxonomy import load_candidate_context_taxonomy
 from .core_profile_models import (
     CandidateCoreProfile,
+    CandidateFactScope,
     CrossSystemAlignment,
     PrimitiveCandidate,
     PrimitiveState,
@@ -153,6 +154,11 @@ def build_candidate_core_profile(
         schema_version="candidate-core-profile-v1",
         candidate_profile_id=f"candidate-{sha256(f'{fingerprint}:{candidate_semantic_bundle_fingerprint()}'.encode('utf-8')).hexdigest()[:16]}",
         fact_fingerprint=fingerprint,
+        fact_scope=CandidateFactScope(
+            birth_time_known=facts.astrology.ascendant is not None,
+            astrology_time_mode="known_time" if facts.astrology.ascendant is not None else "stable_only",
+            bazi_hour_available=facts.bazi.hour_pillar is not None,
+        ),
         fact_assurance=fact_assurance,
         semantic_model_assurance="project_semantic_partial",
         semantic_capability_level="primitive_only",

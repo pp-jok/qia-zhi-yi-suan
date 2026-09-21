@@ -15,6 +15,8 @@ from .core_profile_similarity import build_candidate_similarity_matrix, evaluate
 class CandidateCalibrationRun:
     schema_version: str
     bundle_fingerprint: str
+    calibration_policy_version: str
+    calibration_policy_sha256: str
     algorithm_versions: Tuple[str, ...]
     case_count: int
     case_ids: Tuple[str, ...]
@@ -43,9 +45,11 @@ def run_candidate_calibration(
 ) -> CandidateCalibrationRun:
     profiles = tuple(profiles_by_case[key] for key in sorted(profiles_by_case))
     evaluation = evaluate_candidate_similarity_matrix(build_candidate_similarity_matrix(profiles))
+    policy_version, policy_sha = _active_calibration_policy()
     result = CandidateCalibrationRun(
         schema_version="candidate-calibration-result-v1",
         bundle_fingerprint=candidate_semantic_bundle_fingerprint(),
+        calibration_policy_version=policy_version, calibration_policy_sha256=policy_sha,
         algorithm_versions=("candidate-builder-semantic-v3", "candidate-state-resolver-v3", "candidate-alignment-resolver-v3"),
         case_count=len(profiles), case_ids=tuple(sorted(profiles_by_case)),
         normalized_profile_hashes={key: sha256(repr(normalize_candidate_profile(profiles_by_case[key])).encode()).hexdigest() for key in sorted(profiles_by_case)},
@@ -68,6 +72,9 @@ def run_candidate_holdout(
         failures.append("HOLDOUT_BUNDLE_MISMATCH")
     if calibration.get("run_status") != "pass":
         failures.append("HOLDOUT_CALIBRATION_NOT_PASSED")
+    policy_version, policy_sha = _active_calibration_policy()
+    if calibration.get("calibration_policy_version") != policy_version or calibration.get("calibration_policy_sha256") != policy_sha:
+        failures.append("HOLDOUT_CALIBRATION_POLICY_MISMATCH")
     if any(profile.semantic_bundle_fingerprint != bundle for profile in profiles_by_case.values()):
         failures.append("HOLDOUT_PROFILE_BUNDLE_MISMATCH")
     result = CandidateHoldoutRun(
@@ -82,8 +89,14 @@ def run_candidate_holdout(
 
 
 def _active_calibration_policy_sha256() -> str:
+    return _active_calibration_policy()[1]
+
+
+def _active_calibration_policy() -> tuple[str, str]:
     from .candidate_assets import candidate_asset_root
-    return sha256((candidate_asset_root() / "core_profile_calibration_policy_v2.yaml").read_bytes()).hexdigest()
+    path = candidate_asset_root() / "core_profile_calibration_policy_v2.yaml"
+    import yaml
+    return yaml.safe_load(path.read_text(encoding="utf-8"))["policy_version"], sha256(path.read_bytes()).hexdigest()
 
 
 def _write_json(path: Optional[Path], value: object) -> None:

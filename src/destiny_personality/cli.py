@@ -1,4 +1,5 @@
 import argparse
+from dataclasses import asdict
 import json
 from pathlib import Path
 import sys
@@ -41,6 +42,15 @@ def _build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="directory containing the accepted runtime baseline",
     )
+    render = subparsers.add_parser("render-core-portrait")
+    render.add_argument("profile", type=Path)
+    render.add_argument("--mode", choices=("core", "core_concise", "core_standard"), required=True)
+    explain = subparsers.add_parser("explain-profile-item")
+    explain.add_argument("profile", type=Path); explain.add_argument("item_id")
+    view = subparsers.add_parser("profile-source-view")
+    view.add_argument("profile", type=Path); view.add_argument("--view", choices=("combined", "bazi", "astrology", "comparison"), required=True)
+    diff = subparsers.add_parser("profile-diff")
+    diff.add_argument("left", type=Path); diff.add_argument("right", type=Path)
     return parser
 
 
@@ -202,9 +212,23 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 args.candidate_dir, args.runtime_config_dir
             )
             summary = _calculation_contract_summary(bundle, fingerprint)
+        elif args.command in {"render-core-portrait", "explain-profile-item", "profile-source-view", "profile-diff"}:
+            from .core_profile_codec import load_candidate_profile
+            from .core_portrait import build_candidate_profile_summary, compare_candidate_profiles_versions, explain_profile_item, render_core_concise, render_core_standard, source_view
+            if args.command == "profile-diff":
+                summary = asdict(compare_candidate_profiles_versions(load_candidate_profile(args.left), load_candidate_profile(args.right)))
+            else:
+                profile = load_candidate_profile(args.profile)
+                if args.command == "render-core-portrait":
+                    view = build_candidate_profile_summary(profile)
+                    summary = asdict(view if args.mode == "core" else render_core_concise(view) if args.mode == "core_concise" else render_core_standard(view))
+                elif args.command == "explain-profile-item":
+                    summary = asdict(explain_profile_item(profile, args.item_id))
+                else:
+                    summary = [asdict(item) for item in source_view(profile, args.view)]
         else:
             return 2
-    except ConfigError as error:
+    except (ConfigError, ValueError) as error:
         print(str(error), file=sys.stderr)
         return 2
     print(json.dumps(summary, ensure_ascii=False, sort_keys=True))

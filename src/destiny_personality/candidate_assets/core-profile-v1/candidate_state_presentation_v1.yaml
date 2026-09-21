@@ -1,0 +1,15 @@
+review_status: approved
+schema_version: candidate-state-presentation-v1
+states:
+  supported_high: 这一倾向较明确
+  supported_low: 更偏向相反方向
+  context_differentiated: 不同情境下表现不同
+  mixed: 当前证据呈现明显张力
+  unknown: 当前证据不足
+contexts:
+  decision: 重要决策
+  work: 工作与任务推进
+  pressure: 压力情境
+  relationship: 关系互动
+  change: 变化与探索
+  action: 实际行动

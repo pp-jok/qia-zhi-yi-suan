@@ -21,3 +21,17 @@ def test_calibration_and_holdout_runners_emit_bound_machine_records(tmp_path, no
     assert json.loads(calibration_path.read_text(encoding="utf-8"))["case_ids"] == ["synthetic-a"]
     assert holdout.run_status == "pass"
     assert json.loads(holdout_path.read_text(encoding="utf-8"))["calibration_policy_sha256"]
+
+
+def test_holdout_rejects_calibration_from_another_policy(tmp_path, normalized_time, bazi_facts, astrology_facts):
+    from destiny_personality.calibration import run_candidate_calibration, run_candidate_holdout
+    from destiny_personality.core_profile_builder import build_candidate_core_profile
+
+    profile = build_candidate_core_profile(DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts), fact_assurance="capability_reported")
+    calibration_path = tmp_path / "calibration.json"
+    run_candidate_calibration({"case": profile}, calibration_path)
+    payload = json.loads(calibration_path.read_text(encoding="utf-8"))
+    payload["calibration_policy_sha256"] = "0" * 64
+    calibration_path.write_text(json.dumps(payload), encoding="utf-8")
+    result = run_candidate_holdout({"holdout": profile}, calibration_path)
+    assert "HOLDOUT_CALIBRATION_POLICY_MISMATCH" in result.assertion_failures

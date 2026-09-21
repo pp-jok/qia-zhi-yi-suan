@@ -97,6 +97,7 @@ class CandidateProfileVersionDiff:
     changed_primitives: Tuple[ChangedPrimitive, ...]
     mapping_version_changed: bool
     resolver_version_changed: bool
+    change_reasons: Tuple[str, ...]
 
 
 def build_candidate_profile_summary(profile: CandidateCoreProfile) -> CandidateProfileSummary:
@@ -115,23 +116,20 @@ def build_candidate_profile_summary(profile: CandidateCoreProfile) -> CandidateP
         cross_system_unresolved=tuple(item for item in profile.cross_system_alignments if item.status == "unresolved"),
         evidence_limits=profile.limitations,
         time_sensitivity=_time_sensitivity(profile),
-        next_available_analysis=("可查看八字、占星或合参证据", "可补充准确出生时间以复核时间敏感部分"),
+        next_available_analysis=("可查看八字、占星或合参证据",) + (("可补充准确出生时间以复核时间敏感部分",) if not profile.fact_scope.birth_time_known else ()),
     )
 
 
 def render_core_concise(summary: CandidateProfileSummary) -> CorePortrait:
     items = _display_items(summary, 4)
-    sections = [
-        _section("summary", "核心画像摘要", _item_sentence(item), item)
-        for item in items
-    ]
+    sections = [_overview_section(summary)] + [_section(f"primitive-{item.primitive_id}", item.canonical_name, _item_sentence(item), item) for item in items]
     sections.extend((_evidence_section(summary), _time_section(summary), _limits_section(summary)))
     return _portrait("core_concise", summary, tuple(sections[:8]))
 
 
 def render_core_standard(summary: CandidateProfileSummary) -> CorePortrait:
     items = _display_items(summary, 8)
-    sections = [
+    sections = [_overview_section(summary)] + [
         _section(f"primitive-{index}", item.canonical_name, _item_sentence(item), item)
         for index, item in enumerate(items, 1)
     ]
@@ -184,10 +182,12 @@ def compare_candidate_profiles_versions(left: CandidateCoreProfile, right: Candi
                 tuple(sorted(before.context_states.items())) if before else (),
                 tuple(sorted(after.context_states.items())) if after else (),
             ))
+    mapping_changed = _version(left, "bazi_mapping") != _version(right, "bazi_mapping") or _version(left, "astrology_mapping") != _version(right, "astrology_mapping")
+    resolver_changed = _version(left, "state_resolver") != _version(right, "state_resolver")
+    reasons = (("fact_changed",) if left.fact_fingerprint != right.fact_fingerprint else ()) + (("mapping_version_changed",) if mapping_changed else ()) + (("resolver_version_changed",) if resolver_changed else ()) + (("context_resolution_changed",) if any(item.before_contexts != item.after_contexts for item in changed) else ())
     return CandidateProfileVersionDiff(
         left.candidate_profile_id, right.candidate_profile_id, tuple(unchanged), tuple(changed),
-        _version(left, "bazi_mapping") != _version(right, "bazi_mapping") or _version(left, "astrology_mapping") != _version(right, "astrology_mapping"),
-        _version(left, "state_resolver") != _version(right, "state_resolver"),
+        mapping_changed, resolver_changed, reasons,
     )
 
 
@@ -206,19 +206,19 @@ def _summary_item(profile: CandidateCoreProfile, primitive_id: str, name: str) -
 def _strength(state: str, candidates: Tuple[PrimitiveCandidate, ...], alignments: Tuple[CrossSystemAlignment, ...]) -> str:
     if state == "unknown": return "证据不足"
     if state == "mixed": return "证据混合"
-    if any(item.status == "validation" for item in alignments) and len({item.source_system for item in candidates}) == 2: return "核心支持"
     if state == "context_differentiated": return "情境支持"
+    if any(item.status == "validation" for item in alignments) and len({item.source_system for item in candidates}) == 2: return "核心支持"
     if len({item.source_system for item in candidates}) == 1: return "单体系支持"
     return "明确支持"
 
 
 def _primitive_names() -> dict[str, str]:
-    payload = yaml.safe_load((candidate_asset_root() / "primitive_ontology_v1.yaml").read_text(encoding="utf-8"))
-    return {item["primitive_id"]: item["canonical_name"] for item in payload["primitives"]}
+    payload = yaml.safe_load((candidate_asset_root() / "candidate_primitive_presentation_v1.yaml").read_text(encoding="utf-8"))
+    return {key: value["zh_CN_name"] for key, value in payload.items() if key.startswith("P")}
 
 
 def _time_sensitivity(profile: CandidateCoreProfile) -> TimeSensitivitySummary:
-    unknown_time = any(item.evidence_stability == "stable" for item in profile.astrology_primitive_candidates)
+    unknown_time = not profile.fact_scope.birth_time_known
     if unknown_time:
         return TimeSensitivitySummary(("稳定行星与相位证据",), ("Ascendant", "MC", "宫位", "角轴相关解释"))
     return TimeSensitivitySummary(("稳定行星与相位证据", "Ascendant", "MC", "宫位与角轴相关解释"), ())
@@ -226,12 +226,22 @@ def _time_sensitivity(profile: CandidateCoreProfile) -> TimeSensitivitySummary:
 
 def _display_items(summary: CandidateProfileSummary, maximum: int) -> Tuple[ProfileSummaryItem, ...]:
     priority = summary.core_supported_primitives + summary.contextual_primitives + summary.mixed_primitives
-    return (priority or summary.unknown_primitives)[:maximum]
+    return priority[:maximum]
 
 
 def _item_sentence(item: ProfileSummaryItem) -> str:
-    contexts = "、".join(item.contexts) or "当前事实范围"
-    return f"{item.canonical_name}：{item.evidence_strength}；状态为 {item.state}；适用情境为 {contexts}。"
+    contexts = "、".join(_presentation()["contexts"].get(context, context) for context in item.contexts) or "当前事实范围"
+    return f"{item.canonical_name}：{item.evidence_strength}；适用情境为 {contexts}。"
+
+
+def _presentation() -> dict:
+    return yaml.safe_load((candidate_asset_root() / "candidate_state_presentation_v1.yaml").read_text(encoding="utf-8"))
+
+
+def _overview_section(summary: CandidateProfileSummary) -> CorePortraitSection:
+    items = _display_items(summary, 2)
+    body = "；".join(f"{item.canonical_name}在{'、'.join(item.contexts) or '当前范围'}呈现{item.evidence_strength}" for item in items) or "当前可支持的基础倾向有限，以下保留证据边界。"
+    return CorePortraitSection("overview", "核心画像摘要", body, tuple(f"primitive_states.{item.primitive_id}" for item in items))
 
 
 def _section(section_id: str, title: str, body: str, item: ProfileSummaryItem) -> CorePortraitSection:
@@ -239,11 +249,23 @@ def _section(section_id: str, title: str, body: str, item: ProfileSummaryItem) -
 
 
 def _evidence_section(summary: CandidateProfileSummary) -> CorePortraitSection:
-    return CorePortraitSection("evidence", "证据与合参", f"跨体系验证 {len(summary.cross_system_validations)} 项；情境化一致 {len(summary.cross_system_contextualizations)} 项。", ())
+    items = summary.core_supported_primitives + summary.contextual_primitives
+    body = "；".join(
+        f"{item.canonical_name}在{'、'.join(_presentation()['contexts'].get(context, context) for context in item.contexts)}获得{item.evidence_strength}"
+        for item in items[:3]
+    ) or "当前没有足够的跨体系证据可作合参结论。"
+    return CorePortraitSection("evidence", "证据与合参", body, tuple(f"primitive_states.{item.primitive_id}" for item in items[:3]))
 
 
 def _comparison_section(summary: CandidateProfileSummary) -> CorePortraitSection:
-    return CorePortraitSection("comparison", "两套体系未统一之处", f"待保留的未解决对齐 {len(summary.cross_system_unresolved)} 项。", ())
+    refs = tuple(f"primitive_states.{item.primitive_id}" for item in summary.cross_system_unresolved)
+    if not summary.cross_system_unresolved:
+        body = "当前没有需要保留的直接未统一结论。"
+    else:
+        body = "以下基础倾向在两套体系间仍需保留差异，不将其合并为单一结论：" + "、".join(
+            item.primitive_id for item in summary.cross_system_unresolved
+        ) + "。"
+    return CorePortraitSection("comparison", "两套体系未统一之处", body, refs)
 
 
 def _time_section(summary: CandidateProfileSummary) -> CorePortraitSection:
