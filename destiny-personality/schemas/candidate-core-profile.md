@@ -30,7 +30,8 @@ limitations
 bundle fingerprint, so identical facts evaluated under a changed bundle cannot
 share an identity. `semantic_model_versions` must include versioned mapping,
 state resolver, alignment resolver, context taxonomy, evidence weighting, and
-builder semantics. The bundle fingerprint covers semantic YAML assets and those
+builder semantics. The version list also records the state and alignment
+resolver versions explicitly. The bundle fingerprint covers semantic YAML assets and those
 algorithm versions; calibration and holdout evidence records are excluded to
 avoid circular self-fingerprinting.
 

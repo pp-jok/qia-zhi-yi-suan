@@ -1,6 +1,6 @@
 ---
 name: destiny-personality
-description: Use when a user requests a Bazi and Western astrology personality portrait (portrait), deterministic birth-chart facts (facts_only), or review of an existing fact packet or execution report (audit).
+description: Use when a user requests a Bazi and Western astrology personality portrait (legacy, core, core_concise, or core_standard), deterministic birth-chart facts (facts_only), or review of an existing fact packet or execution report (audit).
 ---
 
 # Destiny Personality
@@ -13,7 +13,9 @@ Do not read unrelated local projects or undeclared business files without explic
 
 ## Select one mode
 
-- Use `portrait` by default only for a clear request to create a new personality portrait.
+- Use `legacy` only when the user explicitly requests the compatible 56-chapter portrait.
+- Use `core_concise` for a short primitive-only Core Portrait; use `core_standard` for the expanded preview. Use `core` for the structured summary without prose rendering.
+- Use `portrait` as the compatibility alias for `legacy`.
 - Use `facts_only` when the user requests deterministic chart facts or validation without personality reasoning.
 - Use `audit` when the user supplies facts or a report to review. Do not advance, repair, or complete the supplied execution.
 
@@ -23,7 +25,7 @@ Read the [birth input contract](schemas/birth-input.md) and run the [preflight c
 
 For a portrait, normalize both explicit fields and unambiguous compact input
 under `compact-or-structured-birth-input-v1`. A line such as
-`2000.1.1.00:00 上海 未指定` is sufficient input; normalize it without asking the
+`1986.5.25.11:55 北京 男` is sufficient input; normalize it without asking the
 user to restate it. Ask one focused question only for a genuinely ambiguous or
 missing required value. Preserve a supplied sex label, never infer it, and do
 not mistake input normalization for permission to calculate chart facts.
@@ -68,17 +70,30 @@ This route does not authorize candidate assets, calculation, or strict semantic
 claims; it activates only after separately approved production assets pass their
 own gates.
 
-### Candidate Core Pipeline
+### Candidate Core Portrait Preview
 
-`Facts → Candidate Core Profile → Candidate Report Plan` is available for the
-**Design / Calibration Set only**. It validates candidate Profile containment
-and records stopped executions, but must not render a user-facing report, enter
-the default route, or substitute for the approved production Core Profile
+`Facts → Candidate Core Profile → Candidate Profile Summary → Core Portrait` is
+available as an explicitly selected **Candidate Preview** route. It is
+`primitive_only`, does not enter the default legacy route, and must state its
+candidate scope. It may render only ontology-backed Primitive, context,
+evidence, cross-system comparison, and limitation views; it must not derive
+Signature, Dynamic, Fate Theme, Archetype, or an unanchored narrative claim.
 
-Read [Candidate Core Profile](schemas/candidate-core-profile.md) before this
-route. The candidate IR is distinct from `core-destiny-profile-v1` and remains
-`primitive_only`.
+Before entering this candidate route, read the [Candidate Core Profile
+contract](schemas/candidate-core-profile.md). Keep this IR distinct from
+`core-destiny-profile-v1`; its current capability is `primitive_only`.
 branch.
+
+For `core` return the structured Candidate Profile Summary. For
+`core_concise`, render four to eight evidence-contained sections. For
+`core_standard`, render eight to fourteen evidence-contained sections. Select
+themes from actual supported Primitive states; never fill a section by creating
+a new conclusion. Support `source_view: combined | bazi | astrology |
+comparison`; comparison reports only local alignment statuses. When birth time
+is unknown, explain that stable planet/aspect evidence may remain available but
+Ascendant, MC, houses, and angle-axis interpretation are unavailable. A request
+to explain an item must return its Primitive, contexts, facts, rule references,
+counterevidence, and limitations.
 
 The strict branch retains the original gates:
 

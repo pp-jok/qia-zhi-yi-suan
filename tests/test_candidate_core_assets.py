@@ -62,6 +62,6 @@ def test_c4b_candidate_policy_is_bound_to_the_current_semantic_bundle() -> None:
     policy = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
 
     assert policy["bundle_fingerprint"] == candidate_semantic_bundle_fingerprint()
-    assert policy["similarity_weights"]["weighted_primitive_overlap"] == 1.0
+    assert policy["similarity_weights"]["primitive_state_context_overlap"] == 1.0
     assert policy["contrast_pair_thresholds"]["default_max_similarity"] == 0.75
     assert policy["unsupported_activation_frequency"] == 0

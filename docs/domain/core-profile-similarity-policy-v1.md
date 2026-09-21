@@ -15,7 +15,7 @@ Each matrix cell contains values in `[0, 1]` for:
 
 | Component | Candidate comparison |
 | --- | --- |
-| `weighted_primitive_overlap` | weighted Jaccard overlap of Primitive ID plus resolved direction, weighted only by approved salience and evidence stability |
+| `primitive_state_context_overlap` | equal-weight Jaccard overlap of Primitive ID, resolved state, and context state |
 | `signature_primitive_overlap` | overlap of Primitive membership in source-local Dominant Signatures, retaining source system |
 | `dynamic_family_pole_overlap` | overlap of approved relation-family IDs and declared poles; empty sets are `not_applicable`, not 1.0 |
 | `fate_theme_overlap` | overlap of approved Fate Theme basis references; absent themes are `not_applicable`, not evidence of sameness |
@@ -30,7 +30,7 @@ substitute for structure.
 For Bundle fingerprint
 `a77958e1f4453828b44fd1c2573f58f4e51e63b1c25c581d0293da0166276bd9`:
 
-- `weighted_primitive_overlap` has weight `1.0`, using equal Primitive and
+- `primitive_state_context_overlap` has weight `1.0`; `weighted_primitive_overlap` remains disabled until approved weights exist.
   source evidence-stability weights of `1.0`.
 - Signature, Dynamic, and Fate components have weight `0.0` because their D1
   policies are disabled; their cells remain `not_applicable`.

@@ -5,7 +5,7 @@
 ## Bound bundle
 
 This run is bound to the exact semantic bundle fingerprint
-`733648b1a7fad62ef78bbbbd9c20733fc6800c9b23095f729aab95d96780c705`.
+`256ba053b174a054226301f1b493e0e0c8f9f50e9f2976a72b8045dbf6ed6131`.
 It uses `candidate-builder-semantic-v3`, `candidate-state-resolver-v3`, and
 `candidate-alignment-resolver-v3`.
 

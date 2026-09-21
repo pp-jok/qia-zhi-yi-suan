@@ -2,7 +2,9 @@ review_status: approved
 review_refs:
   - docs/domain/holdout-validation-v0.2.3.md
 schema_version: candidate-holdout-validation-v2
-bundle_fingerprint: 733648b1a7fad62ef78bbbbd9c20733fc6800c9b23095f729aab95d96780c705
+bundle_fingerprint: 256ba053b174a054226301f1b493e0e0c8f9f50e9f2976a72b8045dbf6ed6131
+calibration_policy_version: c4b-candidate-v2
+calibration_policy_sha256: cf19f884c5de6406c3761ec017f599ad34f1f03d73f9692804ea98cadd507c79
 algorithm_versions:
   - candidate-builder-semantic-v3
   - candidate-state-resolver-v3

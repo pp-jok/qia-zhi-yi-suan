@@ -15,8 +15,8 @@ class CandidateProfileComparison:
 
     case_pair: Tuple[str, str]
     primitive_state_pairs: Mapping[str, Tuple[str, str]]
-    weighted_primitive_overlap: Optional[float]
-    weighted_primitive_overlap_status: str
+    primitive_state_context_overlap: Optional[float]
+    primitive_state_context_overlap_status: str
     signature_primitive_overlap: Optional[float]
     signature_primitive_overlap_status: str
     dynamic_family_pole_overlap: Optional[float]
@@ -47,12 +47,12 @@ def compare_candidate_profiles(
         )
         for primitive_id in primitive_ids
     }
-    primitive_overlap, primitive_status = _weighted_primitive_overlap(left, right)
+    primitive_overlap, primitive_status = _primitive_state_context_overlap(left, right)
     return CandidateProfileComparison(
         case_pair=(left.candidate_profile_id, right.candidate_profile_id),
         primitive_state_pairs=primitive_state_pairs,
-        weighted_primitive_overlap=primitive_overlap,
-        weighted_primitive_overlap_status=primitive_status,
+        primitive_state_context_overlap=primitive_overlap,
+        primitive_state_context_overlap_status=primitive_status,
         signature_primitive_overlap=None,
         signature_primitive_overlap_status="not_applicable",
         dynamic_family_pole_overlap=None,
@@ -105,14 +105,13 @@ def evaluate_candidate_similarity_matrix(
     return CandidateCalibrationResult(max_similarity, threshold, errors)
 
 
-def _weighted_primitive_overlap(
+def _primitive_state_context_overlap(
     left: CandidateCoreProfile,
     right: CandidateCoreProfile,
 ) -> Tuple[Optional[float], str]:
     policy = _load_current_candidate_policy()
     if policy is None:
         return None, "CALIBRATION_POLICY_GAP"
-    weights = policy["primitive_salience_weights"]
     left_tokens = {
         (primitive_id, state.state, tuple(sorted(state.context_states.items())))
         for primitive_id, state in left.primitive_states.items()
@@ -127,9 +126,7 @@ def _weighted_primitive_overlap(
     if not union:
         return None, "not_applicable"
     overlap = left_tokens & right_tokens
-    denominator = sum(weights[primitive_id] for primitive_id, _, _ in union)
-    numerator = sum(weights[primitive_id] for primitive_id, _, _ in overlap)
-    return numerator / denominator, "calibrated"
+    return len(overlap) / len(union), "calibrated"
 
 
 def _load_current_candidate_policy() -> Optional[dict]:
@@ -142,6 +139,6 @@ def _load_current_candidate_policy() -> Optional[dict]:
     policy = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
     if policy["bundle_fingerprint"] != candidate_semantic_bundle_fingerprint():
         return None
-    if policy["similarity_weights"]["weighted_primitive_overlap"] != 1.0:
+    if policy["similarity_weights"]["primitive_state_context_overlap"] != 1.0:
         return None
     return policy

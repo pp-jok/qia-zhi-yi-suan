@@ -1,4 +1,5 @@
 from pathlib import Path
+from hashlib import sha256
 from typing import Dict, Optional, Tuple
 
 import yaml
@@ -52,10 +53,18 @@ def validate_candidate_promotion_authorization(
     assets = _load_candidate_assets(root)
     calibration = assets.get("core_profile_calibration_policy_v2.yaml", {})
     holdout = assets.get("holdout_validation_v2.yaml", {})
-    expected = candidate_semantic_bundle_fingerprint()
+    expected = candidate_semantic_bundle_fingerprint(root)
     if calibration.get("bundle_fingerprint") != expected:
         blockers.append("CALIBRATION_POLICY_GAP")
-    if holdout.get("bundle_fingerprint") != expected or holdout.get("result") != "pass":
+    if holdout.get("bundle_fingerprint") != expected:
+        blockers.extend(("HOLDOUT_BUNDLE_MISMATCH", "CANDIDATE_HOLDOUT_VALIDATION_REQUIRED"))
+    calibration_sha = _file_sha256(root / "core_profile_calibration_policy_v2.yaml")
+    if (
+        holdout.get("calibration_policy_version") != calibration.get("policy_version")
+        or holdout.get("calibration_policy_sha256") != calibration_sha
+    ):
+        blockers.extend(("HOLDOUT_CALIBRATION_POLICY_MISMATCH", "CANDIDATE_HOLDOUT_VALIDATION_REQUIRED"))
+    if holdout.get("result") != "pass":
         blockers.append("CANDIDATE_HOLDOUT_VALIDATION_REQUIRED")
     blockers.append("HUMAN_PRODUCTION_APPROVAL_REQUIRED")
     return tuple(dict.fromkeys(blockers))
@@ -78,6 +87,10 @@ def _load_candidate_assets(candidate_root: Path) -> Dict[str, dict]:
         if isinstance(value, dict):
             assets[path.name] = value
     return assets
+
+
+def _file_sha256(path: Path) -> str:
+    return sha256(path.read_bytes()).hexdigest() if path.is_file() else ""
 
 
 def _environment_is_complete(environment: object) -> bool:

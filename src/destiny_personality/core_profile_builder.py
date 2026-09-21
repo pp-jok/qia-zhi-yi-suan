@@ -30,9 +30,12 @@ _CANDIDATE_PRIMITIVES = (
 _CANDIDATE_VERSIONS = (
     ("ontology", "c1-review-v1"),
     ("state_policy", "candidate-state-policy-v2"),
+    ("state_resolver", "candidate-state-resolver-v3"),
     ("bazi_mapping", "candidate-c2-bazi-v2"),
     ("astrology_mapping", "candidate-c2-astrology-v2"),
     ("alignment", "candidate-alignment-v2"),
+    ("alignment_policy", "candidate-context-v1"),
+    ("alignment_resolver", "candidate-alignment-resolver-v3"),
     ("candidate_builder", "candidate-builder-semantic-v3"),
     ("context_taxonomy", "candidate-context-v1"),
     ("evidence_weighting", "candidate-evidence-weighting-v1"),
@@ -44,14 +47,15 @@ _SEMANTIC_ALGORITHM_VERSIONS = (
     "candidate-builder-semantic-v3",
     "candidate-state-resolver-v3",
     "candidate-alignment-resolver-v3",
+    "candidate-similarity-resolver-v2",
 )
 
 
-def candidate_semantic_bundle_fingerprint() -> str:
+def candidate_semantic_bundle_fingerprint(candidate_root: Optional[Path] = None) -> str:
     """Fingerprint D1 semantic assets without creating a circular calibration hash."""
 
     digest = sha256()
-    for path in sorted(_candidate_asset_root().glob("*.yaml")):
+    for path in sorted((candidate_root or _candidate_asset_root()).glob("*.yaml")):
         if path.name.startswith(("core_profile_calibration_policy_", "holdout_validation_")):
             continue
         digest.update(path.name.encode("utf-8"))

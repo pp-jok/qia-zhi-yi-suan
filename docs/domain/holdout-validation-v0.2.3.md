@@ -4,7 +4,7 @@
 
 ## Bound bundle
 
-Fingerprint: `733648b1a7fad62ef78bbbbd9c20733fc6800c9b23095f729aab95d96780c705`.
+Fingerprint: `256ba053b174a054226301f1b493e0e0c8f9f50e9f2976a72b8045dbf6ed6131`.
 The holdout run uses the same versioned builder, state resolver, and alignment
 resolver named in the v0.2.3 calibration record.
 
