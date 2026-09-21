@@ -6,7 +6,7 @@ from typing import Mapping, Optional, Tuple
 import yaml
 
 from .core_profile_builder import candidate_semantic_bundle_fingerprint
-from .core_profile_models import CoreDestinyProfile
+from .core_profile_models import CandidateCoreProfile
 
 
 @dataclass(frozen=True)
@@ -34,8 +34,8 @@ class CandidateCalibrationResult:
 
 
 def compare_candidate_profiles(
-    left: CoreDestinyProfile,
-    right: CoreDestinyProfile,
+    left: CandidateCoreProfile,
+    right: CandidateCoreProfile,
 ) -> CandidateProfileComparison:
     """Expose comparable structures without inventing C4b weights or thresholds."""
 
@@ -49,7 +49,7 @@ def compare_candidate_profiles(
     }
     primitive_overlap, primitive_status = _weighted_primitive_overlap(left, right)
     return CandidateProfileComparison(
-        case_pair=(left.core_profile_id, right.core_profile_id),
+        case_pair=(left.candidate_profile_id, right.candidate_profile_id),
         primitive_state_pairs=primitive_state_pairs,
         weighted_primitive_overlap=primitive_overlap,
         weighted_primitive_overlap_status=primitive_status,
@@ -64,16 +64,16 @@ def compare_candidate_profiles(
 
 
 def build_candidate_similarity_matrix(
-    profiles: Tuple[CoreDestinyProfile, ...],
+    profiles: Tuple[CandidateCoreProfile, ...],
 ) -> Tuple[CandidateProfileComparison, ...]:
     """Build a stable diagnostic matrix without treating duplicate IDs as cases."""
 
     unique_profiles = []
     seen_ids = set()
     for profile in profiles:
-        if profile.core_profile_id not in seen_ids:
+        if profile.candidate_profile_id not in seen_ids:
             unique_profiles.append(profile)
-            seen_ids.add(profile.core_profile_id)
+            seen_ids.add(profile.candidate_profile_id)
     return tuple(
         compare_candidate_profiles(left, right)
         for left, right in combinations(unique_profiles, 2)
@@ -106,20 +106,20 @@ def evaluate_candidate_similarity_matrix(
 
 
 def _weighted_primitive_overlap(
-    left: CoreDestinyProfile,
-    right: CoreDestinyProfile,
+    left: CandidateCoreProfile,
+    right: CandidateCoreProfile,
 ) -> Tuple[Optional[float], str]:
     policy = _load_current_candidate_policy()
     if policy is None:
         return None, "CALIBRATION_POLICY_GAP"
     weights = policy["primitive_salience_weights"]
     left_tokens = {
-        (primitive_id, state.state)
+        (primitive_id, state.state, tuple(sorted(state.context_states.items())))
         for primitive_id, state in left.primitive_states.items()
         if state.state != "unknown"
     }
     right_tokens = {
-        (primitive_id, state.state)
+        (primitive_id, state.state, tuple(sorted(state.context_states.items())))
         for primitive_id, state in right.primitive_states.items()
         if state.state != "unknown"
     }
@@ -127,8 +127,8 @@ def _weighted_primitive_overlap(
     if not union:
         return None, "not_applicable"
     overlap = left_tokens & right_tokens
-    denominator = sum(weights[primitive_id] for primitive_id, _ in union)
-    numerator = sum(weights[primitive_id] for primitive_id, _ in overlap)
+    denominator = sum(weights[primitive_id] for primitive_id, _, _ in union)
+    numerator = sum(weights[primitive_id] for primitive_id, _, _ in overlap)
     return numerator / denominator, "calibrated"
 
 

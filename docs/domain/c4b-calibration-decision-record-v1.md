@@ -26,7 +26,7 @@
 ## Frozen candidate decisions
 
 - Semantic Bundle fingerprint:
-  `2e09e801b58fbd18cd5fa8b53a15041144cd6c1830b91d986473e476a161cfcd`.
+  `5d3cd30fd19a871fcf3a76ae6698cd856b5e24f14e7a0aeb31185cbea0ebcac5`.
 - All six Primitive salience weights and both source evidence-stability weights:
   `1.0`.
 - `weighted_primitive_overlap`: `1.0`; unavailable Signature, Dynamic, and

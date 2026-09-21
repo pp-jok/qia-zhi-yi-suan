@@ -9,6 +9,11 @@ class PrimitiveCandidate:
     direction: str
     fact_refs: Tuple[str, ...]
     semantic_rule_refs: Tuple[str, ...]
+    context: str
+    salience: str
+    evidence_stability: str
+    modifier_refs: Tuple[str, ...]
+    counterevidence_refs: Tuple[str, ...]
     limitations: Tuple[str, ...]
 
 
@@ -18,6 +23,11 @@ class PrimitiveState:
     state: str
     evidence_refs: Tuple[str, ...]
     resolution_rule_ref: str
+    context_states: Mapping[str, str]
+    supporting_candidates: Tuple[str, ...]
+    counter_candidates: Tuple[str, ...]
+    contradictions: Tuple[str, ...]
+    unresolved_contexts: Tuple[str, ...]
     limitations: Tuple[str, ...]
 
 
@@ -27,15 +37,18 @@ class CrossSystemAlignment:
     status: str
     bazi_rule_refs: Tuple[str, ...]
     astrology_rule_refs: Tuple[str, ...]
+    shared_contexts: Tuple[str, ...]
     limitations: Tuple[str, ...]
 
 
 @dataclass(frozen=True)
-class CoreDestinyProfile:
+class CandidateCoreProfile:
     schema_version: str
-    core_profile_id: str
+    candidate_profile_id: str
     fact_assurance: str
     semantic_model_assurance: str
+    semantic_capability_level: str
+    semantic_bundle_fingerprint: str
     semantic_model_versions: Tuple[Tuple[str, str], ...]
     bazi_primitive_candidates: Tuple[PrimitiveCandidate, ...]
     astrology_primitive_candidates: Tuple[PrimitiveCandidate, ...]
@@ -44,6 +57,31 @@ class CoreDestinyProfile:
     core_dynamics: Tuple[object, ...]
     archetype: Optional[object]
     limitations: Tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class CoreDestinyProfile:
+    """Reserved formal production IR; candidate execution must not instantiate it."""
+
+    schema_version: str
+    core_profile_id: str
+    fact_packet_refs: Tuple[str, ...]
+    fact_assurance: str
+    semantic_model_assurance: str
+    semantic_model_versions: Tuple[Tuple[str, str], ...]
+    bazi_primitive_candidates: Tuple[PrimitiveCandidate, ...]
+    astrology_primitive_candidates: Tuple[PrimitiveCandidate, ...]
+    primitive_states: Mapping[str, PrimitiveState]
+    cross_system_alignment: Tuple[CrossSystemAlignment, ...]
+    dominant_signatures: Tuple[object, ...]
+    core_dynamics: Tuple[object, ...]
+    shadow_mature_forms: Tuple[object, ...]
+    fate_themes: Tuple[object, ...]
+    archetype: Optional[object]
+    contradictions: Tuple[str, ...]
+    limitations: Tuple[str, ...]
+    unresolved_questions: Tuple[str, ...]
+    audit_trail: Tuple[str, ...]
 
 
 @dataclass(frozen=True)

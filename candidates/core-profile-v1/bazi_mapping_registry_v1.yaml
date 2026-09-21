@@ -12,6 +12,7 @@ rules:
     requires_any_groups: [[比肩, 劫财], [食神, 伤官]]
     minimum_distinct_pillars: 2
     allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_visible_evidence_per_group: true
     requires_day_master_environment: true
     context: decision_work
   - rule_id: BZ-C2B-02
@@ -20,6 +21,7 @@ rules:
     requires_any_groups: [[正印, 偏印], [正官, 七杀]]
     minimum_distinct_pillars: 2
     allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_visible_evidence_per_group: true
     requires_day_master_environment: true
     context: pressure_work
   - rule_id: BZ-C2B-03
@@ -28,6 +30,8 @@ rules:
     requires_any_groups: [[食神, 伤官], [正财, 偏财]]
     minimum_distinct_pillars: 2
     allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_visible_evidence_per_group: true
+    counterweight_any: [正印, 偏印, 正官, 七杀]
     requires_day_master_environment: true
     context: change_work
   - rule_id: BZ-C2B-04
@@ -36,6 +40,7 @@ rules:
     requires_any_groups: [[正财, 偏财, 正官, 七杀], [比肩, 劫财, 正印, 偏印]]
     minimum_distinct_pillars: 2
     allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_visible_evidence_per_group: true
     requires_day_master_environment: true
     context: relationship
   - rule_id: BZ-C2B-05
@@ -44,6 +49,7 @@ rules:
     requires_any_groups: [[食神, 伤官], [正财, 偏财]]
     minimum_distinct_pillars: 2
     allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_visible_evidence_per_group: true
     requires_day_master_environment: true
     context: work_action
   - rule_id: BZ-C2B-06
@@ -52,6 +58,7 @@ rules:
     requires_any_groups: [[正印, 偏印], [正官, 七杀]]
     minimum_distinct_pillars: 2
     allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_visible_evidence_per_group: true
     requires_day_master_environment: true
     context: pressure
   - rule_id: BZ-C2B-07
@@ -60,6 +67,7 @@ rules:
     requires_any_groups: [[正印, 偏印], [正官, 七杀]]
     minimum_distinct_pillars: 2
     allowed_source_kinds: [visible_stem, hidden_stem]
+    requires_visible_evidence_per_group: true
     requires_day_master_environment: true
     context: work_decision
 limitations:

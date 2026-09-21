@@ -1,11 +1,11 @@
 from typing import Union
 
-from .core_profile_models import CoreDestinyProfile, StoppedCoreProfileExecution
+from .core_profile_models import CandidateCoreProfile, StoppedCoreProfileExecution
 from .report_plan_models import CandidateReportPlan, CandidateReportTopic
 
 
 def build_candidate_report_plan(
-    profile: Union[CoreDestinyProfile, StoppedCoreProfileExecution],
+    profile: Union[CandidateCoreProfile, StoppedCoreProfileExecution],
 ) -> CandidateReportPlan:
     """Plan candidate output from Profile evidence without adding semantics."""
 
@@ -25,7 +25,7 @@ def build_candidate_report_plan(
             selected_topics.append(topic)
     return CandidateReportPlan(
         schema_version="candidate-report-plan-v1",
-        core_profile_ref=profile.core_profile_id,
+        core_profile_ref=profile.candidate_profile_id,
         selected_topics=tuple(selected_topics),
         omitted_candidate_topics=tuple(omitted_topics),
         section_plan=tuple(topic.topic_id for topic in selected_topics),

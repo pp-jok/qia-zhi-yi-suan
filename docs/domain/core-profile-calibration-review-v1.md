@@ -86,7 +86,7 @@ Builder. The run is a calibration input, not evidence for production release.
 Following owner approval to proceed, the candidate-only policy freezes:
 
 - semantic Bundle fingerprint:
-  `2e09e801b58fbd18cd5fa8b53a15041144cd6c1830b91d986473e476a161cfcd`;
+  `5d3cd30fd19a871fcf3a76ae6698cd856b5e24f14e7a0aeb31185cbea0ebcac5`;
 - equal Primitive salience and evidence-stability weights of `1.0`;
 - a `1.0` weight for `weighted_primitive_overlap` and `0.0` for unavailable
   Signature, Dynamic, and Fate components;

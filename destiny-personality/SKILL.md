@@ -74,6 +74,10 @@ own gates.
 **Design / Calibration Set only**. It validates candidate Profile containment
 and records stopped executions, but must not render a user-facing report, enter
 the default route, or substitute for the approved production Core Profile
+
+Read [Candidate Core Profile](schemas/candidate-core-profile.md) before this
+route. The candidate IR is distinct from `core-destiny-profile-v1` and remains
+`primitive_only`.
 branch.
 
 The strict branch retains the original gates:

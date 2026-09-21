@@ -3,7 +3,7 @@ from typing import Optional, Tuple, Union
 
 from .calculation.models import DeterministicChartFacts
 from .core_profile_builder import build_candidate_core_profile
-from .core_profile_models import CoreDestinyProfile, StoppedCoreProfileExecution
+from .core_profile_models import CandidateCoreProfile, StoppedCoreProfileExecution
 from .core_profile_validation import validate_candidate_profile
 from .report_plan_models import CandidateReportPlan
 from .report_plan_validation import validate_candidate_report_plan
@@ -13,7 +13,7 @@ from .report_planner import build_candidate_report_plan
 @dataclass(frozen=True)
 class CandidatePipelineExecution:
     status: str
-    profile: Union[CoreDestinyProfile, StoppedCoreProfileExecution]
+    profile: Union[CandidateCoreProfile, StoppedCoreProfileExecution]
     report_plan: Optional[CandidateReportPlan]
     profile_validation_errors: Tuple[str, ...]
     report_plan_validation_errors: Tuple[str, ...]

@@ -5,6 +5,12 @@ review_refs:
 schema_version: candidate-context-aware-mapping-registry-v1
 registry_version: candidate-c2-astrology-v1
 source_system: astrology
+aspect_roles:
+  conjunction: integrated
+  sextile: harmonious
+  square: hard_tension
+  trine: harmonious
+  opposition: polarity
 rules:
   - rule_id: AS-C2B-01
     primitive_id: P001
@@ -16,7 +22,7 @@ rules:
     dignity_modifier_any: [domicile, exaltation]
     angular_body_any: [Sun, Mars]
     house_context_any: [1, 10]
-    requires_known_time: true
+    requires_known_time: false
     context: decision_work
   - rule_id: AS-C2B-02
     primitive_id: P002
@@ -25,7 +31,7 @@ rules:
     requires_aspect_pair: [Saturn, Sun]
     allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
     max_orb: 8
-    requires_known_time: true
+    requires_known_time: false
     context: pressure_work
   - rule_id: AS-C2B-03
     primitive_id: P002
@@ -34,7 +40,7 @@ rules:
     requires_aspect_pair: [Uranus, Sun]
     allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
     max_orb: 8
-    requires_known_time: true
+    requires_known_time: false
     context: change_work
   - rule_id: AS-C2B-04
     primitive_id: P003
@@ -43,7 +49,7 @@ rules:
     requires_aspect_pair: [Moon, Venus]
     allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
     max_orb: 8
-    requires_known_time: true
+    requires_known_time: false
     context: relationship
   - rule_id: AS-C2B-05
     primitive_id: P004
@@ -52,7 +58,7 @@ rules:
     requires_aspect_pair: [Mars, Sun]
     allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
     max_orb: 8
-    requires_known_time: true
+    requires_known_time: false
     context: work_action
   - rule_id: AS-C2B-06
     primitive_id: P005
@@ -61,7 +67,7 @@ rules:
     requires_aspect_pair: [Moon, Mercury]
     allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
     max_orb: 8
-    requires_known_time: true
+    requires_known_time: false
     context: pressure_relationship
   - rule_id: AS-C2B-07
     primitive_id: P006
@@ -70,7 +76,7 @@ rules:
     requires_aspect_pair: [Mercury, Saturn]
     allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
     max_orb: 8
-    requires_known_time: true
+    requires_known_time: false
     context: work_decision
 limitations:
   - Candidate rules require later vocabulary, aspect, and orb validation.

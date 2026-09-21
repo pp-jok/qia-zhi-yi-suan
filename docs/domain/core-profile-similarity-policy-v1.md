@@ -28,7 +28,7 @@ substitute for structure.
 ## C4b candidate threshold policy
 
 For Bundle fingerprint
-`2e09e801b58fbd18cd5fa8b53a15041144cd6c1830b91d986473e476a161cfcd`:
+`5d3cd30fd19a871fcf3a76ae6698cd856b5e24f14e7a0aeb31185cbea0ebcac5`:
 
 - `weighted_primitive_overlap` has weight `1.0`, using equal Primitive and
   source evidence-stability weights of `1.0`.

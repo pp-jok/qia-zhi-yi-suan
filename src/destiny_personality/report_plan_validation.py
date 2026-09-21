@@ -1,17 +1,17 @@
 from typing import Optional, Tuple
 
-from .core_profile_models import CoreDestinyProfile
+from .core_profile_models import CandidateCoreProfile
 from .report_plan_models import CandidateReportPlan
 
 
 def validate_candidate_report_plan(
     plan: CandidateReportPlan,
-    profile: CoreDestinyProfile,
+    profile: CandidateCoreProfile,
 ) -> Tuple[str, ...]:
     """Validate Profile containment for a candidate-only report plan."""
 
     errors = []
-    if plan.core_profile_ref != profile.core_profile_id:
+    if plan.core_profile_ref != profile.candidate_profile_id:
         errors.append("REPORT_PLAN_PROFILE_MISMATCH")
     if "no_new_semantic_conclusions" not in plan.rendering_constraints:
         errors.append("REPORT_PLAN_CONTAINMENT_CONSTRAINT_MISSING")
