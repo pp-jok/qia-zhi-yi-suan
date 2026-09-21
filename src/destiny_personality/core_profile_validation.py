@@ -38,8 +38,4 @@ def validate_candidate_profile(profile: CandidateCoreProfile) -> Tuple[str, ...]
         for item in profile.cross_system_alignments
     ):
         errors.append("D1_ALIGNMENT_STATUS_INVALID")
-    if profile.core_dynamics:
-        errors.append("D1_DYNAMIC_DERIVATION_DISABLED")
-    if profile.archetype is not None:
-        errors.append("D1_ARCHETYPE_DERIVATION_DISABLED")
     return tuple(errors)

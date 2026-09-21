@@ -1,0 +1,10 @@
+review_status: approved
+review_refs:
+  - docs/domain/candidate-semantic-asset-approval-v1.md
+schema_version: candidate-context-taxonomy-v1
+taxonomy_version: candidate-context-v1
+contexts: [action, change, decision, pressure, relationship, work]
+comparison_policy:
+  exact_overlap: comparable
+  partial_overlap: contextualization
+  no_overlap: non_comparable

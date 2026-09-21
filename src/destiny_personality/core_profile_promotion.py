@@ -20,6 +20,8 @@ def validate_candidate_bundle_for_promotion(
     bazi = assets.get("bazi_mapping_registry_v1.yaml")
     astrology = assets.get("astrology_mapping_registry_v1.yaml")
     environment = assets.get("bazi_day_master_environment_v1.yaml")
+    taxonomy = assets.get("context_taxonomy_v1.yaml")
+    weighting = assets.get("candidate_evidence_weighting_policy_v1.yaml")
     blockers = []
     if not assets or any(asset.get("review_status") != "approved" for asset in assets.values()):
         blockers.append("CANDIDATE_REVIEW_PENDING")
@@ -31,6 +33,10 @@ def validate_candidate_bundle_for_promotion(
         blockers.append("ASTROLOGY_DIGNITY_MODIFIER_UNIMPLEMENTED")
     if not _astrology_angle_house_modifier_is_complete(astrology):
         blockers.append("ASTROLOGY_ANGLE_HOUSE_BRANCH_UNIMPLEMENTED")
+    if not _context_taxonomy_is_complete(taxonomy, bazi, astrology):
+        blockers.append("CANDIDATE_CONTEXT_TAXONOMY_UNAVAILABLE")
+    if not _weighting_policy_is_complete(weighting):
+        blockers.append("CANDIDATE_EVIDENCE_WEIGHTING_POLICY_UNAVAILABLE")
     return tuple(blockers)
 
 
@@ -74,6 +80,9 @@ def _bazi_provenance_is_complete(bazi: object) -> bool:
         and isinstance(rule.get("allowed_source_kinds"), list)
         and _REQUIRED_SOURCE_KINDS.issubset(set(rule["allowed_source_kinds"]))
         and rule.get("requires_day_master_environment") is True
+        and isinstance(rule.get("contexts"), list)
+        and bool(rule["contexts"])
+        and isinstance(rule.get("environment_effect"), str)
         for rule in rules
     )
 
@@ -107,3 +116,30 @@ def _nonempty_string_list(value: object) -> bool:
 
 def _nonempty_list(value: object) -> bool:
     return isinstance(value, list) and bool(value)
+
+
+def _context_taxonomy_is_complete(taxonomy: object, bazi: object, astrology: object) -> bool:
+    if not isinstance(taxonomy, dict) or not isinstance(taxonomy.get("contexts"), list):
+        return False
+    allowed = set(taxonomy["contexts"])
+    if not allowed or not isinstance(taxonomy.get("comparison_policy"), dict):
+        return False
+    bazi_rules = bazi.get("rules", ()) if isinstance(bazi, dict) else ()
+    return all(
+        isinstance(rule.get("contexts"), list)
+        and bool(rule["contexts"])
+        and set(rule["contexts"]).issubset(allowed)
+        for rule in tuple(bazi_rules) + _astrology_rules(astrology)
+    )
+
+
+def _weighting_policy_is_complete(weighting: object) -> bool:
+    if not isinstance(weighting, dict):
+        return False
+    bands = weighting.get("astrology", {}).get("orb_bands")
+    return (
+        isinstance(bands, dict)
+        and bool(bands)
+        and all(isinstance(value, dict) and isinstance(value.get("max_orb"), int) for value in bands.values())
+        and isinstance(weighting.get("bazi", {}).get("default_salience"), str)
+    )

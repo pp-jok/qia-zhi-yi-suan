@@ -9,11 +9,14 @@ class PrimitiveCandidate:
     direction: str
     fact_refs: Tuple[str, ...]
     semantic_rule_refs: Tuple[str, ...]
-    context: str
+    contexts: Tuple[str, ...]
     salience: str
     evidence_stability: str
     modifier_refs: Tuple[str, ...]
     counterevidence_refs: Tuple[str, ...]
+    expression_mode: str
+    tension_level: str
+    counterweight_effect: Optional[str]
     limitations: Tuple[str, ...]
 
 
@@ -33,11 +36,13 @@ class PrimitiveState:
 
 @dataclass(frozen=True)
 class CrossSystemAlignment:
+    alignment_id: str
     primitive_id: str
+    context_refs: Tuple[str, ...]
     status: str
+    direction_relation: str
     bazi_rule_refs: Tuple[str, ...]
     astrology_rule_refs: Tuple[str, ...]
-    shared_contexts: Tuple[str, ...]
     limitations: Tuple[str, ...]
 
 
@@ -54,8 +59,6 @@ class CandidateCoreProfile:
     astrology_primitive_candidates: Tuple[PrimitiveCandidate, ...]
     cross_system_alignments: Tuple[CrossSystemAlignment, ...]
     primitive_states: Mapping[str, PrimitiveState]
-    core_dynamics: Tuple[object, ...]
-    archetype: Optional[object]
     limitations: Tuple[str, ...]
 
 

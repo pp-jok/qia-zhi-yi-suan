@@ -1,6 +1,6 @@
 # Astrology Executable Mapping Review v1
 
-**Stage:** C2b — candidate condition review
+**Stage:** C2b — candidate condition review  
 **Status:** accepted for D1 candidate use on 2026-09-18; no production approval
 
 ## Candidate condition vocabulary
@@ -28,13 +28,19 @@ modifier; all conditions remain candidate-only and have no production approval.
 
 ## Candidate mappings
 
+The following table is the **D1 executable subset**. Runtime implements only
+the exact body pairs stated below; broader conceptual examples in the semantic
+review are not executable until they receive a separate YAML rule and test.
+Aspect expression and tension are versioned candidate semantics, while orb
+bands come from the evidence-weighting policy.
+
 | Rule ID | Output | Candidate condition | Context / exclusions |
 | --- | --- | --- | --- |
-| `AS-C2B-01` | `P001` high | Sun or Mars with a Mercury/Sun/Mars major aspect or known-time angle context | decision/work; exclude Sun sign alone and leadership claims |
-| `AS-C2B-02` | `P002` high | Saturn aspecting Sun, Moon, Mercury, Venus, or Mars; optional known-time corroboration | pressure/work; exclude treating Saturn alone as fear or rigidity |
-| `AS-C2B-03` | `P002` low | Uranus major aspect to a personal planet or angle, plus personal-planet activation | change/work; exclude one outer-planet placement without contact |
+| `AS-C2B-01` | `P001` high | exact Sun–Mars major aspect | decision/work; exclude Sun sign alone and leadership claims |
+| `AS-C2B-02` | `P002` high | exact Saturn–Sun major aspect | pressure; exclude treating Saturn alone as fear or rigidity |
+| `AS-C2B-03` | `P002` low | exact Uranus–Sun major aspect | change; exclude one outer-planet placement without contact |
 | `AS-C2B-04` | `P003` high | Moon or Venus with a major aspect, plus known-time relationship-axis context when available | relationship; exclude dependency, charm, or relationship success claims |
-| `AS-C2B-05` | `P004` high | Mars with Sun/Mercury major aspect or angle/house corroboration | action/work; exclude completion and achievement claims |
+| `AS-C2B-05` | `P004` high | exact Mars–Sun major aspect | action/work; exclude completion and achievement claims |
 | `AS-C2B-06` | `P005` high | Moon with Mercury or Saturn major aspect, optionally modified by dignity | pressure/relationship; exclude diagnosis, intensity, or pathology claims |
 | `AS-C2B-07` | `P006` high | Mercury-Saturn major aspect or Mercury plus known-time angular/house corroboration | work/decision; exclude intelligence, compliance, or education claims |
 

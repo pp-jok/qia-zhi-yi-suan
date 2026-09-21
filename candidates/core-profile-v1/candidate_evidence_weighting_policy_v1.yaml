@@ -1,0 +1,13 @@
+review_status: approved
+review_refs:
+  - docs/domain/candidate-semantic-asset-approval-v1.md
+schema_version: candidate-evidence-weighting-policy-v1
+policy_version: candidate-evidence-weighting-v1
+astrology:
+  orb_bands:
+    strong: {max_orb: 3}
+    moderate: {max_orb: 8}
+bazi:
+  default_salience: moderate
+  environment_effect: contextualize
+  counterweight_effects: [contextualize]

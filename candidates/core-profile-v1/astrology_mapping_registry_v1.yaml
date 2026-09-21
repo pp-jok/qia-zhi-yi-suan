@@ -3,14 +3,14 @@ review_refs:
   - docs/domain/astrology-semantic-mapping-review-v1.md
   - docs/domain/candidate-semantic-asset-approval-v1.md
 schema_version: candidate-context-aware-mapping-registry-v1
-registry_version: candidate-c2-astrology-v1
+registry_version: candidate-c2-astrology-v2
 source_system: astrology
-aspect_roles:
-  conjunction: integrated
-  sextile: harmonious
-  square: hard_tension
-  trine: harmonious
-  opposition: polarity
+aspect_semantics:
+  conjunction: {expression_mode: integrated, tension_level: low}
+  sextile: {expression_mode: cooperative, tension_level: low}
+  square: {expression_mode: effortful, tension_level: high}
+  trine: {expression_mode: fluent, tension_level: low}
+  opposition: {expression_mode: polarized, tension_level: medium}
 rules:
   - rule_id: AS-C2B-01
     primitive_id: P001
@@ -23,7 +23,7 @@ rules:
     angular_body_any: [Sun, Mars]
     house_context_any: [1, 10]
     requires_known_time: false
-    context: decision_work
+    contexts: [decision, work]
   - rule_id: AS-C2B-02
     primitive_id: P002
     direction: high
@@ -32,7 +32,7 @@ rules:
     allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
     max_orb: 8
     requires_known_time: false
-    context: pressure_work
+    contexts: [pressure]
   - rule_id: AS-C2B-03
     primitive_id: P002
     direction: low
@@ -41,7 +41,7 @@ rules:
     allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
     max_orb: 8
     requires_known_time: false
-    context: change_work
+    contexts: [change]
   - rule_id: AS-C2B-04
     primitive_id: P003
     direction: high
@@ -50,7 +50,7 @@ rules:
     allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
     max_orb: 8
     requires_known_time: false
-    context: relationship
+    contexts: [relationship]
   - rule_id: AS-C2B-05
     primitive_id: P004
     direction: high
@@ -59,7 +59,7 @@ rules:
     allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
     max_orb: 8
     requires_known_time: false
-    context: work_action
+    contexts: [work, action]
   - rule_id: AS-C2B-06
     primitive_id: P005
     direction: high
@@ -68,7 +68,7 @@ rules:
     allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
     max_orb: 8
     requires_known_time: false
-    context: pressure_relationship
+    contexts: [pressure, relationship]
   - rule_id: AS-C2B-07
     primitive_id: P006
     direction: high
@@ -77,6 +77,6 @@ rules:
     allowed_aspect_types: [conjunction, sextile, square, trine, opposition]
     max_orb: 8
     requires_known_time: false
-    context: work_decision
+    contexts: [work, decision]
 limitations:
   - Candidate rules require later vocabulary, aspect, and orb validation.

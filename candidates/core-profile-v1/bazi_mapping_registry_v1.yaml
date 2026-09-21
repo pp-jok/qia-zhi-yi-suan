@@ -3,7 +3,7 @@ review_refs:
   - docs/domain/bazi-semantic-mapping-review-v1.md
   - docs/domain/candidate-semantic-asset-approval-v1.md
 schema_version: candidate-context-aware-mapping-registry-v1
-registry_version: candidate-c2-bazi-v1
+registry_version: candidate-c2-bazi-v2
 source_system: bazi
 rules:
   - rule_id: BZ-C2B-01
@@ -14,7 +14,8 @@ rules:
     allowed_source_kinds: [visible_stem, hidden_stem]
     requires_visible_evidence_per_group: true
     requires_day_master_environment: true
-    context: decision_work
+    contexts: [decision, work]
+    environment_effect: contextualize
   - rule_id: BZ-C2B-02
     primitive_id: P002
     direction: high
@@ -23,7 +24,8 @@ rules:
     allowed_source_kinds: [visible_stem, hidden_stem]
     requires_visible_evidence_per_group: true
     requires_day_master_environment: true
-    context: pressure_work
+    contexts: [pressure, work]
+    environment_effect: contextualize
   - rule_id: BZ-C2B-03
     primitive_id: P002
     direction: low
@@ -31,9 +33,12 @@ rules:
     minimum_distinct_pillars: 2
     allowed_source_kinds: [visible_stem, hidden_stem]
     requires_visible_evidence_per_group: true
-    counterweight_any: [正印, 偏印, 正官, 七杀]
+    counterweight_rules:
+      - evidence_any: [正印, 偏印, 正官, 七杀]
+        effect: contextualize
     requires_day_master_environment: true
-    context: change_work
+    contexts: [change, work]
+    environment_effect: contextualize
   - rule_id: BZ-C2B-04
     primitive_id: P003
     direction: high
@@ -42,7 +47,8 @@ rules:
     allowed_source_kinds: [visible_stem, hidden_stem]
     requires_visible_evidence_per_group: true
     requires_day_master_environment: true
-    context: relationship
+    contexts: [relationship]
+    environment_effect: contextualize
   - rule_id: BZ-C2B-05
     primitive_id: P004
     direction: high
@@ -51,7 +57,8 @@ rules:
     allowed_source_kinds: [visible_stem, hidden_stem]
     requires_visible_evidence_per_group: true
     requires_day_master_environment: true
-    context: work_action
+    contexts: [work, action]
+    environment_effect: contextualize
   - rule_id: BZ-C2B-06
     primitive_id: P005
     direction: high
@@ -60,7 +67,8 @@ rules:
     allowed_source_kinds: [visible_stem, hidden_stem]
     requires_visible_evidence_per_group: true
     requires_day_master_environment: true
-    context: pressure
+    contexts: [pressure]
+    environment_effect: contextualize
   - rule_id: BZ-C2B-07
     primitive_id: P006
     direction: high
@@ -69,6 +77,7 @@ rules:
     allowed_source_kinds: [visible_stem, hidden_stem]
     requires_visible_evidence_per_group: true
     requires_day_master_environment: true
-    context: work_decision
+    contexts: [work, decision]
+    environment_effect: contextualize
 limitations:
   - Candidate rules require later vocabulary and deterministic-table validation.

@@ -1,6 +1,6 @@
 # Core Profile Calibration Review v1
 
-**Stage:** C4 — Calibration Review
+**Stage:** C4 — Calibration Review  
 **Status:** C4b candidate policy frozen for the named D1 Bundle on 2026-09-18; no production approval
 
 ## Dataset separation
@@ -86,7 +86,7 @@ Builder. The run is a calibration input, not evidence for production release.
 Following owner approval to proceed, the candidate-only policy freezes:
 
 - semantic Bundle fingerprint:
-  `5d3cd30fd19a871fcf3a76ae6698cd856b5e24f14e7a0aeb31185cbea0ebcac5`;
+  `a77958e1f4453828b44fd1c2573f58f4e51e63b1c25c581d0293da0166276bd9`;
 - equal Primitive salience and evidence-stability weights of `1.0`;
 - a `1.0` weight for `weighted_primitive_overlap` and `0.0` for unavailable
   Signature, Dynamic, and Fate components;

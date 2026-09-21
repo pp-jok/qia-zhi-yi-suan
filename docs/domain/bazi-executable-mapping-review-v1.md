@@ -1,6 +1,6 @@
 # Bazi Executable Mapping Review v1
 
-**Stage:** C2b — candidate condition review
+**Stage:** C2b — candidate condition review  
 **Status:** accepted for D1 candidate use on 2026-09-18; no production approval
 
 ## Candidate condition vocabulary
@@ -21,8 +21,10 @@ the candidate Canonical Fact Vocabulary before YAML projection.
 The current D1 projection additionally requires evidence across at least two
 distinct source pillars, an explicit `visible_stem` or `hidden_stem` origin,
 and a mechanically derived day-master/month-branch environment reference from
-the versioned candidate table. The environment is descriptive only; it does
-not encode strength, favorable elements, patterns, transits, or outcomes.
+the versioned candidate table. The environment is a contextual modifier: it
+records approved seasonal context and marks evidence as
+`environment_contextualized`; it does not encode strength, favorable elements,
+patterns, transits, or outcomes.
 
 ## Candidate mappings
 
@@ -30,7 +32,7 @@ not encode strength, favorable elements, patterns, transits, or outcomes.
 | --- | --- | --- | --- |
 | `BZ-C2B-01` | `P001` high | peer (`比肩`/`劫财`) plus output (`食神`/`伤官`) evidence | decision/work; exclude when either family is only a hidden or uncorroborated token |
 | `BZ-C2B-02` | `P002` high | resource (`正印`/`偏印`) plus authority (`正官`/`七杀`) evidence | pressure/work; exclude treating authority evidence as personal preference without corroboration |
-| `BZ-C2B-03` | `P002` low | output plus wealth (`正财`/`偏财`) evidence, without accepted resource/authority counterweight | change/work; never infer novelty from output alone |
+| `BZ-C2B-03` | `P002` low | output plus wealth (`正财`/`偏财`) evidence, with resource/authority counterweight retained as contextualizing counterevidence | change/work; never infer novelty from output alone |
 | `BZ-C2B-04` | `P003` high | wealth or authority evidence plus peer or resource corroboration | relationship; exclude treating exchange, duty, or role sensitivity as reciprocal attunement |
 | `BZ-C2B-05` | `P004` high | output plus wealth evidence | work/action; exclude completion, achievement, or moral-worth claims |
 | `BZ-C2B-06` | `P005` high | resource plus authority evidence | pressure; describes containment/processing only, never diagnosis or intensity |

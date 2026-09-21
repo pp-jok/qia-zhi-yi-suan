@@ -1,6 +1,6 @@
 # C4b Calibration Decision Record v1
 
-**Stage:** C4b — Candidate numeric calibration
+**Stage:** C4b — Candidate numeric calibration  
 **Status:** candidate policy approved for the named D1 Bundle on 2026-09-18; no production approval
 
 ## Evidence reviewed
@@ -26,7 +26,7 @@
 ## Frozen candidate decisions
 
 - Semantic Bundle fingerprint:
-  `5d3cd30fd19a871fcf3a76ae6698cd856b5e24f14e7a0aeb31185cbea0ebcac5`.
+  `a77958e1f4453828b44fd1c2573f58f4e51e63b1c25c581d0293da0166276bd9`.
 - All six Primitive salience weights and both source evidence-stability weights:
   `1.0`.
 - `weighted_primitive_overlap`: `1.0`; unavailable Signature, Dynamic, and

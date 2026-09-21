@@ -1,5 +1,6 @@
 review_status: approved
 review_refs:
+  - docs/superpowers/specs/2026-09-20-project-owned-fact-provenance-design.md
   - docs/domain/candidate-semantic-asset-approval-v1.md
 schema_version: candidate-bazi-day-master-environment-v1
 table_version: candidate-bazi-day-master-environment-v1

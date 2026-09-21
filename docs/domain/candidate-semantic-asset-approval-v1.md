@@ -1,8 +1,8 @@
 # Candidate Semantic Asset Approval v1
 
-**Decision date:** 2026-09-20
-**Decision authority:** project owner delegated candidate-semantic review to the implementation agent
-**Scope:** `candidates/core-profile-v1/` only
+**Decision date:** 2026-09-20  
+**Decision authority:** project owner delegated candidate-semantic review to the implementation agent; production approval remains human-only  
+**Scope:** `candidates/core-profile-v1/` only  
 **Production effect:** none
 
 ## Decision
@@ -18,17 +18,21 @@ strict production calculation or reader-facing reporting.
   create fate, diagnostic, or outcome claims.
 - C2b Bazi and astrology mappings retain contextual multi-fact gates,
   provenance, known-time protection, exclusions, and source-system isolation.
-- Day-master environment is a complete, versioned descriptive table and cannot
-  infer strength, favorable elements, patterns, transits, or outcomes.
+- Day-master environment is a complete, versioned contextual modifier and
+  cannot infer strength, favorable elements, patterns, transits, or outcomes.
 - Dignity, angularity, and house context are modifier-only and follow an
   activating major aspect.
+- Context uses the approved candidate taxonomy; cross-system alignment is
+  local to shared tags and remains descriptive.
+- Orb bands, aspect expression, counterweight effect, and environment
+  contextualization are versioned candidate assets rather than implicit policy.
 - Signature, Dynamic, Derived Theme, and Archetype policies are explicitly
   disabled; an empty relation graph is an intentional candidate result.
 - C4b calibration binds the exact candidate YAML bundle and preserves the
   Design Set separation, contrast threshold, and unsupported-activation guard.
 
 **Approved bundle fingerprint:**
-`5d3cd30fd19a871fcf3a76ae6698cd856b5e24f14e7a0aeb31185cbea0ebcac5`.
+`a77958e1f4453828b44fd1c2573f58f4e51e63b1c25c581d0293da0166276bd9`.
 
 ## Retained limitations
 
@@ -37,3 +41,5 @@ deterministic lookup rows, node policy, boundary margins, comparison
 tolerances, production ontology, production mappings, coverage policy, or
 narrative rules. Those project-owned production assets remain required before
 any strict production path may open.
+
+See [Production Semantic Approval Boundary](production-semantic-approval.md).

@@ -1,12 +1,13 @@
 from dataclasses import asdict
 from hashlib import sha256
 from pathlib import Path
-from typing import Dict, Iterable, Union
+from typing import Dict, Iterable, Optional, Union
 
 import yaml
 
 from .calculation.models import DeterministicChartFacts
 from .candidate_assets import candidate_asset_root
+from .context_taxonomy import load_candidate_context_taxonomy
 from .core_profile_models import (
     CandidateCoreProfile,
     CrossSystemAlignment,
@@ -28,12 +29,19 @@ _CANDIDATE_PRIMITIVES = (
 
 _CANDIDATE_VERSIONS = (
     ("ontology", "c1-review-v1"),
-    ("state_policy", "candidate-state-policy-v1"),
-    ("bazi_mapping", "c2-review-v1"),
-    ("astrology_mapping", "c2-review-v1"),
-    ("alignment", "candidate-v2.3"),
+    ("state_policy", "candidate-state-policy-v2"),
+    ("bazi_mapping", "candidate-c2-bazi-v2"),
+    ("astrology_mapping", "candidate-c2-astrology-v2"),
+    ("alignment", "candidate-alignment-v2"),
+    ("candidate_builder", "candidate-builder-semantic-v2"),
     ("dynamic_formation", "c3-review-v1"),
     ("calibration_protocol", "c4a-review-v1"),
+)
+
+_SEMANTIC_ALGORITHM_VERSIONS = (
+    "candidate-builder-semantic-v2",
+    "candidate-state-resolver-v2",
+    "candidate-alignment-resolver-v2",
 )
 
 
@@ -47,6 +55,9 @@ def candidate_semantic_bundle_fingerprint() -> str:
         digest.update(path.name.encode("utf-8"))
         digest.update(b"\0")
         digest.update(path.read_bytes())
+        digest.update(b"\0")
+    for version in _SEMANTIC_ALGORITHM_VERSIONS:
+        digest.update(version.encode("utf-8"))
         digest.update(b"\0")
     return digest.hexdigest()
 
@@ -79,7 +90,7 @@ def build_candidate_core_profile(
             primitive_id=primitive_id,
             state="unknown",
             evidence_refs=(),
-            resolution_rule_ref="candidate-state-policy-v1:no-mapped-evidence",
+            resolution_rule_ref="candidate-state-policy-v2:no-mapped-evidence",
             context_states={},
             supporting_candidates=(),
             counter_candidates=(),
@@ -102,8 +113,18 @@ def build_candidate_core_profile(
         state = _resolve_global_state(context_states, directions)
         refs = tuple(ref for candidate in primitive_candidates for ref in candidate.fact_refs)
         rules = tuple(rule for candidate in primitive_candidates for rule in candidate.semantic_rule_refs)
-        supporting = tuple(rule for candidate in primitive_candidates if candidate.direction == "high" for rule in candidate.semantic_rule_refs)
-        counter = tuple(rule for candidate in primitive_candidates if candidate.direction == "low" for rule in candidate.semantic_rule_refs)
+        supporting = tuple(
+            rule
+            for candidate in primitive_candidates
+            if candidate.direction == "high"
+            for rule in candidate.semantic_rule_refs
+        )
+        counter = tuple(
+            rule
+            for candidate in primitive_candidates
+            if candidate.direction == "low"
+            for rule in candidate.semantic_rule_refs
+        )
         states[primitive_id] = PrimitiveState(
             primitive_id=primitive_id,
             state=state,
@@ -112,9 +133,19 @@ def build_candidate_core_profile(
             context_states=context_states,
             supporting_candidates=supporting,
             counter_candidates=counter,
-            contradictions=("opposite directions in the same context" if state == "mixed" else ()),
-            unresolved_contexts=(tuple(sorted(context_states)) if state == "context_differentiated" else ()),
-            limitations=("candidate rules; not production approved",) + (("global state preserves separate context directions",) if state == "context_differentiated" else ()),
+            contradictions=(
+                "opposite directions in the same context"
+                if state == "mixed"
+                else ()
+            ),
+            unresolved_contexts=(
+                tuple(sorted(context_states)) if state == "context_differentiated" else ()
+            ),
+            limitations=("candidate rules; not production approved",) + (
+                ("global state preserves separate context directions",)
+                if state == "context_differentiated"
+                else ()
+            ),
         )
     return CandidateCoreProfile(
         schema_version="candidate-core-profile-v1",
@@ -128,8 +159,6 @@ def build_candidate_core_profile(
         astrology_primitive_candidates=astrology_candidates,
         cross_system_alignments=alignments,
         primitive_states=states,
-        core_dynamics=(),
-        archetype=None,
         limitations=(
             "candidate mappings are pending production approval; "
             "relation and derived-dynamic rules remain disabled",
@@ -143,20 +172,51 @@ def normalize_candidate_profile(profile: CandidateCoreProfile) -> tuple:
         profile.fact_assurance,
         profile.semantic_model_assurance,
         profile.semantic_model_versions,
-        tuple((item.primitive_id, item.source_system, item.direction, item.context, item.salience, item.evidence_stability, item.fact_refs, item.semantic_rule_refs, item.modifier_refs, item.counterevidence_refs, item.limitations) for item in profile.bazi_primitive_candidates + profile.astrology_primitive_candidates),
         tuple(
             (
                 item.primitive_id,
+                item.source_system,
+                item.direction,
+                item.contexts,
+                item.salience,
+                item.evidence_stability,
+                item.fact_refs,
+                item.semantic_rule_refs,
+                item.modifier_refs,
+                item.counterevidence_refs,
+                item.expression_mode,
+                item.tension_level,
+                item.counterweight_effect,
+                item.limitations,
+            )
+            for item in profile.bazi_primitive_candidates + profile.astrology_primitive_candidates
+        ),
+        tuple(
+            (
+                item.alignment_id,
+                item.primitive_id,
+                item.context_refs,
                 item.status,
+                item.direction_relation,
                 item.bazi_rule_refs,
                 item.astrology_rule_refs,
-                item.shared_contexts,
                 item.limitations,
             )
             for item in profile.cross_system_alignments
         ),
         tuple(
-            (primitive_id, state.state, tuple(sorted(state.context_states.items())), state.evidence_refs, state.resolution_rule_ref, state.supporting_candidates, state.counter_candidates, state.contradictions, state.unresolved_contexts, state.limitations)
+            (
+                primitive_id,
+                state.state,
+                tuple(sorted(state.context_states.items())),
+                state.evidence_refs,
+                state.resolution_rule_ref,
+                state.supporting_candidates,
+                state.counter_candidates,
+                state.contradictions,
+                state.unresolved_contexts,
+                state.limitations,
+            )
             for primitive_id, state in sorted(profile.primitive_states.items())
         ),
         profile.semantic_capability_level,
@@ -165,6 +225,7 @@ def normalize_candidate_profile(profile: CandidateCoreProfile) -> tuple:
     )
 
 
+# Kept as an import-compatible name during the candidate pre-release series.
 normalize_core_profile = normalize_candidate_profile
 
 
@@ -177,6 +238,8 @@ def _extract_bazi_candidates(
 ) -> tuple[PrimitiveCandidate, ...]:
     rules_path = _candidate_asset_root() / "bazi_mapping_registry_v1.yaml"
     rules = yaml.safe_load(rules_path.read_text(encoding="utf-8"))["rules"]
+    weighting = _load_evidence_weighting_policy()["bazi"]
+    taxonomy = load_candidate_context_taxonomy()
     ten_god_facts = facts.bazi.ten_gods
     ten_gods = {fact.ten_god for fact in ten_god_facts}
     environment = derive_candidate_day_master_environment(facts.bazi)
@@ -203,14 +266,18 @@ def _extract_bazi_candidates(
             if environment is not None
             else ()
         )
+        counterevidence_refs, counterweight_effect = _counterweight_evidence(rule, ten_gods)
         if (
             all(ten_gods.intersection(group) for group in rule["requires_any_groups"])
             and len(source_pillars) >= rule["minimum_distinct_pillars"]
             and source_kinds_are_allowed
-            and (not rule.get("requires_visible_evidence_per_group") or _has_visible_evidence_for_each_group(ten_god_facts, rule["requires_any_groups"]))
-            and not ten_gods.intersection(rule.get("counterweight_any", ()))
+            and (
+                not rule.get("requires_visible_evidence_per_group")
+                or _has_visible_evidence_for_each_group(ten_god_facts, rule["requires_any_groups"])
+            )
             and (not rule["requires_day_master_environment"] or environment is not None)
         ):
+            contexts = _validated_contexts(rule["contexts"], taxonomy.contexts)
             candidates.append(
                 PrimitiveCandidate(
                     primitive_id=rule["primitive_id"],
@@ -226,11 +293,18 @@ def _extract_bazi_candidates(
                         for fact in matching_facts
                     ) + environment_ref,
                     semantic_rule_refs=(rule["rule_id"],),
-                    context=rule["context"],
-                    salience="moderate",
-                    evidence_stability="deterministic",
-                    modifier_refs=environment_ref,
-                    counterevidence_refs=(),
+                    contexts=contexts,
+                    salience=weighting["default_salience"],
+                    evidence_stability="environment_contextualized",
+                    modifier_refs=environment_ref + (
+                        (f"bazi.environment_effect:{rule['environment_effect']}:{environment.season}",)
+                        if environment is not None
+                        else ()
+                    ),
+                    counterevidence_refs=counterevidence_refs,
+                    expression_mode="contextualized" if environment is not None else "direct",
+                    tension_level="medium" if counterweight_effect else "low",
+                    counterweight_effect=counterweight_effect,
                     limitations=("candidate rule; not production approved",),
                 )
             )
@@ -243,7 +317,9 @@ def _extract_astrology_candidates(
     rules_path = _candidate_asset_root() / "astrology_mapping_registry_v1.yaml"
     registry = yaml.safe_load(rules_path.read_text(encoding="utf-8"))
     rules = registry["rules"]
-    aspect_roles = registry["aspect_roles"]
+    aspect_semantics = registry["aspect_semantics"]
+    weighting = _load_evidence_weighting_policy()["astrology"]
+    taxonomy = load_candidate_context_taxonomy()
     bodies = {placement.body for placement in facts.astrology.placements}
     known_time = facts.astrology.ascendant is not None
     candidates = []
@@ -262,6 +338,7 @@ def _extract_astrology_candidates(
             not rule.get("requires_known_time") or known_time
         ):
             modifier_refs = _astrology_modifier_refs(rule, facts)
+            aspect_semantic = _combined_aspect_semantics(matching_aspects, aspect_semantics)
             candidates.append(
                 PrimitiveCandidate(
                     primitive_id=rule["primitive_id"],
@@ -277,11 +354,14 @@ def _extract_astrology_candidates(
                         for aspect in matching_aspects
                     ) + modifier_refs,
                     semantic_rule_refs=(rule["rule_id"],),
-                    context=rule["context"],
-                    salience=_aspect_salience(matching_aspects),
+                    contexts=_validated_contexts(rule["contexts"], taxonomy.contexts),
+                    salience=_aspect_salience(matching_aspects, weighting["orb_bands"]),
                     evidence_stability="stable" if not known_time else "time_augmented",
-                    modifier_refs=modifier_refs + _aspect_role_refs(matching_aspects, aspect_roles),
+                    modifier_refs=modifier_refs + _aspect_role_refs(matching_aspects, aspect_semantics),
                     counterevidence_refs=(),
+                    expression_mode=aspect_semantic["expression_mode"],
+                    tension_level=aspect_semantic["tension_level"],
+                    counterweight_effect=None,
                     limitations=("candidate rule; not production approved",),
                 )
             )
@@ -304,29 +384,77 @@ def _astrology_modifier_refs(rule: dict, facts: DeterministicChartFacts) -> tupl
     return tuple(refs)
 
 
-def _aspect_role_refs(aspects: Iterable[object], roles: dict[str, str]) -> tuple[str, ...]:
-    return tuple(f"astrology.aspect_role:{roles[aspect.aspect_type]}" for aspect in aspects)
+def _aspect_role_refs(aspects: Iterable[object], semantics: dict[str, dict]) -> tuple[str, ...]:
+    return tuple(
+        f"astrology.aspect_expression:{semantics[aspect.aspect_type]['expression_mode']}:"
+        f"{semantics[aspect.aspect_type]['tension_level']}"
+        for aspect in aspects
+    )
 
 
-def _aspect_salience(aspects: Iterable[object]) -> str:
-    return "strong" if any(aspect.orb <= 3 for aspect in aspects) else "moderate"
+def _aspect_salience(aspects: Iterable[object], orb_bands: dict[str, dict]) -> str:
+    minimum_orb = min(aspect.orb for aspect in aspects)
+    for label, policy in sorted(orb_bands.items(), key=lambda item: item[1]["max_orb"]):
+        if minimum_orb <= policy["max_orb"]:
+            return label
+    raise ValueError("aspect exceeds approved orb bands")
+
+
+def _combined_aspect_semantics(aspects: Iterable[object], semantics: dict[str, dict]) -> dict[str, str]:
+    values = [semantics[aspect.aspect_type] for aspect in aspects]
+    return max(values, key=lambda item: {"low": 0, "medium": 1, "high": 2}[item["tension_level"]])
+
+
+def _load_evidence_weighting_policy() -> dict:
+    path = _candidate_asset_root() / "candidate_evidence_weighting_policy_v1.yaml"
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
+
+
+def _validated_contexts(contexts: Iterable[str], allowed_contexts: set[str]) -> tuple[str, ...]:
+    result = tuple(sorted(set(contexts)))
+    if not result or not set(result).issubset(allowed_contexts):
+        raise ValueError("candidate mapping contains an unapproved context tag")
+    return result
+
+
+def _context_scope(contexts: tuple[str, ...]) -> str:
+    return "+".join(contexts)
+
+
+def _counterweight_evidence(rule: dict, ten_gods: set[str]) -> tuple[tuple[str, ...], Optional[str]]:
+    for policy in rule.get("counterweight_rules", ()):
+        matched = tuple(value for value in policy["evidence_any"] if value in ten_gods)
+        if matched:
+            return tuple(f"bazi.ten_gods:{value}" for value in matched), policy["effect"]
+    return (), None
 
 
 def _has_visible_evidence_for_each_group(ten_god_facts: tuple, groups: list[list[str]]) -> bool:
-    return all(any(fact.ten_god in group and fact.source_kind.value == "visible_stem" for fact in ten_god_facts) for group in groups)
+    return all(
+        any(
+            fact.ten_god in group and fact.source_kind.value == "visible_stem"
+            for fact in ten_god_facts
+        )
+        for group in groups
+    )
 
 
 def _resolve_context_states(candidates: tuple[PrimitiveCandidate, ...]) -> Dict[str, str]:
     by_context: Dict[str, set[str]] = {}
     for candidate in candidates:
-        by_context.setdefault(candidate.context, set()).add(candidate.direction)
-    return {context: "mixed" if len(directions) > 1 else f"supported_{next(iter(directions))}" for context, directions in sorted(by_context.items())}
+        by_context.setdefault(_context_scope(candidate.contexts), set()).add(candidate.direction)
+    return {
+        context: "mixed" if len(directions) > 1 else f"supported_{next(iter(directions))}"
+        for context, directions in sorted(by_context.items())
+    }
 
 
 def _resolve_global_state(context_states: Dict[str, str], directions: set[str]) -> str:
     if len(directions) == 1:
         return f"supported_{next(iter(directions))}"
-    return "mixed" if any(state == "mixed" for state in context_states.values()) else "context_differentiated"
+    if any(state == "mixed" for state in context_states.values()):
+        return "mixed"
+    return "context_differentiated"
 
 
 def _candidate_asset_root() -> Path:
@@ -347,31 +475,63 @@ def _align_cross_system(
         )
         if not bazi_for_primitive and not astrology_for_primitive:
             continue
-        bazi_directions = {item.direction for item in bazi_for_primitive}
-        astrology_directions = {item.direction for item in astrology_for_primitive}
-        shared_contexts = tuple(sorted({item.context for item in bazi_for_primitive} & {item.context for item in astrology_for_primitive}))
         if not bazi_for_primitive or not astrology_for_primitive:
-            status = "non_comparable"
-        elif not shared_contexts:
-            status = "non_comparable"
-        elif bazi_directions == astrology_directions and len(bazi_directions) == 1:
-            status = "validation"
-        else:
-            status = "unresolved"
-        alignments.append(
-            CrossSystemAlignment(
-                primitive_id=primitive_id,
-                status=status,
-                bazi_rule_refs=tuple(
-                    rule for item in bazi_for_primitive for rule in item.semantic_rule_refs
-                ),
-                astrology_rule_refs=tuple(
-                    rule for item in astrology_for_primitive for rule in item.semantic_rule_refs
-                ),
-                shared_contexts=shared_contexts,
-                limitations=(
-                    "candidate alignment is descriptive and does not alter primitive salience",
-                ),
+            alignments.extend(_single_system_alignments(primitive_id, bazi_for_primitive, astrology_for_primitive))
+            continue
+        for bazi_candidate in bazi_for_primitive:
+            for astrology_candidate in astrology_for_primitive:
+                shared = tuple(sorted(set(bazi_candidate.contexts) & set(astrology_candidate.contexts)))
+                exact = set(bazi_candidate.contexts) == set(astrology_candidate.contexts)
+                relation = "same" if bazi_candidate.direction == astrology_candidate.direction else "opposed"
+                status = (
+                    "non_comparable" if not shared
+                    else "validation" if exact and relation == "same"
+                    else "contextualization" if relation == "same"
+                    else "unresolved"
+                )
+                scope = shared or tuple(sorted(set(bazi_candidate.contexts) | set(astrology_candidate.contexts)))
+                alignments.append(_alignment(primitive_id, scope, status, relation, bazi_candidate, astrology_candidate))
+    return tuple(alignments)
+
+
+def _single_system_alignments(
+    primitive_id: str,
+    bazi_candidates: tuple[PrimitiveCandidate, ...],
+    astrology_candidates: tuple[PrimitiveCandidate, ...],
+) -> tuple[CrossSystemAlignment, ...]:
+    result = []
+    for candidate in bazi_candidates + astrology_candidates:
+        result.append(
+            _alignment(
+                primitive_id,
+                candidate.contexts,
+                "non_comparable",
+                "single_system",
+                candidate if candidate.source_system == "bazi" else None,
+                candidate if candidate.source_system == "astrology" else None,
             )
         )
-    return tuple(alignments)
+    return tuple(result)
+
+
+def _alignment(
+    primitive_id: str,
+    contexts: tuple[str, ...],
+    status: str,
+    direction_relation: str,
+    bazi_candidate: Optional[PrimitiveCandidate],
+    astrology_candidate: Optional[PrimitiveCandidate],
+) -> CrossSystemAlignment:
+    bazi_refs = bazi_candidate.semantic_rule_refs if bazi_candidate else ()
+    astrology_refs = astrology_candidate.semantic_rule_refs if astrology_candidate else ()
+    scope = _context_scope(contexts)
+    return CrossSystemAlignment(
+        alignment_id=f"{primitive_id}:{scope}:{'|'.join(bazi_refs)}:{'|'.join(astrology_refs)}",
+        primitive_id=primitive_id,
+        context_refs=contexts,
+        status=status,
+        direction_relation=direction_relation,
+        bazi_rule_refs=bazi_refs,
+        astrology_rule_refs=astrology_refs,
+        limitations=("candidate alignment is descriptive and does not alter primitive salience",),
+    )

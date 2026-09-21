@@ -50,12 +50,12 @@ def test_candidate_ir_preserves_context_and_unknown_time_boundaries() -> None:
     assert profile.semantic_capability_level == "primitive_only"
     assert profile.primitive_states["P002"].state == "context_differentiated"
     assert profile.primitive_states["P002"].context_states == {
-        "change_work": "supported_low",
-        "pressure_work": "supported_high",
+        "change": "supported_low",
+        "pressure+work": "supported_high",
     }
     candidate = next(item for item in profile.astrology_primitive_candidates if item.primitive_id == "P002")
     assert candidate.evidence_stability == "stable"
-    assert "astrology.aspect_role:hard_tension" in candidate.modifier_refs
+    assert "astrology.aspect_expression:effortful:high" in candidate.modifier_refs
     assert not any(ref.startswith("astrology.angular:") for ref in candidate.modifier_refs)
 
 
