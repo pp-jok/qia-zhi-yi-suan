@@ -1,6 +1,6 @@
 # Candidate Semantic Asset Approval v1
 
-**Decision date:** 2026-09-20  
+**Decision date:** 2026-09-21  
 **Decision authority:** project owner delegated candidate-semantic review to the implementation agent; production approval remains human-only  
 **Scope:** `candidates/core-profile-v1/` only  
 **Production effect:** none
@@ -32,7 +32,7 @@ strict production calculation or reader-facing reporting.
   Design Set separation, contrast threshold, and unsupported-activation guard.
 
 **Approved bundle fingerprint:**
-`a77958e1f4453828b44fd1c2573f58f4e51e63b1c25c581d0293da0166276bd9`.
+`733648b1a7fad62ef78bbbbd9c20733fc6800c9b23095f729aab95d96780c705`.
 
 ## Retained limitations
 

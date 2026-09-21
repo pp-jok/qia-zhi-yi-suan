@@ -1,4 +1,6 @@
-review_status: approved
+review_status: superseded
+superseded_by: core_profile_calibration_policy_v2.yaml
+supersession_reason: semantic bundle changed after the v1 calibration run
 review_refs:
   - docs/domain/core-profile-calibration-review-v1.md
   - docs/domain/core-profile-similarity-policy-v1.md

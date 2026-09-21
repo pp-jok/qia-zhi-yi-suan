@@ -1,7 +1,10 @@
 # C4b Calibration Decision Record v1
 
 **Stage:** C4b — Candidate numeric calibration  
-**Status:** candidate policy approved for the named D1 Bundle on 2026-09-18; no production approval
+**Status:** superseded for current semantic-bundle evidence; retained as an historical record.
+
+The current candidate run is recorded in `core-profile-calibration-v0.2.3.md`
+and `holdout-validation-v0.2.3.md` with its exact bundle fingerprint.
 
 ## Evidence reviewed
 

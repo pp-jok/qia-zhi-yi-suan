@@ -39,10 +39,10 @@ bands come from the evidence-weighting policy.
 | `AS-C2B-01` | `P001` high | exact Sun–Mars major aspect | decision/work; exclude Sun sign alone and leadership claims |
 | `AS-C2B-02` | `P002` high | exact Saturn–Sun major aspect | pressure; exclude treating Saturn alone as fear or rigidity |
 | `AS-C2B-03` | `P002` low | exact Uranus–Sun major aspect | change; exclude one outer-planet placement without contact |
-| `AS-C2B-04` | `P003` high | Moon or Venus with a major aspect, plus known-time relationship-axis context when available | relationship; exclude dependency, charm, or relationship success claims |
+| `AS-C2B-04` | `P003` high | exact Moon–Venus major aspect | relationship; known-time axis context is deferred; exclude dependency, charm, or relationship success claims |
 | `AS-C2B-05` | `P004` high | exact Mars–Sun major aspect | action/work; exclude completion and achievement claims |
-| `AS-C2B-06` | `P005` high | Moon with Mercury or Saturn major aspect, optionally modified by dignity | pressure/relationship; exclude diagnosis, intensity, or pathology claims |
-| `AS-C2B-07` | `P006` high | Mercury-Saturn major aspect or Mercury plus known-time angular/house corroboration | work/decision; exclude intelligence, compliance, or education claims |
+| `AS-C2B-06` | `P005` high | exact Moon–Mercury major aspect | pressure/relationship; dignity and Saturn variants are deferred; exclude diagnosis, intensity, or pathology claims |
+| `AS-C2B-07` | `P006` high | exact Mercury–Saturn major aspect | work/decision; angular/house corroboration is deferred; exclude intelligence, compliance, or education claims |
 
 ## Required modifiers
 

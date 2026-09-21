@@ -137,7 +137,7 @@ def _load_current_candidate_policy() -> Optional[dict]:
         Path(__file__).resolve().parents[2]
         / "candidates"
         / "core-profile-v1"
-        / "core_profile_calibration_policy_v1.yaml"
+        / "core_profile_calibration_policy_v2.yaml"
     )
     policy = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
     if policy["bundle_fingerprint"] != candidate_semantic_bundle_fingerprint():

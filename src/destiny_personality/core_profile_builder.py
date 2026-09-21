@@ -33,15 +33,17 @@ _CANDIDATE_VERSIONS = (
     ("bazi_mapping", "candidate-c2-bazi-v2"),
     ("astrology_mapping", "candidate-c2-astrology-v2"),
     ("alignment", "candidate-alignment-v2"),
-    ("candidate_builder", "candidate-builder-semantic-v2"),
+    ("candidate_builder", "candidate-builder-semantic-v3"),
+    ("context_taxonomy", "candidate-context-v1"),
+    ("evidence_weighting", "candidate-evidence-weighting-v1"),
     ("dynamic_formation", "c3-review-v1"),
     ("calibration_protocol", "c4a-review-v1"),
 )
 
 _SEMANTIC_ALGORITHM_VERSIONS = (
-    "candidate-builder-semantic-v2",
-    "candidate-state-resolver-v2",
-    "candidate-alignment-resolver-v2",
+    "candidate-builder-semantic-v3",
+    "candidate-state-resolver-v3",
+    "candidate-alignment-resolver-v3",
 )
 
 
@@ -50,7 +52,7 @@ def candidate_semantic_bundle_fingerprint() -> str:
 
     digest = sha256()
     for path in sorted(_candidate_asset_root().glob("*.yaml")):
-        if path.name == "core_profile_calibration_policy_v1.yaml":
+        if path.name.startswith(("core_profile_calibration_policy_", "holdout_validation_")):
             continue
         digest.update(path.name.encode("utf-8"))
         digest.update(b"\0")
@@ -110,7 +112,7 @@ def build_candidate_core_profile(
             continue
         context_states = _resolve_context_states(primitive_candidates)
         directions = {candidate.direction for candidate in primitive_candidates}
-        state = _resolve_global_state(context_states, directions)
+        state = _resolve_global_state(context_states, directions, primitive_candidates)
         refs = tuple(ref for candidate in primitive_candidates for ref in candidate.fact_refs)
         rules = tuple(rule for candidate in primitive_candidates for rule in candidate.semantic_rule_refs)
         supporting = tuple(
@@ -133,11 +135,7 @@ def build_candidate_core_profile(
             context_states=context_states,
             supporting_candidates=supporting,
             counter_candidates=counter,
-            contradictions=(
-                "opposite directions in the same context"
-                if state == "mixed"
-                else ()
-            ),
+            contradictions=_state_contradictions(state, primitive_candidates),
             unresolved_contexts=(
                 tuple(sorted(context_states)) if state == "context_differentiated" else ()
             ),
@@ -145,11 +143,12 @@ def build_candidate_core_profile(
                 ("global state preserves separate context directions",)
                 if state == "context_differentiated"
                 else ()
-            ),
+            ) + (("counterweight contextualization retained",) if any(candidate.counterweight_effect for candidate in primitive_candidates) else ()),
         )
     return CandidateCoreProfile(
         schema_version="candidate-core-profile-v1",
-        candidate_profile_id=f"candidate-{fingerprint[:16]}",
+        candidate_profile_id=f"candidate-{sha256(f'{fingerprint}:{candidate_semantic_bundle_fingerprint()}'.encode('utf-8')).hexdigest()[:16]}",
+        fact_fingerprint=fingerprint,
         fact_assurance=fact_assurance,
         semantic_model_assurance="project_semantic_partial",
         semantic_capability_level="primitive_only",
@@ -169,6 +168,7 @@ def build_candidate_core_profile(
 def normalize_candidate_profile(profile: CandidateCoreProfile) -> tuple:
     return (
         profile.schema_version,
+        profile.fact_fingerprint,
         profile.fact_assurance,
         profile.semantic_model_assurance,
         profile.semantic_model_versions,
@@ -449,12 +449,35 @@ def _resolve_context_states(candidates: tuple[PrimitiveCandidate, ...]) -> Dict[
     }
 
 
-def _resolve_global_state(context_states: Dict[str, str], directions: set[str]) -> str:
+def _resolve_global_state(
+    context_states: Dict[str, str],
+    directions: set[str],
+    candidates: tuple[PrimitiveCandidate, ...],
+) -> str:
     if len(directions) == 1:
         return f"supported_{next(iter(directions))}"
     if any(state == "mixed" for state in context_states.values()):
         return "mixed"
+    if any(
+        left.direction != right.direction and set(left.contexts) & set(right.contexts)
+        for index, left in enumerate(candidates)
+        for right in candidates[index + 1 :]
+    ):
+        return "mixed"
     return "context_differentiated"
+
+
+def _state_contradictions(state: str, candidates: tuple[PrimitiveCandidate, ...]) -> tuple[str, ...]:
+    if state != "mixed":
+        return ()
+    if any(
+        left.direction != right.direction and set(left.contexts) & set(right.contexts)
+        and set(left.contexts) != set(right.contexts)
+        for index, left in enumerate(candidates)
+        for right in candidates[index + 1 :]
+    ):
+        return ("opposite directions in overlapping context scopes",)
+    return ("opposite directions in the same context",)
 
 
 def _candidate_asset_root() -> Path:
@@ -466,6 +489,7 @@ def _align_cross_system(
     astrology_candidates: tuple[PrimitiveCandidate, ...],
 ) -> tuple[CrossSystemAlignment, ...]:
     alignments = []
+    comparison_policy = load_candidate_context_taxonomy().comparison_policy
     for primitive_id in _CANDIDATE_PRIMITIVES:
         bazi_for_primitive = tuple(
             item for item in bazi_candidates if item.primitive_id == primitive_id
@@ -483,15 +507,18 @@ def _align_cross_system(
                 shared = tuple(sorted(set(bazi_candidate.contexts) & set(astrology_candidate.contexts)))
                 exact = set(bazi_candidate.contexts) == set(astrology_candidate.contexts)
                 relation = "same" if bazi_candidate.direction == astrology_candidate.direction else "opposed"
-                status = (
-                    "non_comparable" if not shared
-                    else "validation" if exact and relation == "same"
-                    else "contextualization" if relation == "same"
-                    else "unresolved"
-                )
+                status = _alignment_status(comparison_policy, exact, bool(shared), relation)
                 scope = shared or tuple(sorted(set(bazi_candidate.contexts) | set(astrology_candidate.contexts)))
                 alignments.append(_alignment(primitive_id, scope, status, relation, bazi_candidate, astrology_candidate))
     return tuple(alignments)
+
+
+def _alignment_status(policy: dict[str, str], exact: bool, has_overlap: bool, relation: str) -> str:
+    if relation == "opposed" and has_overlap:
+        return "unresolved"
+    key = "exact_overlap" if exact else "partial_overlap" if has_overlap else "no_overlap"
+    result = policy[key]
+    return "validation" if result == "comparable" else result
 
 
 def _single_system_alignments(

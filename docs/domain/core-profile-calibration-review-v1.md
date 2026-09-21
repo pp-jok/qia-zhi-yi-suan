@@ -1,7 +1,11 @@
 # Core Profile Calibration Review v1
 
 **Stage:** C4 — Calibration Review  
-**Status:** C4b candidate policy frozen for the named D1 Bundle on 2026-09-18; no production approval
+**Status:** superseded for semantic-bundle evidence by v0.2.3; retained as an historical record.
+
+The v1 run is not evidence for the scoped semantic bundle. See
+`core-profile-calibration-v0.2.3.md` and `holdout-validation-v0.2.3.md` for the
+current fingerprint-bound records.
 
 ## Dataset separation
 

@@ -50,6 +50,7 @@ class CrossSystemAlignment:
 class CandidateCoreProfile:
     schema_version: str
     candidate_profile_id: str
+    fact_fingerprint: str
     fact_assurance: str
     semantic_model_assurance: str
     semantic_capability_level: str

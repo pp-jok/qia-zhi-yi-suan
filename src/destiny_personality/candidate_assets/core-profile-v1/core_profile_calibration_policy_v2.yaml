@@ -1,13 +1,10 @@
-review_status: superseded
-superseded_by: core_profile_calibration_policy_v2.yaml
-supersession_reason: semantic bundle changed after the v1 calibration run
+review_status: approved
 review_refs:
-  - docs/domain/core-profile-calibration-review-v1.md
-  - docs/domain/core-profile-similarity-policy-v1.md
-  - docs/domain/candidate-semantic-asset-approval-v1.md
-schema_version: candidate-core-profile-calibration-policy-v1
-policy_version: c4b-candidate-v1
-bundle_fingerprint: a77958e1f4453828b44fd1c2573f58f4e51e63b1c25c581d0293da0166276bd9
+  - docs/domain/core-profile-calibration-v0.2.3.md
+  - docs/domain/holdout-validation-v0.2.3.md
+schema_version: candidate-core-profile-calibration-policy-v2
+policy_version: c4b-candidate-v2
+bundle_fingerprint: 733648b1a7fad62ef78bbbbd9c20733fc6800c9b23095f729aab95d96780c705
 similarity_weights:
   weighted_primitive_overlap: 1.0
   signature_primitive_overlap: 0.0

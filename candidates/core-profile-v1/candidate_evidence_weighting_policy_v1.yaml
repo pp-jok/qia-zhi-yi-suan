@@ -3,6 +3,12 @@ review_refs:
   - docs/domain/candidate-semantic-asset-approval-v1.md
 schema_version: candidate-evidence-weighting-policy-v1
 policy_version: candidate-evidence-weighting-v1
+allowed_salience_values: [strong, moderate]
+allowed_environment_effects: [contextualize]
+allowed_counterweight_effects: [contextualize]
+allowed_tension_levels: [low, medium, high]
+allowed_expression_modes: [integrated, cooperative, effortful, fluent, polarized, contextualized, direct]
+environment_semantic_scope: descriptive_context_only
 astrology:
   orb_bands:
     strong: {max_orb: 3}

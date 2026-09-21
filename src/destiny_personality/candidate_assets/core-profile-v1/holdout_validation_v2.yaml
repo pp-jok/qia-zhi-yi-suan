@@ -1,0 +1,12 @@
+review_status: approved
+review_refs:
+  - docs/domain/holdout-validation-v0.2.3.md
+schema_version: candidate-holdout-validation-v2
+bundle_fingerprint: 733648b1a7fad62ef78bbbbd9c20733fc6800c9b23095f729aab95d96780c705
+algorithm_versions:
+  - candidate-builder-semantic-v3
+  - candidate-state-resolver-v3
+  - candidate-alignment-resolver-v3
+case_count: 5
+assertion_failures: 0
+result: pass

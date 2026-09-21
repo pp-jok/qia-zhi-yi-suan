@@ -4,6 +4,7 @@ from typing import Dict, Optional, Tuple
 import yaml
 
 from .candidate_assets import candidate_asset_root
+from .core_profile_builder import candidate_semantic_bundle_fingerprint
 
 
 _REQUIRED_STEMS = frozenset("甲乙丙丁戊己庚辛壬癸")
@@ -11,7 +12,7 @@ _REQUIRED_MONTH_BRANCHES = frozenset("寅卯辰巳午未申酉戌亥子丑")
 _REQUIRED_SOURCE_KINDS = {"visible_stem", "hidden_stem"}
 
 
-def validate_candidate_bundle_for_promotion(
+def validate_candidate_bundle_technical_readiness(
     candidate_root: Optional[Path] = None,
 ) -> Tuple[str, ...]:
     """Return explicit blockers before any candidate semantic asset is promoted."""
@@ -23,7 +24,8 @@ def validate_candidate_bundle_for_promotion(
     taxonomy = assets.get("context_taxonomy_v1.yaml")
     weighting = assets.get("candidate_evidence_weighting_policy_v1.yaml")
     blockers = []
-    if not assets or any(asset.get("review_status") != "approved" for asset in assets.values()):
+    active_assets = [asset for asset in assets.values() if asset.get("review_status") != "superseded"]
+    if not assets or any(asset.get("review_status") != "approved" for asset in active_assets):
         blockers.append("CANDIDATE_REVIEW_PENDING")
     if not _environment_is_complete(environment):
         blockers.append("BAZI_DAY_MASTER_ENVIRONMENT_UNAVAILABLE")
@@ -35,9 +37,34 @@ def validate_candidate_bundle_for_promotion(
         blockers.append("ASTROLOGY_ANGLE_HOUSE_BRANCH_UNIMPLEMENTED")
     if not _context_taxonomy_is_complete(taxonomy, bazi, astrology):
         blockers.append("CANDIDATE_CONTEXT_TAXONOMY_UNAVAILABLE")
-    if not _weighting_policy_is_complete(weighting):
+    if not _weighting_policy_is_complete(weighting) or not _mapping_semantics_are_allowed(weighting, bazi, astrology):
         blockers.append("CANDIDATE_EVIDENCE_WEIGHTING_POLICY_UNAVAILABLE")
     return tuple(blockers)
+
+
+def validate_candidate_promotion_authorization(
+    candidate_root: Optional[Path] = None,
+) -> Tuple[str, ...]:
+    """Require calibrated evidence and a human owner before production authorization."""
+
+    root = candidate_root or _default_candidate_root()
+    blockers = list(validate_candidate_bundle_technical_readiness(root))
+    assets = _load_candidate_assets(root)
+    calibration = assets.get("core_profile_calibration_policy_v2.yaml", {})
+    holdout = assets.get("holdout_validation_v2.yaml", {})
+    expected = candidate_semantic_bundle_fingerprint()
+    if calibration.get("bundle_fingerprint") != expected:
+        blockers.append("CALIBRATION_POLICY_GAP")
+    if holdout.get("bundle_fingerprint") != expected or holdout.get("result") != "pass":
+        blockers.append("CANDIDATE_HOLDOUT_VALIDATION_REQUIRED")
+    blockers.append("HUMAN_PRODUCTION_APPROVAL_REQUIRED")
+    return tuple(dict.fromkeys(blockers))
+
+
+def validate_candidate_bundle_for_promotion(candidate_root: Optional[Path] = None) -> Tuple[str, ...]:
+    """Backward-compatible technical readiness alias; this is not authorization."""
+
+    return validate_candidate_bundle_technical_readiness(candidate_root)
 
 
 def _default_candidate_root() -> Path:
@@ -142,4 +169,30 @@ def _weighting_policy_is_complete(weighting: object) -> bool:
         and bool(bands)
         and all(isinstance(value, dict) and isinstance(value.get("max_orb"), int) for value in bands.values())
         and isinstance(weighting.get("bazi", {}).get("default_salience"), str)
+        and all(_nonempty_string_list(weighting.get(key)) for key in (
+            "allowed_salience_values", "allowed_environment_effects", "allowed_counterweight_effects",
+            "allowed_tension_levels", "allowed_expression_modes",
+        ))
+        and weighting.get("environment_semantic_scope") == "descriptive_context_only"
+    )
+
+
+def _mapping_semantics_are_allowed(weighting: object, bazi: object, astrology: object) -> bool:
+    if not isinstance(weighting, dict) or not isinstance(bazi, dict) or not isinstance(astrology, dict):
+        return False
+    environment_effects = set(weighting["allowed_environment_effects"])
+    counterweight_effects = set(weighting["allowed_counterweight_effects"])
+    tensions = set(weighting["allowed_tension_levels"])
+    modes = set(weighting["allowed_expression_modes"])
+    return (
+        all(rule.get("environment_effect") in environment_effects for rule in bazi.get("rules", ()))
+        and all(
+            policy.get("effect") in counterweight_effects
+            for rule in bazi.get("rules", ())
+            for policy in rule.get("counterweight_rules", ())
+        )
+        and all(
+            value.get("tension_level") in tensions and value.get("expression_mode") in modes
+            for value in astrology.get("aspect_semantics", {}).values()
+        )
     )
