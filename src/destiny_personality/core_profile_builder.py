@@ -180,7 +180,7 @@ def build_candidate_core_profile(
         fact_scope=CandidateFactScope(
             birth_time_known=facts.normalized_time.fact_mode == FactMode.TIME_SENSITIVE,
             astrology_time_mode=("known_time" if facts.normalized_time.fact_mode == FactMode.TIME_SENSITIVE else "stable_only"),
-            bazi_hour_available=(facts.normalized_time.fact_mode == FactMode.TIME_SENSITIVE),
+            bazi_hour_available=facts.bazi.hour_pillar is not None,
         ),
         fact_assurance=fact_assurance,
         semantic_model_assurance="project_semantic_partial",

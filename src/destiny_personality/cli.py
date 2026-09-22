@@ -53,7 +53,6 @@ def _build_parser() -> argparse.ArgumentParser:
     diff.add_argument("left", type=Path); diff.add_argument("right", type=Path)
     build = subparsers.add_parser("build-core-profile")
     build.add_argument("facts", type=Path)
-    build.add_argument("--fact-assurance", choices=("project_verified", "capability_reported"), required=True)
     build.add_argument("--output", type=Path, required=True)
     return parser
 
@@ -219,10 +218,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         elif args.command == "build-core-profile":
             from .core_profile_builder import build_candidate_core_profile
             from .core_profile_codec import write_candidate_profile
-            from .deterministic_facts_codec import load_deterministic_facts
+            from .deterministic_facts_codec import load_validated_deterministic_facts
 
             profile = build_candidate_core_profile(
-                load_deterministic_facts(args.facts), fact_assurance=args.fact_assurance
+                load_validated_deterministic_facts(args.facts), fact_assurance="project_verified"
             )
             write_candidate_profile(profile, args.output)
             summary = {"status": "ok", "profile": str(args.output), "profile_id": profile.candidate_profile_id}

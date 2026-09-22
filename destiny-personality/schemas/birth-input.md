@@ -50,7 +50,10 @@ Do not require the user to know timezone or coordinates. Phase C may resolve mis
 
 ## Normalized execution input
 
-Record `requested_mode` as `portrait`, `facts_only`, or `audit`. Default to `portrait` only when the request clearly asks for a new portrait.
+Record `requested_mode` as `portrait`, `legacy`, `core`, `core_concise`,
+`core_standard`, `facts_only`, or `audit`. `portrait` is the compatibility
+alias for `legacy`. Default to `portrait` only when the request clearly asks
+for a new portrait.
 
 When `birth_time` is `unknown`, set `fact_mode` to `stable_only`. Reject any attempt to use an hour pillar, Ascendant, MC, houses, or facts that declare an hour-pillar source.
 

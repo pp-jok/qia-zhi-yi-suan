@@ -82,7 +82,6 @@ Signature, Dynamic, Fate Theme, Archetype, or an unanchored narrative claim.
 Before entering this candidate route, read the [Candidate Core Profile
 contract](schemas/candidate-core-profile.md). Keep this IR distinct from
 `core-destiny-profile-v1`; its current capability is `primitive_only`.
-branch.
 
 For `core` return the structured Candidate Profile Summary. For
 `core_concise`, target four to eight evidence-contained sections; sparse
@@ -97,16 +96,22 @@ Ascendant, MC, houses, and angle-axis interpretation are unavailable. A request
 to explain an item must return its Primitive, contexts, facts, rule references,
 counterevidence, and limitations.
 
-Use the packaged runtime commands for a normalized Candidate Profile JSON:
+Use the packaged runtime commands only after `FACTS_VALIDATED`. The public
+route is `deterministic-facts-v1` (with provenance and passed qualification)
+→ `build-core-profile` → validated Candidate Profile JSON → renderer. The
+runtime derives `project_verified` assurance from the qualified packet; an
+agent or caller must not select or promote it.
 
 ```text
+destiny-personality-reference-validate build-core-profile QUALIFIED_FACTS.json --output PROFILE.json
 destiny-personality-reference-validate render-core-portrait PROFILE --mode core_concise
 destiny-personality-reference-validate explain-profile-item PROFILE primitive:P001
 destiny-personality-reference-validate profile-source-view PROFILE --view comparison
 destiny-personality-reference-validate profile-diff LEFT_PROFILE RIGHT_PROFILE
 ```
 
-These commands consume qualified Profile facts; they do not calculate a birth chart.
+These commands consume qualified facts or an already validated Profile; they do
+not calculate a birth chart.
 
 The strict branch retains the original gates:
 

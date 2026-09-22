@@ -22,17 +22,61 @@ def test_render_core_portrait_cli(tmp_path, capsys, normalized_time, bazi_facts,
     assert len({section["section_id"] for section in output["sections"]}) == len(output["sections"])
 
 
-def test_build_core_profile_cli_uses_qualified_facts_without_calculation(tmp_path, capsys, normalized_time, bazi_facts, astrology_facts):
+def test_build_core_profile_cli_accepts_only_a_validated_formal_facts_packet(tmp_path, capsys, normalized_time, bazi_facts, astrology_facts):
     from destiny_personality.calculation import DeterministicChartFacts
     from destiny_personality.deterministic_facts_codec import deterministic_facts_to_dict
 
     facts_path = tmp_path / "facts.json"
-    facts_path.write_text(json.dumps(deterministic_facts_to_dict(DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts))), encoding="utf-8")
+    facts_path.write_text(json.dumps(_qualified_facts_payload(DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts))), encoding="utf-8")
     output_path = tmp_path / "profile.json"
 
-    assert main(["build-core-profile", str(facts_path), "--fact-assurance", "capability_reported", "--output", str(output_path)]) == 0
+    assert main(["build-core-profile", str(facts_path), "--output", str(output_path)]) == 0
     assert json.loads(capsys.readouterr().out)["status"] == "ok"
-    assert json.loads(output_path.read_text(encoding="utf-8"))["schema_version"] == "candidate-core-profile-v1"
+    profile = json.loads(output_path.read_text(encoding="utf-8"))
+    assert profile["schema_version"] == "candidate-core-profile-v1"
+    assert profile["fact_assurance"] == "project_verified"
+
+
+@pytest.mark.parametrize(
+    ("mutator", "error_code"),
+    (
+        (lambda payload: payload.pop("provenance_refs"), "FACT_QUALIFICATION_REQUIRED"),
+        (lambda payload: payload["validation_summary"].update({"provenance": "failed"}), "FACT_QUALIFICATION_INVALID"),
+        (lambda payload: payload["methodology_versions"].update({"bazi": "wrong"}), "FACT_QUALIFICATION_INVALID"),
+    ),
+)
+def test_build_core_profile_cli_fails_closed_for_unqualified_facts(tmp_path, capsys, normalized_time, bazi_facts, astrology_facts, mutator, error_code):
+    from destiny_personality.calculation import DeterministicChartFacts
+
+    payload = _qualified_facts_payload(DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts))
+    mutator(payload)
+    facts_path = tmp_path / "facts.json"
+    facts_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert main(["build-core-profile", str(facts_path), "--output", str(tmp_path / "profile.json")]) == 2
+    assert error_code in capsys.readouterr().err
+
+
+def test_build_core_profile_cli_rejects_caller_selected_assurance(tmp_path):
+    with pytest.raises(SystemExit):
+        main(["build-core-profile", str(tmp_path / "facts.json"), "--fact-assurance", "project_verified", "--output", str(tmp_path / "profile.json")])
+
+
+def _qualified_facts_payload(facts) -> dict:
+    from destiny_personality.deterministic_facts_codec import deterministic_facts_to_dict
+
+    payload = deterministic_facts_to_dict(facts)
+    payload.update({
+        "schema_version": "deterministic-facts-v1",
+        "fact_mode": facts.normalized_time.fact_mode.value,
+        "methodology_versions": {"bazi": facts.bazi.methodology_version, "astrology": facts.astrology.methodology_version},
+        "provenance_refs": ["accepted-envelope:test", "validation:test"],
+        "validation_summary": {
+            "structure": "passed", "methodology": "passed", "provenance": "passed",
+            "internal_consistency": "passed", "time_scope": "passed", "independent_comparison": "passed",
+        },
+    })
+    return payload
 
 
 def test_profile_source_view_cli_rejects_invalid_profile(tmp_path, capsys):

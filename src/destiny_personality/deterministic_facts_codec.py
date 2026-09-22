@@ -68,6 +68,8 @@ def deterministic_facts_to_dict(facts: DeterministicChartFacts) -> dict:
 
 
 def deterministic_facts_from_dict(payload: Mapping[str, object]) -> DeterministicChartFacts:
+    """Decode the internal chart-facts transport used by tests and adapters."""
+
     if payload.get("schema_version") != "deterministic-chart-facts-v1":
         raise ValueError("DETERMINISTIC_FACTS_SCHEMA_INVALID")
     try:
@@ -110,6 +112,45 @@ def load_deterministic_facts(path: Path) -> DeterministicChartFacts:
         return deterministic_facts_from_dict(json.loads(path.read_text(encoding="utf-8")))
     except (OSError, json.JSONDecodeError) as error:
         raise ValueError("DETERMINISTIC_FACTS_JSON_INVALID") from error
+
+
+def load_validated_deterministic_facts(path: Path) -> DeterministicChartFacts:
+    """Load the public `deterministic-facts-v1` contract after qualification."""
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError("DETERMINISTIC_FACTS_JSON_INVALID") from error
+    _validate_qualification_envelope(payload)
+    internal_payload = dict(payload)
+    internal_payload["schema_version"] = "deterministic-chart-facts-v1"
+    facts = deterministic_facts_from_dict(internal_payload)
+    if payload["fact_mode"] != facts.normalized_time.fact_mode.value:
+        raise ValueError("FACT_QUALIFICATION_INVALID")
+    versions = payload["methodology_versions"]
+    if versions["bazi"] != facts.bazi.methodology_version or versions["astrology"] != facts.astrology.methodology_version:
+        raise ValueError("FACT_QUALIFICATION_INVALID")
+    return facts
+
+
+def _validate_qualification_envelope(payload: Mapping[str, object]) -> None:
+    if payload.get("schema_version") != "deterministic-facts-v1":
+        raise ValueError("DETERMINISTIC_FACTS_SCHEMA_INVALID")
+    provenance = payload.get("provenance_refs")
+    validation = payload.get("validation_summary")
+    if not isinstance(provenance, list) or not provenance or not all(isinstance(ref, str) and ref for ref in provenance):
+        raise ValueError("FACT_QUALIFICATION_REQUIRED")
+    if not isinstance(validation, Mapping):
+        raise ValueError("FACT_QUALIFICATION_REQUIRED")
+    required_checks = (
+        "structure", "methodology", "provenance", "internal_consistency",
+        "time_scope", "independent_comparison",
+    )
+    if any(validation.get(check) != "passed" for check in required_checks):
+        raise ValueError("FACT_QUALIFICATION_INVALID")
+    versions = payload.get("methodology_versions")
+    if not isinstance(versions, Mapping) or not isinstance(versions.get("bazi"), str) or not isinstance(versions.get("astrology"), str):
+        raise ValueError("FACT_QUALIFICATION_INVALID")
 
 
 def _pillar_dict(value: Optional[BaziPillar]) -> Optional[dict]:

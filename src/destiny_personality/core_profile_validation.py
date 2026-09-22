@@ -24,7 +24,7 @@ def validate_candidate_profile(profile: CandidateCoreProfile) -> Tuple[str, ...]
         errors.append("FACT_SCOPE_CONTRACT_ERROR")
     if profile.fact_scope.birth_time_known != (profile.fact_scope.astrology_time_mode == "known_time"):
         errors.append("FACT_SCOPE_CONTRACT_ERROR")
-    if profile.fact_scope.bazi_hour_available != profile.fact_scope.birth_time_known:
+    if profile.fact_scope.astrology_time_mode == "stable_only" and profile.fact_scope.bazi_hour_available:
         errors.append("FACT_SCOPE_CONTRACT_ERROR")
     if set(profile.primitive_states) != _CANDIDATE_PRIMITIVE_IDS:
         errors.append("D1_PRIMITIVE_COVERAGE_INVALID")

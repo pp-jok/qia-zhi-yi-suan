@@ -74,6 +74,18 @@ def test_stable_only_facts_reject_time_sensitive_fields(normalized_time, bazi_fa
         )
 
 
+def test_known_birth_time_does_not_invent_an_unavailable_hour_pillar(normalized_time, bazi_facts, astrology_facts) -> None:
+    from destiny_personality.core_profile_builder import build_candidate_core_profile
+
+    bazi_without_hour = bazi_facts.__class__(**{**bazi_facts.__dict__, "hour_pillar": None})
+    profile = build_candidate_core_profile(
+        DeterministicChartFacts(normalized_time, bazi_without_hour, astrology_facts), fact_assurance="capability_reported"
+    )
+
+    assert profile.fact_scope.birth_time_known is True
+    assert profile.fact_scope.bazi_hour_available is False
+
+
 def test_candidate_builder_activates_bazi_rule_only_with_required_evidence(
     normalized_time, bazi_facts, astrology_facts
 ) -> None:

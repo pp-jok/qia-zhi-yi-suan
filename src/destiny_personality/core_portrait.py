@@ -335,4 +335,12 @@ def _expression(item: ProfileSummaryItem) -> str:
 
 def _localized_contexts(contexts: Tuple[str, ...]) -> str:
     labels = _presentation()["contexts"]
-    return "、".join(labels.get(context, "未命名情境") for context in contexts)
+    return "、".join(
+        labels.get(tag, "未命名情境")
+        for context in contexts
+        for tag in parse_context_scope(context)
+    )
+
+
+def parse_context_scope(scope: str) -> Tuple[str, ...]:
+    return tuple(tag for tag in scope.split("+") if tag)
