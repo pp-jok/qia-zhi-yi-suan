@@ -42,6 +42,7 @@ def test_core_summary_and_renderers_are_primitive_contained(normalized_time, baz
 
 
 def test_source_views_explanation_and_profile_diff_are_auditable(normalized_time, bazi_facts, astrology_facts) -> None:
+    from dataclasses import replace
     from destiny_personality.core_portrait import (
         build_candidate_profile_summary,
         compare_candidate_profiles_versions,
@@ -61,6 +62,9 @@ def test_source_views_explanation_and_profile_diff_are_auditable(normalized_time
     diff = compare_candidate_profiles_versions(profile, profile)
     assert diff.unchanged_primitive_ids == tuple(sorted(profile.primitive_states))
     assert not diff.changed_primitives
+    runtime_diff = compare_candidate_profiles_versions(profile, replace(profile, profile_runtime_version="candidate-profile-runtime-v3"))
+    assert runtime_diff.runtime_version_changed is True
+    assert "profile_runtime_version_changed" in runtime_diff.change_reasons
 
 
 def test_unknown_birth_time_explains_available_and_unavailable_evidence(normalized_time, bazi_facts, astrology_facts) -> None:

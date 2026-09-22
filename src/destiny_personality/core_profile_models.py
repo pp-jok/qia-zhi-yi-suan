@@ -57,6 +57,7 @@ class CandidateFactScope:
 class CandidateCoreProfile:
     schema_version: str
     candidate_profile_id: str
+    profile_runtime_version: str
     fact_fingerprint: str
     fact_scope: CandidateFactScope
     fact_assurance: str

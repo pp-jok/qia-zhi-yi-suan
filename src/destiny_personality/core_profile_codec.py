@@ -20,6 +20,7 @@ def candidate_profile_from_dict(payload: Mapping[str, object]) -> CandidateCoreP
         scope = CandidateFactScope(**payload["fact_scope"])
         profile = CandidateCoreProfile(
             schema_version=payload["schema_version"], candidate_profile_id=payload["candidate_profile_id"],
+            profile_runtime_version=payload["profile_runtime_version"],
             fact_fingerprint=payload["fact_fingerprint"], fact_scope=scope, fact_assurance=payload["fact_assurance"],
             semantic_model_assurance=payload["semantic_model_assurance"], semantic_capability_level=payload["semantic_capability_level"],
             semantic_bundle_fingerprint=payload["semantic_bundle_fingerprint"],

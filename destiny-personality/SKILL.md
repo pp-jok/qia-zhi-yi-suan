@@ -98,12 +98,14 @@ counterevidence, and limitations.
 
 Use the packaged runtime commands only after `FACTS_VALIDATED`. The public
 route is `deterministic-facts-v1` (with provenance and passed qualification)
-→ `build-core-profile` → validated Candidate Profile JSON → renderer. The
-runtime derives `project_verified` assurance from the qualified packet; an
-agent or caller must not select or promote it.
+→ `build-core-profile` with a separate `fact-qualification-v1` → validated
+Candidate Profile JSON → renderer. The runtime derives assurance from the
+fingerprint-bound qualification; an agent or caller must not select or promote
+it. A qualified external packet normally remains `capability_reported` until
+complete project-owned strict deterministic validation exists.
 
 ```text
-destiny-personality-reference-validate build-core-profile QUALIFIED_FACTS.json --output PROFILE.json
+destiny-personality-reference-validate build-core-profile FACTS.json --qualification FACT_QUALIFICATION.json --output PROFILE.json
 destiny-personality-reference-validate render-core-portrait PROFILE --mode core_concise
 destiny-personality-reference-validate explain-profile-item PROFILE primitive:P001
 destiny-personality-reference-validate profile-source-view PROFILE --view comparison

@@ -6,6 +6,12 @@ Produce one report for `portrait`, `facts_only`, and `audit`.
 
 - `schema_version`: use `execution-report-v1`.
 - `mode`: `portrait`, `facts_only`, or `audit`.
+- `requested_mode`: the user route: `legacy`, `core`, `core_concise`,
+  `core_standard`, `facts_only`, or `audit`.
+- `portrait_route`: `legacy` or `candidate_core` when `mode` is `portrait`;
+  otherwise `not_applicable`.
+- `renderer_profile`: `structured`, `concise`, `standard`, or
+  `not_applicable`; it is a renderer selection, not an execution lifecycle mode.
 - `execution_profile`: `controlled_inference` or `strict`.
 - `status`: `completed`, `partial`, or `stopped`.
 - `current_stage`: last successfully reached state, or the failed state when stopped.

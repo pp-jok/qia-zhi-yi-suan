@@ -1,4 +1,3 @@
-from dataclasses import asdict
 from hashlib import sha256
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Union
@@ -17,6 +16,7 @@ from .core_profile_models import (
     StoppedCoreProfileExecution,
 )
 from .day_master_environment import derive_candidate_day_master_environment
+from .deterministic_facts_codec import deterministic_facts_fingerprint
 
 
 _CANDIDATE_PRIMITIVES = (
@@ -95,6 +95,7 @@ def build_candidate_core_profile(
     facts: DeterministicChartFacts,
     *,
     fact_assurance: str,
+    profile_runtime_version: str = "candidate-profile-runtime-v2",
 ) -> Union[CandidateCoreProfile, StoppedCoreProfileExecution]:
     _validate_fact_scope(facts)
     fingerprint = _fact_fingerprint(facts)
@@ -175,7 +176,8 @@ def build_candidate_core_profile(
         )
     return CandidateCoreProfile(
         schema_version="candidate-core-profile-v1",
-        candidate_profile_id=f"candidate-{sha256(f'{fingerprint}:{candidate_semantic_bundle_fingerprint()}'.encode('utf-8')).hexdigest()[:16]}",
+        candidate_profile_id=f"candidate-{sha256(f'{fingerprint}:{candidate_semantic_bundle_fingerprint()}:{profile_runtime_version}'.encode('utf-8')).hexdigest()[:16]}",
+        profile_runtime_version=profile_runtime_version,
         fact_fingerprint=fingerprint,
         fact_scope=CandidateFactScope(
             birth_time_known=facts.normalized_time.fact_mode == FactMode.TIME_SENSITIVE,
@@ -201,7 +203,13 @@ def build_candidate_core_profile(
 def normalize_candidate_profile(profile: CandidateCoreProfile) -> tuple:
     return (
         profile.schema_version,
+        profile.profile_runtime_version,
         profile.fact_fingerprint,
+        (
+            profile.fact_scope.birth_time_known,
+            profile.fact_scope.astrology_time_mode,
+            profile.fact_scope.bazi_hour_available,
+        ),
         profile.fact_assurance,
         profile.semantic_model_assurance,
         profile.semantic_model_versions,
@@ -263,7 +271,7 @@ normalize_core_profile = normalize_candidate_profile
 
 
 def _fact_fingerprint(facts: DeterministicChartFacts) -> str:
-    return sha256(repr(asdict(facts)).encode("utf-8")).hexdigest()
+    return deterministic_facts_fingerprint(facts)
 
 
 def _validate_fact_scope(facts: DeterministicChartFacts) -> None:

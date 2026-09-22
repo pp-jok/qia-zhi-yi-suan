@@ -86,6 +86,20 @@ def test_known_birth_time_does_not_invent_an_unavailable_hour_pillar(normalized_
     assert profile.fact_scope.bazi_hour_available is False
 
 
+def test_normalized_profile_includes_fact_scope_and_runtime_version(normalized_time, bazi_facts, astrology_facts) -> None:
+    from dataclasses import replace
+    from destiny_personality.core_profile_builder import build_candidate_core_profile, normalize_candidate_profile
+
+    profile = build_candidate_core_profile(DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts), fact_assurance="capability_reported")
+    changed_scope = replace(profile, fact_scope=replace(profile.fact_scope, bazi_hour_available=False))
+    changed_runtime = replace(profile, profile_runtime_version="candidate-profile-runtime-v3")
+
+    assert profile.profile_runtime_version == "candidate-profile-runtime-v2"
+    assert normalize_candidate_profile(profile) != normalize_candidate_profile(changed_scope)
+    assert normalize_candidate_profile(profile) != normalize_candidate_profile(changed_runtime)
+    assert profile.candidate_profile_id != build_candidate_core_profile(DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts), fact_assurance="capability_reported", profile_runtime_version="candidate-profile-runtime-v3").candidate_profile_id
+
+
 def test_candidate_builder_activates_bazi_rule_only_with_required_evidence(
     normalized_time, bazi_facts, astrology_facts
 ) -> None:

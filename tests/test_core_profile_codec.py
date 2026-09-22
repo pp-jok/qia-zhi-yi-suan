@@ -13,7 +13,9 @@ def test_candidate_profile_json_round_trip(tmp_path, normalized_time, bazi_facts
     )
     path = tmp_path / "profile.json"
     write_candidate_profile(profile, path)
-    assert load_candidate_profile(path) == profile
+    restored = load_candidate_profile(path)
+    assert restored == profile
+    assert restored.profile_runtime_version == "candidate-profile-runtime-v2"
 
 
 def test_candidate_profile_codec_rejects_non_candidate_payload():

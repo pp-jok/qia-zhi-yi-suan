@@ -99,6 +99,7 @@ class CandidateProfileVersionDiff:
     changed_primitives: Tuple[ChangedPrimitive, ...]
     mapping_version_changed: bool
     resolver_version_changed: bool
+    runtime_version_changed: bool
     change_reasons: Tuple[str, ...]
 
 
@@ -186,10 +187,11 @@ def compare_candidate_profiles_versions(left: CandidateCoreProfile, right: Candi
             ))
     mapping_changed = _version(left, "bazi_mapping") != _version(right, "bazi_mapping") or _version(left, "astrology_mapping") != _version(right, "astrology_mapping")
     resolver_changed = _version(left, "state_resolver") != _version(right, "state_resolver")
-    reasons = (("fact_changed",) if left.fact_fingerprint != right.fact_fingerprint else ()) + (("mapping_version_changed",) if mapping_changed else ()) + (("resolver_version_changed",) if resolver_changed else ()) + (("context_resolution_changed",) if any(item.before_contexts != item.after_contexts for item in changed) else ())
+    runtime_changed = left.profile_runtime_version != right.profile_runtime_version
+    reasons = (("fact_changed",) if left.fact_fingerprint != right.fact_fingerprint else ()) + (("mapping_version_changed",) if mapping_changed else ()) + (("resolver_version_changed",) if resolver_changed else ()) + (("profile_runtime_version_changed",) if runtime_changed else ()) + (("context_resolution_changed",) if any(item.before_contexts != item.after_contexts for item in changed) else ())
     return CandidateProfileVersionDiff(
         left.candidate_profile_id, right.candidate_profile_id, tuple(unchanged), tuple(changed),
-        mapping_changed, resolver_changed, reasons,
+        mapping_changed, resolver_changed, runtime_changed, reasons,
     )
 
 

@@ -18,6 +18,8 @@ def validate_candidate_profile(profile: CandidateCoreProfile) -> Tuple[str, ...]
         errors.append("D1_SEMANTIC_ASSURANCE_INVALID")
     if profile.schema_version != "candidate-core-profile-v1":
         errors.append("CANDIDATE_IR_SCHEMA_INVALID")
+    if not profile.profile_runtime_version.startswith("candidate-profile-runtime-v"):
+        errors.append("CANDIDATE_RUNTIME_VERSION_INVALID")
     if profile.semantic_capability_level != "primitive_only":
         errors.append("CANDIDATE_CAPABILITY_LEVEL_INVALID")
     if profile.fact_scope.astrology_time_mode not in {"known_time", "stable_only"}:

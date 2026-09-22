@@ -11,6 +11,7 @@ Use these root fields:
 ```text
 schema_version
 candidate_profile_id
+profile_runtime_version
 fact_fingerprint
 fact_assurance
 semantic_model_assurance
@@ -26,9 +27,11 @@ limitations
 
 `schema_version` is fixed to `candidate-core-profile-v1` and
 `semantic_capability_level` is currently fixed to `primitive_only`.
-`candidate_profile_id` is derived from both `fact_fingerprint` and the semantic
-bundle fingerprint, so identical facts evaluated under a changed bundle cannot
-share an identity. `semantic_model_versions` must include versioned mapping,
+`candidate_profile_id` is derived from `fact_fingerprint`, the semantic bundle
+fingerprint, and `profile_runtime_version`, so a runtime-only IR behavior
+change cannot share an identity with its predecessor. `profile_runtime_version`
+tracks fact organization and schema behavior independently of semantic and
+presentation versions. `semantic_model_versions` must include versioned mapping,
 state resolver, alignment resolver, context taxonomy, evidence weighting, and
 builder semantics. The version list also records the state and alignment
 resolver versions explicitly. The bundle fingerprint covers semantic YAML assets and those

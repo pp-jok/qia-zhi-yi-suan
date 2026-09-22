@@ -3,9 +3,9 @@
 ## Packet
 
 At `FACTS_NORMALIZED`, mechanically produce a `deterministic-facts-v1` packet
-from accepted calculation envelopes. At `FACTS_VALIDATED`, accept that packet
-only after it passes its own structure, methodology, provenance, and required
-independent-comparison checks. Required top-level fields are `schema_version`,
+from accepted calculation envelopes. At `FACTS_VALIDATED`, mechanically
+validate its structure, methodology, provenance, and applicable comparison
+conditions. Required top-level fields are `schema_version`,
 `fact_mode`, `methodology_versions`, `provenance_refs`, `normalized_time`,
 `bazi`, `astrology`, and `validation_summary`.
 
@@ -14,6 +14,11 @@ independent-comparison checks. Required top-level fields are `schema_version`,
 `methodology_versions.astrology` is `western-tropical-v1.0`. `provenance_refs`
 contains references to accepted calculation envelopes and validation assets;
 it does not promote raw provider output to a fact.
+
+For Candidate Core Profile runtime, pair this packet with a separate
+[`fact-qualification-v1`](fact-qualification.md). The packet's
+`validation_summary` remains an audit summary; it cannot itself derive or
+promote fact assurance.
 
 ## Normalized time
 

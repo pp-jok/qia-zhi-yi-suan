@@ -4,8 +4,10 @@ The codec deliberately transports facts only. It does not accept birth input or
 invoke a chart calculation engine.
 """
 
+from dataclasses import asdict, dataclass
 from datetime import date, datetime
 from decimal import Decimal
+from hashlib import sha256
 import json
 from pathlib import Path
 from typing import Mapping, Optional, Tuple
@@ -28,6 +30,12 @@ from .calculation.models import (
     TenGodSourceKind,
     TimeBasis,
 )
+
+
+@dataclass(frozen=True)
+class QualifiedFacts:
+    facts: DeterministicChartFacts
+    fact_assurance: str
 
 
 def deterministic_facts_to_dict(facts: DeterministicChartFacts) -> dict:
@@ -133,6 +141,46 @@ def load_validated_deterministic_facts(path: Path) -> DeterministicChartFacts:
     return facts
 
 
+def load_qualified_deterministic_facts(
+    facts_path: Path, qualification_path: Optional[Path]
+) -> QualifiedFacts:
+    """Bind a formal facts packet to independent qualification evidence."""
+
+    if qualification_path is None:
+        raise ValueError("FACT_QUALIFICATION_REQUIRED")
+    facts = load_validated_deterministic_facts(facts_path)
+    try:
+        qualification = json.loads(qualification_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError("FACT_QUALIFICATION_REQUIRED") from error
+    return QualifiedFacts(facts, derive_fact_assurance(facts, qualification))
+
+
+def deterministic_facts_fingerprint(facts: DeterministicChartFacts) -> str:
+    return sha256(repr(asdict(facts)).encode("utf-8")).hexdigest()
+
+
+def derive_fact_assurance(
+    facts: DeterministicChartFacts, qualification: Mapping[str, object]
+) -> str:
+    """Return the assurance authorized by a fingerprint-bound qualification."""
+
+    _validate_qualification(qualification, facts)
+    assurance = qualification["derived_fact_assurance"]
+    calculation_config = qualification["validation_summary"]["calculation_config"]
+    if assurance == "project_verified":
+        if calculation_config != "passed":
+            raise ValueError("FACT_QUALIFICATION_INVALID")
+        # Candidate runtime has no complete project-owned deterministic
+        # calculation configuration, so it cannot certify strict verification.
+        return "capability_reported"
+    if assurance == "capability_reported":
+        if calculation_config not in {"passed", "not_available"}:
+            raise ValueError("FACT_QUALIFICATION_INVALID")
+        return assurance
+    raise ValueError("FACT_ASSURANCE_INVALID")
+
+
 def _validate_qualification_envelope(payload: Mapping[str, object]) -> None:
     if payload.get("schema_version") != "deterministic-facts-v1":
         raise ValueError("DETERMINISTIC_FACTS_SCHEMA_INVALID")
@@ -142,14 +190,45 @@ def _validate_qualification_envelope(payload: Mapping[str, object]) -> None:
         raise ValueError("FACT_QUALIFICATION_REQUIRED")
     if not isinstance(validation, Mapping):
         raise ValueError("FACT_QUALIFICATION_REQUIRED")
-    required_checks = (
-        "structure", "methodology", "provenance", "internal_consistency",
-        "time_scope", "independent_comparison",
-    )
-    if any(validation.get(check) != "passed" for check in required_checks):
+    if not validation:
         raise ValueError("FACT_QUALIFICATION_INVALID")
     versions = payload.get("methodology_versions")
     if not isinstance(versions, Mapping) or not isinstance(versions.get("bazi"), str) or not isinstance(versions.get("astrology"), str):
+        raise ValueError("FACT_QUALIFICATION_INVALID")
+
+
+def _validate_qualification(
+    qualification: Mapping[str, object], facts: DeterministicChartFacts
+) -> None:
+    if qualification.get("schema_version") != "fact-qualification-v1":
+        raise ValueError("FACT_QUALIFICATION_INVALID")
+    if qualification.get("fact_fingerprint") != deterministic_facts_fingerprint(facts):
+        raise ValueError("FACT_QUALIFICATION_MISMATCH")
+    if qualification.get("qualification_status") != "passed" or qualification.get("fact_contract_version") != "deterministic-facts-v1":
+        raise ValueError("FACT_QUALIFICATION_INVALID")
+    _non_empty_refs(qualification, "validation_refs")
+    _non_empty_refs(qualification, "provenance_refs")
+    _non_empty_refs(qualification, "calculation_envelope_refs")
+    versions = qualification.get("methodology_versions")
+    if not isinstance(versions, Mapping) or versions.get("bazi") != facts.bazi.methodology_version or versions.get("astrology") != facts.astrology.methodology_version:
+        raise ValueError("FACT_QUALIFICATION_INVALID")
+    validation = qualification.get("validation_summary")
+    required_checks = ("structure", "methodology", "provenance", "internal_consistency", "time_scope")
+    if not isinstance(validation, Mapping) or any(validation.get(check) != "passed" for check in required_checks):
+        raise ValueError("FACT_QUALIFICATION_INVALID")
+    comparison = qualification.get("comparison")
+    if not isinstance(comparison, Mapping) or not isinstance(comparison.get("required"), bool):
+        raise ValueError("FACT_QUALIFICATION_INVALID")
+    if comparison["required"]:
+        if comparison.get("status") != "passed" or not isinstance(comparison.get("comparison_ref"), str) or not comparison["comparison_ref"]:
+            raise ValueError("FACT_QUALIFICATION_INVALID")
+    elif comparison.get("status") != "not_required":
+        raise ValueError("FACT_QUALIFICATION_INVALID")
+
+
+def _non_empty_refs(payload: Mapping[str, object], key: str) -> None:
+    values = payload.get(key)
+    if not isinstance(values, list) or not values or not all(isinstance(value, str) and value for value in values):
         raise ValueError("FACT_QUALIFICATION_INVALID")
 
 
