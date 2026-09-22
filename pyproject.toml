@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qia-zhi-yi-suan-candidate"
-version = "0.3.8"
+version = "0.3.9"
 description = "Auditable candidate Core Profile engine for the Qia Zhi Yi Suan agent skill"
 requires-python = ">=3.9"
 dependencies = ["PyYAML>=6,<7"]

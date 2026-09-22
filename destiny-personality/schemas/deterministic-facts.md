@@ -3,9 +3,9 @@
 ## Packet
 
 At `FACTS_NORMALIZED`, mechanically produce a `deterministic-facts-v1` packet
-from accepted calculation envelopes. At `FACTS_VALIDATED`, mechanically
-validate its structure, methodology, provenance, and applicable comparison
-conditions. Required top-level fields are `schema_version`,
+from accepted calculation envelopes. At `FACTS_VALIDATED`, accept that packet
+only after it passes its own structure, methodology, provenance, and required
+independent-comparison checks. Required top-level fields are `schema_version`,
 `fact_mode`, `methodology_versions`, `provenance_refs`, `normalized_time`,
 `bazi`, `astrology`, and `validation_summary`.
 
