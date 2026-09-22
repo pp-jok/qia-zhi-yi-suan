@@ -201,7 +201,9 @@ def _summary_item(profile: CandidateCoreProfile, primitive_id: str, name: str) -
         item_id=f"primitive:{primitive_id}", primitive_id=primitive_id, canonical_name=name, state=state.state,
         contexts=tuple(sorted({context for item in candidates for context in item.contexts})),
         resolved_direction=_resolved_direction(state.state),
-        context_directions=tuple(sorted(state.context_states.items())),
+        context_directions=tuple(
+            sorted((context, _context_direction(direction)) for context, direction in state.context_states.items())
+        ),
         evidence_strength=_strength(state.state, candidates, alignments),
         source_systems=tuple(sorted({item.source_system for item in candidates})), limitations=state.limitations,
     )
@@ -236,6 +238,14 @@ def _resolved_direction(state: str) -> str:
     if state == "mixed":
         return "mixed"
     return "unknown"
+
+
+def _context_direction(state: str) -> str:
+    if state == "supported_high":
+        return "high"
+    if state == "supported_low":
+        return "low"
+    return state
 
 
 def _time_sensitivity(profile: CandidateCoreProfile) -> TimeSensitivitySummary:
