@@ -1,2 +1,0 @@
-[console_scripts]
-destiny-personality = destiny_personality.cli:main

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts.verify_package import copy_project_source, find_project_wheel
+from scripts.verify_package import copy_project_source, find_project_wheel, project_distribution_name
 
 
 def test_copy_project_source_excludes_generated_artifacts(tmp_path: Path) -> None:
@@ -32,14 +32,20 @@ def test_copy_project_source_excludes_generated_artifacts(tmp_path: Path) -> Non
         assert not (destination / path.relative_to(project_root)).exists()
 
 
-def test_find_project_wheel_uses_reference_validator_distribution_name(
+def test_find_project_wheel_uses_project_distribution_name(
     tmp_path: Path,
 ) -> None:
-    expected = tmp_path / "destiny_personality_reference_validator-0.1.0.whl"
+    expected = tmp_path / "qia_zhi_yi_suan_candidate-0.3.5.whl"
     expected.touch()
     (tmp_path / "pyyaml-6.0.3.whl").touch()
 
-    assert find_project_wheel(tmp_path) == expected
+    assert find_project_wheel(tmp_path, "qia-zhi-yi-suan-candidate") == expected
+
+
+def test_project_distribution_name_reads_pyproject_and_normalizes_wheel_name(tmp_path: Path) -> None:
+    (tmp_path / "pyproject.toml").write_text('[project]\nname = "qia-zhi-yi-suan-candidate"\n', encoding="utf-8")
+
+    assert project_distribution_name(tmp_path) == "qia_zhi_yi_suan_candidate"
 
 
 def test_package_verifier_covers_calculation_contract_public_api_and_cli() -> None:
@@ -57,3 +63,4 @@ def test_package_verifier_covers_calculation_contract_public_api_and_cli() -> No
         assert symbol in script
     assert '"validate-calculation-contracts"' in script
     assert "CONFIG_GAP | canonical_fact_vocabulary_v1.yaml" in script
+    assert '"--force-reinstall"' in script

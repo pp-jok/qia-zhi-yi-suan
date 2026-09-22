@@ -1,5 +1,6 @@
 from pathlib import Path
 from shutil import copytree
+from dataclasses import replace
 
 import yaml
 
@@ -65,17 +66,54 @@ def test_source_views_explanation_and_profile_diff_are_auditable(normalized_time
 def test_unknown_birth_time_explains_available_and_unavailable_evidence(normalized_time, bazi_facts, astrology_facts) -> None:
     from destiny_personality.core_portrait import build_candidate_profile_summary
     from destiny_personality.core_profile_builder import build_candidate_core_profile
+    from destiny_personality.calculation.models import FactMode
 
     astrology = astrology_facts.__class__(
         methodology_version=astrology_facts.methodology_version, placements=astrology_facts.placements,
         aspects=(AstrologyAspectFact("Saturn", "Sun", "trine", 1),), ascendant=None, mc=None,
         house_cusps=(), dignities=(),
     )
-    profile = build_candidate_core_profile(DeterministicChartFacts(normalized_time, bazi_facts, astrology), fact_assurance="capability_reported")
+    stable_time = normalized_time.__class__(**{**normalized_time.__dict__, "fact_mode": FactMode.STABLE_ONLY})
+    bazi = bazi_facts.__class__(**{**bazi_facts.__dict__, "hour_pillar": None})
+    placements = tuple(item.__class__(item.body, item.longitude, item.sign, item.degree_in_sign, None) for item in astrology.placements)
+    astrology = astrology.__class__(**{**astrology.__dict__, "placements": placements})
+    profile = build_candidate_core_profile(DeterministicChartFacts(stable_time, bazi, astrology), fact_assurance="capability_reported")
     summary = build_candidate_profile_summary(profile)
 
     assert "稳定行星与相位证据" in summary.time_sensitivity.available
     assert "Ascendant" in summary.time_sensitivity.unavailable
+
+
+def test_user_portrait_preserves_direction_and_hides_internal_identifiers(normalized_time, bazi_facts, astrology_facts) -> None:
+    from destiny_personality.core_portrait import build_candidate_profile_summary, render_core_standard
+
+    profile = _profile(normalized_time, bazi_facts, astrology_facts)
+    summary = build_candidate_profile_summary(profile)
+    portrait = render_core_standard(summary)
+    user_text = "\n".join(section.body for section in portrait.sections)
+
+    assert any(item.resolved_direction == "high" for item in summary.items)
+    assert "更倾向寻求稳定、明确和可预期的结构" in user_text
+    assert "P001" not in user_text
+    assert "decision" not in user_text
+    assert portrait.presentation_bundle_fingerprint
+
+
+def test_context_differentiated_summary_keeps_scoped_direction(normalized_time, bazi_facts, astrology_facts) -> None:
+    from destiny_personality.core_portrait import build_candidate_profile_summary
+
+    profile = _profile(normalized_time, bazi_facts, astrology_facts)
+    state = replace(
+        profile.primitive_states["P001"],
+        state="context_differentiated",
+        context_states={"decision": "high", "relationship": "low"},
+    )
+    profile = replace(profile, primitive_states={**profile.primitive_states, "P001": state})
+
+    item = next(item for item in build_candidate_profile_summary(profile).items if item.primitive_id == "P001")
+
+    assert item.resolved_direction == "contextual"
+    assert item.context_directions == (("decision", "high"), ("relationship", "low"))
 
 
 def test_promotion_uses_the_bundle_being_checked(tmp_path) -> None:

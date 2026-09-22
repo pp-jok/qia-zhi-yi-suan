@@ -22,6 +22,19 @@ def test_render_core_portrait_cli(tmp_path, capsys, normalized_time, bazi_facts,
     assert len({section["section_id"] for section in output["sections"]}) == len(output["sections"])
 
 
+def test_build_core_profile_cli_uses_qualified_facts_without_calculation(tmp_path, capsys, normalized_time, bazi_facts, astrology_facts):
+    from destiny_personality.calculation import DeterministicChartFacts
+    from destiny_personality.deterministic_facts_codec import deterministic_facts_to_dict
+
+    facts_path = tmp_path / "facts.json"
+    facts_path.write_text(json.dumps(deterministic_facts_to_dict(DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts))), encoding="utf-8")
+    output_path = tmp_path / "profile.json"
+
+    assert main(["build-core-profile", str(facts_path), "--fact-assurance", "capability_reported", "--output", str(output_path)]) == 0
+    assert json.loads(capsys.readouterr().out)["status"] == "ok"
+    assert json.loads(output_path.read_text(encoding="utf-8"))["schema_version"] == "candidate-core-profile-v1"
+
+
 def test_profile_source_view_cli_rejects_invalid_profile(tmp_path, capsys):
     exit_code = main(["profile-source-view", str(tmp_path / "missing.json"), "--view", "bazi"])
     assert exit_code == 2

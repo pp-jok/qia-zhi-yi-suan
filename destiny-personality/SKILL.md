@@ -85,10 +85,12 @@ contract](schemas/candidate-core-profile.md). Keep this IR distinct from
 branch.
 
 For `core` return the structured Candidate Profile Summary. For
-`core_concise`, render four to eight evidence-contained sections. For
-`core_standard`, render eight to fourteen evidence-contained sections. Select
-themes from actual supported Primitive states; never fill a section by creating
-a new conclusion. Support `source_view: combined | bazi | astrology |
+`core_concise`, target four to eight evidence-contained sections; sparse
+evidence may yield fewer sections. For `core_standard`, target eight to
+fourteen evidence-contained sections; it may likewise be shorter when the
+available facts do not justify more. Select themes from actual supported
+Primitive states; never fill a section by creating a new conclusion. Support
+`source_view: combined | bazi | astrology |
 comparison`; comparison reports only local alignment statuses. When birth time
 is unknown, explain that stable planet/aspect evidence may remain available but
 Ascendant, MC, houses, and angle-axis interpretation are unavailable. A request

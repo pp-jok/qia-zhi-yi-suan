@@ -37,6 +37,43 @@ def test_candidate_builder_returns_auditable_partial_profile_for_candidate_facts
     assert normalize_core_profile(first) == normalize_core_profile(second)
 
 
+def test_fact_scope_comes_from_normalized_fact_mode(normalized_time, bazi_facts, astrology_facts) -> None:
+    from destiny_personality.calculation.models import FactMode
+    from destiny_personality.core_profile_builder import build_candidate_core_profile
+
+    stable_time = normalized_time.__class__(
+        **{**normalized_time.__dict__, "fact_mode": FactMode.STABLE_ONLY}
+    )
+    bazi = bazi_facts.__class__(**{**bazi_facts.__dict__, "hour_pillar": None})
+    astrology = astrology_facts.__class__(
+        **{**astrology_facts.__dict__, "ascendant": None, "mc": None, "house_cusps": ()}
+    )
+    astrology = astrology.__class__(
+        **{**astrology.__dict__, "placements": tuple(item.__class__(item.body, item.longitude, item.sign, item.degree_in_sign, None) for item in astrology.placements)}
+    )
+    profile = build_candidate_core_profile(
+        DeterministicChartFacts(stable_time, bazi, astrology), fact_assurance="capability_reported"
+    )
+
+    assert profile.fact_scope.birth_time_known is False
+    assert profile.fact_scope.astrology_time_mode == "stable_only"
+    assert profile.fact_scope.bazi_hour_available is False
+
+
+def test_stable_only_facts_reject_time_sensitive_fields(normalized_time, bazi_facts, astrology_facts) -> None:
+    import pytest
+    from destiny_personality.calculation.models import FactMode
+    from destiny_personality.core_profile_builder import build_candidate_core_profile
+
+    stable_time = normalized_time.__class__(
+        **{**normalized_time.__dict__, "fact_mode": FactMode.STABLE_ONLY}
+    )
+    with pytest.raises(ValueError, match="FACT_SCOPE_CONTRACT_ERROR"):
+        build_candidate_core_profile(
+            DeterministicChartFacts(stable_time, bazi_facts, astrology_facts), fact_assurance="capability_reported"
+        )
+
+
 def test_candidate_builder_activates_bazi_rule_only_with_required_evidence(
     normalized_time, bazi_facts, astrology_facts
 ) -> None:

@@ -20,6 +20,12 @@ def validate_candidate_profile(profile: CandidateCoreProfile) -> Tuple[str, ...]
         errors.append("CANDIDATE_IR_SCHEMA_INVALID")
     if profile.semantic_capability_level != "primitive_only":
         errors.append("CANDIDATE_CAPABILITY_LEVEL_INVALID")
+    if profile.fact_scope.astrology_time_mode not in {"known_time", "stable_only"}:
+        errors.append("FACT_SCOPE_CONTRACT_ERROR")
+    if profile.fact_scope.birth_time_known != (profile.fact_scope.astrology_time_mode == "known_time"):
+        errors.append("FACT_SCOPE_CONTRACT_ERROR")
+    if profile.fact_scope.bazi_hour_available != profile.fact_scope.birth_time_known:
+        errors.append("FACT_SCOPE_CONTRACT_ERROR")
     if set(profile.primitive_states) != _CANDIDATE_PRIMITIVE_IDS:
         errors.append("D1_PRIMITIVE_COVERAGE_INVALID")
     if any(state.state not in _ALLOWED_STATES for state in profile.primitive_states.values()):

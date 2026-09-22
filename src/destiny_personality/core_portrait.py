@@ -1,7 +1,6 @@
 """Primitive-only, user-readable views over a Candidate Core Profile."""
 
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Optional, Tuple, Union
 
 import yaml
@@ -23,6 +22,8 @@ class ProfileSummaryItem:
     canonical_name: str
     state: str
     contexts: Tuple[str, ...]
+    resolved_direction: str
+    context_directions: Tuple[Tuple[str, str], ...]
     evidence_strength: str
     source_systems: Tuple[str, ...]
     limitations: Tuple[str, ...]
@@ -62,6 +63,7 @@ class CorePortrait:
     schema_version: str
     mode: str
     profile_ref: str
+    presentation_bundle_fingerprint: str
     sections: Tuple[CorePortraitSection, ...]
     limitations: Tuple[str, ...]
 
@@ -198,6 +200,8 @@ def _summary_item(profile: CandidateCoreProfile, primitive_id: str, name: str) -
     return ProfileSummaryItem(
         item_id=f"primitive:{primitive_id}", primitive_id=primitive_id, canonical_name=name, state=state.state,
         contexts=tuple(sorted({context for item in candidates for context in item.contexts})),
+        resolved_direction=_resolved_direction(state.state),
+        context_directions=tuple(sorted(state.context_states.items())),
         evidence_strength=_strength(state.state, candidates, alignments),
         source_systems=tuple(sorted({item.source_system for item in candidates})), limitations=state.limitations,
     )
@@ -217,6 +221,23 @@ def _primitive_names() -> dict[str, str]:
     return {key: value["zh_CN_name"] for key, value in payload.items() if key.startswith("P")}
 
 
+def _primitive_presentation(primitive_id: str) -> dict:
+    payload = yaml.safe_load((candidate_asset_root() / "candidate_primitive_presentation_v1.yaml").read_text(encoding="utf-8"))
+    return payload[primitive_id]
+
+
+def _resolved_direction(state: str) -> str:
+    if state == "supported_high":
+        return "high"
+    if state == "supported_low":
+        return "low"
+    if state == "context_differentiated":
+        return "contextual"
+    if state == "mixed":
+        return "mixed"
+    return "unknown"
+
+
 def _time_sensitivity(profile: CandidateCoreProfile) -> TimeSensitivitySummary:
     unknown_time = not profile.fact_scope.birth_time_known
     if unknown_time:
@@ -230,8 +251,7 @@ def _display_items(summary: CandidateProfileSummary, maximum: int) -> Tuple[Prof
 
 
 def _item_sentence(item: ProfileSummaryItem) -> str:
-    contexts = "、".join(_presentation()["contexts"].get(context, context) for context in item.contexts) or "当前事实范围"
-    return f"{item.canonical_name}：{item.evidence_strength}；适用情境为 {contexts}。"
+    return f"{_expression(item)}；{item.evidence_strength}。"
 
 
 def _presentation() -> dict:
@@ -240,7 +260,7 @@ def _presentation() -> dict:
 
 def _overview_section(summary: CandidateProfileSummary) -> CorePortraitSection:
     items = _display_items(summary, 2)
-    body = "；".join(f"{item.canonical_name}在{'、'.join(item.contexts) or '当前范围'}呈现{item.evidence_strength}" for item in items) or "当前可支持的基础倾向有限，以下保留证据边界。"
+    body = "；".join(f"{item.canonical_name}：{_expression(item)}" for item in items) or "当前可支持的基础倾向有限，以下保留证据边界。"
     return CorePortraitSection("overview", "核心画像摘要", body, tuple(f"primitive_states.{item.primitive_id}" for item in items))
 
 
@@ -251,7 +271,7 @@ def _section(section_id: str, title: str, body: str, item: ProfileSummaryItem) -
 def _evidence_section(summary: CandidateProfileSummary) -> CorePortraitSection:
     items = summary.core_supported_primitives + summary.contextual_primitives
     body = "；".join(
-        f"{item.canonical_name}在{'、'.join(_presentation()['contexts'].get(context, context) for context in item.contexts)}获得{item.evidence_strength}"
+        f"{item.canonical_name}：{_expression(item)}，并获得{item.evidence_strength}"
         for item in items[:3]
     ) or "当前没有足够的跨体系证据可作合参结论。"
     return CorePortraitSection("evidence", "证据与合参", body, tuple(f"primitive_states.{item.primitive_id}" for item in items[:3]))
@@ -263,7 +283,7 @@ def _comparison_section(summary: CandidateProfileSummary) -> CorePortraitSection
         body = "当前没有需要保留的直接未统一结论。"
     else:
         body = "以下基础倾向在两套体系间仍需保留差异，不将其合并为单一结论：" + "、".join(
-            item.primitive_id for item in summary.cross_system_unresolved
+            _primitive_names()[item.primitive_id] for item in summary.cross_system_unresolved
         ) + "。"
     return CorePortraitSection("comparison", "两套体系未统一之处", body, refs)
 
@@ -277,8 +297,32 @@ def _limits_section(summary: CandidateProfileSummary) -> CorePortraitSection:
 
 
 def _portrait(mode: str, summary: CandidateProfileSummary, sections: Tuple[CorePortraitSection, ...]) -> CorePortrait:
-    return CorePortrait("candidate-core-portrait-v1", mode, summary.profile_ref, sections, ("primitive_only", "candidate preview; not production authorization"))
+    from .core_profile_builder import candidate_presentation_bundle_fingerprint
+
+    return CorePortrait("candidate-core-portrait-v1", mode, summary.profile_ref, candidate_presentation_bundle_fingerprint(), sections, ("primitive_only", "candidate preview; not production authorization"))
 
 
 def _version(profile: CandidateCoreProfile, key: str) -> Optional[str]:
     return dict(profile.semantic_model_versions).get(key)
+
+
+def _expression(item: ProfileSummaryItem) -> str:
+    primitive = _primitive_presentation(item.primitive_id)
+    if item.resolved_direction in {"high", "low"}:
+        contexts = _localized_contexts(item.contexts)
+        suffix = f"，主要涉及{contexts}" if contexts else ""
+        return primitive[f"{item.resolved_direction}_expression"] + suffix
+    if item.resolved_direction == "contextual":
+        parts = []
+        for context, direction in item.context_directions:
+            if direction in {"high", "low"}:
+                parts.append(f"在{_localized_contexts((context,))}时{primitive[f'{direction}_expression']}")
+        return "；".join(parts) or "不同情境下的表现存在差异"
+    if item.resolved_direction == "mixed":
+        return "当前证据同时支持不同方向，暂不合并为单一倾向"
+    return "当前证据不足，暂不形成倾向判断"
+
+
+def _localized_contexts(contexts: Tuple[str, ...]) -> str:
+    labels = _presentation()["contexts"]
+    return "、".join(labels.get(context, "未命名情境") for context in contexts)

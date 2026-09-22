@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -25,9 +26,18 @@ def copy_project_source(project_root: Path, destination: Path) -> None:
     shutil.copytree(project_root, destination, ignore=_ignore_generated)
 
 
-def find_project_wheel(wheelhouse: Path) -> Path:
+def project_distribution_name(project_root: Path) -> str:
+    pyproject = (project_root / "pyproject.toml").read_text(encoding="utf-8")
+    match = re.search(r'^name\s*=\s*["\']([^"\']+)["\']\s*$', pyproject, re.MULTILINE)
+    if match is None:
+        raise RuntimeError("project distribution name is missing")
+    return re.sub(r"[-.]+", "_", match.group(1))
+
+
+def find_project_wheel(wheelhouse: Path, distribution_name: str) -> Path:
+    distribution_name = re.sub(r"[-.]+", "_", distribution_name)
     project_wheels = tuple(
-        wheelhouse.glob("destiny_personality_reference_validator-*.whl")
+        wheelhouse.glob(f"{distribution_name}-*.whl")
     )
     if len(project_wheels) != 1:
         raise RuntimeError(
@@ -59,7 +69,9 @@ def main() -> int:
             ],
             cwd=source_copy,
         )
-        project_wheel = find_project_wheel(wheelhouse)
+        project_wheel = find_project_wheel(
+            wheelhouse, project_distribution_name(source_copy)
+        )
 
         venv_dir = workspace / "venv"
         run([sys.executable, "-m", "venv", venv_dir])
@@ -77,6 +89,7 @@ def main() -> int:
                 "-m",
                 "pip",
                 "install",
+                "--force-reinstall",
                 "--no-index",
                 "--find-links",
                 wheelhouse,

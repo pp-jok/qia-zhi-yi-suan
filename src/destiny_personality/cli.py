@@ -51,6 +51,10 @@ def _build_parser() -> argparse.ArgumentParser:
     view.add_argument("profile", type=Path); view.add_argument("--view", choices=("combined", "bazi", "astrology", "comparison"), required=True)
     diff = subparsers.add_parser("profile-diff")
     diff.add_argument("left", type=Path); diff.add_argument("right", type=Path)
+    build = subparsers.add_parser("build-core-profile")
+    build.add_argument("facts", type=Path)
+    build.add_argument("--fact-assurance", choices=("project_verified", "capability_reported"), required=True)
+    build.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -212,6 +216,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 args.candidate_dir, args.runtime_config_dir
             )
             summary = _calculation_contract_summary(bundle, fingerprint)
+        elif args.command == "build-core-profile":
+            from .core_profile_builder import build_candidate_core_profile
+            from .core_profile_codec import write_candidate_profile
+            from .deterministic_facts_codec import load_deterministic_facts
+
+            profile = build_candidate_core_profile(
+                load_deterministic_facts(args.facts), fact_assurance=args.fact_assurance
+            )
+            write_candidate_profile(profile, args.output)
+            summary = {"status": "ok", "profile": str(args.output), "profile_id": profile.candidate_profile_id}
         elif args.command in {"render-core-portrait", "explain-profile-item", "profile-source-view", "profile-diff"}:
             from .core_profile_codec import load_candidate_profile
             from .core_portrait import build_candidate_profile_summary, compare_candidate_profiles_versions, explain_profile_item, render_core_concise, render_core_standard, source_view

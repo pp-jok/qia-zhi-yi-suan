@@ -5,7 +5,7 @@ from typing import Dict, Iterable, Optional, Union
 
 import yaml
 
-from .calculation.models import DeterministicChartFacts
+from .calculation.models import DeterministicChartFacts, FactMode
 from .candidate_assets import candidate_asset_root
 from .context_taxonomy import load_candidate_context_taxonomy
 from .core_profile_models import (
@@ -51,13 +51,20 @@ _SEMANTIC_ALGORITHM_VERSIONS = (
     "candidate-similarity-resolver-v2",
 )
 
+_PRESENTATION_ASSET_NAMES = (
+    "candidate_primitive_presentation_v1.yaml",
+    "candidate_state_presentation_v1.yaml",
+)
+
+_PRESENTATION_RENDERER_VERSION = "candidate-portrait-renderer-v3"
+
 
 def candidate_semantic_bundle_fingerprint(candidate_root: Optional[Path] = None) -> str:
     """Fingerprint D1 semantic assets without creating a circular calibration hash."""
 
     digest = sha256()
     for path in sorted((candidate_root or _candidate_asset_root()).glob("*.yaml")):
-        if path.name.startswith(("core_profile_calibration_policy_", "holdout_validation_")):
+        if path.name.startswith(("core_profile_calibration_policy_", "holdout_validation_")) or path.name in _PRESENTATION_ASSET_NAMES:
             continue
         digest.update(path.name.encode("utf-8"))
         digest.update(b"\0")
@@ -69,11 +76,27 @@ def candidate_semantic_bundle_fingerprint(candidate_root: Optional[Path] = None)
     return digest.hexdigest()
 
 
+def candidate_presentation_bundle_fingerprint(candidate_root: Optional[Path] = None) -> str:
+    """Fingerprint approved wording separately from semantic inference assets."""
+
+    root = candidate_root or _candidate_asset_root()
+    digest = sha256()
+    for name in _PRESENTATION_ASSET_NAMES:
+        path = root / name
+        digest.update(name.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    digest.update(_PRESENTATION_RENDERER_VERSION.encode("utf-8"))
+    return digest.hexdigest()
+
+
 def build_candidate_core_profile(
     facts: DeterministicChartFacts,
     *,
     fact_assurance: str,
 ) -> Union[CandidateCoreProfile, StoppedCoreProfileExecution]:
+    _validate_fact_scope(facts)
     fingerprint = _fact_fingerprint(facts)
     if fact_assurance == "none":
         return StoppedCoreProfileExecution(
@@ -155,9 +178,9 @@ def build_candidate_core_profile(
         candidate_profile_id=f"candidate-{sha256(f'{fingerprint}:{candidate_semantic_bundle_fingerprint()}'.encode('utf-8')).hexdigest()[:16]}",
         fact_fingerprint=fingerprint,
         fact_scope=CandidateFactScope(
-            birth_time_known=facts.astrology.ascendant is not None,
-            astrology_time_mode="known_time" if facts.astrology.ascendant is not None else "stable_only",
-            bazi_hour_available=facts.bazi.hour_pillar is not None,
+            birth_time_known=facts.normalized_time.fact_mode == FactMode.TIME_SENSITIVE,
+            astrology_time_mode=("known_time" if facts.normalized_time.fact_mode == FactMode.TIME_SENSITIVE else "stable_only"),
+            bazi_hour_available=(facts.normalized_time.fact_mode == FactMode.TIME_SENSITIVE),
         ),
         fact_assurance=fact_assurance,
         semantic_model_assurance="project_semantic_partial",
@@ -241,6 +264,19 @@ normalize_core_profile = normalize_candidate_profile
 
 def _fact_fingerprint(facts: DeterministicChartFacts) -> str:
     return sha256(repr(asdict(facts)).encode("utf-8")).hexdigest()
+
+
+def _validate_fact_scope(facts: DeterministicChartFacts) -> None:
+    if facts.normalized_time.fact_mode != FactMode.STABLE_ONLY:
+        return
+    if (
+        facts.bazi.hour_pillar is not None
+        or facts.astrology.ascendant is not None
+        or facts.astrology.mc is not None
+        or facts.astrology.house_cusps
+        or any(item.house is not None for item in facts.astrology.placements)
+    ):
+        raise ValueError("FACT_SCOPE_CONTRACT_ERROR")
 
 
 def _extract_bazi_candidates(

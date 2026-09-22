@@ -1,4 +1,5 @@
 from pathlib import Path
+from shutil import copytree
 
 import yaml
 
@@ -52,6 +53,29 @@ def test_candidate_semantic_bundle_fingerprint_is_stable_and_auditable() -> None
     assert first == second
     assert len(first) == 64
     assert set(first) <= set("0123456789abcdef")
+
+
+def test_presentation_and_semantic_fingerprints_change_in_their_own_layers(tmp_path: Path) -> None:
+    from destiny_personality.core_profile_builder import (
+        candidate_presentation_bundle_fingerprint,
+        candidate_semantic_bundle_fingerprint,
+    )
+
+    source = Path(__file__).resolve().parents[1] / "candidates" / "core-profile-v1"
+    presentation_copy = tmp_path / "presentation"
+    copytree(source, presentation_copy)
+    (presentation_copy / "candidate_primitive_presentation_v1.yaml").write_text(
+        (presentation_copy / "candidate_primitive_presentation_v1.yaml").read_text(encoding="utf-8").replace("自主判断", "独立判断", 1), encoding="utf-8"
+    )
+    assert candidate_semantic_bundle_fingerprint(presentation_copy) == candidate_semantic_bundle_fingerprint(source)
+    assert candidate_presentation_bundle_fingerprint(presentation_copy) != candidate_presentation_bundle_fingerprint(source)
+
+    mapping_copy = tmp_path / "mapping"
+    copytree(source, mapping_copy)
+    (mapping_copy / "bazi_mapping_registry_v1.yaml").write_text(
+        (mapping_copy / "bazi_mapping_registry_v1.yaml").read_text(encoding="utf-8") + "\n# semantic revision\n", encoding="utf-8"
+    )
+    assert candidate_semantic_bundle_fingerprint(mapping_copy) != candidate_semantic_bundle_fingerprint(source)
 
 
 def test_c4b_candidate_policy_is_bound_to_the_current_semantic_bundle() -> None:

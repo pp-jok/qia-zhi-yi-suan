@@ -1,8 +1,26 @@
 review_status: approved
 schema_version: candidate-primitive-presentation-v1
-P001: {zh_CN_name: 自主判断与自我主导}
-P002: {zh_CN_name: 稳定感与可预期需求}
-P003: {zh_CN_name: 关系互动中的感受与回应}
-P004: {zh_CN_name: 行动启动与推进方式}
-P005: {zh_CN_name: 情绪调节取向}
-P006: {zh_CN_name: 结构化与组织取向}
+P001:
+  zh_CN_name: 自主判断与自我主导
+  high_expression: 更倾向自主判断并保持较强的自我主导
+  low_expression: 更倾向借助明确的外部框架、角色或指导形成判断
+P002:
+  zh_CN_name: 稳定感与可预期需求
+  high_expression: 更倾向寻求稳定、明确和可预期的结构
+  low_expression: 更能接受变化、开放性和较低确定性的环境
+P003:
+  zh_CN_name: 关系互动中的感受与回应
+  high_expression: 更重视关系中的感受、回应与协调
+  low_expression: 更倾向以较独立的方式处理关系互动
+P004:
+  zh_CN_name: 行动启动与推进方式
+  high_expression: 更倾向主动启动并推进实际行动
+  low_expression: 更倾向在行动前保留更多观察、准备或等待空间
+P005:
+  zh_CN_name: 情绪调节取向
+  high_expression: 更倾向通过结构、边界或调节来安顿情绪体验
+  low_expression: 更倾向允许情绪体验保持开放、流动或不急于收束
+P006:
+  zh_CN_name: 结构化与组织取向
+  high_expression: 更倾向以结构、组织和秩序推进事务
+  low_expression: 更倾向以弹性、开放和较少预设结构推进事务

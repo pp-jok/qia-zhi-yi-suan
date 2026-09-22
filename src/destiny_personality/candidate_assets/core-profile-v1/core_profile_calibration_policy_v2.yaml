@@ -4,7 +4,7 @@ review_refs:
   - docs/domain/holdout-validation-v0.2.3.md
 schema_version: candidate-core-profile-calibration-policy-v2
 policy_version: c4b-candidate-v2
-bundle_fingerprint: b6636be66e3b44fe5d0f035bc759d4340f0d4960e7ad7ae12eaba30bb59df153
+bundle_fingerprint: 256ba053b174a054226301f1b493e0e0c8f9f50e9f2976a72b8045dbf6ed6131
 similarity_weights:
   primitive_state_context_overlap: 1.0
   weighted_primitive_overlap: 0.0
