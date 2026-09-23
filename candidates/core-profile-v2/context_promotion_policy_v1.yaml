@@ -1,0 +1,69 @@
+review_status: approved_candidate
+review_refs:
+  - docs/reviews/c1-product-owner-approval-record.md
+  - docs/reviews/c1-product-owner-decision-packet.md
+schema_version: candidate-context-promotion-policy-v1
+policy_version: candidate-c1-context-promotion-v1
+activation: candidate_only
+outputs:
+  - global_candidate_evidence
+  - contextual_variation
+explicit_global_evidence:
+  required: qualified global-scope evidence
+  can_create: global_candidate_evidence
+  notes:
+    - A global candidate is not a resolved Primitive state.
+    - Primitive State Resolution remains the only layer that may produce supported_high, supported_low, mixed, or unknown.
+multi_context_minimum:
+  independent_context_count: 2
+  representative_context_required: true
+  same_direction_required: true
+  minimum_evidence_qualification_required: true
+  required_conditions:
+    - Each context is eligible for the target Primitive's global promotion.
+    - Each context meets the minimum evidence qualification.
+    - Each supporting evidence root is independent.
+    - No material counter-context exists.
+context_independence:
+  two_labels_are_independent_contexts: false
+  audit_fields:
+    - evidence_root
+    - fact_reference
+    - mapping_rule
+    - context_origin
+  requirement: Context labels count separately only when their audit fields establish independent context support.
+evidence_root_independence:
+  duplicate_canonical_fact_can_count_twice: false
+  shared_evidence_root_must_be_retained: true
+  requirement: One canonical fact projected into multiple context labels remains one evidence root.
+representative_context:
+  requirement: A local context may participate only when the target Primitive declares it valid and representative for promotion.
+material_counter_context:
+  direction: opposite_to_promotion
+  minimum_evidence_qualification_required: true
+  representative_context_required: true
+  independent_evidence_source_required: true
+  blocks_global_promotion: true
+  result_when_present: contextual_variation
+contextual_variation:
+  opposite_local_directions_create_global_mixed: false
+  result: contextual_variation
+  notes:
+    - Local high plus local low remains scoped variation by default.
+    - Evidence quantity within one context is not context coverage.
+global_mixed_scope_rule:
+  requires_global_scope_evidence: true
+  opposite_qualified_evidence_required: true
+  unresolved_after_quality_context_modifier_and_qualification: true
+  local_conflict_is_sufficient: false
+state_resolution_boundary:
+  promotion_resolves_primitive_state: false
+  permitted_state_resolution_layer: Primitive State Resolution
+verification_scenarios:
+  single_context_does_not_promote: contextual_variation
+  duplicate_fact_root_does_not_count_as_independent_context: contextual_variation
+  two_independent_same_direction_contexts_create_global_candidate: global_candidate_evidence
+  material_counter_context_blocks_promotion: contextual_variation
+  opposite_local_contexts_remain_contextual_variation: contextual_variation
+  local_conflict_does_not_create_global_mixed: contextual_variation
+  explicit_global_evidence_can_create_global_candidate: global_candidate_evidence

@@ -1,0 +1,48 @@
+schema_version: semantic-evidence-root-registry-v1
+registry_version: candidate-semantic-evidence-root-registry-v1
+review_status: candidate_only
+roots:
+  - evidence_root_id: ER-BZ-TEN-GOD-INSTANCE-V1
+    system: bazi
+    source_type: canonical_fact_instance
+    source_ref: deterministic_facts.bazi.ten_gods
+    version: deterministic-chart-facts-v1
+    scope:
+      identity_fields:
+        - subject_ref
+        - ten_god
+        - source_pillars
+        - source_kind
+    approved_use:
+      - fact_instance_identification
+      - candidate_mechanism_evidence_reference
+    prohibited_use:
+      - direct_primitive_state_assertion
+      - mapping_rule_creation
+    provenance:
+      origin: project_owned_deterministic_facts
+      methodology_ref: bazi-core-v1.0
+    review_status: approved
+    product_owner_decision_ref: PO-DELEGATED-C2-SM-PHASE-2A-2026-09-22
+  - evidence_root_id: ER-AS-ASPECT-INSTANCE-V1
+    system: astrology
+    source_type: canonical_fact_instance
+    source_ref: deterministic_facts.astrology.aspects
+    version: deterministic-chart-facts-v1
+    scope:
+      identity_fields:
+        - body_a
+        - body_b
+        - aspect_type
+        - orb
+    approved_use:
+      - fact_instance_identification
+      - candidate_mechanism_evidence_reference
+    prohibited_use:
+      - direct_primitive_state_assertion
+      - mapping_rule_creation
+    provenance:
+      origin: project_owned_deterministic_facts
+      methodology_ref: western-tropical-v1.0
+    review_status: approved
+    product_owner_decision_ref: PO-DELEGATED-C2-SM-PHASE-2A-2026-09-22

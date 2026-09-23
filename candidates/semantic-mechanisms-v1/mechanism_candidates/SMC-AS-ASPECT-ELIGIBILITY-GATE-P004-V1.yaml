@@ -1,0 +1,14 @@
+candidate_id: SMC-AS-ASPECT-ELIGIBILITY-GATE-P004-V1
+review_status: proposed
+source_system: astrology
+source_fact_classes: [deterministic_facts.astrology.aspects]
+evidence_root_refs: [ER-AS-ASPECT-INSTANCE-V1]
+proposed_mechanism: An identified astrology aspect instance may enter later P004 evidence review only as a non-primary rule gate; it cannot establish P004 direction, magnitude, or Primitive state.
+target_primitive_questions: ["When and how is concrete action started and advanced?"]
+evidence_role: RULE_GATE
+asserts_primitive_state: false
+origin: approved_evidence_root
+legacy_similarity:
+  same_source_conditions: false
+  same_target_primitive: false
+  same_direction: false

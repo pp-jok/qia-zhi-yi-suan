@@ -1,0 +1,4 @@
+schema_version: mapping-v2-candidate-registry-v1
+registry_version: candidate-mapping-v2-registry-v1
+review_status: candidate_only
+candidates: []

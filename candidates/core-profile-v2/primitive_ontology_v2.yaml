@@ -1,0 +1,198 @@
+review_status: approved_candidate
+review_refs:
+  - docs/reviews/c1-product-owner-approval-record.md
+  - docs/reviews/c1-primitive-semantic-cards.md
+schema_version: candidate-primitive-ontology-v2
+ontology_version: candidate-c1-v2
+activation: candidate_only
+primitives:
+  - primitive_id: P001
+    canonical_name: Self-Directed Judgement
+    canonical_definition: The degree to which judgement is organized from internal criteria rather than explicit external roles, guidance, or frameworks.
+    semantic_question: How is judgement formed and to whom do its standards belong?
+    high_definition: Judgement is primarily organized from internal standards and self-endorsed criteria.
+    low_definition: Judgement primarily relies on explicit external roles, guidance, or frameworks.
+    mixed_definition: Mixed requires qualified, direction-opposed evidence within the same scope of judgement ownership.
+    unknown_definition: Unknown means there is insufficient permitted evidence about judgement ownership; it is not low autonomy.
+    included_meanings:
+      - judgement standards
+      - judgement ownership
+      - internal criteria
+      - external framework reliance
+    excluded_meanings:
+      - action initiation
+      - action speed
+      - rebellion
+      - change preference
+      - relational responsiveness
+      - social distance
+    neighbor_primitives: [P003, P004]
+    neighbor_boundaries:
+      P003: Relational responsiveness does not infer lower judgement ownership, and self-directed judgement does not infer lower relational responsiveness.
+      P004: Judgement ownership is distinct from action initiation; initiating action does not establish self-directed judgement.
+    valid_contexts: [decision, work, pressure, relationship, change, action]
+    invalid_contexts: [modifier_only, unavailable_time_sensitive_fact]
+    global_promotion_eligibility: eligible
+    context_promotion_policy_ref: context_promotion_policy_v1
+    counter_evidence_semantics: Qualified opposite evidence must address judgement ownership in the same scope, not merely slower action or relational preference.
+    non_evidence_semantics: Missing facts, excluded action facts, relational facts, and unavailable time-sensitive facts are not reverse evidence.
+    limitations:
+      - Does not diagnose independence, rebellion, or social distance.
+      - Does not infer a global state from relationship-only evidence.
+
+  - primitive_id: P002
+    canonical_name: Predictability Orientation
+    canonical_definition: The degree to which stable, clear, and predictable conditions are preferred.
+    semantic_question: How much predictability and stability is preferred?
+    high_definition: Stable, clear, and predictable conditions are preferentially sought.
+    low_definition: Change, openness, and lower certainty are preferentially tolerated or sought.
+    mixed_definition: Mixed requires qualified support for both directions within the same scope of predictability preference.
+    unknown_definition: Unknown means there is no valid stability-direction evidence; it is not openness to change.
+    included_meanings:
+      - predictability preference
+      - stability need
+      - certainty preference
+      - openness to change
+    excluded_meanings:
+      - organizational method
+      - responsibility
+      - task planning skill
+      - risk morality
+    neighbor_primitives: [P004, P006]
+    neighbor_boundaries:
+      P004: Preference for predictability does not determine when action is initiated.
+      P006: Preference for predictability is distinct from organizational method; wanting stability does not establish structured task organization.
+    valid_contexts: [decision, work, pressure, relationship, change, action]
+    invalid_contexts: [modifier_only, unavailable_time_sensitive_fact]
+    global_promotion_eligibility: eligible
+    context_promotion_policy_ref: context_promotion_policy_v1
+    counter_evidence_semantics: Qualified opposite evidence must address preferred certainty or change, not the presence of a plan or rule.
+    non_evidence_semantics: Organizational evidence, missing facts, and unavailable time-sensitive facts do not establish the reverse direction.
+    limitations:
+      - Does not measure responsibility or general risk morality.
+      - Local work structure alone cannot establish global predictability preference.
+
+  - primitive_id: P003
+    canonical_name: Relational Responsiveness
+    canonical_definition: The degree to which relational feeling, response, and coordination are prioritized in handling relationship interaction.
+    semantic_question: How are relationship interactions handled and responded to?
+    high_definition: Relational feeling, response, and coordination are actively prioritized.
+    low_definition: Relationship interaction is handled with comparatively independent or lower-response orientation.
+    mixed_definition: Mixed requires qualified opposite relational-response evidence within the same relationship scope.
+    unknown_definition: Unknown means relational evidence is insufficient; it is not absence of relationships.
+    included_meanings:
+      - relational responsiveness
+      - connection orientation
+      - response to relational feeling
+      - coordination
+    excluded_meanings:
+      - judgement ownership
+      - autonomy
+      - sociability volume
+      - attachment diagnosis
+    neighbor_primitives: [P001]
+    neighbor_boundaries:
+      P001: Relational responsiveness does not infer lower judgement ownership, and independent judgement does not infer lower relational responsiveness.
+    valid_contexts: [relationship]
+    invalid_contexts: [modifier_only, unavailable_time_sensitive_fact]
+    global_promotion_eligibility: constrained
+    context_promotion_policy_ref: context_promotion_policy_v1
+    counter_evidence_semantics: Qualified opposite evidence must address relational response or coordination, not a separate judgement standard.
+    non_evidence_semantics: Relationship facts do not by themselves establish global autonomy; missing relationship facts are not low responsiveness.
+    limitations:
+      - Does not diagnose attachment, social quantity, or relationship health.
+      - Relationship-only evidence needs independent representative contexts before any global candidate is possible.
+
+  - primitive_id: P004
+    canonical_name: Action Initiation
+    canonical_definition: The degree to which concrete action is started and actively advanced rather than held in observation, preparation, or waiting.
+    semantic_question: When and how is concrete action started and advanced?
+    high_definition: Concrete action is readily initiated and actively advanced.
+    low_definition: Observation, preparation, restraint, or waiting is preferentially preserved before action.
+    mixed_definition: Mixed requires qualified activation and restraint evidence within the same action scope.
+    unknown_definition: Unknown means there is no permitted action evidence; it is not passivity.
+    included_meanings:
+      - action initiation
+      - action advancement
+      - concrete activation
+      - preparation or waiting
+    excluded_meanings:
+      - judgement ownership
+      - impulsivity
+      - achievement
+      - rebellion
+    neighbor_primitives: [P001]
+    neighbor_boundaries:
+      P001: Action initiation is distinct from judgement ownership; autonomous judgement does not establish rapid action initiation.
+    valid_contexts: [decision, work, pressure, change, action]
+    invalid_contexts: [modifier_only, unavailable_time_sensitive_fact]
+    global_promotion_eligibility: eligible
+    context_promotion_policy_ref: context_promotion_policy_v1
+    counter_evidence_semantics: Qualified opposite evidence must address action start or advancement, not the source of judgement criteria.
+    non_evidence_semantics: Missing facts, judgement facts, and unavailable time-sensitive facts are not evidence of restraint.
+    limitations:
+      - Does not assess impulsivity, achievement, or moral value.
+      - A single busy context cannot establish a global candidate.
+
+  - primitive_id: P005
+    canonical_name: Affect Regulation Orientation
+    canonical_definition: The orientation through which affect is preferentially held, bounded, structured, or allowed to flow.
+    semantic_question: How is affect preferentially held or processed?
+    high_definition: Affect is preferentially processed through boundaries, structure, or regulation.
+    low_definition: Affect is preferentially permitted to remain open, flowing, or less bounded.
+    mixed_definition: Mixed requires qualified opposite affect-regulation evidence within the same affect scope.
+    unknown_definition: Unknown means affect-regulation evidence is unavailable; it is not emotional absence.
+    included_meanings:
+      - affect regulation
+      - emotional boundaries
+      - affect structure
+      - open affect flow
+    excluded_meanings:
+      - affect intensity
+      - pathology
+      - relationship need
+      - organizational method
+    neighbor_primitives: [P006]
+    neighbor_boundaries:
+      P006: Affect regulation is distinct from general organizational method; task structure does not establish affective boundaries.
+    valid_contexts: [pressure, relationship, change]
+    invalid_contexts: [modifier_only, unavailable_time_sensitive_fact]
+    global_promotion_eligibility: constrained
+    context_promotion_policy_ref: context_promotion_policy_v1
+    counter_evidence_semantics: Qualified opposite evidence must concern affect processing, not emotional intensity or work organization.
+    non_evidence_semantics: Missing affect evidence, pathology labels, and organizational facts are not reverse affect-regulation evidence.
+    limitations:
+      - Does not diagnose mental health or emotional intensity.
+      - Pressure-only evidence remains local unless the shared policy conditions are met.
+
+  - primitive_id: P006
+    canonical_name: Organizational Orientation
+    canonical_definition: The degree to which activities and tasks are organized through order, arrangement, and pre-set structure.
+    semantic_question: How are activities and tasks arranged and organized?
+    high_definition: Activities and tasks are organized through order, arrangement, and pre-set structure.
+    low_definition: Activities and tasks are organized with flexibility and fewer pre-set structures.
+    mixed_definition: Mixed requires qualified structured and flexible organizational evidence within the same task scope.
+    unknown_definition: Unknown means there is no valid organizational evidence; it is not disorganization.
+    included_meanings:
+      - organizational method
+      - arrangement
+      - task structure
+      - flexible organization
+    excluded_meanings:
+      - predictability preference
+      - stability need
+      - responsibility
+      - control morality
+    neighbor_primitives: [P002, P005]
+    neighbor_boundaries:
+      P002: Organizational method is distinct from predictability preference; structured tasks do not establish a need for stability.
+      P005: General organization is distinct from affect regulation; orderly tasks do not establish emotional boundaries.
+    valid_contexts: [decision, work, pressure, change, action]
+    invalid_contexts: [modifier_only, unavailable_time_sensitive_fact]
+    global_promotion_eligibility: eligible
+    context_promotion_policy_ref: context_promotion_policy_v1
+    counter_evidence_semantics: Qualified opposite evidence must concern task arrangement, not comfort with predictability.
+    non_evidence_semantics: Stability preference, missing facts, and unavailable time-sensitive facts are not reverse organizational evidence.
+    limitations:
+      - Does not measure responsibility, morality, or a global need for stability.
+      - Work-only structure is not automatically global organization.

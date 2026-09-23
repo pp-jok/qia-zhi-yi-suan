@@ -1,0 +1,40 @@
+schema_version: semantic-mechanism-role-policy-v1
+policy_version: candidate-semantic-mechanism-role-policy-v1
+activation_status: candidate_only
+roles:
+  RULE_GATE:
+    evidence_admission: true
+    mapping_origin: false
+    primitive_direction: false
+    primitive_state: false
+    runtime_activation: false
+  PRIMARY_EVIDENCE:
+    evidence_admission: true
+    mapping_origin: true
+    primitive_direction: true
+    primitive_state: false
+    runtime_activation: false
+  MODIFIER:
+    evidence_admission: true
+    mapping_origin: false
+    primitive_direction: false
+    primitive_state: false
+    runtime_activation: false
+  CONTEXTUALIZER:
+    evidence_admission: true
+    mapping_origin: false
+    primitive_direction: false
+    primitive_state: false
+    runtime_activation: false
+  COUNTER_EVIDENCE:
+    evidence_admission: true
+    mapping_origin: false
+    primitive_direction: false
+    primitive_state: false
+    runtime_activation: false
+  EXCLUSION:
+    evidence_admission: true
+    mapping_origin: false
+    primitive_direction: false
+    primitive_state: false
+    runtime_activation: false

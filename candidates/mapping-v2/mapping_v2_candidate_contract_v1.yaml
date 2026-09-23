@@ -1,0 +1,17 @@
+schema_version: mapping-v2-candidate-contract-v1
+activation_status: candidate
+production_status: disabled
+required_fields:
+  - mapping_candidate_id
+  - source_system
+  - canonical_fact_requirements
+  - semantic_mechanism_refs
+  - primitive_id
+  - primitive_question
+  - proposed_direction
+  - contexts
+  - evidence_root_refs
+  - limitations
+  - legacy_similarity
+  - audit_trail
+  - review_status

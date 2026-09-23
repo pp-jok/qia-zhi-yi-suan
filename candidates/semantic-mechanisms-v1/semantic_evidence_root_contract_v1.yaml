@@ -1,0 +1,35 @@
+schema_version: semantic-evidence-root-v1
+contract_version: candidate-semantic-evidence-root-contract-v1
+review_status: candidate_only
+activation_status: inactive
+required_root_fields:
+  - evidence_root_id
+  - system
+  - source_type
+  - source_ref
+  - version
+  - scope
+  - approved_use
+  - prohibited_use
+  - provenance
+  - review_status
+  - product_owner_decision_ref
+approved_root_review_status: approved
+allowed_review_statuses:
+  - proposed
+  - approved
+  - rejected
+  - deferred
+prohibited_origins:
+  - golden_sample
+  - legacy_output
+  - desired_personality
+  - renderer_wording
+unknown_root_policy:
+  audit_visible: true
+  aggregation_eligible: false
+  promotion_eligible: false
+  validation_eligible: false
+limitations:
+  - No evidence roots are admitted in Phase 1.
+  - Evidence roots are determined by canonical fact identity only.

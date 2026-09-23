@@ -1,0 +1,36 @@
+schema_version: semantic-mechanism-v1
+contract_version: candidate-semantic-mechanism-contract-v1
+review_status: candidate_only
+activation_status: inactive
+allowed_roles:
+  - PRIMARY_EVIDENCE
+  - MODIFIER
+  - CONTEXTUALIZER
+  - COUNTER_EVIDENCE
+  - EXCLUSION
+  - RULE_GATE
+allowed_review_statuses:
+  - proposed
+  - approved
+  - rejected
+  - deferred
+required_candidate_fields:
+  - candidate_id
+  - review_status
+  - source_system
+  - source_fact_classes
+  - evidence_root_refs
+  - proposed_mechanism
+  - target_primitive_questions
+  - evidence_role
+  - asserts_primitive_state
+  - origin
+  - legacy_similarity
+prohibited_origins:
+  - golden_sample
+  - legacy_output
+  - desired_personality
+  - renderer_wording
+limitations:
+  - No semantic mechanism is admitted in Phase 1.
+  - An approved mechanism is eligible only for future Mapping Candidate design.

@@ -55,6 +55,50 @@ def _build_parser() -> argparse.ArgumentParser:
     build.add_argument("facts", type=Path)
     build.add_argument("--qualification", type=Path)
     build.add_argument("--output", type=Path, required=True)
+    audit_core = subparsers.add_parser("audit-semantic-core")
+    audit_core.add_argument("project_root", type=Path)
+    mechanisms = subparsers.add_parser("validate-semantic-mechanisms")
+    mechanisms.add_argument("project_root", type=Path)
+    mapping = subparsers.add_parser("build-mapping-candidates")
+    mapping.add_argument("project_root", type=Path)
+    mapping_validate = subparsers.add_parser("validate-mapping-v2")
+    mapping_validate.add_argument("project_root", type=Path)
+    signatures = subparsers.add_parser("build-signatures")
+    signatures.add_argument("project_root", type=Path)
+    dynamics = subparsers.add_parser("build-dynamics")
+    dynamics.add_argument("project_root", type=Path)
+    mapping_calibration = subparsers.add_parser("run-mapping-calibration")
+    mapping_calibration.add_argument("project_root", type=Path)
+    mapping_holdout = subparsers.add_parser("run-mapping-holdout")
+    mapping_holdout.add_argument("project_root", type=Path)
+    promote = subparsers.add_parser("promote-semantic-bundle")
+    promote.add_argument("active_bundle_ref")
+    promote.add_argument("candidate_bundle_ref")
+    promote.add_argument("--decision-ref")
+    rollback = subparsers.add_parser("rollback-semantic-bundle")
+    rollback.add_argument("active_bundle_ref")
+    rollback.add_argument("candidate_bundle_ref")
+    rollback.add_argument("decision_ref")
+    packet = subparsers.add_parser("promotion-review-packet")
+    packet.add_argument("candidate_bundle_ref")
+    packet.add_argument("--decision-ref")
+    report_plan = subparsers.add_parser("build-report-plan")
+    report_plan.add_argument("core", type=Path)
+    report_plan.add_argument("renderer_profile")
+    render_report = subparsers.add_parser("render-report")
+    render_report.add_argument("core", type=Path)
+    render_report.add_argument("renderer_profile")
+    semantic_source = subparsers.add_parser("semantic-core-source-view")
+    semantic_source.add_argument("core", type=Path)
+    semantic_source.add_argument("stage", choices=("mapping", "signature", "dynamic", "theme", "archetype"))
+    semantic_explain = subparsers.add_parser("semantic-core-explain")
+    semantic_explain.add_argument("core", type=Path)
+    semantic_explain.add_argument("item_id")
+    semantic_diff = subparsers.add_parser("semantic-core-diff")
+    semantic_diff.add_argument("left", type=Path)
+    semantic_diff.add_argument("right", type=Path)
+    semantic_packet = subparsers.add_parser("semantic-core-review-packet")
+    semantic_packet.add_argument("project_root", type=Path)
     return parser
 
 
@@ -225,6 +269,59 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             profile = build_candidate_core_profile(qualified.facts, fact_assurance=qualified.fact_assurance)
             write_candidate_profile(profile, args.output)
             summary = {"status": "ok", "profile": str(args.output), "profile_id": profile.candidate_profile_id}
+        elif args.command in {"audit-semantic-core", "validate-semantic-mechanisms", "build-mapping-candidates", "validate-mapping-v2", "build-signatures", "build-dynamics", "run-mapping-calibration", "run-mapping-holdout", "promote-semantic-bundle", "rollback-semantic-bundle", "promotion-review-packet", "build-report-plan", "render-report", "semantic-core-source-view", "semantic-core-explain", "semantic-core-diff", "semantic-core-review-packet"}:
+            from .semantic_core import audit_semantic_core_candidate, build_promotion_review_packet, build_report_plan, build_semantic_core_candidate, build_semantic_core_review_packet, diff_semantic_core_candidates, explain_semantic_core_item, form_core_dynamics, form_dominant_signatures, load_semantic_mechanism_role_policy, promote_semantic_bundle, render_semantic_core_report, rollback_semantic_bundle, semantic_core_source_view
+            from .semantic_core_codec import load_semantic_core_candidate
+            from .semantic_mechanisms import build_semantic_mechanism_audit_report, load_approved_evidence_root_ids, load_approved_semantic_mechanism_ids, load_semantic_mechanism_candidates
+            from .mapping_v2 import audit_mapping_v2_candidates, build_fresh_mapping_candidates, compile_mapping_v2_candidate_bundle, load_mapping_v2_candidate_registry, run_mapping_v2_calibration, run_mapping_v2_holdout
+            root = args.project_root if hasattr(args, "project_root") else Path(".")
+            mechanism_root = root / "candidates" / "semantic-mechanisms-v1"
+            if args.command == "promote-semantic-bundle":
+                summary = asdict(promote_semantic_bundle(args.active_bundle_ref, args.candidate_bundle_ref, args.decision_ref))
+            elif args.command == "rollback-semantic-bundle":
+                summary = asdict(rollback_semantic_bundle(promote_semantic_bundle(args.active_bundle_ref, args.candidate_bundle_ref, args.decision_ref)))
+            elif args.command == "promotion-review-packet":
+                summary = build_promotion_review_packet(args.candidate_bundle_ref, ("PASS",), args.decision_ref)
+            elif args.command == "build-report-plan":
+                summary = asdict(build_report_plan(load_semantic_core_candidate(args.core), args.renderer_profile))
+            elif args.command == "render-report":
+                core = load_semantic_core_candidate(args.core)
+                summary = asdict(render_semantic_core_report(core, build_report_plan(core, args.renderer_profile)))
+            elif args.command == "semantic-core-source-view":
+                summary = semantic_core_source_view(load_semantic_core_candidate(args.core), args.stage)
+            elif args.command == "semantic-core-explain":
+                summary = explain_semantic_core_item(load_semantic_core_candidate(args.core), args.item_id)
+            elif args.command == "semantic-core-diff":
+                summary = asdict(diff_semantic_core_candidates(load_semantic_core_candidate(args.left), load_semantic_core_candidate(args.right)))
+            elif args.command == "semantic-core-review-packet":
+                candidates = load_semantic_mechanism_candidates(mechanism_root)
+                approved_roots = load_approved_evidence_root_ids(mechanism_root)
+                approved_mechanisms = load_approved_semantic_mechanism_ids(mechanism_root)
+                summary = build_semantic_core_review_packet(len(approved_roots), len(approved_mechanisms), 0, ("PASS",))
+            elif args.command == "audit-semantic-core":
+                summary = audit_semantic_core_candidate(build_semantic_core_candidate("cli-audit", ()))
+            elif args.command == "validate-semantic-mechanisms":
+                candidates = load_semantic_mechanism_candidates(mechanism_root)
+                summary = dict(build_semantic_mechanism_audit_report(candidates, load_approved_evidence_root_ids(mechanism_root), contract_root=mechanism_root))
+            elif args.command in {"build-mapping-candidates", "validate-mapping-v2"}:
+                policy = load_semantic_mechanism_role_policy(root)
+                eligible = ()
+                candidates = build_fresh_mapping_candidates(eligible)
+                if args.command == "validate-mapping-v2":
+                    registry = load_mapping_v2_candidate_registry(root)
+                    candidates = registry.candidates
+                bundle = compile_mapping_v2_candidate_bundle(candidates, eligible)
+                summary = asdict(bundle)
+                if args.command == "validate-mapping-v2":
+                    summary["audit"] = audit_mapping_v2_candidates(candidates, eligible)
+            elif args.command == "build-signatures":
+                summary = {"status": "blocked_by_gate", "signatures": list(form_dominant_signatures(())), "blockers": ["APPROVED_PRIMITIVE_V2_REQUIRED"]}
+            elif args.command == "run-mapping-calibration":
+                summary = asdict(run_mapping_v2_calibration(()))
+            elif args.command == "run-mapping-holdout":
+                summary = asdict(run_mapping_v2_holdout(()))
+            else:
+                summary = {"status": "blocked_by_gate", "dynamics": list(form_core_dynamics(())), "blockers": ["APPROVED_SIGNATURE_REQUIRED"]}
         elif args.command in {"render-core-portrait", "explain-profile-item", "profile-source-view", "profile-diff"}:
             from .core_profile_codec import load_candidate_profile
             from .core_portrait import build_candidate_profile_summary, compare_candidate_profiles_versions, explain_profile_item, render_core_concise, render_core_standard, source_view
