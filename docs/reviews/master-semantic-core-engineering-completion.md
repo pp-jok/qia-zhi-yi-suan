@@ -1,4 +1,4 @@
-# Master Semantic Core Engineering Completion
+# Semantic Core Engineering Closure
 
 ## Engineering completion
 
@@ -81,6 +81,31 @@ promotion, and rollback. It does **not** mean the system has acquired a new
 approved semantic mechanism, Mapping rule, primitive interpretation, or active
 runtime behavior. The present zero-state is therefore both the expected result
 and the safety boundary for this release.
+
+## Non-zero engineering closure
+
+The repository now also contains a policy-driven, synthetic non-zero path for
+future approved assets: Mapping → Primitive state → Signature → Dynamic → Fate
+Theme → optional Archetype. The path is exercised only by `TEST_ONLY` fixtures;
+the candidate registries remain unchanged and empty where approval is absent.
+
+Mapping eligibility is derived from validated repository mechanisms, approved
+Evidence Roots, and the Role Authority Policy. A caller-provided identifier is
+not authority. Promotion is separately bound to a versioned decision artifact,
+matching candidate fingerprint, passing calibration and holdout records, a
+persisted Shadow record, and a record-backed rollback.
+
+## Final readiness statement
+
+```text
+Engineering Readiness: COMPLETE
+Semantic Asset Readiness: BLOCKED AT PRODUCT OWNER MECHANISM/MAPPING GATES
+Production Activation: NOT AUTHORIZED
+```
+
+No real mechanism was approved, no real Mapping was activated, no Primitive v2
+runtime was activated, no Signature/Dynamic/Theme/Archetype runtime was
+activated, and no production semantic bundle was promoted.
 
 ## Final verification
 

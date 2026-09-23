@@ -321,8 +321,19 @@ def mapping_candidate_eligibility(
         if isinstance(contract_root, (str, Path))
         else DEFAULT_CONTRACT_ROOT
     )
-    approved_mechanism_ids = load_approved_semantic_mechanism_ids(root)
-    if type(mechanism_ref) is not str or mechanism_ref not in set(approved_mechanism_ids):
+    from .semantic_authority import load_mapping_eligible_semantic_mechanisms
+    from .semantic_core import load_semantic_mechanism_role_policy
+
+    project_root = root.parents[1] if root.name == "semantic-mechanisms-v1" else root
+    try:
+        policy = load_semantic_mechanism_role_policy(project_root)
+        eligible_ids = {
+            item["candidate_id"]
+            for item in load_mapping_eligible_semantic_mechanisms(root, policy)
+        }
+    except ConfigError:
+        eligible_ids = set()
+    if type(mechanism_ref) is not str or mechanism_ref not in eligible_ids:
         return (_finding("MAPPING_CANDIDATE_UNAPPROVED_MECHANISM", "error"),)
     return (_finding("MAPPING_CANDIDATE_ELIGIBLE_FOR_DESIGN_ONLY", "info"),)
 
