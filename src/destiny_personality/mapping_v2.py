@@ -39,6 +39,30 @@ def load_mapping_v2_candidate_registry(project_root: Path) -> MappingV2Candidate
     return MappingV2CandidateRegistry(payload["review_status"], tuple(candidates))
 
 
+def load_mapping_proposal_registry(project_root: Path) -> Tuple[Mapping[str, object], ...]:
+    """Load author-authored proposals; this layer confers no Mapping approval."""
+    path = Path(project_root) / "candidates" / "mapping-v2" / "mapping_proposal_registry_v1.yaml"
+    payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+    proposals = payload.get("proposals") if isinstance(payload, dict) else None
+    if payload.get("schema_version") != "mapping-v2-proposal-registry-v1" or not isinstance(proposals, list) or not all(isinstance(item, dict) for item in proposals):
+        raise ValueError("MAPPING_PROPOSAL_REGISTRY_INVALID")
+    return tuple(proposals)
+
+
+def validate_mapping_proposal(proposal: object, mapping_eligible_ids: Iterable[str]) -> Tuple[str, ...]:
+    """Validate authored proposal completeness without converting it to a Mapping."""
+    if not isinstance(proposal, dict):
+        return ("MAPPING_PROPOSAL_TYPE_ERROR",)
+    required = ("proposal_id", "source_system", "canonical_fact_requirements", "semantic_mechanism_refs", "primitive_id", "primitive_question", "proposed_direction", "contexts", "modifiers", "contextualizers", "counterevidence", "exclusions", "evidence_root_refs", "limitations", "legacy_similarity", "origin", "review_status")
+    findings = ["MAPPING_PROPOSAL_FIELD_REQUIRED"] if any(not proposal.get(field) for field in required) else []
+    refs = proposal.get("semantic_mechanism_refs")
+    if not isinstance(refs, list) or not set(refs).issubset(set(mapping_eligible_ids)):
+        findings.append("MAPPING_PROPOSAL_ELIGIBLE_MECHANISM_REQUIRED")
+    if proposal.get("review_status") != "reviewed":
+        findings.append("MAPPING_PROPOSAL_REVIEW_REQUIRED")
+    return tuple(sorted(set(findings)))
+
+
 def build_fresh_mapping_candidates(mapping_eligible_mechanisms: Iterable[object]) -> Tuple[object, ...]:
     """No mechanism may become a Mapping without a separately authored candidate."""
     tuple(mapping_eligible_mechanisms)
@@ -146,8 +170,17 @@ def mapping_v2_candidate_fingerprint(project_root: Path) -> str:
 
 
 def run_mapping_v2_calibration(approved_bundle: Iterable[object]) -> MappingV2Evaluation:
-    return MappingV2Evaluation("blocked_by_gate", ("APPROVED_MAPPING_V2_BUNDLE_REQUIRED",)) if not tuple(approved_bundle) else MappingV2Evaluation("ready_for_review", ())
+    items = tuple(item for item in approved_bundle if isinstance(item, Mapping))
+    if not items:
+        return MappingV2Evaluation("blocked_by_gate", ("APPROVED_MAPPING_V2_BUNDLE_REQUIRED",))
+    primitive_contexts = {(item.get("primitive_id"), tuple(sorted(item.get("contexts", ())))) for item in items}
+    blockers = ("MAPPING_TEMPLATE_COLLAPSE",) if len(primitive_contexts) == 1 and len(items) > 1 else ()
+    return MappingV2Evaluation("fail" if blockers else "ready_for_review", blockers)
 
 
 def run_mapping_v2_holdout(approved_bundle: Iterable[object]) -> MappingV2Evaluation:
-    return MappingV2Evaluation("blocked_by_gate", ("APPROVED_MAPPING_V2_BUNDLE_REQUIRED",)) if not tuple(approved_bundle) else MappingV2Evaluation("ready_for_review", ())
+    items = tuple(item for item in approved_bundle if isinstance(item, Mapping))
+    if not items:
+        return MappingV2Evaluation("blocked_by_gate", ("APPROVED_MAPPING_V2_BUNDLE_REQUIRED",))
+    blockers = ("MAPPING_HOLDOUT_CONTEXT_REQUIRED",) if any(not item.get("contexts") for item in items) else ()
+    return MappingV2Evaluation("fail" if blockers else "ready_for_review", blockers)

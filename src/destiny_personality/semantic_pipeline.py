@@ -26,13 +26,15 @@ def build_semantic_core_from_approved_mapping(
         "theme": _stage_status("theme" in policies, themes),
         "archetype": _stage_status("archetype" in policies, archetypes),
     }
-    return {
+    core = {
         "profile_ref": profile_ref, "mapping_candidates": mappings, "primitive_states": primitives,
         "signatures": signatures, "dynamics": dynamics, "shadow_mature_forms": tuple(
             {"dynamic_id": item["dynamic_id"], "shadow_form": item.get("shadow_form"), "mature_form": item.get("mature_form")} for item in dynamics
         ), "fate_themes": themes, "archetype": archetypes[0] if archetypes else None,
         "stage_statuses": statuses, "limitations": (), "audit_trail": ("policy_driven",),
     }
+    core["provenance"] = build_semantic_provenance(core)
+    return core
 
 
 def load_enabled_formation_policies(project_root: Path) -> tuple[dict, dict]:
@@ -83,22 +85,86 @@ def _blocked_core(profile_ref: str) -> dict:
     return {"profile_ref": profile_ref, "mapping_candidates": (), "primitive_states": (), "signatures": (), "dynamics": (), "shadow_mature_forms": (), "fate_themes": (), "archetype": None, "stage_statuses": {stage: "blocked_by_gate" for stage in ("mapping", "primitive_v2", "signature", "dynamic", "theme", "archetype")}, "limitations": ("APPROVED_MAPPING_REQUIRED",), "audit_trail": ()}
 
 
+def build_semantic_provenance(core: Mapping[str, object]) -> dict:
+    """Build immutable stored lineage; consumers read this rather than infer anew."""
+    nodes, edges = set(), set()
+    for mapping in core.get("mapping_candidates", ()):
+        mapping_ref = "mapping:" + str(mapping["mapping_candidate_id"])
+        primitive_ref = "primitive:" + str(mapping["primitive_id"])
+        nodes.update((mapping_ref, primitive_ref)); edges.add((primitive_ref, "derived_from", mapping_ref))
+        for field, kind in (("semantic_mechanism_refs", "semantic_mechanism"), ("evidence_root_refs", "evidence_root"), ("canonical_fact_requirements", "fact")):
+            for ref in mapping.get(field, ()):
+                child = kind + ":" + str(ref); nodes.add(child); edges.add((mapping_ref, "supported_by", child))
+    for collection, prefix, source_prefix in (("signatures", "signature", "primitive"), ("dynamics", "dynamic", "signature"), ("fate_themes", "theme", "dynamic")):
+        for item in core.get(collection, ()):
+            identifier = item.get(prefix + "_id") or item.get("theme_id")
+            if identifier:
+                node = prefix + ":" + str(identifier); nodes.add(node)
+                for ref in item.get("source_refs", ()):
+                    edges.add((node, "formed_from", source_prefix + ":" + str(ref)))
+    return {"nodes": tuple(sorted(nodes)), "edges": tuple(sorted(edges))}
+
+
+def explain_semantic_pipeline_item(core: Mapping[str, object], item_ref: str) -> dict:
+    """Return persisted lineage for one item without invoking semantic formation."""
+    graph = core.get("provenance", {})
+    if not isinstance(graph, Mapping):
+        return {"status": "not_found", "item_id": item_ref, "provenance_nodes": (), "provenance_edges": ()}
+    edges = tuple(graph.get("edges", ()))
+    if item_ref not in set(graph.get("nodes", ())):
+        return {"status": "not_found", "item_id": item_ref, "provenance_nodes": (), "provenance_edges": ()}
+    seen, frontier = {item_ref}, [item_ref]
+    selected = []
+    while frontier:
+        current = frontier.pop()
+        for left, relation, right in edges:
+            if left == current and right not in seen:
+                seen.add(right); frontier.append(right); selected.append((left, relation, right))
+    return {"status": "available", "item_id": item_ref, "provenance_nodes": tuple(sorted(seen)), "provenance_edges": tuple(sorted(selected)), "limitations": tuple(core.get("limitations", ()))}
+
+
+def semantic_pipeline_source_view(core: Mapping[str, object], stage: str) -> dict:
+    prefixes = {"mapping": "mapping", "primitive": "primitive", "signature": "signature", "dynamic": "dynamic", "theme": "theme", "archetype": "archetype"}
+    if stage not in prefixes:
+        raise ValueError("SEMANTIC_CORE_SOURCE_STAGE_INVALID")
+    prefix = prefixes[stage] + ":"
+    graph = core.get("provenance", {})
+    nodes = tuple(node for node in graph.get("nodes", ()) if node.startswith(prefix)) if isinstance(graph, Mapping) else ()
+    return {"profile_ref": core["profile_ref"], "stage": stage, "status": core.get("stage_statuses", {}).get("primitive_v2" if stage == "primitive" else stage, "blocked_by_gate"), "item_count": len(nodes), "provenance_nodes": nodes, "containment_status": "persisted_provenance_only"}
+
+
 def resolve_primitive_states(mappings: Iterable[Mapping[str, object]], policy: Mapping[str, object]) -> tuple:
     """Aggregate multiple Mapping records into one explicit state per Primitive."""
     grouped = {}
     for mapping in mappings:
+        if mapping.get("exclusion_matched") is True:
+            continue
         grouped.setdefault(mapping["primitive_id"], []).append(mapping)
     results = []
     for primitive_id, items in sorted(grouped.items()):
         states = {item.get("proposed_direction", {}).get("state", "unknown") for item in items}
-        state = _resolve_state(states, policy)
+        context_states = _context_states(items)
+        state = "context_differentiated" if len(set(context_states.values())) > 1 else _resolve_state(states, policy)
         result = {"primitive_id": primitive_id, "state": state, "mapping_refs": tuple(item["mapping_candidate_id"] for item in items)}
+        if context_states:
+            result["context_states"] = context_states
         if any("semantic_mechanism_refs" in item for item in items):
             result["mechanism_refs"] = tuple(ref for item in items for ref in item.get("semantic_mechanism_refs", ()))
             result["evidence_root_refs"] = tuple(ref for item in items for ref in item.get("evidence_root_refs", ()))
             result["fact_refs"] = tuple(ref for item in items for ref in item.get("canonical_fact_requirements", ()))
         results.append(result)
     return tuple(results)
+
+
+def _context_states(items: list[Mapping[str, object]]) -> dict:
+    grouped = {}
+    for item in items:
+        state = item.get("proposed_direction", {}).get("state", "unknown")
+        contexts = item.get("contexts", ())
+        for context in contexts if isinstance(contexts, (list, tuple)) else ():
+            if isinstance(context, str) and context:
+                grouped.setdefault(context, set()).add(state)
+    return {context: _resolve_state(states, {}) for context, states in sorted(grouped.items())}
 
 
 def _resolve_state(states: set, policy: Mapping[str, object]) -> str:

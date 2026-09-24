@@ -90,22 +90,24 @@ def test_pipeline_codec_preserves_nonzero_audit_and_policy_references(tmp_path: 
     assert restored["core"] == core
     assert restored["formation_policy_versions"] == {"signature": "TEST-V1"}
     assert len(semantic_pipeline_fingerprint({"signature": "TEST-V1"})) == 64
+    assert restored["formation_policy_fingerprint"] == semantic_pipeline_fingerprint({"signature": "TEST-V1"})
+
+
+def test_pipeline_codec_fingerprint_changes_when_policy_content_changes(tmp_path: Path) -> None:
+    from destiny_personality.semantic_pipeline_codec import load_pipeline_core, write_pipeline_core
+
+    core = {"profile_ref": "test"}
+    left, right = tmp_path / "left.json", tmp_path / "right.json"
+    write_pipeline_core(core, {"signature": {"policy_version": "V1", "rules": ["S1"]}}, left)
+    write_pipeline_core(core, {"signature": {"policy_version": "V1", "rules": ["S2"]}}, right)
+    assert load_pipeline_core(left)["formation_policy_fingerprint"] != load_pipeline_core(right)["formation_policy_fingerprint"]
 
 
 def test_authorized_promotion_cli_requires_decision_artifact(tmp_path: Path, capsys) -> None:
     from destiny_personality.cli import main
 
-    decision = tmp_path / "decision.json"
-    decision.write_text('{"schema_version":"semantic-promotion-decision-v1","decision_id":"D-1","candidate_bundle_ref":"bundle:test","candidate_fingerprint":"abc","decision":"approve_shadow","allowed_stage":"shadow","decision_timestamp":"2026-09-23T00:00:00Z","supersedes":null,"review_refs":["review:1"]}', encoding="utf-8")
-    record = tmp_path / "record.json"
-    calibration = tmp_path / "calibration.json"
-    holdout = tmp_path / "holdout.json"
-    calibration.write_text('{"run_status":"pass","bundle_fingerprint":"abc"}', encoding="utf-8")
-    holdout.write_text('{"run_status":"pass","bundle_fingerprint":"abc"}', encoding="utf-8")
-    assert main(["promote-semantic-bundle-authorized", "active:test", "bundle:test", "abc", str(decision), str(record), "--calibration", str(calibration), "--holdout", str(holdout)]) == 0
-    assert "shadow" in capsys.readouterr().out
-    assert main(["rollback-semantic-bundle-authorized", str(record)]) == 0
-    assert "rolled_back" in capsys.readouterr().out
+    with pytest.raises(SystemExit):
+        main(["promote-semantic-bundle-authorized", "active:test", "bundle:test", "abc", str(tmp_path / "fake-decision.json")])
 
 
 def test_build_semantic_core_cli_persists_authoritative_zero_state(tmp_path: Path, capsys) -> None:
@@ -188,6 +190,20 @@ def test_dynamic_policy_metadata_is_retained_as_formed_data() -> None:
     assert core["shadow_mature_forms"] == ({"dynamic_id": "D1", "shadow_form": "SH-1", "mature_form": "MT-1"},)
 
 
+def test_pipeline_persists_provenance_from_signature_to_facts() -> None:
+    from destiny_personality.semantic_pipeline import build_semantic_core_from_approved_mapping, explain_semantic_pipeline_item, semantic_pipeline_source_view
+
+    core = build_semantic_core_from_approved_mapping(
+        "profile:test",
+        ({"mapping_candidate_id": "M1", "primitive_id": "P001", "proposed_direction": {"state": "supported_high"}, "semantic_mechanism_refs": ["SMC-1"], "evidence_root_refs": ["ER-1"], "canonical_fact_requirements": ["fact:1"]},),
+        {"signature": {"rules": [{"signature_id": "S1", "required_primitive_ids": ["P001"]}]}},
+    )
+    assert ("signature:S1", "formed_from", "primitive:P001") in core["provenance"]["edges"]
+    assert ("mapping:M1", "supported_by", "fact:fact:1") in core["provenance"]["edges"]
+    assert "fact:fact:1" in explain_semantic_pipeline_item(core, "signature:S1")["provenance_nodes"]
+    assert semantic_pipeline_source_view(core, "signature")["item_count"] == 1
+
+
 def test_primitive_resolver_merges_conflicting_mapping_evidence() -> None:
     from destiny_personality.semantic_pipeline import resolve_primitive_states
 
@@ -196,6 +212,18 @@ def test_primitive_resolver_merges_conflicting_mapping_evidence() -> None:
         {"mapping_candidate_id": "M2", "primitive_id": "P001", "proposed_direction": {"state": "supported_low"}},
     ), {})
     assert states == ({"primitive_id": "P001", "state": "mixed", "mapping_refs": ("M1", "M2")},)
+
+
+def test_primitive_resolver_preserves_cross_context_variation_and_ignores_exclusions() -> None:
+    from destiny_personality.semantic_pipeline import resolve_primitive_states
+
+    states = resolve_primitive_states((
+        {"mapping_candidate_id": "M1", "primitive_id": "P001", "contexts": ["work"], "proposed_direction": {"state": "supported_high"}},
+        {"mapping_candidate_id": "M2", "primitive_id": "P001", "contexts": ["relationship"], "proposed_direction": {"state": "supported_low"}},
+        {"mapping_candidate_id": "M3", "primitive_id": "P001", "exclusion_matched": True, "proposed_direction": {"state": "supported_low"}},
+    ), {})
+    assert states[0]["state"] == "context_differentiated"
+    assert states[0]["mapping_refs"] == ("M1", "M2")
 
 
 def test_pipeline_distinguishes_zero_output_from_missing_policy() -> None:

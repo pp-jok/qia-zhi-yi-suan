@@ -75,24 +75,24 @@ def _build_parser() -> argparse.ArgumentParser:
     mapping_calibration.add_argument("project_root", type=Path)
     mapping_holdout = subparsers.add_parser("run-mapping-holdout")
     mapping_holdout.add_argument("project_root", type=Path)
-    promote = subparsers.add_parser("promote-semantic-bundle")
+    promote = subparsers.add_parser("promote-semantic-bundle", help="deprecated simulation; never writes an authority record")
     promote.add_argument("active_bundle_ref")
     promote.add_argument("candidate_bundle_ref")
     promote.add_argument("--decision-ref")
     authorized_promote = subparsers.add_parser("promote-semantic-bundle-authorized")
+    authorized_promote.add_argument("project_root", type=Path)
     authorized_promote.add_argument("active_bundle_ref")
     authorized_promote.add_argument("candidate_bundle_ref")
     authorized_promote.add_argument("candidate_fingerprint")
-    authorized_promote.add_argument("decision_path", type=Path)
-    authorized_promote.add_argument("record_path", type=Path)
-    authorized_promote.add_argument("--calibration", type=Path, required=True)
-    authorized_promote.add_argument("--holdout", type=Path, required=True)
+    authorized_promote.add_argument("decision_id")
     rollback = subparsers.add_parser("rollback-semantic-bundle")
     rollback.add_argument("active_bundle_ref")
     rollback.add_argument("candidate_bundle_ref")
     rollback.add_argument("decision_ref")
     authorized_rollback = subparsers.add_parser("rollback-semantic-bundle-authorized")
-    authorized_rollback.add_argument("record_path", type=Path)
+    authorized_rollback.add_argument("project_root", type=Path)
+    authorized_rollback.add_argument("decision_id")
+    authorized_rollback.add_argument("candidate_fingerprint")
     packet = subparsers.add_parser("promotion-review-packet")
     packet.add_argument("candidate_bundle_ref")
     packet.add_argument("--decision-ref")
@@ -295,25 +295,28 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             core["audit_trail"] = (*core["audit_trail"], "repository_mapping_v2", mapping_bundle.status)
             if mapping_bundle.blockers:
                 core["limitations"] = tuple(sorted(set((*core["limitations"], *mapping_bundle.blockers))))
-            write_pipeline_core(core, policy_versions, args.output)
+            write_pipeline_core(core, policies or policy_versions, args.output)
             summary = {"status": core["stage_statuses"]["mapping"], "output": str(args.output), "stage_statuses": core["stage_statuses"]}
         elif args.command in {"audit-semantic-core", "validate-semantic-mechanisms", "build-mapping-candidates", "validate-mapping-v2", "build-signatures", "build-dynamics", "run-mapping-calibration", "run-mapping-holdout", "promote-semantic-bundle", "promote-semantic-bundle-authorized", "rollback-semantic-bundle", "rollback-semantic-bundle-authorized", "promotion-review-packet", "build-report-plan", "render-report", "semantic-core-source-view", "semantic-core-explain", "semantic-core-diff", "semantic-core-review-packet"}:
             from .semantic_core import audit_semantic_core_candidate, build_promotion_review_packet, build_report_plan, build_semantic_core_candidate, build_semantic_core_review_packet, diff_semantic_core_candidates, explain_semantic_core_item, form_core_dynamics, form_dominant_signatures, load_semantic_mechanism_role_policy, promote_semantic_bundle, render_semantic_core_report, rollback_semantic_bundle, semantic_core_source_view
             from .semantic_core_codec import load_semantic_core_candidate
             from .semantic_mechanisms import build_semantic_mechanism_audit_report, load_approved_evidence_root_ids, load_approved_semantic_mechanism_ids, load_semantic_mechanism_candidates
-            from .mapping_v2 import audit_mapping_v2_candidates, build_fresh_mapping_candidates, compile_mapping_v2_candidate_bundle, compile_mapping_v2_from_repository, load_mapping_v2_candidate_registry, mapping_v2_candidate_fingerprint, run_mapping_v2_calibration, run_mapping_v2_holdout
+            from .mapping_v2 import audit_mapping_v2_candidates, build_fresh_mapping_candidates, compile_mapping_v2_candidate_bundle, compile_mapping_v2_from_repository, load_mapping_proposal_registry, load_mapping_v2_candidate_registry, mapping_v2_candidate_fingerprint, run_mapping_v2_calibration, run_mapping_v2_holdout
             from .semantic_authority import load_mapping_eligible_semantic_mechanisms
             root = args.project_root if hasattr(args, "project_root") else Path(".")
             mechanism_root = root / "candidates" / "semantic-mechanisms-v1"
             if args.command == "promote-semantic-bundle":
                 summary = asdict(promote_semantic_bundle(args.active_bundle_ref, args.candidate_bundle_ref, args.decision_ref))
             elif args.command == "promote-semantic-bundle-authorized":
-                from .semantic_promotion import promote_from_decision, validate_technical_records
-                checks = validate_technical_records(args.candidate_fingerprint, args.calibration, args.holdout)
-                summary = asdict(promote_from_decision(args.active_bundle_ref, args.candidate_bundle_ref, args.candidate_fingerprint, args.decision_path, checks, args.record_path))
+                from .promotion_authority import load_promotion_authority
+                from .semantic_promotion import promote_from_authority
+                authority = load_promotion_authority(args.project_root, args.candidate_bundle_ref, args.candidate_fingerprint, args.decision_id)
+                record = args.project_root / "governance" / "semantic-promotion-v1" / "promotion-records" / (args.decision_id + "-" + args.candidate_fingerprint + ".json")
+                summary = asdict(promote_from_authority(args.active_bundle_ref, authority, record))
             elif args.command == "rollback-semantic-bundle-authorized":
                 from .semantic_promotion import rollback_from_record
-                summary = asdict(rollback_from_record(args.record_path))
+                record = args.project_root / "governance" / "semantic-promotion-v1" / "promotion-records" / (args.decision_id + "-" + args.candidate_fingerprint + ".json")
+                summary = asdict(rollback_from_record(record))
             elif args.command == "rollback-semantic-bundle":
                 summary = asdict(rollback_semantic_bundle(promote_semantic_bundle(args.active_bundle_ref, args.candidate_bundle_ref, args.decision_ref)))
             elif args.command == "promotion-review-packet":
@@ -324,9 +327,23 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 core = load_semantic_core_candidate(args.core)
                 summary = asdict(render_semantic_core_report(core, build_report_plan(core, args.renderer_profile)))
             elif args.command == "semantic-core-source-view":
-                summary = semantic_core_source_view(load_semantic_core_candidate(args.core), args.stage)
+                from .semantic_pipeline_codec import load_pipeline_core
+                try:
+                    pipeline_core = load_pipeline_core(args.core)["core"]
+                except ValueError:
+                    summary = semantic_core_source_view(load_semantic_core_candidate(args.core), args.stage)
+                else:
+                    from .semantic_pipeline import semantic_pipeline_source_view
+                    summary = semantic_pipeline_source_view(pipeline_core, args.stage)
             elif args.command == "semantic-core-explain":
-                summary = explain_semantic_core_item(load_semantic_core_candidate(args.core), args.item_id)
+                from .semantic_pipeline_codec import load_pipeline_core
+                try:
+                    pipeline_core = load_pipeline_core(args.core)["core"]
+                except ValueError:
+                    summary = explain_semantic_core_item(load_semantic_core_candidate(args.core), args.item_id)
+                else:
+                    from .semantic_pipeline import explain_semantic_pipeline_item
+                    summary = explain_semantic_pipeline_item(pipeline_core, args.item_id)
             elif args.command == "semantic-core-diff":
                 summary = asdict(diff_semantic_core_candidates(load_semantic_core_candidate(args.left), load_semantic_core_candidate(args.right)))
             elif args.command == "semantic-core-review-packet":
@@ -344,6 +361,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 summary = dict(audit_semantic_core_candidate(build_semantic_core_candidate("cli-audit", ())))
                 summary.update({
                     "mapping_eligible_mechanism_count": len(eligible.mechanism_ids),
+                    "mapping_proposal_count": len(load_mapping_proposal_registry(root)),
+                    "approved_mapping_count": len(mapping_bundle.bazi_rules) + len(mapping_bundle.astrology_rules),
                     "mapping_v2_candidate_fingerprint": mapping_v2_candidate_fingerprint(root),
                     "mapping_v2_runtime_status": mapping_bundle.status,
                     "mapping_v2_runtime_blockers": mapping_bundle.blockers,

@@ -43,3 +43,29 @@ def test_mapping_registry_loader_accepts_future_reviewed_registry(tmp_path: Path
         encoding="utf-8",
     )
     assert load_mapping_v2_candidate_registry(tmp_path).review_status == "approved"
+
+
+def test_mapping_proposals_are_loaded_and_validated_without_auto_approval(tmp_path: Path) -> None:
+    from destiny_personality.mapping_v2 import load_mapping_proposal_registry, validate_mapping_proposal
+
+    directory = tmp_path / "candidates" / "mapping-v2"
+    directory.mkdir(parents=True)
+    (directory / "mapping_proposal_registry_v1.yaml").write_text(
+        "schema_version: mapping-v2-proposal-registry-v1\nproposals: []\n", encoding="utf-8"
+    )
+    assert load_mapping_proposal_registry(tmp_path) == ()
+    assert "MAPPING_PROPOSAL_REVIEW_REQUIRED" in validate_mapping_proposal(
+        {"proposal_id": "P1", "semantic_mechanism_refs": ["SMC-1"], "primitive_id": "P001", "primitive_question": "q", "source_system": "bazi", "review_status": "proposed"},
+        {"SMC-1"},
+    )
+
+
+def test_mapping_evaluation_rejects_template_collapse() -> None:
+    from destiny_personality.mapping_v2 import run_mapping_v2_calibration
+
+    result = run_mapping_v2_calibration((
+        {"mapping_candidate_id": "M1", "primitive_id": "P001", "contexts": ["work"]},
+        {"mapping_candidate_id": "M2", "primitive_id": "P001", "contexts": ["work"]},
+    ))
+    assert result.status == "fail"
+    assert "MAPPING_TEMPLATE_COLLAPSE" in result.blockers

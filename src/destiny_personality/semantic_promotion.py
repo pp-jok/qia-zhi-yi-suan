@@ -5,6 +5,9 @@ import json
 from pathlib import Path
 from typing import Mapping, Tuple
 
+from .promotion_authority import PromotionAuthority
+
+
 
 @dataclass(frozen=True)
 class PersistedSemanticPromotion:
@@ -28,6 +31,22 @@ def promote_from_decision(active_bundle_ref: str, candidate_bundle_ref: str, can
     if not technical_checks or any(check != "PASS" for check in technical_checks):
         raise ValueError("PROMOTION_TECHNICAL_GATE_FAILED")
     result = PersistedSemanticPromotion("shadow", active_bundle_ref, candidate_bundle_ref, payload["decision_id"], active_bundle_ref, candidate_fingerprint, technical_checks)
+    Path(record_path).write_text(json.dumps({"schema_version": "semantic-promotion-record-v1", **asdict(result)}, sort_keys=True) + "\n", encoding="utf-8")
+    return result
+
+
+def promote_from_authority(
+    active_bundle_ref: str, authority: PromotionAuthority, record_path: Path
+) -> PersistedSemanticPromotion:
+    """Persist a shadow record only after Authority Store resolution."""
+    if Path(record_path).exists():
+        raise ValueError("PROMOTION_DUPLICATE_SHADOW_RECORD")
+    result = PersistedSemanticPromotion(
+        "shadow", active_bundle_ref, authority.candidate_bundle_ref, authority.decision_id,
+        active_bundle_ref, authority.candidate_fingerprint,
+        (authority.calibration_artifact_ref, authority.holdout_artifact_ref),
+    )
+    Path(record_path).parent.mkdir(parents=True, exist_ok=True)
     Path(record_path).write_text(json.dumps({"schema_version": "semantic-promotion-record-v1", **asdict(result)}, sort_keys=True) + "\n", encoding="utf-8")
     return result
 
