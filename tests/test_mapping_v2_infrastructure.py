@@ -31,3 +31,15 @@ def test_mapping_candidate_requires_approved_mapping_eligible_mechanism() -> Non
     )
 
     assert findings == ("APPROVED_MAPPING_ELIGIBLE_MECHANISM_REQUIRED",)
+
+
+def test_mapping_registry_loader_accepts_future_reviewed_registry(tmp_path: Path) -> None:
+    from destiny_personality.mapping_v2 import load_mapping_v2_candidate_registry
+
+    path = tmp_path / "candidates" / "mapping-v2"
+    path.mkdir(parents=True)
+    (path / "mapping_v2_candidate_registry_v1.yaml").write_text(
+        "schema_version: mapping-v2-candidate-registry-v1\nreview_status: approved\ncandidates: []\n",
+        encoding="utf-8",
+    )
+    assert load_mapping_v2_candidate_registry(tmp_path).review_status == "approved"

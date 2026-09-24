@@ -3,7 +3,7 @@
 from dataclasses import dataclass, asdict
 import json
 from pathlib import Path
-from typing import Tuple
+from typing import Mapping, Tuple
 
 
 @dataclass(frozen=True)
@@ -18,9 +18,11 @@ class PersistedSemanticPromotion:
 
 
 def promote_from_decision(active_bundle_ref: str, candidate_bundle_ref: str, candidate_fingerprint: str, decision_path: Path, technical_checks: Tuple[str, ...], record_path: Path) -> PersistedSemanticPromotion:
-    payload = json.loads(Path(decision_path).read_text(encoding="utf-8"))
-    if payload.get("schema_version") != "semantic-promotion-decision-v1" or payload.get("decision") != "approve_shadow":
-        raise ValueError("PROMOTION_DECISION_INVALID")
+    try:
+        payload = json.loads(Path(decision_path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError("PROMOTION_DECISION_INVALID") from exc
+    _validate_decision_payload(payload)
     if payload.get("candidate_bundle_ref") != candidate_bundle_ref or payload.get("candidate_fingerprint") != candidate_fingerprint or payload.get("allowed_stage") != "shadow":
         raise ValueError("PROMOTION_DECISION_BINDING_MISMATCH")
     if not technical_checks or any(check != "PASS" for check in technical_checks):
@@ -31,10 +33,27 @@ def promote_from_decision(active_bundle_ref: str, candidate_bundle_ref: str, can
 
 
 def rollback_from_record(record_path: Path) -> PersistedSemanticPromotion:
-    payload = json.loads(Path(record_path).read_text(encoding="utf-8"))
+    try:
+        payload = json.loads(Path(record_path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError("ROLLBACK_RECORD_INVALID") from exc
     if payload.get("schema_version") != "semantic-promotion-record-v1" or payload.get("status") != "shadow":
         raise ValueError("ROLLBACK_RECORD_INVALID")
-    return PersistedSemanticPromotion("rolled_back", payload["rollback_target"], payload["candidate_bundle_ref"], payload["decision_ref"], "", payload["candidate_fingerprint"], tuple(payload["validation_refs"]))
+    result = PersistedSemanticPromotion("rolled_back", payload["rollback_target"], payload["candidate_bundle_ref"], payload["decision_ref"], "", payload["candidate_fingerprint"], tuple(payload["validation_refs"]))
+    Path(record_path).write_text(json.dumps({"schema_version": "semantic-promotion-record-v1", **asdict(result)}, sort_keys=True) + "\n", encoding="utf-8")
+    return result
+
+
+def _validate_decision_payload(payload: object) -> None:
+    if not isinstance(payload, Mapping):
+        raise ValueError("PROMOTION_DECISION_INVALID")
+    required_strings = ("decision_id", "candidate_bundle_ref", "candidate_fingerprint", "decision_timestamp")
+    if payload.get("schema_version") != "semantic-promotion-decision-v1" or payload.get("decision") != "approve_shadow":
+        raise ValueError("PROMOTION_DECISION_INVALID")
+    if any(not isinstance(payload.get(field), str) or not payload[field] for field in required_strings):
+        raise ValueError("PROMOTION_DECISION_INVALID")
+    if payload.get("allowed_stage") != "shadow" or not isinstance(payload.get("review_refs"), list):
+        raise ValueError("PROMOTION_DECISION_INVALID")
 
 
 def validate_technical_records(candidate_fingerprint: str, calibration_path: Path, holdout_path: Path) -> Tuple[str, ...]:
@@ -59,11 +78,17 @@ def shadow_diff_metrics(active_core: dict, candidate_core: dict) -> dict:
         value = core.get(key, ())
         return len(value) if isinstance(value, (list, tuple)) else int(value is not None)
     states = tuple(candidate_core.get("primitive_states", ()))
+    state_count = len(states)
+    def rate(state: str) -> float:
+        return sum(item.get("state") == state for item in states) / state_count if state_count else 0.0
     return {
         "primitive_activation_delta": count(candidate_core, "primitive_states") - count(active_core, "primitive_states"),
-        "unknown_rate": sum(item.get("state") == "unknown" for item in states),
-        "mixed_rate": sum(item.get("state") == "mixed" for item in states),
-        "context_differentiated_rate": sum(item.get("state") == "context_differentiated" for item in states),
+        "unknown_count": sum(item.get("state") == "unknown" for item in states),
+        "mixed_count": sum(item.get("state") == "mixed" for item in states),
+        "context_differentiated_count": sum(item.get("state") == "context_differentiated" for item in states),
+        "unknown_rate": rate("unknown"),
+        "mixed_rate": rate("mixed"),
+        "context_differentiated_rate": rate("context_differentiated"),
         "signature_count_delta": count(candidate_core, "signatures") - count(active_core, "signatures"),
         "dynamic_count_delta": count(candidate_core, "dynamics") - count(active_core, "dynamics"),
         "theme_count_delta": count(candidate_core, "fate_themes") - count(active_core, "fate_themes"),

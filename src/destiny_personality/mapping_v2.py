@@ -34,7 +34,7 @@ def load_mapping_v2_candidate_registry(project_root: Path) -> MappingV2Candidate
     if not isinstance(payload, dict) or payload.get("schema_version") != "mapping-v2-candidate-registry-v1":
         raise ValueError("MAPPING_V2_REGISTRY_VERSION_MISMATCH")
     candidates = payload.get("candidates")
-    if payload.get("review_status") != "candidate_only" or not isinstance(candidates, list):
+    if payload.get("review_status") not in {"candidate_only", "approved"} or not isinstance(candidates, list):
         raise ValueError("MAPPING_V2_REGISTRY_CONTRACT_ERROR")
     return MappingV2CandidateRegistry(payload["review_status"], tuple(candidates))
 
@@ -63,6 +63,24 @@ def compile_mapping_v2_candidate_bundle(
     bazi_rules = tuple(item for item in items if item["source_system"] == "bazi")
     astrology_rules = tuple(item for item in items if item["source_system"] == "astrology")
     return MappingV2CandidateBundle("candidate_compiled", bazi_rules, astrology_rules, ())
+
+
+def compile_mapping_v2_from_repository(project_root: Path) -> MappingV2CandidateBundle:
+    """Compile the registry against repository-derived mapping authority only."""
+    from .config_errors import ConfigError
+    from .semantic_authority import load_mapping_eligible_semantic_mechanisms
+    from .semantic_core import load_semantic_mechanism_role_policy
+
+    root = Path(project_root)
+    registry = load_mapping_v2_candidate_registry(root)
+    try:
+        snapshot = load_mapping_eligible_semantic_mechanisms(
+            root / "candidates" / "semantic-mechanisms-v1",
+            load_semantic_mechanism_role_policy(root),
+        )
+    except ConfigError:
+        return MappingV2CandidateBundle("blocked_by_gate", (), (), ("MAPPING_AUTHORITY_POLICY_REQUIRED",))
+    return compile_mapping_v2_candidate_bundle(registry.candidates, snapshot.mechanism_ids)
 
 
 def validate_mapping_candidate(candidate: object, approved_mapping_eligible_ids: Iterable[str]) -> Tuple[str, ...]:

@@ -327,10 +327,7 @@ def mapping_candidate_eligibility(
     project_root = root.parents[1] if root.name == "semantic-mechanisms-v1" else root
     try:
         policy = load_semantic_mechanism_role_policy(project_root)
-        eligible_ids = {
-            item["candidate_id"]
-            for item in load_mapping_eligible_semantic_mechanisms(root, policy)
-        }
+        eligible_ids = load_mapping_eligible_semantic_mechanisms(root, policy).mechanism_ids
     except ConfigError:
         eligible_ids = set()
     if type(mechanism_ref) is not str or mechanism_ref not in eligible_ids:

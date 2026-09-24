@@ -2,7 +2,10 @@
 
 from hashlib import sha256
 import json
+from pathlib import Path
 from typing import Iterable, Mapping
+
+import yaml
 
 
 def build_semantic_core_from_approved_mapping(
@@ -11,27 +14,17 @@ def build_semantic_core_from_approved_mapping(
     mappings = tuple(_freeze(dict(item)) for item in approved_mappings)
     if not mappings:
         return _blocked_core(profile_ref)
-    primitives = tuple(
-        {
-            "primitive_id": item["primitive_id"],
-            "state": item["proposed_direction"].get("state", "unknown"),
-            "mapping_refs": (item["mapping_candidate_id"],),
-            "mechanism_refs": tuple(item.get("semantic_mechanism_refs", ())),
-            "evidence_root_refs": tuple(item.get("evidence_root_refs", ())),
-            "fact_refs": tuple(item.get("canonical_fact_requirements", ())),
-        }
-        for item in mappings
-    )
+    primitives = resolve_primitive_states(mappings, policies.get("primitive_v2", {}))
     signatures = _form("signature", policies.get("signature", {}), primitives, "required_primitive_ids", "primitive_id", "signature_id")
     dynamics = _form("dynamic", policies.get("dynamic", {}), signatures, "required_signature_ids", "signature_id", "dynamic_id")
     themes = _form("theme", policies.get("theme", {}), dynamics, "required_dynamic_ids", "dynamic_id", "theme_id")
     archetypes = _form("archetype", policies.get("archetype", {}), themes, "required_theme_ids", "theme_id", "archetype_id")
     statuses = {
         "mapping": "available", "primitive_v2": "available",
-        "signature": "available" if signatures else "blocked_by_gate",
-        "dynamic": "available" if dynamics else "blocked_by_gate",
-        "theme": "available" if themes else "blocked_by_gate",
-        "archetype": "available" if archetypes else "blocked_by_gate",
+        "signature": _stage_status("signature" in policies, signatures),
+        "dynamic": _stage_status("dynamic" in policies, dynamics),
+        "theme": _stage_status("theme" in policies, themes),
+        "archetype": _stage_status("archetype" in policies, archetypes),
     }
     return {
         "profile_ref": profile_ref, "mapping_candidates": mappings, "primitive_states": primitives,
@@ -42,6 +35,29 @@ def build_semantic_core_from_approved_mapping(
     }
 
 
+def load_enabled_formation_policies(project_root: Path) -> tuple[dict, dict]:
+    """Load only explicitly enabled reviewed formation policies from this repository."""
+    root = Path(project_root) / "candidates" / "core-profile-v1"
+    specs = {
+        "signature": "signature_formation_policy_v1.yaml",
+        "dynamic": "dynamic_formation_policy_v1.yaml",
+        "theme": "derived_theme_policy_v1.yaml",
+    }
+    policies = {}
+    versions = {}
+    for stage, filename in specs.items():
+        path = root / filename
+        if not path.is_file():
+            continue
+        payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
+            continue
+        if payload.get("review_status") == "approved" and payload.get("mode") == "enabled":
+            policies[stage] = payload
+            versions[stage] = str(payload.get("policy_version", "unversioned"))
+    return policies, versions
+
+
 def _form(stage: str, policy: Mapping[str, object], sources: tuple, required_key: str, source_id_key: str, output_id_key: str) -> tuple:
     rules = policy.get("rules", ()) if isinstance(policy, Mapping) else ()
     source_ids = {item.get(source_id_key) for item in sources}
@@ -49,12 +65,50 @@ def _form(stage: str, policy: Mapping[str, object], sources: tuple, required_key
     for rule in rules if isinstance(rules, list) else ():
         required = rule.get(required_key, ()) if isinstance(rule, Mapping) else ()
         if rule.get(output_id_key) and isinstance(required, list) and set(required).issubset(source_ids):
-            result.append({output_id_key: rule[output_id_key], "source_refs": tuple(required), "formation_rule_ref": rule.get("formation_rule_ref", f"{stage}:{rule[output_id_key]}")})
+            formed = {output_id_key: rule[output_id_key], "source_refs": tuple(required), "formation_rule_ref": rule.get("formation_rule_ref", f"{stage}:{rule[output_id_key]}")}
+            for field in ("shadow_form", "mature_form", "contexts", "limitations"):
+                if field in rule:
+                    formed[field] = _freeze(rule[field])
+            result.append(formed)
     return tuple(result)
+
+
+def _stage_status(policy_present: bool, output: tuple) -> str:
+    if not policy_present:
+        return "blocked_by_gate"
+    return "available" if output else "available_zero"
 
 
 def _blocked_core(profile_ref: str) -> dict:
     return {"profile_ref": profile_ref, "mapping_candidates": (), "primitive_states": (), "signatures": (), "dynamics": (), "shadow_mature_forms": (), "fate_themes": (), "archetype": None, "stage_statuses": {stage: "blocked_by_gate" for stage in ("mapping", "primitive_v2", "signature", "dynamic", "theme", "archetype")}, "limitations": ("APPROVED_MAPPING_REQUIRED",), "audit_trail": ()}
+
+
+def resolve_primitive_states(mappings: Iterable[Mapping[str, object]], policy: Mapping[str, object]) -> tuple:
+    """Aggregate multiple Mapping records into one explicit state per Primitive."""
+    grouped = {}
+    for mapping in mappings:
+        grouped.setdefault(mapping["primitive_id"], []).append(mapping)
+    results = []
+    for primitive_id, items in sorted(grouped.items()):
+        states = {item.get("proposed_direction", {}).get("state", "unknown") for item in items}
+        state = _resolve_state(states, policy)
+        result = {"primitive_id": primitive_id, "state": state, "mapping_refs": tuple(item["mapping_candidate_id"] for item in items)}
+        if any("semantic_mechanism_refs" in item for item in items):
+            result["mechanism_refs"] = tuple(ref for item in items for ref in item.get("semantic_mechanism_refs", ()))
+            result["evidence_root_refs"] = tuple(ref for item in items for ref in item.get("evidence_root_refs", ()))
+            result["fact_refs"] = tuple(ref for item in items for ref in item.get("canonical_fact_requirements", ()))
+        results.append(result)
+    return tuple(results)
+
+
+def _resolve_state(states: set, policy: Mapping[str, object]) -> str:
+    conflict_state = policy.get("conflict_state", "mixed") if isinstance(policy, Mapping) else "mixed"
+    known = {state for state in states if state != "unknown"}
+    if not known:
+        return "unknown"
+    if len(known) > 1:
+        return conflict_state
+    return next(iter(known))
 
 
 def _freeze(value: object) -> object:
@@ -89,7 +143,8 @@ def build_semantic_report(core: Mapping[str, object], renderer_profile: str) -> 
     for section_id, collection_key in (("signatures", "signatures"), ("dynamics", "dynamics"), ("fate_themes", "fate_themes")):
         items = tuple(core.get(collection_key, ()))
         if items:
-            sections.append({"section_id": section_id, "title": section_id.replace("_", " ").title(), "body": "", "source_refs": tuple(item.get("source_refs", ()) for item in items), "limitations": tuple(core.get("limitations", ()))})
+            rule_refs = tuple(str(item.get("formation_rule_ref", "unreferenced")) for item in items)
+            sections.append({"section_id": section_id, "title": section_id.replace("_", " ").title(), "body": f"已形成 {len(items)} 项受控语义条目；来源规则：" + ", ".join(rule_refs), "source_refs": tuple(item.get("source_refs", ()) for item in items), "limitations": tuple(core.get("limitations", ()))})
     return {"profile_ref": core["profile_ref"], "renderer_profile": renderer_profile, "sections": tuple(sections), "containment_status": "core_refs_only"}
 
 

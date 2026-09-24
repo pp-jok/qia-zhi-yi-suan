@@ -95,6 +95,26 @@ not authority. Promotion is separately bound to a versioned decision artifact,
 matching candidate fingerprint, passing calibration and holdout records, a
 persisted Shadow record, and a record-backed rollback.
 
+## Runtime closure updates
+
+The Repository-driven `build-semantic-core` command compiles Mapping v2 from
+the registry and the repository-derived Mapping Eligibility Snapshot. It loads
+only explicitly enabled, reviewed formation policies. With the current
+candidate-only assets, it correctly persists a `blocked_by_gate` zero-state
+with the relevant Mapping blocker; it cannot silently manufacture a Mapping.
+
+Pipeline Core records are accepted by the existing source-view, explain, diff,
+and report CLI paths through a read-only codec adapter. Primitive resolution
+aggregates all Mapping evidence for a Primitive and distinguishes `unknown`
+from conflicting `mixed` evidence. Stage status also distinguishes an absent
+policy (`blocked_by_gate`) from a present policy that forms no item
+(`available_zero`).
+
+Decision-bound rollback is persisted as a terminal state and rejects a repeat
+rollback. Shadow metrics publish both state counts and true state rates. These
+changes alter only candidate engineering behavior; they neither add a semantic
+asset nor change any active fingerprint.
+
 ## Final readiness statement
 
 ```text
@@ -109,7 +129,7 @@ activated, and no production semantic bundle was promoted.
 
 ## Final verification
 
-On 2026-09-23, the complete test suite passed with `525 passed in 26.79s` and
+On 2026-09-24, the complete test suite passed with `543 passed in 35.04s` and
 the isolated wheel/package verifier printed `package verification passed`.
 The active semantic fingerprint remained
 `256ba053b174a054226301f1b493e0e0c8f9f50e9f2976a72b8045dbf6ed6131`.

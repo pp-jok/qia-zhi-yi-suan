@@ -284,17 +284,24 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             write_candidate_profile(profile, args.output)
             summary = {"status": "ok", "profile": str(args.output), "profile_id": profile.candidate_profile_id}
         elif args.command == "build-semantic-core":
-            from .semantic_pipeline import build_semantic_core_from_approved_mapping
+            from .mapping_v2 import compile_mapping_v2_from_repository
+            from .semantic_pipeline import build_semantic_core_from_approved_mapping, load_enabled_formation_policies
             from .semantic_pipeline_codec import write_pipeline_core
 
-            core = build_semantic_core_from_approved_mapping(args.profile_ref, (), {})
-            write_pipeline_core(core, {}, args.output)
+            mapping_bundle = compile_mapping_v2_from_repository(args.project_root)
+            mappings = (*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules)
+            policies, policy_versions = load_enabled_formation_policies(args.project_root)
+            core = build_semantic_core_from_approved_mapping(args.profile_ref, mappings, policies)
+            core["audit_trail"] = (*core["audit_trail"], "repository_mapping_v2", mapping_bundle.status)
+            if mapping_bundle.blockers:
+                core["limitations"] = tuple(sorted(set((*core["limitations"], *mapping_bundle.blockers))))
+            write_pipeline_core(core, policy_versions, args.output)
             summary = {"status": core["stage_statuses"]["mapping"], "output": str(args.output), "stage_statuses": core["stage_statuses"]}
         elif args.command in {"audit-semantic-core", "validate-semantic-mechanisms", "build-mapping-candidates", "validate-mapping-v2", "build-signatures", "build-dynamics", "run-mapping-calibration", "run-mapping-holdout", "promote-semantic-bundle", "promote-semantic-bundle-authorized", "rollback-semantic-bundle", "rollback-semantic-bundle-authorized", "promotion-review-packet", "build-report-plan", "render-report", "semantic-core-source-view", "semantic-core-explain", "semantic-core-diff", "semantic-core-review-packet"}:
             from .semantic_core import audit_semantic_core_candidate, build_promotion_review_packet, build_report_plan, build_semantic_core_candidate, build_semantic_core_review_packet, diff_semantic_core_candidates, explain_semantic_core_item, form_core_dynamics, form_dominant_signatures, load_semantic_mechanism_role_policy, promote_semantic_bundle, render_semantic_core_report, rollback_semantic_bundle, semantic_core_source_view
             from .semantic_core_codec import load_semantic_core_candidate
             from .semantic_mechanisms import build_semantic_mechanism_audit_report, load_approved_evidence_root_ids, load_approved_semantic_mechanism_ids, load_semantic_mechanism_candidates
-            from .mapping_v2 import audit_mapping_v2_candidates, build_fresh_mapping_candidates, compile_mapping_v2_candidate_bundle, load_mapping_v2_candidate_registry, mapping_v2_candidate_fingerprint, run_mapping_v2_calibration, run_mapping_v2_holdout
+            from .mapping_v2 import audit_mapping_v2_candidates, build_fresh_mapping_candidates, compile_mapping_v2_candidate_bundle, compile_mapping_v2_from_repository, load_mapping_v2_candidate_registry, mapping_v2_candidate_fingerprint, run_mapping_v2_calibration, run_mapping_v2_holdout
             from .semantic_authority import load_mapping_eligible_semantic_mechanisms
             root = args.project_root if hasattr(args, "project_root") else Path(".")
             mechanism_root = root / "candidates" / "semantic-mechanisms-v1"
@@ -330,11 +337,17 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             elif args.command == "audit-semantic-core":
                 policy = load_semantic_mechanism_role_policy(root)
                 eligible = load_mapping_eligible_semantic_mechanisms(mechanism_root, policy)
+                mapping_bundle = compile_mapping_v2_candidate_bundle(
+                    load_mapping_v2_candidate_registry(root).candidates,
+                    eligible.mechanism_ids,
+                )
                 summary = dict(audit_semantic_core_candidate(build_semantic_core_candidate("cli-audit", ())))
                 summary.update({
-                    "mapping_eligible_mechanism_count": len(eligible),
+                    "mapping_eligible_mechanism_count": len(eligible.mechanism_ids),
                     "mapping_v2_candidate_fingerprint": mapping_v2_candidate_fingerprint(root),
-                    "semantic_readiness": "blocked_by_gate",
+                    "mapping_v2_runtime_status": mapping_bundle.status,
+                    "mapping_v2_runtime_blockers": mapping_bundle.blockers,
+                    "semantic_readiness": "blocked_by_gate" if mapping_bundle.status == "blocked_by_gate" else "candidate_only",
                 })
             elif args.command == "validate-semantic-mechanisms":
                 candidates = load_semantic_mechanism_candidates(mechanism_root)
@@ -342,20 +355,26 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             elif args.command in {"build-mapping-candidates", "validate-mapping-v2"}:
                 policy = load_semantic_mechanism_role_policy(root)
                 eligible = load_mapping_eligible_semantic_mechanisms(mechanism_root, policy)
-                candidates = build_fresh_mapping_candidates(eligible)
+                candidates = build_fresh_mapping_candidates(eligible.mechanism_ids)
                 if args.command == "validate-mapping-v2":
                     registry = load_mapping_v2_candidate_registry(root)
                     candidates = registry.candidates
-                bundle = compile_mapping_v2_candidate_bundle(candidates, eligible)
+                bundle = compile_mapping_v2_candidate_bundle(candidates, eligible.mechanism_ids)
                 summary = asdict(bundle)
                 if args.command == "validate-mapping-v2":
-                    summary["audit"] = audit_mapping_v2_candidates(candidates, eligible)
+                    summary["audit"] = audit_mapping_v2_candidates(candidates, eligible.mechanism_ids)
             elif args.command == "build-signatures":
                 summary = {"status": "blocked_by_gate", "signatures": list(form_dominant_signatures(())), "blockers": ["APPROVED_PRIMITIVE_V2_REQUIRED"]}
             elif args.command == "run-mapping-calibration":
-                summary = asdict(run_mapping_v2_calibration(()))
+                mapping_bundle = compile_mapping_v2_from_repository(root)
+                summary = asdict(run_mapping_v2_calibration((*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules)))
+                summary["mapping_bundle_status"] = mapping_bundle.status
+                summary["mapping_bundle_blockers"] = mapping_bundle.blockers
             elif args.command == "run-mapping-holdout":
-                summary = asdict(run_mapping_v2_holdout(()))
+                mapping_bundle = compile_mapping_v2_from_repository(root)
+                summary = asdict(run_mapping_v2_holdout((*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules)))
+                summary["mapping_bundle_status"] = mapping_bundle.status
+                summary["mapping_bundle_blockers"] = mapping_bundle.blockers
             else:
                 summary = {"status": "blocked_by_gate", "dynamics": list(form_core_dynamics(())), "blockers": ["APPROVED_SIGNATURE_REQUIRED"]}
         elif args.command in {"render-core-portrait", "explain-profile-item", "profile-source-view", "profile-diff"}:

@@ -1,4 +1,7 @@
+import json
 from pathlib import Path
+
+import pytest
 
 
 def test_role_policy_is_enforced_by_authoritative_mapping_eligibility(tmp_path: Path) -> None:
@@ -7,7 +10,7 @@ def test_role_policy_is_enforced_by_authoritative_mapping_eligibility(tmp_path: 
     root = tmp_path / "semantic-mechanisms-v1"
     root.mkdir()
     (root / "semantic_evidence_root_registry_v1.yaml").write_text("schema_version: semantic-evidence-root-registry-v1\nroots: []\n", encoding="utf-8")
-    assert load_mapping_eligible_semantic_mechanisms(root, {"PRIMARY_EVIDENCE": {"mapping_origin": True}}) == ()
+    assert load_mapping_eligible_semantic_mechanisms(root, {"PRIMARY_EVIDENCE": {"mapping_origin": True}}).mechanisms == ()
 
 
 def test_synthetic_policy_drives_complete_nonzero_pipeline() -> None:
@@ -58,7 +61,9 @@ def test_nonzero_core_explain_diff_and_report_remain_source_contained() -> None:
 
     explanation = explain_semantic_item(core, "signature:SIG-1")
     assert explanation["source_refs"] == ("P001",)
-    assert build_semantic_report(core, "standard-portrait-v1")["sections"][0]["source_refs"]
+    report = build_semantic_report(core, "standard-portrait-v1")
+    assert report["sections"][0]["source_refs"]
+    assert report["sections"][0]["body"]
     assert diff_semantic_cores(core, {**core, "signatures": ()}) == ("signature_change",)
 
 
@@ -69,6 +74,7 @@ def test_cli_audit_reports_authoritative_eligibility_and_candidate_fingerprints(
     output = capsys.readouterr().out
     assert "mapping_eligible_mechanism_count" in output
     assert "mapping_v2_candidate_fingerprint" in output
+    assert "mapping_v2_runtime_status" in output
 
 
 def test_pipeline_codec_preserves_nonzero_audit_and_policy_references(tmp_path: Path) -> None:
@@ -104,12 +110,38 @@ def test_authorized_promotion_cli_requires_decision_artifact(tmp_path: Path, cap
 
 def test_build_semantic_core_cli_persists_authoritative_zero_state(tmp_path: Path, capsys) -> None:
     from destiny_personality.cli import main
+    from destiny_personality.semantic_pipeline_codec import load_pipeline_core
 
     output = tmp_path / "semantic-core.json"
     root = Path(__file__).resolve().parents[1]
     assert main(["build-semantic-core", str(root), "profile:test", str(output)]) == 0
     assert output.is_file()
     assert "blocked_by_gate" in capsys.readouterr().out
+    persisted = load_pipeline_core(output)
+    assert "repository_mapping_v2" in persisted["core"]["audit_trail"]
+
+
+def test_pipeline_core_is_readable_by_existing_semantic_core_views(tmp_path: Path, capsys) -> None:
+    from destiny_personality.cli import main
+
+    root = Path(__file__).resolve().parents[1]
+    output = tmp_path / "semantic-core.json"
+    assert main(["build-semantic-core", str(root), "profile:test", str(output)]) == 0
+    assert main(["semantic-core-source-view", str(output), "mapping"]) == 0
+    assert "profile:test" in capsys.readouterr().out
+
+
+def test_repository_mapping_compilation_uses_authoritative_eligibility_snapshot(tmp_path: Path) -> None:
+    from destiny_personality.mapping_v2 import compile_mapping_v2_from_repository
+
+    candidates = tmp_path / "candidates"
+    (candidates / "mapping-v2").mkdir(parents=True)
+    (candidates / "semantic-mechanisms-v1").mkdir()
+    (candidates / "mapping-v2" / "mapping_v2_candidate_registry_v1.yaml").write_text(
+        "schema_version: mapping-v2-candidate-registry-v1\nreview_status: candidate_only\ncandidates: []\n",
+        encoding="utf-8",
+    )
+    assert compile_mapping_v2_from_repository(tmp_path).status == "blocked_by_gate"
 
 
 def test_promotion_technical_gate_requires_passing_bound_records(tmp_path: Path) -> None:
@@ -131,3 +163,55 @@ def test_shadow_diff_exposes_stage_activation_metrics() -> None:
     active = {"primitive_states": (), "signatures": (), "dynamics": (), "fate_themes": (), "archetype": None}
     candidate = {"primitive_states": ({"state": "unknown"}, {"state": "mixed"}), "signatures": ({"signature_id": "S"},), "dynamics": (), "fate_themes": (), "archetype": None}
     assert shadow_diff_metrics(active, candidate)["signature_count_delta"] == 1
+    assert shadow_diff_metrics(active, candidate)["unknown_rate"] == 0.5
+
+
+def test_authorized_rollback_is_persisted_and_cannot_repeat(tmp_path: Path) -> None:
+    from destiny_personality.semantic_promotion import rollback_from_record
+
+    record = tmp_path / "record.json"
+    record.write_text('{"schema_version":"semantic-promotion-record-v1","status":"shadow","active_bundle_ref":"active:test","candidate_bundle_ref":"bundle:test","decision_ref":"D-1","rollback_target":"active:test","candidate_fingerprint":"abc","validation_refs":["PASS"]}', encoding="utf-8")
+    assert rollback_from_record(record).status == "rolled_back"
+    assert json.loads(record.read_text(encoding="utf-8"))["status"] == "rolled_back"
+    with pytest.raises(ValueError, match="ROLLBACK_RECORD_INVALID"):
+        rollback_from_record(record)
+
+
+def test_dynamic_policy_metadata_is_retained_as_formed_data() -> None:
+    from destiny_personality.semantic_pipeline import build_semantic_core_from_approved_mapping
+
+    core = build_semantic_core_from_approved_mapping(
+        "profile:test",
+        ({"mapping_candidate_id": "M1", "primitive_id": "P001", "proposed_direction": {"state": "supported_high"}},),
+        {"signature": {"rules": [{"signature_id": "S1", "required_primitive_ids": ["P001"]}]}, "dynamic": {"rules": [{"dynamic_id": "D1", "required_signature_ids": ["S1"], "shadow_form": "SH-1", "mature_form": "MT-1"}]}},
+    )
+    assert core["shadow_mature_forms"] == ({"dynamic_id": "D1", "shadow_form": "SH-1", "mature_form": "MT-1"},)
+
+
+def test_primitive_resolver_merges_conflicting_mapping_evidence() -> None:
+    from destiny_personality.semantic_pipeline import resolve_primitive_states
+
+    states = resolve_primitive_states((
+        {"mapping_candidate_id": "M1", "primitive_id": "P001", "proposed_direction": {"state": "supported_high"}},
+        {"mapping_candidate_id": "M2", "primitive_id": "P001", "proposed_direction": {"state": "supported_low"}},
+    ), {})
+    assert states == ({"primitive_id": "P001", "state": "mixed", "mapping_refs": ("M1", "M2")},)
+
+
+def test_pipeline_distinguishes_zero_output_from_missing_policy() -> None:
+    from destiny_personality.semantic_pipeline import build_semantic_core_from_approved_mapping
+
+    core = build_semantic_core_from_approved_mapping(
+        "profile:test",
+        ({"mapping_candidate_id": "M1", "primitive_id": "P001", "proposed_direction": {"state": "supported_high"}},),
+        {"signature": {"rules": []}},
+    )
+    assert core["stage_statuses"]["signature"] == "available_zero"
+    assert core["stage_statuses"]["dynamic"] == "blocked_by_gate"
+
+
+def test_mapping_eligibility_snapshot_exposes_hashable_authoritative_ids() -> None:
+    from destiny_personality.semantic_authority import MappingEligibilitySnapshot
+
+    snapshot = MappingEligibilitySnapshot(({"candidate_id": "SMC-1"},), "policy:test")
+    assert snapshot.mechanism_ids == frozenset({"SMC-1"})
