@@ -202,6 +202,7 @@ def test_pipeline_persists_provenance_from_signature_to_facts() -> None:
     assert ("mapping:M1", "supported_by", "fact:fact:1") in core["provenance"]["edges"]
     assert "fact:fact:1" in explain_semantic_pipeline_item(core, "signature:S1")["provenance_nodes"]
     assert semantic_pipeline_source_view(core, "signature")["item_count"] == 1
+    assert ("semantic_mechanism:SMC-1", "supported_by", "evidence_root:ER-1") in core["provenance"]["edges"]
 
 
 def test_primitive_resolver_merges_conflicting_mapping_evidence() -> None:
@@ -226,6 +227,16 @@ def test_primitive_resolver_preserves_cross_context_variation_and_ignores_exclus
     assert states[0]["mapping_refs"] == ("M1", "M2")
 
 
+def test_primitive_qualifiers_do_not_create_or_reverse_direction() -> None:
+    from destiny_personality.semantic_pipeline import resolve_primitive_states
+
+    states = resolve_primitive_states((
+        {"mapping_candidate_id": "M1", "primitive_id": "P001", "modifiers": ["m"], "contextualizers": ["work"], "counterevidence": ["c"], "proposed_direction": {}},
+    ), {})
+    assert states[0]["state"] == "unknown"
+    assert states[0]["counterevidence_refs"] == ("c",)
+
+
 def test_pipeline_distinguishes_zero_output_from_missing_policy() -> None:
     from destiny_personality.semantic_pipeline import build_semantic_core_from_approved_mapping
 
@@ -236,6 +247,14 @@ def test_pipeline_distinguishes_zero_output_from_missing_policy() -> None:
     )
     assert core["stage_statuses"]["signature"] == "available_zero"
     assert core["stage_statuses"]["dynamic"] == "blocked_by_gate"
+
+
+def test_pipeline_diff_reports_provenance_and_policy_changes() -> None:
+    from destiny_personality.semantic_pipeline import diff_semantic_pipeline_cores
+
+    left = {"mapping_candidates": (), "primitive_states": ({"state": "unknown", "context_states": {}},), "signatures": (), "dynamics": (), "shadow_mature_forms": (), "fate_themes": (), "archetype": None, "stage_statuses": {}, "provenance": {"nodes": (), "edges": ()}, "authority": "A", "formation_policy_fingerprint": "one"}
+    right = {**left, "provenance": {"nodes": ("fact:1",), "edges": ()}, "formation_policy_fingerprint": "two"}
+    assert diff_semantic_pipeline_cores(left, right) == ("formation_policy_change", "provenance_change")
 
 
 def test_mapping_eligibility_snapshot_exposes_hashable_authoritative_ids() -> None:

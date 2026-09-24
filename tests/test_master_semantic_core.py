@@ -141,6 +141,13 @@ def test_cli_promotion_requires_decision_reference(capsys) -> None:
     assert "PROMOTION_AUTHORIZATION_REQUIRED" in capsys.readouterr().out
 
 
+def test_legacy_promotion_cli_is_explicitly_simulated(capsys) -> None:
+    from destiny_personality.cli import main
+
+    assert main(["promote-semantic-bundle", "active-v1", "candidate-v2", "--decision-ref", "D1"]) == 0
+    assert "simulated_shadow" in capsys.readouterr().out
+
+
 def test_cli_review_packet_and_rollback_are_machine_readable(capsys) -> None:
     from destiny_personality.cli import main
 

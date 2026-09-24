@@ -301,12 +301,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             from .semantic_core import audit_semantic_core_candidate, build_promotion_review_packet, build_report_plan, build_semantic_core_candidate, build_semantic_core_review_packet, diff_semantic_core_candidates, explain_semantic_core_item, form_core_dynamics, form_dominant_signatures, load_semantic_mechanism_role_policy, promote_semantic_bundle, render_semantic_core_report, rollback_semantic_bundle, semantic_core_source_view
             from .semantic_core_codec import load_semantic_core_candidate
             from .semantic_mechanisms import build_semantic_mechanism_audit_report, load_approved_evidence_root_ids, load_approved_semantic_mechanism_ids, load_semantic_mechanism_candidates
-            from .mapping_v2 import audit_mapping_v2_candidates, build_fresh_mapping_candidates, compile_mapping_v2_candidate_bundle, compile_mapping_v2_from_repository, load_mapping_proposal_registry, load_mapping_v2_candidate_registry, mapping_v2_candidate_fingerprint, run_mapping_v2_calibration, run_mapping_v2_holdout
+            from .mapping_v2 import audit_mapping_v2_candidates, build_fresh_mapping_candidates, build_mapping_evaluation_artifact, compile_mapping_v2_candidate_bundle, compile_mapping_v2_from_repository, load_mapping_proposal_registry, load_mapping_v2_candidate_registry, mapping_v2_candidate_fingerprint, run_mapping_v2_calibration, run_mapping_v2_holdout
             from .semantic_authority import load_mapping_eligible_semantic_mechanisms
             root = args.project_root if hasattr(args, "project_root") else Path(".")
             mechanism_root = root / "candidates" / "semantic-mechanisms-v1"
             if args.command == "promote-semantic-bundle":
-                summary = asdict(promote_semantic_bundle(args.active_bundle_ref, args.candidate_bundle_ref, args.decision_ref))
+                simulation = asdict(promote_semantic_bundle(args.active_bundle_ref, args.candidate_bundle_ref, args.decision_ref))
+                simulation["status"] = "simulated_" + simulation["status"]
+                simulation["authority"] = "none"
+                simulation["persistence"] = "none"
+                summary = simulation
             elif args.command == "promote-semantic-bundle-authorized":
                 from .promotion_authority import load_promotion_authority
                 from .semantic_promotion import promote_from_authority
@@ -345,7 +349,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                     from .semantic_pipeline import explain_semantic_pipeline_item
                     summary = explain_semantic_pipeline_item(pipeline_core, args.item_id)
             elif args.command == "semantic-core-diff":
-                summary = asdict(diff_semantic_core_candidates(load_semantic_core_candidate(args.left), load_semantic_core_candidate(args.right)))
+                from .semantic_pipeline_codec import load_pipeline_core
+                try:
+                    left_pipeline, right_pipeline = load_pipeline_core(args.left), load_pipeline_core(args.right)
+                except ValueError:
+                    summary = asdict(diff_semantic_core_candidates(load_semantic_core_candidate(args.left), load_semantic_core_candidate(args.right)))
+                else:
+                    from .semantic_pipeline import diff_semantic_pipeline_cores
+                    left_core = {**left_pipeline["core"], "formation_policy_fingerprint": left_pipeline["formation_policy_fingerprint"]}
+                    right_core = {**right_pipeline["core"], "formation_policy_fingerprint": right_pipeline["formation_policy_fingerprint"]}
+                    summary = {"changed_categories": diff_semantic_pipeline_cores(left_core, right_core)}
             elif args.command == "semantic-core-review-packet":
                 candidates = load_semantic_mechanism_candidates(mechanism_root)
                 approved_roots = load_approved_evidence_root_ids(mechanism_root)
@@ -374,7 +387,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             elif args.command in {"build-mapping-candidates", "validate-mapping-v2"}:
                 policy = load_semantic_mechanism_role_policy(root)
                 eligible = load_mapping_eligible_semantic_mechanisms(mechanism_root, policy)
-                candidates = build_fresh_mapping_candidates(eligible.mechanism_ids)
+                candidates = build_fresh_mapping_candidates(load_mapping_proposal_registry(root), eligible.mechanism_ids)
                 if args.command == "validate-mapping-v2":
                     registry = load_mapping_v2_candidate_registry(root)
                     candidates = registry.candidates
@@ -386,12 +399,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 summary = {"status": "blocked_by_gate", "signatures": list(form_dominant_signatures(())), "blockers": ["APPROVED_PRIMITIVE_V2_REQUIRED"]}
             elif args.command == "run-mapping-calibration":
                 mapping_bundle = compile_mapping_v2_from_repository(root)
-                summary = asdict(run_mapping_v2_calibration((*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules)))
+                summary = dict(build_mapping_evaluation_artifact("calibration", (*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules), "mapping-v2:repository", mapping_v2_candidate_fingerprint(root), (), "mapping-v2-evaluation-v1"))
                 summary["mapping_bundle_status"] = mapping_bundle.status
                 summary["mapping_bundle_blockers"] = mapping_bundle.blockers
             elif args.command == "run-mapping-holdout":
                 mapping_bundle = compile_mapping_v2_from_repository(root)
-                summary = asdict(run_mapping_v2_holdout((*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules)))
+                summary = dict(build_mapping_evaluation_artifact("holdout", (*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules), "mapping-v2:repository", mapping_v2_candidate_fingerprint(root), (), "mapping-v2-evaluation-v1"))
                 summary["mapping_bundle_status"] = mapping_bundle.status
                 summary["mapping_bundle_blockers"] = mapping_bundle.blockers
             else:

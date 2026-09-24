@@ -69,3 +69,21 @@ def test_mapping_evaluation_rejects_template_collapse() -> None:
     ))
     assert result.status == "fail"
     assert "MAPPING_TEMPLATE_COLLAPSE" in result.blockers
+
+
+def test_reviewed_proposal_becomes_unapproved_mapping_candidate() -> None:
+    from destiny_personality.mapping_v2 import build_fresh_mapping_candidates
+
+    proposal = {"proposal_id": "P1", "source_system": "bazi", "canonical_fact_requirements": ["fact:1"], "semantic_mechanism_refs": ["SMC-1"], "primitive_id": "P001", "primitive_question": "q", "proposed_direction": {"state": "supported_high"}, "contexts": ["work"], "modifiers": ["m"], "contextualizers": ["work"], "counterevidence": ["c"], "exclusions": ["e"], "evidence_root_refs": ["ER-1"], "limitations": ["l"], "legacy_similarity": {"status": "none"}, "origin": "author", "review_status": "reviewed"}
+    candidate = build_fresh_mapping_candidates((proposal,), {"SMC-1"})[0]
+    assert candidate["mapping_candidate_id"] == "P1"
+    assert candidate["review_status"] == "candidate"
+
+
+def test_mapping_calibration_artifact_is_machine_generated_and_binds_dataset() -> None:
+    from destiny_personality.mapping_v2 import build_mapping_evaluation_artifact
+
+    artifact = build_mapping_evaluation_artifact("calibration", (), "bundle:test", "f" * 64, ("fixture:design-a",), "policy:test")
+    assert artifact["schema_version"] == "semantic-calibration-artifact-v1"
+    assert artifact["run_status"] == "blocked_by_gate"
+    assert artifact["runner_version"] == "mapping-evaluation-v1"

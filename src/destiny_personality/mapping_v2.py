@@ -1,6 +1,7 @@
 """Candidate-only Fresh Mapping v2 infrastructure."""
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 from typing import Iterable, Mapping, Tuple
@@ -63,10 +64,21 @@ def validate_mapping_proposal(proposal: object, mapping_eligible_ids: Iterable[s
     return tuple(sorted(set(findings)))
 
 
-def build_fresh_mapping_candidates(mapping_eligible_mechanisms: Iterable[object]) -> Tuple[object, ...]:
-    """No mechanism may become a Mapping without a separately authored candidate."""
-    tuple(mapping_eligible_mechanisms)
-    return ()
+def build_fresh_mapping_candidates(
+    proposals: Iterable[object], mapping_eligible_ids: Iterable[str] = ()
+) -> Tuple[object, ...]:
+    """Transform only reviewed, valid authored proposals; never auto-approve."""
+    eligible = set(mapping_eligible_ids)
+    candidates = []
+    for proposal in proposals:
+        if validate_mapping_proposal(proposal, eligible):
+            continue
+        candidate = dict(proposal)
+        candidate["mapping_candidate_id"] = candidate.pop("proposal_id")
+        candidate["audit_trail"] = ["mapping-proposal:" + candidate["mapping_candidate_id"]]
+        candidate["review_status"] = "candidate"
+        candidates.append(candidate)
+    return tuple(candidates)
 
 
 def compile_mapping_v2_candidate_bundle(
@@ -184,3 +196,20 @@ def run_mapping_v2_holdout(approved_bundle: Iterable[object]) -> MappingV2Evalua
         return MappingV2Evaluation("blocked_by_gate", ("APPROVED_MAPPING_V2_BUNDLE_REQUIRED",))
     blockers = ("MAPPING_HOLDOUT_CONTEXT_REQUIRED",) if any(not item.get("contexts") for item in items) else ()
     return MappingV2Evaluation("fail" if blockers else "ready_for_review", blockers)
+
+
+def build_mapping_evaluation_artifact(
+    kind: str, bundle: Iterable[object], candidate_bundle_ref: str, bundle_fingerprint: str,
+    dataset_refs: Iterable[str], policy_version: str,
+) -> Mapping[str, object]:
+    """Create a machine-originated candidate evaluation artifact; no registry write occurs here."""
+    if kind not in {"calibration", "holdout"}:
+        raise ValueError("MAPPING_EVALUATION_KIND_INVALID")
+    items, datasets = tuple(bundle), tuple(dataset_refs)
+    evaluation = run_mapping_v2_calibration(items) if kind == "calibration" else run_mapping_v2_holdout(items)
+    status = "pass" if evaluation.status == "ready_for_review" and datasets else evaluation.status
+    findings = evaluation.blockers if datasets else (*evaluation.blockers, "MAPPING_EVALUATION_DATASET_REQUIRED")
+    if not datasets and status == "ready_for_review":
+        status = "fail"
+    artifact_id = kind + ":" + sha256((candidate_bundle_ref + bundle_fingerprint + "|".join(datasets)).encode()).hexdigest()[:16]
+    return {"schema_version": f"semantic-{kind}-artifact-v1", "artifact_id": artifact_id, "candidate_bundle_ref": candidate_bundle_ref, "bundle_fingerprint": bundle_fingerprint, "runner_version": "mapping-evaluation-v1", "policy_version": policy_version, "dataset_refs": datasets, "run_timestamp": datetime.now(timezone.utc).isoformat(), "run_status": status, "metrics": {"mapping_count": len(items)}, "findings": findings, "limitations": ("candidate_only",)}

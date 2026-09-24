@@ -92,9 +92,18 @@ def build_semantic_provenance(core: Mapping[str, object]) -> dict:
         mapping_ref = "mapping:" + str(mapping["mapping_candidate_id"])
         primitive_ref = "primitive:" + str(mapping["primitive_id"])
         nodes.update((mapping_ref, primitive_ref)); edges.add((primitive_ref, "derived_from", mapping_ref))
+        mechanisms = tuple(mapping.get("semantic_mechanism_refs", ()))
+        roots = tuple(mapping.get("evidence_root_refs", ()))
+        facts = tuple(mapping.get("canonical_fact_requirements", ()))
         for field, kind in (("semantic_mechanism_refs", "semantic_mechanism"), ("evidence_root_refs", "evidence_root"), ("canonical_fact_requirements", "fact")):
             for ref in mapping.get(field, ()):
                 child = kind + ":" + str(ref); nodes.add(child); edges.add((mapping_ref, "supported_by", child))
+        for mechanism in mechanisms:
+            for root in roots:
+                edges.add(("semantic_mechanism:" + str(mechanism), "supported_by", "evidence_root:" + str(root)))
+        for root in roots:
+            for fact in facts:
+                edges.add(("evidence_root:" + str(root), "supported_by", "fact:" + str(fact)))
     for collection, prefix, source_prefix in (("signatures", "signature", "primitive"), ("dynamics", "dynamic", "signature"), ("fate_themes", "theme", "dynamic")):
         for item in core.get(collection, ()):
             identifier = item.get(prefix + "_id") or item.get("theme_id")
@@ -152,6 +161,10 @@ def resolve_primitive_states(mappings: Iterable[Mapping[str, object]], policy: M
             result["mechanism_refs"] = tuple(ref for item in items for ref in item.get("semantic_mechanism_refs", ()))
             result["evidence_root_refs"] = tuple(ref for item in items for ref in item.get("evidence_root_refs", ()))
             result["fact_refs"] = tuple(ref for item in items for ref in item.get("canonical_fact_requirements", ()))
+        for field, output_field in (("modifiers", "modifier_refs"), ("contextualizers", "contextualizer_refs"), ("counterevidence", "counterevidence_refs")):
+            refs = tuple(ref for item in items for ref in item.get(field, ()) if isinstance(ref, str) and ref)
+            if refs:
+                result[output_field] = refs
         results.append(result)
     return tuple(results)
 
@@ -199,6 +212,22 @@ def explain_semantic_item(core: Mapping[str, object], item_ref: str) -> dict:
 def diff_semantic_cores(left: Mapping[str, object], right: Mapping[str, object]) -> tuple:
     checks = (("mapping_change", "mapping_candidates"), ("primitive_state_change", "primitive_states"), ("signature_change", "signatures"), ("dynamic_change", "dynamics"), ("theme_change", "fate_themes"), ("archetype_change", "archetype"), ("stage_status_change", "stage_statuses"))
     return tuple(label for label, key in checks if left.get(key) != right.get(key))
+
+
+def diff_semantic_pipeline_cores(left: Mapping[str, object], right: Mapping[str, object]) -> tuple:
+    checks = (
+        ("mapping_change", "mapping_candidates"), ("primitive_state_change", "primitive_states"),
+        ("signature_change", "signatures"), ("dynamic_change", "dynamics"),
+        ("shadow_mature_change", "shadow_mature_forms"), ("theme_change", "fate_themes"),
+        ("archetype_change", "archetype"), ("formation_policy_change", "formation_policy_fingerprint"),
+        ("provenance_change", "provenance"), ("authority_change", "authority"),
+        ("stage_status_change", "stage_statuses"),
+    )
+    context_changed = any(item.get("context_states") != other.get("context_states") for item, other in zip(left.get("primitive_states", ()), right.get("primitive_states", ())))
+    labels = [label for label, key in checks if left.get(key) != right.get(key)]
+    if context_changed and "context_state_change" not in labels:
+        labels.insert(2, "context_state_change")
+    return tuple(labels)
 
 
 def build_semantic_report(core: Mapping[str, object], renderer_profile: str) -> dict:
