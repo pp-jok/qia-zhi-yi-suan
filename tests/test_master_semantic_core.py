@@ -134,6 +134,7 @@ def test_cli_exposes_mapping_calibration_and_holdout_gates(capsys) -> None:
     calibration_output = capsys.readouterr().out
     assert "blocked_by_gate" in calibration_output
     assert "design_set" in calibration_output
+    assert '"fixture_count": 8' in calibration_output
 
 
 def test_cli_refuses_to_register_a_nonpassing_mapping_evaluation(capsys) -> None:
@@ -168,5 +169,6 @@ def test_cli_review_packet_and_rollback_are_machine_readable(capsys) -> None:
     holdout_output = capsys.readouterr().out
     assert "blocked_by_gate" in holdout_output
     assert "holdout_set" in holdout_output
+    assert '"fixture_count": 5' in holdout_output
     assert main(["build-signatures", str(PROJECT_ROOT)]) == 0
     assert "blocked_by_gate" in capsys.readouterr().out

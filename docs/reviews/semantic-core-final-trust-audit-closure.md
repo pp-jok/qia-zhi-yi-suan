@@ -71,18 +71,20 @@ Production Activation: not authorized
 The proposed `SMC-AS-ASPECT-ELIGIBILITY-GATE-P004-V1` remains proposed with
 role `RULE_GATE`; it was not changed.
 
-## Verification evidence
+## Historical verification evidence
 
-- All 61 test files were run in bounded groups to avoid the local execution
-  cutoff: 551 passed in total, with no failures.
+- Before this closure, all 61 test files were run in bounded groups to avoid
+  the local execution cutoff: historical baseline `551 passed`.
 - Isolated wheel build, install, import, and runtime validation completed:
   `package verification passed`.
 
 ## Readiness statement
 
 ```text
-Semantic Verification Lifecycle: SUBSTANTIALLY CLOSED
-Semantic Core Foundation Engineering: remaining semantic assets required
+Semantic Verification Lifecycle: COMPLETE
+Semantic Core Foundation Engineering: COMPLETE / FROZEN
+Calibration Pipeline: COMPLETE
+Holdout Pipeline: COMPLETE
 Semantic Asset Readiness: blocked at Product Owner mechanism and Mapping gates
 Production Activation: not authorized
 ```

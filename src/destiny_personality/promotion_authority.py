@@ -41,12 +41,12 @@ def load_promotion_authority(
 
 def register_evaluation_artifact(project_root: Path, kind: str, artifact: Mapping[str, object]) -> None:
     """Append one passing machine-generated artifact to its authoritative registry."""
+    from .mapping_v2 import validate_mapping_evaluation_artifact
+
     if kind not in {"calibration", "holdout"}:
         raise ValueError("EVALUATION_ARTIFACT_KIND_INVALID")
-    required = ("artifact_id", "candidate_bundle_ref", "bundle_fingerprint", "runner_version", "policy_version", "dataset_refs", "run_timestamp", "metrics", "findings", "limitations")
-    if artifact.get("schema_version") != f"semantic-{kind}-artifact-v1" or any(field not in artifact for field in required):
-        raise ValueError("EVALUATION_ARTIFACT_INVALID")
-    if artifact.get("runner_version") != "mapping-evaluation-v1" or artifact.get("run_status") != "pass":
+    validate_mapping_evaluation_artifact(kind, artifact)
+    if artifact.get("run_status") != "pass":
         raise ValueError("EVALUATION_ARTIFACT_NOT_PASSED")
     path = Path(project_root) / "governance" / "semantic-promotion-v1" / f"{kind}_registry_v1.yaml"
     try:
@@ -93,13 +93,17 @@ def _validate_decision(item: Mapping[str, object]) -> None:
 
 
 def _find_matching_artifact(items: tuple[Mapping[str, object], ...], bundle_ref: str, fingerprint: str, prefix: str) -> Mapping[str, object]:
+    from .mapping_v2 import validate_mapping_evaluation_artifact
+
     matches = tuple(item for item in items if item.get("candidate_bundle_ref") == bundle_ref and item.get("bundle_fingerprint") == fingerprint)
     if len(matches) != 1:
         raise ValueError(prefix + "_ARTIFACT_REQUIRED")
     artifact = matches[0]
-    required = ("artifact_id", "runner_version", "policy_version", "dataset_refs", "run_timestamp")
-    if any(not artifact.get(field) for field in required):
-        raise ValueError(prefix + "_ARTIFACT_INVALID")
+    kind = "calibration" if prefix == "PROMOTION_CALIBRATION" else "holdout"
+    try:
+        validate_mapping_evaluation_artifact(kind, artifact)
+    except ValueError as exc:
+        raise ValueError(prefix + "_ARTIFACT_INVALID") from exc
     if artifact.get("run_status") != "pass":
         raise ValueError(prefix + "_NOT_PASSED")
     return artifact

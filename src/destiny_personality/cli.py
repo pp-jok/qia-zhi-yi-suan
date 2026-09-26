@@ -303,7 +303,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             from .semantic_core import audit_semantic_core_candidate, build_promotion_review_packet, build_report_plan, build_semantic_core_candidate, build_semantic_core_review_packet, diff_semantic_core_candidates, explain_semantic_core_item, form_core_dynamics, form_dominant_signatures, load_semantic_mechanism_role_policy, promote_semantic_bundle, render_semantic_core_report, rollback_semantic_bundle, semantic_core_source_view
             from .semantic_core_codec import load_semantic_core_candidate
             from .semantic_mechanisms import build_semantic_mechanism_audit_report, load_approved_evidence_root_ids, load_approved_semantic_mechanism_ids, load_semantic_mechanism_candidates
-            from .mapping_v2 import audit_mapping_v2_candidates, build_fresh_mapping_candidates, build_mapping_evaluation_artifact, compile_mapping_v2_candidate_bundle, compile_mapping_v2_from_repository, load_mapping_proposal_registry, load_mapping_v2_candidate_registry, mapping_evaluation_dataset_refs, mapping_v2_candidate_fingerprint, run_mapping_v2_calibration, run_mapping_v2_holdout
+            from .mapping_v2 import audit_mapping_v2_candidates, build_fresh_mapping_candidates, build_mapping_evaluation_artifact, compile_mapping_v2_candidate_bundle, compile_mapping_v2_from_repository, load_mapping_proposal_registry, load_mapping_v2_candidate_registry, mapping_evaluation_dataset_refs, mapping_v2_candidate_fingerprint, run_mapping_v2_calibration, run_mapping_v2_holdout, run_repository_mapping_evaluation
             from .semantic_authority import load_mapping_eligible_semantic_mechanisms
             root = args.project_root if hasattr(args, "project_root") else Path(".")
             mechanism_root = root / "candidates" / "semantic-mechanisms-v1"
@@ -401,7 +401,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 summary = {"status": "blocked_by_gate", "signatures": list(form_dominant_signatures(())), "blockers": ["APPROVED_PRIMITIVE_V2_REQUIRED"]}
             elif args.command == "run-mapping-calibration":
                 mapping_bundle = compile_mapping_v2_from_repository(root)
-                summary = dict(build_mapping_evaluation_artifact("calibration", (*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules), "mapping-v2:repository", mapping_v2_candidate_fingerprint(root), mapping_evaluation_dataset_refs(root, "calibration"), "mapping-v2-evaluation-v1"))
+                summary = dict(run_repository_mapping_evaluation(root, "calibration", (*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules), "mapping-v2:repository", mapping_v2_candidate_fingerprint(root), "mapping-v2-evaluation-v1"))
                 if args.register:
                     from .promotion_authority import register_evaluation_artifact
                     register_evaluation_artifact(root, "calibration", summary)
@@ -410,7 +410,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 summary["mapping_bundle_blockers"] = mapping_bundle.blockers
             elif args.command == "run-mapping-holdout":
                 mapping_bundle = compile_mapping_v2_from_repository(root)
-                summary = dict(build_mapping_evaluation_artifact("holdout", (*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules), "mapping-v2:repository", mapping_v2_candidate_fingerprint(root), mapping_evaluation_dataset_refs(root, "holdout"), "mapping-v2-evaluation-v1"))
+                summary = dict(run_repository_mapping_evaluation(root, "holdout", (*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules), "mapping-v2:repository", mapping_v2_candidate_fingerprint(root), "mapping-v2-evaluation-v1"))
                 if args.register:
                     from .promotion_authority import register_evaluation_artifact
                     register_evaluation_artifact(root, "holdout", summary)

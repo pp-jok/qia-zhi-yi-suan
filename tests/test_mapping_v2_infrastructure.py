@@ -95,7 +95,12 @@ def test_mapping_evaluation_uses_disjoint_repository_design_and_holdout_datasets
     for name in ("design_set", "holdout_set"):
         directory = tmp_path / "tests" / "fixtures" / "core_profile_calibration" / name
         directory.mkdir(parents=True)
-        (directory / f"{name}.yaml").write_text("fixture_schema_version: test-v1\n", encoding="utf-8")
+        (directory / f"{name}.yaml").write_text(
+            "fixture_schema_version: candidate-core-profile-calibration-facts-v1\n"
+            f"case_id: {name}\nfact_assurance: capability_reported\nbazi_ten_gods: []\n"
+            "astrology:\n  known_birth_time: true\n  aspect_pairs: []\n",
+            encoding="utf-8",
+        )
 
     calibration = mapping_evaluation_dataset_refs(tmp_path, "calibration")
     holdout = mapping_evaluation_dataset_refs(tmp_path, "holdout")

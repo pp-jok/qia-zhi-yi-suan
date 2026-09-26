@@ -118,8 +118,10 @@ asset nor change any active fingerprint.
 ## Current readiness statement
 
 ```text
-Semantic Verification Lifecycle: SUBSTANTIALLY CLOSED
-Semantic Core Foundation Engineering: NOT FINAL COMPLETE
+Semantic Verification Lifecycle: COMPLETE
+Semantic Core Foundation Engineering: COMPLETE / FROZEN
+Calibration Pipeline: COMPLETE
+Holdout Pipeline: COMPLETE
 Semantic Asset Readiness: BLOCKED AT PRODUCT OWNER MECHANISM/MAPPING GATES
 Production Activation: NOT AUTHORIZED
 ```
@@ -128,10 +130,11 @@ No real mechanism was approved, no real Mapping was activated, no Primitive v2
 runtime was activated, no Signature/Dynamic/Theme/Archetype runtime was
 activated, and no production semantic bundle was promoted.
 
-## Final verification
+## Historical verification
 
-On 2026-09-24, the complete test suite passed with `543 passed in 35.04s` and
-the isolated wheel/package verifier printed `package verification passed`.
+Before this closure, on 2026-09-24, the complete test suite passed with the
+historical baseline `543 passed in 35.04s` and the isolated wheel/package
+verifier printed `package verification passed`.
 The active semantic fingerprint remained
 `256ba053b174a054226301f1b493e0e0c8f9f50e9f2976a72b8045dbf6ed6131`.
 The candidate-only Mapping and Semantic Core fingerprints are recorded by the
@@ -152,6 +155,7 @@ fingerprint.
 - Qualifiers are formally `stored_but_not_resolved`: they are preserved for
   audit but are not a policy-active direction or weighting mechanism.
 
-This completes the reusable verification plumbing. Further work belongs to
-actual semantic asset authoring and approval, not additional Semantic Core
-foundation engineering.
+The final Calibration/Holdout execution closure is documented in
+`semantic-core-final-calibration-holdout-closure.md`. This completes the
+reusable verification plumbing. Further work belongs to actual semantic asset
+authoring and approval, not additional Semantic Core foundation engineering.

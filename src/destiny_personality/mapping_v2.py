@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from hashlib import sha256
+import json
 from pathlib import Path
 from typing import Iterable, Mapping, Tuple
 
@@ -184,11 +185,9 @@ def mapping_v2_candidate_fingerprint(project_root: Path) -> str:
 
 def mapping_evaluation_dataset_refs(project_root: Path, kind: str) -> Tuple[str, ...]:
     """Return the disjoint repository fixture set used by each evaluation runner."""
-    if kind not in {"calibration", "holdout"}:
-        raise ValueError("MAPPING_EVALUATION_KIND_INVALID")
-    set_name = "design_set" if kind == "calibration" else "holdout_set"
-    directory = Path(project_root) / "tests" / "fixtures" / "core_profile_calibration" / set_name
-    return tuple(path.relative_to(project_root).as_posix() for path in sorted(directory.glob("*.yaml")))
+    from .mapping_evaluation import load_mapping_evaluation_datasets
+
+    return load_mapping_evaluation_datasets(project_root)[kind].refs
 
 
 def run_mapping_v2_calibration(approved_bundle: Iterable[object]) -> MappingV2Evaluation:
@@ -210,16 +209,76 @@ def run_mapping_v2_holdout(approved_bundle: Iterable[object]) -> MappingV2Evalua
 
 def build_mapping_evaluation_artifact(
     kind: str, bundle: Iterable[object], candidate_bundle_ref: str, bundle_fingerprint: str,
-    dataset_refs: Iterable[str], policy_version: str,
+    dataset_refs: Iterable[str], policy_version: str, dataset_fingerprint: str = "",
+    execution: object = None,
 ) -> Mapping[str, object]:
-    """Create a machine-originated candidate evaluation artifact; no registry write occurs here."""
+    """Create an attested evaluation artifact; a passing result requires executed cases."""
     if kind not in {"calibration", "holdout"}:
         raise ValueError("MAPPING_EVALUATION_KIND_INVALID")
     items, datasets = tuple(bundle), tuple(dataset_refs)
     evaluation = run_mapping_v2_calibration(items) if kind == "calibration" else run_mapping_v2_holdout(items)
-    status = "pass" if evaluation.status == "ready_for_review" and datasets else evaluation.status
-    findings = evaluation.blockers if datasets else (*evaluation.blockers, "MAPPING_EVALUATION_DATASET_REQUIRED")
-    if not datasets and status == "ready_for_review":
-        status = "fail"
-    artifact_id = kind + ":" + sha256((candidate_bundle_ref + bundle_fingerprint + "|".join(datasets)).encode()).hexdigest()[:16]
-    return {"schema_version": f"semantic-{kind}-artifact-v1", "artifact_id": artifact_id, "candidate_bundle_ref": candidate_bundle_ref, "bundle_fingerprint": bundle_fingerprint, "runner_version": "mapping-evaluation-v1", "policy_version": policy_version, "dataset_refs": datasets, "run_timestamp": datetime.now(timezone.utc).isoformat(), "run_status": status, "metrics": {"mapping_count": len(items)}, "findings": findings, "limitations": ("candidate_only",)}
+    dataset_hash = dataset_fingerprint or _stable_fingerprint(datasets)
+    mapping_bundle_hash = _stable_fingerprint(items)
+    if not datasets:
+        status, findings, metrics = "fail", (*evaluation.blockers, "MAPPING_EVALUATION_DATASET_REQUIRED"), {"mapping_count": len(items)}
+    elif evaluation.status == "blocked_by_gate":
+        status, findings, metrics = "blocked_by_gate", evaluation.blockers, {"mapping_count": len(items), "fixture_count": 0, "executed_case_count": 0, **dict(getattr(execution, "metrics", {}))}
+    elif execution is None:
+        status, findings, metrics = "fail", (*evaluation.blockers, "MAPPING_EVALUATION_EXECUTION_REQUIRED"), {"mapping_count": len(items)}
+    else:
+        status = getattr(execution, "status", "fail")
+        findings = tuple(sorted(set((*evaluation.blockers, *getattr(execution, "findings", ())))))
+        metrics = {"mapping_count": len(items), **dict(getattr(execution, "metrics", {}))}
+        if evaluation.status == "fail":
+            status = "fail"
+    evaluation_input_fingerprint = _evaluation_input_fingerprint(kind, candidate_bundle_ref, bundle_fingerprint, mapping_bundle_hash, dataset_hash, "mapping-evaluation-v1", policy_version)
+    payload = {"schema_version": f"semantic-{kind}-artifact-v1", "artifact_id": kind + ":" + evaluation_input_fingerprint[:16], "candidate_bundle_ref": candidate_bundle_ref, "bundle_fingerprint": bundle_fingerprint, "mapping_bundle_fingerprint": mapping_bundle_hash, "runner_version": "mapping-evaluation-v1", "policy_version": policy_version, "dataset_refs": datasets, "dataset_fingerprint": dataset_hash, "evaluation_input_fingerprint": evaluation_input_fingerprint, "run_timestamp": datetime.now(timezone.utc).isoformat(), "run_status": status, "metrics": metrics, "findings": findings, "limitations": ("candidate_only", "holdout_read_only") if kind == "holdout" else ("candidate_only",)}
+    return {**payload, "artifact_fingerprint": _artifact_fingerprint(payload)}
+
+
+def run_repository_mapping_evaluation(
+    project_root: Path, kind: str, bundle: Iterable[object], candidate_bundle_ref: str,
+    bundle_fingerprint: str, policy_version: str,
+) -> Mapping[str, object]:
+    """Official runner: load independent fixtures, execute them, then attest the artifact."""
+    from .mapping_evaluation import MappingEvaluationRun, execute_mapping_evaluation, load_mapping_evaluation_datasets
+
+    dataset = load_mapping_evaluation_datasets(project_root)[kind]
+    items = tuple(item for item in bundle if isinstance(item, Mapping))
+    execution = execute_mapping_evaluation(kind, items, dataset) if items else MappingEvaluationRun(
+        "blocked_by_gate", {"fixture_count": len(dataset.fixtures), "executed_case_count": 0}, (), ()
+    )
+    return build_mapping_evaluation_artifact(kind, items, candidate_bundle_ref, bundle_fingerprint, dataset.refs, policy_version, dataset.fingerprint, execution)
+
+
+def validate_mapping_evaluation_artifact(kind: str, artifact: Mapping[str, object]) -> None:
+    """Fail closed unless an artifact is internally consistent and runner-attested."""
+    required = ("artifact_id", "candidate_bundle_ref", "bundle_fingerprint", "mapping_bundle_fingerprint", "runner_version", "policy_version", "dataset_refs", "dataset_fingerprint", "evaluation_input_fingerprint", "run_timestamp", "run_status", "metrics", "findings", "limitations", "artifact_fingerprint")
+    if kind not in {"calibration", "holdout"} or artifact.get("schema_version") != f"semantic-{kind}-artifact-v1" or any(field not in artifact for field in required):
+        raise ValueError("EVALUATION_ARTIFACT_INVALID")
+    if artifact.get("runner_version") != "mapping-evaluation-v1":
+        raise ValueError("EVALUATION_ARTIFACT_RUNNER_INVALID")
+    if artifact.get("run_status") not in {"pass", "fail", "blocked_by_gate"} or not isinstance(artifact.get("dataset_refs"), (list, tuple)) or not artifact["dataset_refs"]:
+        raise ValueError("EVALUATION_ARTIFACT_INVALID")
+    for field in ("bundle_fingerprint", "mapping_bundle_fingerprint", "dataset_fingerprint", "evaluation_input_fingerprint", "artifact_fingerprint"):
+        if not _is_sha256(artifact.get(field)):
+            raise ValueError("EVALUATION_ARTIFACT_FINGERPRINT_INVALID")
+    expected_input = _evaluation_input_fingerprint(kind, str(artifact["candidate_bundle_ref"]), str(artifact["bundle_fingerprint"]), str(artifact["mapping_bundle_fingerprint"]), str(artifact["dataset_fingerprint"]), str(artifact["runner_version"]), str(artifact["policy_version"]))
+    if artifact.get("evaluation_input_fingerprint") != expected_input or artifact.get("artifact_id") != kind + ":" + expected_input[:16] or artifact.get("artifact_fingerprint") != _artifact_fingerprint(artifact):
+        raise ValueError("EVALUATION_ARTIFACT_FINGERPRINT_INVALID")
+
+
+def _evaluation_input_fingerprint(kind: str, candidate_bundle_ref: str, bundle_fingerprint: str, mapping_bundle_fingerprint: str, dataset_fingerprint: str, runner_version: str, policy_version: str) -> str:
+    return _stable_fingerprint({"kind": kind, "candidate_bundle_ref": candidate_bundle_ref, "bundle_fingerprint": bundle_fingerprint, "mapping_bundle_fingerprint": mapping_bundle_fingerprint, "dataset_fingerprint": dataset_fingerprint, "runner_version": runner_version, "policy_version": policy_version, "evaluation_config": "mapping-primitive-fixture-execution-v1"})
+
+
+def _artifact_fingerprint(artifact: Mapping[str, object]) -> str:
+    return _stable_fingerprint({key: value for key, value in artifact.items() if key not in {"artifact_fingerprint", "run_timestamp"}})
+
+
+def _stable_fingerprint(value: object) -> str:
+    return sha256(json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), default=list).encode("utf-8")).hexdigest()
+
+
+def _is_sha256(value: object) -> bool:
+    return isinstance(value, str) and len(value) == 64 and all(character in "0123456789abcdef" for character in value)
