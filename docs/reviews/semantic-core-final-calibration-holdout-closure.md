@@ -53,4 +53,6 @@ Future work starts with real semantic asset authoring and the Product Owner revi
 The current suite was collected as 572 tests and completed in bounded groups:
 167 + 113 + 181 + 111 = `572 passed`. Isolated package verification completed
 against a freshly built wheel. No active semantic or presentation fingerprint
-was modified by this closure.
+was modified by this closure. GitHub Actions for published commit `aac3e4a`
+also completed successfully on Python 3.9, 3.11, and 3.12, with the separate
+package-verification job successful.
