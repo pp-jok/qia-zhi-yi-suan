@@ -21,6 +21,19 @@ def test_rule_gate_is_approved_but_never_mapping_eligible(tmp_path: Path) -> Non
     }
 
 
+def test_only_primary_evidence_can_be_a_mapping_origin() -> None:
+    from destiny_personality.semantic_core import (
+        load_semantic_mechanism_role_policy,
+        mapping_eligibility_for_role,
+    )
+
+    policy = load_semantic_mechanism_role_policy(PROJECT_ROOT)
+
+    for role in ("RULE_GATE", "MODIFIER", "CONTEXTUALIZER", "COUNTER_EVIDENCE", "EXCLUSION"):
+        assert mapping_eligibility_for_role(policy, role)["mapping_origin"] is False
+    assert mapping_eligibility_for_role(policy, "PRIMARY_EVIDENCE")["mapping_origin"] is True
+
+
 def test_mapping_and_all_downstream_layers_fail_closed_without_approved_mapping() -> None:
     from destiny_personality.semantic_core import build_semantic_core_candidate
 
