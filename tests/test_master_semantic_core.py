@@ -131,7 +131,16 @@ def test_cli_exposes_mapping_calibration_and_holdout_gates(capsys) -> None:
     from destiny_personality.cli import main
 
     assert main(["run-mapping-calibration", str(PROJECT_ROOT)]) == 0
-    assert "blocked_by_gate" in capsys.readouterr().out
+    calibration_output = capsys.readouterr().out
+    assert "blocked_by_gate" in calibration_output
+    assert "design_set" in calibration_output
+
+
+def test_cli_refuses_to_register_a_nonpassing_mapping_evaluation(capsys) -> None:
+    from destiny_personality.cli import main
+
+    assert main(["run-mapping-calibration", str(PROJECT_ROOT), "--register"]) == 2
+    assert "EVALUATION_ARTIFACT_NOT_PASSED" in capsys.readouterr().err
 
 
 def test_cli_promotion_requires_decision_reference(capsys) -> None:
@@ -156,6 +165,8 @@ def test_cli_review_packet_and_rollback_are_machine_readable(capsys) -> None:
     assert main(["rollback-semantic-bundle", "active-v1", "candidate-v2", "PO-1"]) == 0
     assert "rolled_back" in capsys.readouterr().out
     assert main(["run-mapping-holdout", str(PROJECT_ROOT)]) == 0
-    assert "blocked_by_gate" in capsys.readouterr().out
+    holdout_output = capsys.readouterr().out
+    assert "blocked_by_gate" in holdout_output
+    assert "holdout_set" in holdout_output
     assert main(["build-signatures", str(PROJECT_ROOT)]) == 0
     assert "blocked_by_gate" in capsys.readouterr().out

@@ -195,7 +195,7 @@ def test_pipeline_persists_provenance_from_signature_to_facts() -> None:
 
     core = build_semantic_core_from_approved_mapping(
         "profile:test",
-        ({"mapping_candidate_id": "M1", "primitive_id": "P001", "proposed_direction": {"state": "supported_high"}, "semantic_mechanism_refs": ["SMC-1"], "evidence_root_refs": ["ER-1"], "canonical_fact_requirements": ["fact:1"]},),
+        ({"mapping_candidate_id": "M1", "primitive_id": "P001", "proposed_direction": {"state": "supported_high"}, "semantic_mechanism_refs": ["SMC-1"], "evidence_root_refs": ["ER-1"], "canonical_fact_requirements": ["fact:1"], "provenance_links": [{"from": "semantic_mechanism:SMC-1", "relation": "supported_by", "to": "evidence_root:ER-1"}, {"from": "evidence_root:ER-1", "relation": "supported_by", "to": "fact:fact:1"}]},),
         {"signature": {"rules": [{"signature_id": "S1", "required_primitive_ids": ["P001"]}]}},
     )
     assert ("signature:S1", "formed_from", "primitive:P001") in core["provenance"]["edges"]
@@ -203,6 +203,35 @@ def test_pipeline_persists_provenance_from_signature_to_facts() -> None:
     assert "fact:fact:1" in explain_semantic_pipeline_item(core, "signature:S1")["provenance_nodes"]
     assert semantic_pipeline_source_view(core, "signature")["item_count"] == 1
     assert ("semantic_mechanism:SMC-1", "supported_by", "evidence_root:ER-1") in core["provenance"]["edges"]
+
+
+def test_mapping_provenance_uses_explicit_asset_links_without_cartesian_inference() -> None:
+    from destiny_personality.semantic_pipeline import build_semantic_core_from_approved_mapping
+
+    core = build_semantic_core_from_approved_mapping(
+        "profile:test",
+        ({"mapping_candidate_id": "M1", "primitive_id": "P001", "proposed_direction": {"state": "supported_high"}, "semantic_mechanism_refs": ["SMC-1", "SMC-2"], "evidence_root_refs": ["ER-1", "ER-2"], "canonical_fact_requirements": ["fact:1", "fact:2"], "provenance_links": [{"from": "semantic_mechanism:SMC-1", "relation": "supported_by", "to": "evidence_root:ER-1"}, {"from": "evidence_root:ER-1", "relation": "supported_by", "to": "fact:fact:1"}]},),
+        {"signature": {"rules": []}},
+    )
+
+    edges = core["provenance"]["edges"]
+    assert ("semantic_mechanism:SMC-1", "supported_by", "evidence_root:ER-1") in edges
+    assert ("semantic_mechanism:SMC-1", "supported_by", "evidence_root:ER-2") not in edges
+    assert ("evidence_root:ER-1", "supported_by", "fact:fact:2") not in edges
+
+
+def test_pipeline_persists_shadow_mature_and_archetype_lineage() -> None:
+    from destiny_personality.semantic_pipeline import build_semantic_core_from_approved_mapping, explain_semantic_pipeline_item
+
+    core = build_semantic_core_from_approved_mapping(
+        "profile:test",
+        ({"mapping_candidate_id": "M1", "primitive_id": "P001", "proposed_direction": {"state": "supported_high"}},),
+        {"signature": {"rules": [{"signature_id": "S1", "required_primitive_ids": ["P001"]}]}, "dynamic": {"rules": [{"dynamic_id": "D1", "required_signature_ids": ["S1"], "shadow_form": "SH-1", "mature_form": "MT-1"}]}, "theme": {"rules": [{"theme_id": "T1", "required_dynamic_ids": ["D1"]}]}, "archetype": {"rules": [{"archetype_id": "A1", "required_theme_ids": ["T1"]}]}},
+    )
+
+    assert ("shadow_mature:D1:shadow", "formed_from", "dynamic:D1") in core["provenance"]["edges"]
+    assert ("archetype:A1", "formed_from", "theme:T1") in core["provenance"]["edges"]
+    assert "signature:S1" in explain_semantic_pipeline_item(core, "shadow_mature:D1:shadow")["provenance_nodes"]
 
 
 def test_primitive_resolver_merges_conflicting_mapping_evidence() -> None:
@@ -235,6 +264,7 @@ def test_primitive_qualifiers_do_not_create_or_reverse_direction() -> None:
     ), {})
     assert states[0]["state"] == "unknown"
     assert states[0]["counterevidence_refs"] == ("c",)
+    assert states[0]["qualifier_resolution_mode"] == "stored_but_not_resolved"
 
 
 def test_pipeline_distinguishes_zero_output_from_missing_policy() -> None:

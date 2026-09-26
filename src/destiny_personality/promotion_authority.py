@@ -39,6 +39,29 @@ def load_promotion_authority(
     return PromotionAuthority(decision_id, candidate_bundle_ref, candidate_fingerprint, str(calibration["artifact_id"]), str(holdout["artifact_id"]))
 
 
+def register_evaluation_artifact(project_root: Path, kind: str, artifact: Mapping[str, object]) -> None:
+    """Append one passing machine-generated artifact to its authoritative registry."""
+    if kind not in {"calibration", "holdout"}:
+        raise ValueError("EVALUATION_ARTIFACT_KIND_INVALID")
+    required = ("artifact_id", "candidate_bundle_ref", "bundle_fingerprint", "runner_version", "policy_version", "dataset_refs", "run_timestamp", "metrics", "findings", "limitations")
+    if artifact.get("schema_version") != f"semantic-{kind}-artifact-v1" or any(field not in artifact for field in required):
+        raise ValueError("EVALUATION_ARTIFACT_INVALID")
+    if artifact.get("runner_version") != "mapping-evaluation-v1" or artifact.get("run_status") != "pass":
+        raise ValueError("EVALUATION_ARTIFACT_NOT_PASSED")
+    path = Path(project_root) / "governance" / "semantic-promotion-v1" / f"{kind}_registry_v1.yaml"
+    try:
+        payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError) as exc:
+        raise ValueError("PROMOTION_AUTHORITY_REGISTRY_UNAVAILABLE") from exc
+    expected_schema = f"semantic-{kind}-registry-v1"
+    if not isinstance(payload, dict) or payload.get("schema_version") != expected_schema or not isinstance(payload.get("artifacts"), list):
+        raise ValueError("PROMOTION_AUTHORITY_REGISTRY_INVALID")
+    if any(item.get("artifact_id") == artifact["artifact_id"] for item in payload["artifacts"] if isinstance(item, dict)):
+        raise ValueError("EVALUATION_ARTIFACT_DUPLICATE")
+    payload["artifacts"].append(dict(artifact))
+    path.write_text(yaml.safe_dump(payload, allow_unicode=True, sort_keys=False), encoding="utf-8")
+
+
 def _load_registry(path: Path, schema_version: str, collection: str) -> tuple[Mapping[str, object], ...]:
     try:
         payload = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -74,10 +97,9 @@ def _find_matching_artifact(items: tuple[Mapping[str, object], ...], bundle_ref:
     if len(matches) != 1:
         raise ValueError(prefix + "_ARTIFACT_REQUIRED")
     artifact = matches[0]
-    required = ("artifact_id", "runner_version", "policy_version", "dataset_refs", "timestamp")
+    required = ("artifact_id", "runner_version", "policy_version", "dataset_refs", "run_timestamp")
     if any(not artifact.get(field) for field in required):
         raise ValueError(prefix + "_ARTIFACT_INVALID")
     if artifact.get("run_status") != "pass":
         raise ValueError(prefix + "_NOT_PASSED")
     return artifact
-

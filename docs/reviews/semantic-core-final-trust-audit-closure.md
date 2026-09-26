@@ -1,4 +1,4 @@
-# Semantic Core Final Trust and Audit Closure Report
+# Semantic Core Verification Lifecycle Closure Report
 
 ## Baseline and scope
 
@@ -31,11 +31,30 @@ a simulation and cannot write an Authority Store record.
 ## Mapping, evaluation, and provenance
 
 Proposals require explicit authoring and review before candidate compilation.
-Calibration rejects template collapse; Holdout independently requires context.
-These checks remain blocked with the repository's empty approved Mapping bundle.
+Proposal validation distinguishes required non-empty fields from qualifier
+collections: `modifiers`, `contextualizers`, `counterevidence`, and
+`exclusions` must exist as lists but may be empty. Calibration uses the
+repository design fixture set and Holdout uses its disjoint holdout fixture
+set. Each runner emits a fingerprint-bound artifact; only an explicit
+`--register` request can append a passing artifact to the authority registry.
+Blocked or failed evaluations cannot be registered.
+
 The stored provenance graph links formed output through Primitive and Mapping
 to Semantic Mechanism, Evidence Root, and canonical Fact where those records
-exist.
+exist. Cross-asset links are read only from an authored Mapping
+`provenance_links` collection; the runtime never fabricates a Cartesian product
+from independent reference lists. Shadow/Mature forms and Archetypes are also
+stored as lineage nodes.
+
+## Qualifier resolution boundary
+
+The current runtime is formally **stored-but-not-resolved** for Mapping
+qualifiers. It preserves `modifier_refs`, `contextualizer_refs`, and
+`counterevidence_refs`, and marks such Primitive output with
+`qualifier_resolution_mode: stored_but_not_resolved`. Qualifiers do not create,
+reverse, or weight a Primitive direction until a separately approved,
+policy-driven qualifier resolution model exists. Exclusions remain an explicit
+hard gate when `exclusion_matched` is true.
 
 ## Current real semantic asset state
 
@@ -62,11 +81,11 @@ role `RULE_GATE`; it was not changed.
 ## Readiness statement
 
 ```text
-Engineering Readiness: candidate-only trust and audit work implemented
+Semantic Verification Lifecycle: SUBSTANTIALLY CLOSED
+Semantic Core Foundation Engineering: remaining semantic assets required
 Semantic Asset Readiness: blocked at Product Owner mechanism and Mapping gates
 Production Activation: not authorized
 ```
 
 No Evidence Root, Semantic Mechanism, Mapping, Primitive runtime, formation
 policy, or production semantic bundle was activated by this work.
-

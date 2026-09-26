@@ -1,4 +1,4 @@
-# Semantic Core Engineering Closure
+# Semantic Core Engineering Status
 
 ## Engineering completion
 
@@ -115,10 +115,11 @@ rollback. Shadow metrics publish both state counts and true state rates. These
 changes alter only candidate engineering behavior; they neither add a semantic
 asset nor change any active fingerprint.
 
-## Final readiness statement
+## Current readiness statement
 
 ```text
-Engineering Readiness: COMPLETE
+Semantic Verification Lifecycle: SUBSTANTIALLY CLOSED
+Semantic Core Foundation Engineering: NOT FINAL COMPLETE
 Semantic Asset Readiness: BLOCKED AT PRODUCT OWNER MECHANISM/MAPPING GATES
 Production Activation: NOT AUTHORIZED
 ```
@@ -136,3 +137,21 @@ The active semantic fingerprint remained
 The candidate-only Mapping and Semantic Core fingerprints are recorded by the
 verification commands independently; neither is part of the active runtime
 fingerprint.
+
+## Verification lifecycle closure additions
+
+- Mapping Proposal validation accepts legal empty qualifier collections while
+  continuing to require their field presence and list shape.
+- Calibration and Holdout bind distinct repository fixture datasets to their
+  artifacts. A passing artifact may be appended to the authority registry only
+  through the explicit evaluation `--register` path; blocked and failed runs
+  fail closed.
+- Mapping provenance uses authored `provenance_links` rather than inferred
+  mechanism-to-root or root-to-fact Cartesian products. Shadow/Mature and
+  Archetype lineage are present in the persisted graph.
+- Qualifiers are formally `stored_but_not_resolved`: they are preserved for
+  audit but are not a policy-active direction or weighting mechanism.
+
+This completes the reusable verification plumbing. Further work belongs to
+actual semantic asset authoring and approval, not additional Semantic Core
+foundation engineering.

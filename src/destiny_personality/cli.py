@@ -73,8 +73,10 @@ def _build_parser() -> argparse.ArgumentParser:
     dynamics.add_argument("project_root", type=Path)
     mapping_calibration = subparsers.add_parser("run-mapping-calibration")
     mapping_calibration.add_argument("project_root", type=Path)
+    mapping_calibration.add_argument("--register", action="store_true", help="append a passing artifact to the authoritative registry")
     mapping_holdout = subparsers.add_parser("run-mapping-holdout")
     mapping_holdout.add_argument("project_root", type=Path)
+    mapping_holdout.add_argument("--register", action="store_true", help="append a passing artifact to the authoritative registry")
     promote = subparsers.add_parser("promote-semantic-bundle", help="deprecated simulation; never writes an authority record")
     promote.add_argument("active_bundle_ref")
     promote.add_argument("candidate_bundle_ref")
@@ -104,7 +106,7 @@ def _build_parser() -> argparse.ArgumentParser:
     render_report.add_argument("renderer_profile")
     semantic_source = subparsers.add_parser("semantic-core-source-view")
     semantic_source.add_argument("core", type=Path)
-    semantic_source.add_argument("stage", choices=("mapping", "signature", "dynamic", "theme", "archetype"))
+    semantic_source.add_argument("stage", choices=("mapping", "primitive", "signature", "dynamic", "shadow_mature", "theme", "archetype"))
     semantic_explain = subparsers.add_parser("semantic-core-explain")
     semantic_explain.add_argument("core", type=Path)
     semantic_explain.add_argument("item_id")
@@ -301,7 +303,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             from .semantic_core import audit_semantic_core_candidate, build_promotion_review_packet, build_report_plan, build_semantic_core_candidate, build_semantic_core_review_packet, diff_semantic_core_candidates, explain_semantic_core_item, form_core_dynamics, form_dominant_signatures, load_semantic_mechanism_role_policy, promote_semantic_bundle, render_semantic_core_report, rollback_semantic_bundle, semantic_core_source_view
             from .semantic_core_codec import load_semantic_core_candidate
             from .semantic_mechanisms import build_semantic_mechanism_audit_report, load_approved_evidence_root_ids, load_approved_semantic_mechanism_ids, load_semantic_mechanism_candidates
-            from .mapping_v2 import audit_mapping_v2_candidates, build_fresh_mapping_candidates, build_mapping_evaluation_artifact, compile_mapping_v2_candidate_bundle, compile_mapping_v2_from_repository, load_mapping_proposal_registry, load_mapping_v2_candidate_registry, mapping_v2_candidate_fingerprint, run_mapping_v2_calibration, run_mapping_v2_holdout
+            from .mapping_v2 import audit_mapping_v2_candidates, build_fresh_mapping_candidates, build_mapping_evaluation_artifact, compile_mapping_v2_candidate_bundle, compile_mapping_v2_from_repository, load_mapping_proposal_registry, load_mapping_v2_candidate_registry, mapping_evaluation_dataset_refs, mapping_v2_candidate_fingerprint, run_mapping_v2_calibration, run_mapping_v2_holdout
             from .semantic_authority import load_mapping_eligible_semantic_mechanisms
             root = args.project_root if hasattr(args, "project_root") else Path(".")
             mechanism_root = root / "candidates" / "semantic-mechanisms-v1"
@@ -399,12 +401,20 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 summary = {"status": "blocked_by_gate", "signatures": list(form_dominant_signatures(())), "blockers": ["APPROVED_PRIMITIVE_V2_REQUIRED"]}
             elif args.command == "run-mapping-calibration":
                 mapping_bundle = compile_mapping_v2_from_repository(root)
-                summary = dict(build_mapping_evaluation_artifact("calibration", (*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules), "mapping-v2:repository", mapping_v2_candidate_fingerprint(root), (), "mapping-v2-evaluation-v1"))
+                summary = dict(build_mapping_evaluation_artifact("calibration", (*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules), "mapping-v2:repository", mapping_v2_candidate_fingerprint(root), mapping_evaluation_dataset_refs(root, "calibration"), "mapping-v2-evaluation-v1"))
+                if args.register:
+                    from .promotion_authority import register_evaluation_artifact
+                    register_evaluation_artifact(root, "calibration", summary)
+                    summary["authority_registry"] = "registered"
                 summary["mapping_bundle_status"] = mapping_bundle.status
                 summary["mapping_bundle_blockers"] = mapping_bundle.blockers
             elif args.command == "run-mapping-holdout":
                 mapping_bundle = compile_mapping_v2_from_repository(root)
-                summary = dict(build_mapping_evaluation_artifact("holdout", (*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules), "mapping-v2:repository", mapping_v2_candidate_fingerprint(root), (), "mapping-v2-evaluation-v1"))
+                summary = dict(build_mapping_evaluation_artifact("holdout", (*mapping_bundle.bazi_rules, *mapping_bundle.astrology_rules), "mapping-v2:repository", mapping_v2_candidate_fingerprint(root), mapping_evaluation_dataset_refs(root, "holdout"), "mapping-v2-evaluation-v1"))
+                if args.register:
+                    from .promotion_authority import register_evaluation_artifact
+                    register_evaluation_artifact(root, "holdout", summary)
+                    summary["authority_registry"] = "registered"
                 summary["mapping_bundle_status"] = mapping_bundle.status
                 summary["mapping_bundle_blockers"] = mapping_bundle.blockers
             else:

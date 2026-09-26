@@ -87,3 +87,26 @@ def test_mapping_calibration_artifact_is_machine_generated_and_binds_dataset() -
     assert artifact["schema_version"] == "semantic-calibration-artifact-v1"
     assert artifact["run_status"] == "blocked_by_gate"
     assert artifact["runner_version"] == "mapping-evaluation-v1"
+
+
+def test_mapping_evaluation_uses_disjoint_repository_design_and_holdout_datasets(tmp_path: Path) -> None:
+    from destiny_personality.mapping_v2 import mapping_evaluation_dataset_refs
+
+    for name in ("design_set", "holdout_set"):
+        directory = tmp_path / "tests" / "fixtures" / "core_profile_calibration" / name
+        directory.mkdir(parents=True)
+        (directory / f"{name}.yaml").write_text("fixture_schema_version: test-v1\n", encoding="utf-8")
+
+    calibration = mapping_evaluation_dataset_refs(tmp_path, "calibration")
+    holdout = mapping_evaluation_dataset_refs(tmp_path, "holdout")
+
+    assert calibration == ("tests/fixtures/core_profile_calibration/design_set/design_set.yaml",)
+    assert holdout == ("tests/fixtures/core_profile_calibration/holdout_set/holdout_set.yaml",)
+    assert not set(calibration) & set(holdout)
+
+
+def test_proposal_allows_empty_qualifier_collections_when_required_fields_exist() -> None:
+    from destiny_personality.mapping_v2 import validate_mapping_proposal
+
+    proposal = {"proposal_id": "P1", "source_system": "bazi", "canonical_fact_requirements": ["fact:1"], "semantic_mechanism_refs": ["SMC-1"], "primitive_id": "P001", "primitive_question": "q", "proposed_direction": {"state": "supported_high"}, "contexts": ["work"], "modifiers": [], "contextualizers": [], "counterevidence": [], "exclusions": [], "evidence_root_refs": ["ER-1"], "limitations": ["l"], "legacy_similarity": {"status": "none"}, "origin": "author", "review_status": "reviewed"}
+    assert validate_mapping_proposal(proposal, {"SMC-1"}) == ()

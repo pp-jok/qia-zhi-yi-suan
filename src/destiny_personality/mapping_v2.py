@@ -54,8 +54,9 @@ def validate_mapping_proposal(proposal: object, mapping_eligible_ids: Iterable[s
     """Validate authored proposal completeness without converting it to a Mapping."""
     if not isinstance(proposal, dict):
         return ("MAPPING_PROPOSAL_TYPE_ERROR",)
-    required = ("proposal_id", "source_system", "canonical_fact_requirements", "semantic_mechanism_refs", "primitive_id", "primitive_question", "proposed_direction", "contexts", "modifiers", "contextualizers", "counterevidence", "exclusions", "evidence_root_refs", "limitations", "legacy_similarity", "origin", "review_status")
-    findings = ["MAPPING_PROPOSAL_FIELD_REQUIRED"] if any(not proposal.get(field) for field in required) else []
+    required_nonempty = ("proposal_id", "source_system", "canonical_fact_requirements", "semantic_mechanism_refs", "primitive_id", "primitive_question", "proposed_direction", "contexts", "evidence_root_refs", "limitations", "legacy_similarity", "origin", "review_status")
+    qualifier_collections = ("modifiers", "contextualizers", "counterevidence", "exclusions")
+    findings = ["MAPPING_PROPOSAL_FIELD_REQUIRED"] if any(not proposal.get(field) for field in required_nonempty) or any(field not in proposal or not isinstance(proposal[field], list) for field in qualifier_collections) else []
     refs = proposal.get("semantic_mechanism_refs")
     if not isinstance(refs, list) or not set(refs).issubset(set(mapping_eligible_ids)):
         findings.append("MAPPING_PROPOSAL_ELIGIBLE_MECHANISM_REQUIRED")
@@ -179,6 +180,15 @@ def mapping_v2_candidate_fingerprint(project_root: Path) -> str:
     root = Path(project_root) / "candidates" / "mapping-v2"
     canonical = b"".join(path.name.encode("utf-8") + b":" + sha256(path.read_bytes()).hexdigest().encode("ascii") + b"\n" for path in sorted(root.glob("*.yaml")))
     return sha256(canonical).hexdigest()
+
+
+def mapping_evaluation_dataset_refs(project_root: Path, kind: str) -> Tuple[str, ...]:
+    """Return the disjoint repository fixture set used by each evaluation runner."""
+    if kind not in {"calibration", "holdout"}:
+        raise ValueError("MAPPING_EVALUATION_KIND_INVALID")
+    set_name = "design_set" if kind == "calibration" else "holdout_set"
+    directory = Path(project_root) / "tests" / "fixtures" / "core_profile_calibration" / set_name
+    return tuple(path.relative_to(project_root).as_posix() for path in sorted(directory.glob("*.yaml")))
 
 
 def run_mapping_v2_calibration(approved_bundle: Iterable[object]) -> MappingV2Evaluation:

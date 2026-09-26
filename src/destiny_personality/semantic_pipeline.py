@@ -92,18 +92,15 @@ def build_semantic_provenance(core: Mapping[str, object]) -> dict:
         mapping_ref = "mapping:" + str(mapping["mapping_candidate_id"])
         primitive_ref = "primitive:" + str(mapping["primitive_id"])
         nodes.update((mapping_ref, primitive_ref)); edges.add((primitive_ref, "derived_from", mapping_ref))
-        mechanisms = tuple(mapping.get("semantic_mechanism_refs", ()))
-        roots = tuple(mapping.get("evidence_root_refs", ()))
-        facts = tuple(mapping.get("canonical_fact_requirements", ()))
         for field, kind in (("semantic_mechanism_refs", "semantic_mechanism"), ("evidence_root_refs", "evidence_root"), ("canonical_fact_requirements", "fact")):
             for ref in mapping.get(field, ()):
                 child = kind + ":" + str(ref); nodes.add(child); edges.add((mapping_ref, "supported_by", child))
-        for mechanism in mechanisms:
-            for root in roots:
-                edges.add(("semantic_mechanism:" + str(mechanism), "supported_by", "evidence_root:" + str(root)))
-        for root in roots:
-            for fact in facts:
-                edges.add(("evidence_root:" + str(root), "supported_by", "fact:" + str(fact)))
+        for link in mapping.get("provenance_links", ()):
+            if not isinstance(link, Mapping):
+                continue
+            left, relation, right = link.get("from"), link.get("relation"), link.get("to")
+            if all(isinstance(value, str) and value for value in (left, relation, right)):
+                nodes.update((left, right)); edges.add((left, relation, right))
     for collection, prefix, source_prefix in (("signatures", "signature", "primitive"), ("dynamics", "dynamic", "signature"), ("fate_themes", "theme", "dynamic")):
         for item in core.get(collection, ()):
             identifier = item.get(prefix + "_id") or item.get("theme_id")
@@ -111,6 +108,19 @@ def build_semantic_provenance(core: Mapping[str, object]) -> dict:
                 node = prefix + ":" + str(identifier); nodes.add(node)
                 for ref in item.get("source_refs", ()):
                     edges.add((node, "formed_from", source_prefix + ":" + str(ref)))
+    for item in core.get("shadow_mature_forms", ()):
+        if not isinstance(item, Mapping) or not item.get("dynamic_id"):
+            continue
+        dynamic_ref = "dynamic:" + str(item["dynamic_id"])
+        for form_kind in ("shadow", "mature"):
+            if item.get(form_kind + "_form"):
+                node = "shadow_mature:" + str(item["dynamic_id"]) + ":" + form_kind
+                nodes.update((node, dynamic_ref)); edges.add((node, "formed_from", dynamic_ref))
+    archetype = core.get("archetype")
+    if isinstance(archetype, Mapping) and archetype.get("archetype_id"):
+        node = "archetype:" + str(archetype["archetype_id"]); nodes.add(node)
+        for ref in archetype.get("source_refs", ()):
+            edges.add((node, "formed_from", "theme:" + str(ref)))
     return {"nodes": tuple(sorted(nodes)), "edges": tuple(sorted(edges))}
 
 
@@ -133,13 +143,14 @@ def explain_semantic_pipeline_item(core: Mapping[str, object], item_ref: str) ->
 
 
 def semantic_pipeline_source_view(core: Mapping[str, object], stage: str) -> dict:
-    prefixes = {"mapping": "mapping", "primitive": "primitive", "signature": "signature", "dynamic": "dynamic", "theme": "theme", "archetype": "archetype"}
+    prefixes = {"mapping": "mapping", "primitive": "primitive", "signature": "signature", "dynamic": "dynamic", "shadow_mature": "shadow_mature", "theme": "theme", "archetype": "archetype"}
     if stage not in prefixes:
         raise ValueError("SEMANTIC_CORE_SOURCE_STAGE_INVALID")
     prefix = prefixes[stage] + ":"
     graph = core.get("provenance", {})
     nodes = tuple(node for node in graph.get("nodes", ()) if node.startswith(prefix)) if isinstance(graph, Mapping) else ()
-    return {"profile_ref": core["profile_ref"], "stage": stage, "status": core.get("stage_statuses", {}).get("primitive_v2" if stage == "primitive" else stage, "blocked_by_gate"), "item_count": len(nodes), "provenance_nodes": nodes, "containment_status": "persisted_provenance_only"}
+    status_key = "primitive_v2" if stage == "primitive" else ("dynamic" if stage == "shadow_mature" else stage)
+    return {"profile_ref": core["profile_ref"], "stage": stage, "status": core.get("stage_statuses", {}).get(status_key, "blocked_by_gate"), "item_count": len(nodes), "provenance_nodes": nodes, "containment_status": "persisted_provenance_only"}
 
 
 def resolve_primitive_states(mappings: Iterable[Mapping[str, object]], policy: Mapping[str, object]) -> tuple:
@@ -165,6 +176,8 @@ def resolve_primitive_states(mappings: Iterable[Mapping[str, object]], policy: M
             refs = tuple(ref for item in items for ref in item.get(field, ()) if isinstance(ref, str) and ref)
             if refs:
                 result[output_field] = refs
+        if any(field in item for item in items for field in ("modifiers", "contextualizers", "counterevidence", "exclusions")):
+            result["qualifier_resolution_mode"] = "stored_but_not_resolved"
         results.append(result)
     return tuple(results)
 
