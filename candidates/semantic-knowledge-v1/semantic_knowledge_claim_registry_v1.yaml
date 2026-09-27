@@ -5,8 +5,17 @@ activation_status: inactive
 claims:
   - claim_id: SKC-BZ-TEN-GODS-STRUCTURAL-ONLY-P004-V1
     system: bazi
-    source_refs: [SK-BZ-TEN-GODS-YAP-2010, SK-BZ-PATTERNS-ALSAYED-2026, SK-PROJECT-P004-ONTOLOGY-V2]
-    source_locators: [Output-star chapters and related structural chapters, Publisher description on non-isolated meanings, P004 excluded meanings]
+    citations:
+      - source_ref: SK-BZ-TEN-GODS-YAP-2010
+        locator: "Contents: Output Element Essentials; Understanding the Output Stars; Output Star Analysis Techniques and Methods; Evaluating the Hurting Officer and Eating God Stars; The Big Picture on Output"
+        support_role: primary
+      - source_ref: SK-BZ-PATTERNS-ALSAYED-2026
+        locator: Publisher description, sentence stating that BaZi is not a collection of isolated meanings
+        support_role: supporting
+      - source_ref: SK-PROJECT-P004-ONTOLOGY-V2
+        locator: P004 excluded meanings and non-evidence semantics
+        support_role: contextual
+    related_claims: []
     tradition_or_school: contemporary Four Pillars structural reading
     canonical_fact_family: deterministic_facts.bazi.ten_gods
     semantic_claim: Output-star terminology is methodologically embedded in wider structural analysis and does not, in the reviewed corpus, state that an isolated Ten-God instance establishes the start or advancement of concrete action.
@@ -20,13 +29,18 @@ claims:
     counter_conditions: [Output, expression, wealth, achievement, and generic activity are nearby constructs rather than P004 by themselves.]
     exclusions: [Popular Ten-God personality shorthand, legacy 食伤 plus 财 shortcut, direct state assertion]
     support_class: INDIRECT_NEARBY_CONSTRUCT
-    conflicting_claim_refs: []
     limitations: Neither source supplies a directly locatable P004 action-initiation rule; current canonical facts do not encode a complete traditional structural judgement.
     review_status: accepted_for_review
   - claim_id: SKC-AS-MARS-ACTION-INITIATIVE-P004-V1
     system: astrology
-    source_refs: [SK-AS-MARS-HOULDING-2004, SK-PROJECT-P004-ONTOLOGY-V2]
-    source_locators: [Mars article opening and Mars interpretation paragraphs, P004 definition and exclusions]
+    citations:
+      - source_ref: SK-AS-MARS-HOULDING-2004
+        locator: Paragraphs beginning "In astrology Mars represents the compelling force of action and initiative" and "The dignities and aspects reveal the details"
+        support_role: primary
+      - source_ref: SK-PROJECT-P004-ONTOLOGY-V2
+        locator: P004 definition, excluded impulsivity, and action non-evidence semantics
+        support_role: contextual
+    related_claims: []
     tradition_or_school: traditional western astrology / horary-informed symbolic interpretation
     canonical_fact_family: deterministic_facts.astrology.placements
     semantic_claim: This traditional source explicitly associates Mars with action and initiative, while requiring dignity and aspects to determine particulars; it is a methodology claim, not an empirically established personality fact.
@@ -40,13 +54,22 @@ claims:
     counter_conditions: [The source itself links Mars to conflict, assertion, survival response, and danger; these are not equivalent to readily initiating and advancing concrete action.]
     exclusions: [Mars equals energy shortcut, Mars equals impulsivity shortcut, aspect-only direction, global state assertion]
     support_class: DIRECT_BUT_SCHOOL_SPECIFIC
-    conflicting_claim_refs: [SKC-AS-ASPECT-TECHNIQUE-DISPUTE-P004-V1]
     limitations: Current project canonical facts lack sect, application/separation, domination, and an approved school-specific synthesis policy; no complete fact-to-P004 direction can be formed.
     review_status: accepted_for_review
   - claim_id: SKC-AS-ASPECT-TECHNIQUE-DISPUTE-P004-V1
     system: astrology
-    source_refs: [SK-AS-ASPECTS-HOULDING-2004, SK-PROJECT-P004-ONTOLOGY-V2]
-    source_locators: [Degree versus sign judgement, orb disagreement, application, dexter/sinister, domination sections, P004 non-evidence semantics]
+    citations:
+      - source_ref: SK-AS-ASPECTS-HOULDING-2004
+        locator: Sections on degree versus sign judgement, orb disagreement, application, dexter/sinister, and the dominating planet
+        support_role: primary
+      - source_ref: SK-PROJECT-P004-ONTOLOGY-V2
+        locator: P004 non-evidence semantics
+        support_role: contextual
+    related_claims:
+      - claim_ref: SKC-AS-MARS-ACTION-INITIATIVE-P004-V1
+        relation: qualifies
+      - claim_ref: SKC-AS-MARS-ACTION-INITIATIVE-P004-V1
+        relation: limits
     tradition_or_school: historical traditional western astrology
     canonical_fact_family: deterministic_facts.astrology.aspects
     semantic_claim: "Traditional aspect interpretation is not a uniform aspect-type label: historical sources vary over orb, sign versus degree, application, and dominance, so an identified aspect instance can support review admission but not a universal P004 direction."
@@ -60,6 +83,5 @@ claims:
     counter_conditions: [The same geometric aspect can be conditioned by bodies, dignity, application, domination, and school-specific technique.]
     exclusions: [All aspects share one direction, orb-only personality inference, direct primitive-state assertion]
     support_class: AMBIGUOUS
-    conflicting_claim_refs: [SKC-AS-MARS-ACTION-INITIATIVE-P004-V1]
     limitations: The registry preserves existing RULE_GATE eligibility only and does not promote it or provide PRIMARY_EVIDENCE.
     review_status: accepted_for_review

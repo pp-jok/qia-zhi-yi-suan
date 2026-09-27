@@ -9,7 +9,7 @@ This corpus distinguishes deterministic chart facts from tradition-internal inte
 | ID | Source | School / scope | Quality | Included because | Limitation |
 |---|---|---|---|---|---|
 | `SK-BZ-TEN-GODS-YAP-2010` | Joey Yap, *The Ten Gods* (2010), Output-star chapters | Contemporary classical BaZi pedagogy; Ten Gods with season, roots, hidden stems and structural factors | Tier B | Technical, authored source with a multi-part Ten-God method | Bibliographic preview does not state an action-initiation rule; not empirical evidence. |
-| `SK-BZ-PATTERNS-ALSAYED-2026` | Jouman Alsayed, *Bazi: The Patterns of Time* (2026) | Contemporary structural Four Pillars reading | Tier B | Explicitly cautions that BaZi is not isolated fixed labels | Recent self-published source; supports a boundary, not P004 direction. |
+| `SK-BZ-PATTERNS-ALSAYED-2026` | Jouman Alsayed, *Bazi: The Patterns of Time* (2026) | Contemporary structural Four Pillars reading | Tier C | Explicitly cautions that BaZi is not isolated fixed labels | Recent self-published source with limited independently verified editorial provenance; supports a boundary, not P004 direction. |
 
 ## Western tropical astrology
 
@@ -21,6 +21,10 @@ This corpus distinguishes deterministic chart facts from tradition-internal inte
 ## Project methodology
 
 `SK-PROJECT-P004-ONTOLOGY-V2` is Tier A project methodology. It supplies only P004's boundary: action start/advancement, not energy, assertion, impulsivity, achievement, judgement ownership, predictability, or organization.
+
+## Quality calibration
+
+Quality describes traceability, authority, publication stability, methodological clarity, and school clarity—not claim truth or scientific validity. Tier A project methodology is normative only and is never independent external support. The explicit policy is `candidates/semantic-knowledge-v1/semantic_knowledge_source_quality_policy_v1.yaml`; all external sources here are traditional-methodology sources, not empirical research.
 
 ## Rejected or unresolved sources
 

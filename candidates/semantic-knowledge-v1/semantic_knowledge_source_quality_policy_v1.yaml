@@ -1,0 +1,20 @@
+schema_version: semantic-knowledge-source-quality-policy-v1
+policy_version: candidate-semantic-knowledge-source-quality-policy-v1
+review_status: candidate_only
+activation_status: inactive
+quality_definitions:
+  TIER_A: Project normative methodology, a reliable classical/primary edition, or directly attributable authoritative technical source; traditional status is not empirical validation.
+  TIER_B: Established modern technical author with clear method, stable publication identity, and traceable technical discussion.
+  TIER_C: Useful specialist or secondary source with limited authority, editorial control, provenance, or traceability.
+  REJECTED: Anonymous, SEO, AI-generated, content-farm, unattributed, or untraceable material.
+evidence_nature_by_source_type:
+  classical_primary_text: traditional_methodology
+  modern_technical_reference: traditional_methodology
+  project_methodology: project_normative
+  academic_history_or_analysis: traditional_methodology
+  empirical_research: empirical
+  popular_secondary: traditional_methodology
+limitations:
+  - Source quality is not claim truth or scientific validity.
+  - Project normative sources cannot count as independent external support.
+  - Traditional methodology sources cannot be represented as empirical research.

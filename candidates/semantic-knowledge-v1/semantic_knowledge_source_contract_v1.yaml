@@ -2,7 +2,7 @@ schema_version: semantic-knowledge-source-v1
 contract_version: candidate-semantic-knowledge-source-contract-v1
 review_status: candidate_only
 activation_status: inactive
-required_source_fields: [source_id, system, source_type, tradition_or_school, title, author_or_editor, edition_or_version, publication_year, language, locator, url_or_bibliographic_ref, methodology_scope, source_quality_class, limitations, review_status]
+required_source_fields: [source_id, system, source_type, evidence_nature, tradition_or_school, title, author_or_editor, edition_or_version, publication_year, language, locator, url_or_bibliographic_ref, methodology_scope, source_quality_class, limitations, review_status]
 allowed_source_types: [classical_primary_text, modern_technical_reference, project_methodology, academic_history_or_analysis, empirical_research, popular_secondary]
 allowed_quality_classes: [TIER_A, TIER_B, TIER_C, REJECTED]
 allowed_review_statuses: [proposed, accepted_for_review, rejected, deferred]

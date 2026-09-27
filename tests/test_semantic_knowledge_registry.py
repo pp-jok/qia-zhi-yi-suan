@@ -9,6 +9,7 @@ KNOWLEDGE_ROOT = PROJECT_ROOT / "candidates" / "semantic-knowledge-v1"
 
 def test_loads_candidate_only_p004_semantic_knowledge_registries() -> None:
     from destiny_personality.semantic_knowledge import (
+        build_semantic_knowledge_audit,
         load_semantic_knowledge_claim_registry,
         load_semantic_knowledge_source_registry,
     )
@@ -28,6 +29,10 @@ def test_loads_candidate_only_p004_semantic_knowledge_registries() -> None:
         "SKC-AS-MARS-ACTION-INITIATIVE-P004-V1",
         "SKC-AS-ASPECT-TECHNIQUE-DISPUTE-P004-V1",
     }
+    audit = build_semantic_knowledge_audit(sources, claims)
+    assert audit["source_quality_distribution"] == {"TIER_A": 1, "TIER_B": 3, "TIER_C": 1}
+    assert audit["direct_p004_claim_count"] == 1
+    assert audit["school_specific_direct_claim_count"] == 1
 
 
 def test_claim_with_unknown_source_reference_is_rejected(tmp_path: Path) -> None:
@@ -36,10 +41,12 @@ def test_claim_with_unknown_source_reference_is_rejected(tmp_path: Path) -> None
 
     (tmp_path / "semantic_knowledge_claim_contract_v1.yaml").write_text(
         """schema_version: semantic-knowledge-claim-v1
-required_claim_fields: [claim_id, system, source_refs, source_locators, tradition_or_school, canonical_fact_family, semantic_claim, target_primitive_id, target_primitive_question, p004_relevance, direction_relevance, scope, contexts, conditions, counter_conditions, exclusions, support_class, conflicting_claim_refs, limitations, review_status]
+required_claim_fields: [claim_id, system, citations, related_claims, tradition_or_school, canonical_fact_family, semantic_claim, target_primitive_id, target_primitive_question, p004_relevance, direction_relevance, scope, contexts, conditions, counter_conditions, exclusions, support_class, limitations, review_status]
 allowed_review_statuses: [proposed]
 allowed_support_classes: [AMBIGUOUS]
 allowed_p004_relevance: [NOT_P004]
+allowed_relation_types: [limits]
+allowed_citation_support_roles: [primary]
 """,
         encoding="utf-8",
     )
@@ -51,8 +58,8 @@ activation_status: inactive
 claims:
   - claim_id: SKC-TEST
     system: bazi
-    source_refs: [SK-MISSING]
-    source_locators: [chapter]
+    citations: [{source_ref: SK-MISSING, locator: chapter, support_role: primary}]
+    related_claims: []
     tradition_or_school: test
     canonical_fact_family: deterministic_facts.bazi.ten_gods
     semantic_claim: Test only.
@@ -66,7 +73,6 @@ claims:
     counter_conditions: []
     exclusions: []
     support_class: AMBIGUOUS
-    conflicting_claim_refs: []
     limitations: []
     review_status: proposed
 """,
@@ -75,3 +81,52 @@ claims:
 
     with pytest.raises(ConfigError, match="unknown source"):
         load_semantic_knowledge_claim_registry(tmp_path, ())
+
+
+def test_claim_relations_and_citations_fail_closed(tmp_path: Path) -> None:
+    from destiny_personality.config_errors import ConfigError
+    from destiny_personality.semantic_knowledge import load_semantic_knowledge_claim_registry
+
+    (tmp_path / "semantic_knowledge_claim_contract_v1.yaml").write_text(
+        """schema_version: semantic-knowledge-claim-v1
+required_claim_fields: [claim_id, system, citations, related_claims, tradition_or_school, canonical_fact_family, semantic_claim, target_primitive_id, target_primitive_question, p004_relevance, direction_relevance, scope, contexts, conditions, counter_conditions, exclusions, support_class, limitations, review_status]
+allowed_review_statuses: [proposed]
+allowed_support_classes: [AMBIGUOUS]
+allowed_p004_relevance: [NOT_P004]
+allowed_relation_types: [limits]
+allowed_citation_support_roles: [primary]
+""",
+        encoding="utf-8",
+    )
+    (tmp_path / "semantic_knowledge_claim_registry_v1.yaml").write_text(
+        """schema_version: semantic-knowledge-claim-registry-v1
+registry_version: test
+review_status: candidate_only
+activation_status: inactive
+claims:
+  - claim_id: SKC-TEST
+    system: bazi
+    citations: [{source_ref: SK-ONE, locator: section 1, support_role: primary}]
+    related_claims: [{claim_ref: SKC-TEST, relation: limits}]
+    tradition_or_school: test
+    canonical_fact_family: deterministic_facts.bazi.ten_gods
+    semantic_claim: Test only.
+    target_primitive_id: P004
+    target_primitive_question: When and how is concrete action started and advanced?
+    p004_relevance: NOT_P004
+    direction_relevance: none
+    scope: none
+    contexts: []
+    conditions: []
+    counter_conditions: []
+    exclusions: []
+    support_class: AMBIGUOUS
+    limitations: []
+    review_status: proposed
+""",
+        encoding="utf-8",
+    )
+    sources = ({"source_id": "SK-ONE"},)
+
+    with pytest.raises(ConfigError, match="self relation"):
+        load_semantic_knowledge_claim_registry(tmp_path, sources)

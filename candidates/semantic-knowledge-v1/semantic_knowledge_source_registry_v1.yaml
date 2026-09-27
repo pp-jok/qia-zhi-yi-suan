@@ -6,6 +6,7 @@ sources:
   - source_id: SK-BZ-TEN-GODS-YAP-2010
     system: bazi
     source_type: modern_technical_reference
+    evidence_nature: traditional_methodology
     tradition_or_school: contemporary classical BaZi pedagogy
     title: "The Ten Gods: An Introduction to The Cornerstone of BaZi"
     author_or_editor: Joey Yap
@@ -21,6 +22,7 @@ sources:
   - source_id: SK-BZ-PATTERNS-ALSAYED-2026
     system: bazi
     source_type: modern_technical_reference
+    evidence_nature: traditional_methodology
     tradition_or_school: contemporary Four Pillars structural reading
     title: "Bazi: The Patterns of Time: Reading the Four Pillars"
     author_or_editor: Jouman Alsayed
@@ -30,12 +32,13 @@ sources:
     locator: "Publisher description: chart structure, season, timing, and context; not a collection of isolated meanings"
     url_or_bibliographic_ref: https://books.google.com/books/about/Bazi.html?hl=en&id=rkNn0gEACAAJ
     methodology_scope: Structural Four Pillars reading across Day Master, season, hidden stems, Ten Gods, combinations, and timing.
-    source_quality_class: TIER_B
+    source_quality_class: TIER_C
     limitations: Recent self-published technical reference; supports a methodological caution rather than a direct P004 direction; not empirical psychology.
     review_status: accepted_for_review
   - source_id: SK-AS-MARS-HOULDING-2004
     system: astrology
     source_type: modern_technical_reference
+    evidence_nature: traditional_methodology
     tradition_or_school: traditional western astrology / horary-informed symbolic interpretation
     title: "Mars: Solar Hero or Deadly Villain?"
     author_or_editor: Deborah Houlding
@@ -51,6 +54,7 @@ sources:
   - source_id: SK-AS-ASPECTS-HOULDING-2004
     system: astrology
     source_type: modern_technical_reference
+    evidence_nature: traditional_methodology
     tradition_or_school: historical traditional western astrology
     title: The Classical Origin and Traditional Use of Aspects
     author_or_editor: Deborah Houlding
@@ -66,6 +70,7 @@ sources:
   - source_id: SK-PROJECT-P004-ONTOLOGY-V2
     system: project
     source_type: project_methodology
+    evidence_nature: project_normative
     tradition_or_school: qia-zhi-yi-suan candidate ontology
     title: Candidate Primitive Ontology V2
     author_or_editor: qia-zhi-yi-suan project

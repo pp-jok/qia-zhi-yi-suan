@@ -6,7 +6,7 @@
 
 ## Western tropical astrology
 
-**Result: `CANONICAL_FACT_GAP` plus `NON_PRIMARY_ROLE_ONLY`.** The Mars source is relevant to action/initiative, but it requires methodological qualifications that the canonical model/policy cannot express. The corresponding placement identity Root is therefore proposed for future review, while the existing aspect candidate remains a non-directional `RULE_GATE` only.
+**Result: `CANONICAL_FACT_GAP` plus `NON_PRIMARY_ROLE_ONLY`.** The bound Mars citation remains `DIRECT_BUT_SCHOOL_SPECIFIC`; the separately bound aspect claim `qualifies` and `limits` it rather than contradicting it. The source requires methodological qualifications that the canonical model/policy cannot express. The corresponding placement identity Root is therefore proposed for future review, while the existing aspect candidate remains a non-directional `RULE_GATE` only.
 
 ## Ownership and guards
 

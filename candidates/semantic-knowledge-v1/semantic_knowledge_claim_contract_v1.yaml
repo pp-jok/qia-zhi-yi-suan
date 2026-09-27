@@ -2,7 +2,9 @@ schema_version: semantic-knowledge-claim-v1
 contract_version: candidate-semantic-knowledge-claim-contract-v1
 review_status: candidate_only
 activation_status: inactive
-required_claim_fields: [claim_id, system, source_refs, source_locators, tradition_or_school, canonical_fact_family, semantic_claim, target_primitive_id, target_primitive_question, p004_relevance, direction_relevance, scope, contexts, conditions, counter_conditions, exclusions, support_class, conflicting_claim_refs, limitations, review_status]
+required_claim_fields: [claim_id, system, citations, related_claims, tradition_or_school, canonical_fact_family, semantic_claim, target_primitive_id, target_primitive_question, p004_relevance, direction_relevance, scope, contexts, conditions, counter_conditions, exclusions, support_class, limitations, review_status]
 allowed_review_statuses: [proposed, accepted_for_review, rejected, deferred]
 allowed_support_classes: [DIRECT_EXPLICIT, DIRECT_BUT_SCHOOL_SPECIFIC, INDIRECT_NEARBY_CONSTRUCT, AMBIGUOUS, CONTRADICTED, UNSUPPORTED]
 allowed_p004_relevance: [DIRECT_ACTION_INITIATION, ACTION_ADVANCEMENT, PRE_ACTION_RESTRAINT, GENERAL_ENERGY_ONLY, ASSERTIVENESS_ONLY, ORGANIZATION_ONLY, PREDICTABILITY_ONLY, JUDGEMENT_OWNERSHIP_ONLY, NOT_P004]
+allowed_relation_types: [supports, qualifies, contradicts, contextualizes, limits]
+allowed_citation_support_roles: [primary, supporting, qualifying, contradicting, contextual]
