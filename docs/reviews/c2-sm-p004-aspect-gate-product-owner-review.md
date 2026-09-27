@@ -24,6 +24,7 @@ It does not answer P004's question, “When and how is concrete action started a
 - The candidate is not runtime-loaded and has no Mapping eligibility.
 - Legacy review found Sun-Mars -> P004-high to be `NO_MAPPING`; this Gate does not reintroduce that direction or source-target-direction rule.
 - No Golden Sample, renderer wording, or runtime output is used as origin.
+- C2-SK methodology review records that traditional aspect method varies by orb, degree/sign, application, and domination; that strengthens the Gate's non-directional boundary but does not change its `proposed` status.
 
 ## Decision options
 

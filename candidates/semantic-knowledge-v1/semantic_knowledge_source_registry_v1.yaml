@@ -1,0 +1,80 @@
+schema_version: semantic-knowledge-source-registry-v1
+registry_version: candidate-semantic-knowledge-source-registry-v1
+review_status: candidate_only
+activation_status: inactive
+sources:
+  - source_id: SK-BZ-TEN-GODS-YAP-2010
+    system: bazi
+    source_type: modern_technical_reference
+    tradition_or_school: contemporary classical BaZi pedagogy
+    title: "The Ten Gods: An Introduction to The Cornerstone of BaZi"
+    author_or_editor: Joey Yap
+    edition_or_version: illustrated edition
+    publication_year: 2010
+    language: English
+    locator: "Contents: Understanding the Output Stars; Evaluating the Hurting Officer and Eating God Stars; The Big Picture on Output"
+    url_or_bibliographic_ref: https://books.google.com/books/about/The_Ten_Gods.html?id=nf1JDwAAQBAJ
+    methodology_scope: Ten-God interpretation with output, wealth, influence, resource, season, roots, and hidden-stem considerations.
+    source_quality_class: TIER_B
+    limitations: Bibliographic preview establishes the method's multi-part structure but does not supply a direct action-initiation rule; it is not empirical psychology.
+    review_status: accepted_for_review
+  - source_id: SK-BZ-PATTERNS-ALSAYED-2026
+    system: bazi
+    source_type: modern_technical_reference
+    tradition_or_school: contemporary Four Pillars structural reading
+    title: "Bazi: The Patterns of Time: Reading the Four Pillars"
+    author_or_editor: Jouman Alsayed
+    edition_or_version: first edition
+    publication_year: 2026
+    language: English
+    locator: "Publisher description: chart structure, season, timing, and context; not a collection of isolated meanings"
+    url_or_bibliographic_ref: https://books.google.com/books/about/Bazi.html?hl=en&id=rkNn0gEACAAJ
+    methodology_scope: Structural Four Pillars reading across Day Master, season, hidden stems, Ten Gods, combinations, and timing.
+    source_quality_class: TIER_B
+    limitations: Recent self-published technical reference; supports a methodological caution rather than a direct P004 direction; not empirical psychology.
+    review_status: accepted_for_review
+  - source_id: SK-AS-MARS-HOULDING-2004
+    system: astrology
+    source_type: modern_technical_reference
+    tradition_or_school: traditional western astrology / horary-informed symbolic interpretation
+    title: "Mars: Solar Hero or Deadly Villain?"
+    author_or_editor: Deborah Houlding
+    edition_or_version: online reproduction of Traditional Astrologer Magazine Issue 8 material
+    publication_year: 2004
+    language: English
+    locator: paragraphs beginning "In astrology Mars represents" and "The dignities and aspects reveal the details"
+    url_or_bibliographic_ref: https://direct.skyscript.co.uk/mars1.html
+    methodology_scope: Traditional symbolic Mars significations, with chart detail contingent on dignity and aspects.
+    source_quality_class: TIER_B
+    limitations: A modern technical exposition of a tradition, not a controlled empirical claim; it does not prescribe one natal personality rule or a P004 Mapping.
+    review_status: accepted_for_review
+  - source_id: SK-AS-ASPECTS-HOULDING-2004
+    system: astrology
+    source_type: modern_technical_reference
+    tradition_or_school: historical traditional western astrology
+    title: The Classical Origin and Traditional Use of Aspects
+    author_or_editor: Deborah Houlding
+    edition_or_version: online reproduction of Traditional Astrologer Magazine Issue 8 material
+    publication_year: 2004
+    language: English
+    locator: sections on degree/sign aspect judgement, orb disagreement, application, dexter/sinister, and domination
+    url_or_bibliographic_ref: https://www.skyscript.co.uk/aspects.html
+    methodology_scope: Historical treatment of aspect calculation and interpretation differences across classical and later authors.
+    source_quality_class: TIER_B
+    limitations: Documents disagreement and technical variance; it does not justify assigning a universal P004 direction to an aspect instance; not empirical psychology.
+    review_status: accepted_for_review
+  - source_id: SK-PROJECT-P004-ONTOLOGY-V2
+    system: project
+    source_type: project_methodology
+    tradition_or_school: qia-zhi-yi-suan candidate ontology
+    title: Candidate Primitive Ontology V2
+    author_or_editor: qia-zhi-yi-suan project
+    edition_or_version: candidate-c1-v2
+    publication_year: 2026
+    language: English
+    locator: P004 Action Initiation definition, included meanings, excluded meanings, and non-evidence semantics
+    url_or_bibliographic_ref: candidates/core-profile-v2/primitive_ontology_v2.yaml
+    methodology_scope: Project-owned semantic boundary for evaluating P004 ownership; not an external traditional source.
+    source_quality_class: TIER_A
+    limitations: Defines the project question only; it cannot support a traditional interpretive claim or create a semantic mechanism.
+    review_status: accepted_for_review

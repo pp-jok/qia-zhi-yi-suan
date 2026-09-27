@@ -40,7 +40,7 @@ Rationale: ____________________
 
 **Candidate:** none proposed.  
 **Evidence reviewed:** `ER-AS-ASPECT-INSTANCE-V1`, including the former Mars-Sun P004-high hypothesis.  
-**Result:** `NO_DEFENSIBLE_MECHANISM`; possible future `EVIDENCE_ROOT_GAP` remains unfilled.
+**Result:** `NO_DEFENSIBLE_MECHANISM`; C2-SK now contains a separate proposed placement-identity Root, `ER-AS-PLANET-PLACEMENT-V1`, which still requires its own Product Owner decision and provides no P004 direction.
 
 Aspect identity is a fact-admission subject, not a direction bridge. Treating Mars/Sun or Saturn patterns as high/low P004 would reintroduce the rejected legacy shortcut and confuse action initiation with energy, assertion, discipline, or ambition.
 

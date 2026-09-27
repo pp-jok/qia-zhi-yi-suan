@@ -46,3 +46,25 @@ roots:
       methodology_ref: western-tropical-v1.0
     review_status: approved
     product_owner_decision_ref: PO-DELEGATED-C2-SM-PHASE-2A-2026-09-22
+  - evidence_root_id: ER-AS-PLANET-PLACEMENT-V1
+    system: astrology
+    source_type: canonical_fact_instance
+    source_ref: deterministic_facts.astrology.placements
+    version: deterministic-chart-facts-v1
+    scope:
+      identity_fields:
+        - body
+        - longitude
+        - sign
+        - degree_in_sign
+    approved_use:
+      - fact_instance_identification
+      - candidate_mechanism_evidence_reference
+    prohibited_use:
+      - direct_primitive_state_assertion
+      - mapping_rule_creation
+    provenance:
+      origin: project_owned_deterministic_facts
+      methodology_ref: western-tropical-v1.0
+    review_status: proposed
+    product_owner_decision_ref: PENDING-C2-SK-P004-ROOT-DECISION

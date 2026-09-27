@@ -71,6 +71,7 @@ def test_registry_loads_the_two_approved_fact_identity_roots() -> None:
     assert {root["evidence_root_id"] for root in roots} == {
         "ER-BZ-TEN-GOD-INSTANCE-V1",
         "ER-AS-ASPECT-INSTANCE-V1",
+        "ER-AS-PLANET-PLACEMENT-V1",
     }
     assert load_approved_evidence_root_ids(_candidate_root()) == {
         "ER-BZ-TEN-GOD-INSTANCE-V1",
@@ -127,9 +128,9 @@ def test_root_audit_reports_two_approved_and_zero_other_roots() -> None:
     )
 
     assert report == {
-        "root_count": 2,
+        "root_count": 3,
         "approved_count": 2,
-        "non_approved_count": 0,
+        "non_approved_count": 1,
     }
 
 
