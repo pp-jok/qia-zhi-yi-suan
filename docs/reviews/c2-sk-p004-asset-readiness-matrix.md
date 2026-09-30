@@ -8,4 +8,4 @@
 | Mars knowledge claim | Accepted for review | `BLOCKED_BY_METHOD` | School-specific relevance, not a direction rule. |
 | Aspect RULE_GATE | Proposed | `BLOCKED_BY_PRODUCT_OWNER` | D1 pending; not Mapping origin. |
 | P004 PRIMARY_EVIDENCE | None | `BLOCKED_BY_METHOD` | Direction, scope, counterevidence, and school synthesis incomplete. |
-| Mapping | None | `BLOCKED_BY_ROOT` | No approved PRIMARY_EVIDENCE mechanism. |
+| Mapping | None | `BLOCKED_BY_METHOD` | No approved PRIMARY_EVIDENCE mechanism exists; Root status alone is not the controlling blocker. |

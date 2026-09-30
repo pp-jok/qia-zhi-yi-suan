@@ -17,6 +17,8 @@ SOURCE_REGISTRY = "semantic_knowledge_source_registry_v1.yaml"
 CLAIM_CONTRACT = "semantic_knowledge_claim_contract_v1.yaml"
 CLAIM_REGISTRY = "semantic_knowledge_claim_registry_v1.yaml"
 SOURCE_QUALITY_POLICY = "semantic_knowledge_source_quality_policy_v1.yaml"
+METHODOLOGY_CONTRACT = "astrology_methodology_candidate_contract_v1.yaml"
+METHODOLOGY_REGISTRY = "astrology_methodology_candidate_registry_v1.yaml"
 
 
 def load_semantic_knowledge_source_registry(root: Path) -> Tuple[Mapping[str, object], ...]:
@@ -117,6 +119,40 @@ def build_semantic_knowledge_audit(
         "empirical_source_count": sum(item["evidence_nature"] == "empirical" for item in sources),
         "traditional_methodology_source_count": sum(item["evidence_nature"] == "traditional_methodology" for item in sources),
     }
+
+
+def load_astrology_methodology_candidates(
+    root: Path,
+    sources: Tuple[Mapping[str, object], ...],
+    claims: Tuple[Mapping[str, object], ...],
+) -> Tuple[Mapping[str, object], ...]:
+    """Load inactive P004-specific methodology candidates with fail-closed refs."""
+
+    directory = Path(root)
+    contract = _mapping(directory / METHODOLOGY_CONTRACT)
+    registry = _mapping(directory / METHODOLOGY_REGISTRY)
+    _equal(contract, "schema_version", "astrology-methodology-candidate-v1", METHODOLOGY_CONTRACT)
+    _equal(registry, "schema_version", "astrology-methodology-candidate-registry-v1", METHODOLOGY_REGISTRY)
+    _candidate_only(registry, METHODOLOGY_REGISTRY)
+    required = _string_list(contract, "required_candidate_fields", METHODOLOGY_CONTRACT)
+    allowed_status = set(_string_list(contract, "allowed_review_statuses", METHODOLOGY_CONTRACT))
+    source_ids = {item["source_id"] for item in sources}
+    claim_ids = {item["claim_id"] for item in claims}
+    candidates = _list(registry, "candidates", METHODOLOGY_REGISTRY)
+    seen = set()
+    for index, candidate in enumerate(candidates):
+        _required(candidate, required, METHODOLOGY_REGISTRY, index)
+        candidate_id = candidate.get("methodology_candidate_id")
+        if not _nonempty(candidate_id) or candidate_id in seen:
+            raise _error("duplicate or invalid methodology candidate id", METHODOLOGY_REGISTRY, f"candidates.{index}.methodology_candidate_id")
+        seen.add(candidate_id)
+        if candidate.get("review_status") not in allowed_status:
+            raise _error("invalid methodology review_status", METHODOLOGY_REGISTRY, f"candidates.{index}.review_status")
+        if not _nonempty_strings(candidate.get("source_refs")) or not set(candidate["source_refs"]).issubset(source_ids):
+            raise _error("unknown methodology source reference", METHODOLOGY_REGISTRY, f"candidates.{index}.source_refs")
+        if not _nonempty_strings(candidate.get("claim_refs")) or not set(candidate["claim_refs"]).issubset(claim_ids):
+            raise _error("unknown methodology claim reference", METHODOLOGY_REGISTRY, f"candidates.{index}.claim_refs")
+    return tuple(candidates)
 
 
 def _mapping(path: Path) -> Mapping[str, object]:

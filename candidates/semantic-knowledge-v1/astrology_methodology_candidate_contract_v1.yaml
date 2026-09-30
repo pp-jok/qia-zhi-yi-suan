@@ -1,0 +1,6 @@
+schema_version: astrology-methodology-candidate-v1
+contract_version: candidate-astrology-methodology-contract-v1
+review_status: candidate_only
+activation_status: inactive
+required_candidate_fields: [methodology_candidate_id, system, domain, use_case, tradition_or_school, source_refs, claim_refs, included_techniques, excluded_techniques, required_canonical_fact_families, optional_fact_families, known_gaps, known_conflicts, limitations, review_status]
+allowed_review_statuses: [proposed, approved_for_semantic_design, deferred, rejected]

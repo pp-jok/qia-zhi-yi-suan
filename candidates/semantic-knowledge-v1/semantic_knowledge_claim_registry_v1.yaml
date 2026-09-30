@@ -54,7 +54,7 @@ claims:
     counter_conditions: [The source itself links Mars to conflict, assertion, survival response, and danger; these are not equivalent to readily initiating and advancing concrete action.]
     exclusions: [Mars equals energy shortcut, Mars equals impulsivity shortcut, aspect-only direction, global state assertion]
     support_class: DIRECT_BUT_SCHOOL_SPECIFIC
-    limitations: Current project canonical facts lack sect, application/separation, domination, and an approved school-specific synthesis policy; no complete fact-to-P004 direction can be formed.
+    limitations: Some traditional qualifiers are not represented, but their necessity for P004 is methodology-dependent; no approved natal method or complete fact-to-P004 direction currently exists.
     review_status: accepted_for_review
   - claim_id: SKC-AS-ASPECT-TECHNIQUE-DISPUTE-P004-V1
     system: astrology
@@ -84,4 +84,89 @@ claims:
     exclusions: [All aspects share one direction, orb-only personality inference, direct primitive-state assertion]
     support_class: AMBIGUOUS
     limitations: The registry preserves existing RULE_GATE eligibility only and does not promote it or provide PRIMARY_EVIDENCE.
+    review_status: accepted_for_review
+  - claim_id: SKC-AS-HELLENISTIC-NATAL-CONDITION-V1
+    system: astrology
+    citations:
+      - source_ref: SK-AS-HELLENISTIC-GEORGE-2019-2022
+        locator: Publisher description and volume organization covering planetary condition and delineating planetary meaning in natal chart reading
+        support_role: primary
+      - source_ref: SK-PROJECT-P004-ONTOLOGY-V2
+        locator: P004 definition and excluded meanings
+        support_role: contextual
+    related_claims:
+      - claim_ref: SKC-AS-MARS-ACTION-INITIATIVE-P004-V1
+        relation: contextualizes
+    tradition_or_school: reconstructed Hellenistic natal astrology
+    canonical_fact_family: deterministic_facts.astrology.placements
+    semantic_claim: Hellenistic natal delineation evaluates a planet through a coherent condition-and-context procedure rather than treating an isolated planet keyword as a complete natal judgment.
+    target_primitive_id: P004
+    target_primitive_question: When and how is concrete action started and advanced?
+    p004_relevance: NOT_P004
+    direction_relevance: none
+    scope: methodology selection and natal delineation procedure
+    contexts: []
+    conditions: [A P004 rule would need to be derived within the declared natal method and separately establish direction.]
+    counter_conditions: [An isolated Mars keyword is insufficient.]
+    exclusions: [horary-only technique, psychological-school mixing, direct Primitive assertion]
+    support_class: INDIRECT_NEARBY_CONSTRUCT
+    limitations: Establishes methodology coherence, not a Mars-to-P004 direction rule.
+    review_status: accepted_for_review
+  - claim_id: SKC-AS-DIGNITY-CONDITION-NOT-DIRECTION-P004-V1
+    system: astrology
+    citations:
+      - source_ref: SK-AS-DIGNITY-HOULDING
+        locator: 'Part 1, "Dignity: Essential or Accidental?", distinguishing essential suitability from accidental strength'
+        support_role: primary
+      - source_ref: SK-PROJECT-P004-ONTOLOGY-V2
+        locator: P004 action-initiation boundary
+        support_role: contextual
+    related_claims:
+      - claim_ref: SKC-AS-MARS-ACTION-INITIATIVE-P004-V1
+        relation: qualifies
+      - claim_ref: SKC-AS-MARS-ACTION-INITIATIVE-P004-V1
+        relation: limits
+    tradition_or_school: traditional western astrology
+    canonical_fact_family: deterministic_facts.astrology.dignities
+    semantic_claim: Dignity evaluates planetary condition, suitability, or strength; without an additional source-backed bridge it does not establish whether concrete action starts or advances readily.
+    target_primitive_id: P004
+    target_primitive_question: When and how is concrete action started and advanced?
+    p004_relevance: NOT_P004
+    direction_relevance: none
+    scope: qualifier boundary
+    contexts: []
+    conditions: [Dignity may qualify a future school-specific Mars mechanism.]
+    counter_conditions: [Strong is not initiation; weak is not restraint.]
+    exclusions: [domicile equals high, detriment equals low, effectiveness equals initiation]
+    support_class: INDIRECT_NEARBY_CONSTRUCT
+    limitations: The source uses predictive examples and does not supply a natal P004 direction rule.
+    review_status: accepted_for_review
+  - claim_id: SKC-AS-NATAL-ASPECTS-QUALIFY-NOT-DIRECT-P004-V1
+    system: astrology
+    citations:
+      - source_ref: SK-AS-NATAL-ASPECTS-CAMPION-2003
+        locator: ASPECTS section on combining/moderating influences, harmony/tension, orb and exactness
+        support_role: primary
+      - source_ref: SK-PROJECT-P004-ONTOLOGY-V2
+        locator: P004 non-evidence semantics
+        support_role: contextual
+    related_claims:
+      - claim_ref: SKC-AS-MARS-ACTION-INITIATIVE-P004-V1
+        relation: qualifies
+      - claim_ref: SKC-AS-ASPECT-TECHNIQUE-DISPUTE-P004-V1
+        relation: contextualizes
+    tradition_or_school: modern western natal astrology
+    canonical_fact_family: deterministic_facts.astrology.aspects
+    semantic_claim: Natal aspects describe combination, moderation, harmony, tension, and strength of influence; those properties do not by themselves determine P004 high or low.
+    target_primitive_id: P004
+    target_primitive_question: When and how is concrete action started and advanced?
+    p004_relevance: NOT_P004
+    direction_relevance: none
+    scope: natal aspect qualifier boundary
+    contexts: []
+    conditions: [A future direction rule must specify planets, school, scope, and an independent P004 bridge.]
+    counter_conditions: [Ease is not high; tension is not low; stronger influence is not faster initiation.]
+    exclusions: [trine or sextile equals high, square or opposition equals low, hard aspect equals more action]
+    support_class: INDIRECT_NEARBY_CONSTRUCT
+    limitations: The source is introductory and does not supply a condition-complete P004 rule.
     review_status: accepted_for_review

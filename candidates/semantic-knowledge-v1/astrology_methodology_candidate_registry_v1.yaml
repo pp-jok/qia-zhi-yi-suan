@@ -1,0 +1,20 @@
+schema_version: astrology-methodology-candidate-registry-v1
+registry_version: candidate-p004-astrology-methodology-registry-v1
+review_status: candidate_only
+activation_status: inactive
+candidates:
+  - methodology_candidate_id: AMC-AS-P004-HELLENISTIC-NATAL-V1
+    system: astrology
+    domain: P004 Action Initiation methodology review
+    use_case: natal interpretation governance only
+    tradition_or_school: reconstructed Hellenistic natal astrology
+    source_refs: [SK-AS-HELLENISTIC-GEORGE-2019-2022, SK-AS-DIGNITY-HOULDING, SK-AS-NATAL-ASPECTS-CAMPION-2003, SK-PROJECT-P004-ONTOLOGY-V2]
+    claim_refs: [SKC-AS-HELLENISTIC-NATAL-CONDITION-V1, SKC-AS-DIGNITY-CONDITION-NOT-DIRECTION-P004-V1, SKC-AS-NATAL-ASPECTS-QUALIFY-NOT-DIRECT-P004-V1, SKC-AS-MARS-ACTION-INITIATIVE-P004-V1]
+    included_techniques: [planet identity and placement, essential dignity as condition, natal aspects as qualification, sect subject to a separate fact gap]
+    excluded_techniques: [horary perfection logic, automatic easy-aspect high, automatic hard-aspect low, sign-placement direction shortcuts]
+    required_canonical_fact_families: [deterministic_facts.astrology.placements, deterministic_facts.astrology.aspects, deterministic_facts.astrology.dignities]
+    optional_fact_families: [deterministic_facts.astrology.houses]
+    known_gaps: [sect is not canonicalized, natal P004 direction rule is absent, counterevidence and context rules are absent, D2 placement Root is pending]
+    known_conflicts: [modern psychological Mars language is not method-equivalent, horary application and perfection rules are excluded]
+    limitations: Approval would select a method for continued semantic design only; it would not approve Mars direction, PRIMARY_EVIDENCE, Mapping, Primitive state, or runtime behavior.
+    review_status: proposed

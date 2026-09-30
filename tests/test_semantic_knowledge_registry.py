@@ -22,17 +22,39 @@ def test_loads_candidate_only_p004_semantic_knowledge_registries() -> None:
         "SK-BZ-PATTERNS-ALSAYED-2026",
         "SK-AS-MARS-HOULDING-2004",
         "SK-AS-ASPECTS-HOULDING-2004",
+        "SK-AS-HELLENISTIC-GEORGE-2019-2022",
+        "SK-AS-DIGNITY-HOULDING",
+        "SK-AS-NATAL-ASPECTS-CAMPION-2003",
         "SK-PROJECT-P004-ONTOLOGY-V2",
     }
     assert {claim["claim_id"] for claim in claims} == {
         "SKC-BZ-TEN-GODS-STRUCTURAL-ONLY-P004-V1",
         "SKC-AS-MARS-ACTION-INITIATIVE-P004-V1",
         "SKC-AS-ASPECT-TECHNIQUE-DISPUTE-P004-V1",
+        "SKC-AS-HELLENISTIC-NATAL-CONDITION-V1",
+        "SKC-AS-DIGNITY-CONDITION-NOT-DIRECTION-P004-V1",
+        "SKC-AS-NATAL-ASPECTS-QUALIFY-NOT-DIRECT-P004-V1",
     }
     audit = build_semantic_knowledge_audit(sources, claims)
-    assert audit["source_quality_distribution"] == {"TIER_A": 1, "TIER_B": 3, "TIER_C": 1}
+    assert audit["source_quality_distribution"] == {"TIER_A": 1, "TIER_B": 6, "TIER_C": 1}
     assert audit["direct_p004_claim_count"] == 1
     assert audit["school_specific_direct_claim_count"] == 1
+
+
+def test_methodology_candidate_is_inactive_and_references_known_assets() -> None:
+    from destiny_personality.semantic_knowledge import (
+        load_astrology_methodology_candidates,
+        load_semantic_knowledge_claim_registry,
+        load_semantic_knowledge_source_registry,
+    )
+
+    sources = load_semantic_knowledge_source_registry(KNOWLEDGE_ROOT)
+    claims = load_semantic_knowledge_claim_registry(KNOWLEDGE_ROOT, sources)
+    candidates = load_astrology_methodology_candidates(KNOWLEDGE_ROOT, sources, claims)
+
+    assert len(candidates) == 1
+    assert candidates[0]["methodology_candidate_id"] == "AMC-AS-P004-HELLENISTIC-NATAL-V1"
+    assert candidates[0]["review_status"] == "proposed"
 
 
 def test_claim_with_unknown_source_reference_is_rejected(tmp_path: Path) -> None:

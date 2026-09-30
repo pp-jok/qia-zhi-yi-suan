@@ -83,3 +83,51 @@ sources:
     source_quality_class: TIER_A
     limitations: Defines the project question only; it cannot support a traditional interpretive claim or create a semantic mechanism.
     review_status: accepted_for_review
+  - source_id: SK-AS-HELLENISTIC-GEORGE-2019-2022
+    system: astrology
+    source_type: modern_technical_reference
+    evidence_nature: traditional_methodology
+    tradition_or_school: reconstructed Hellenistic natal astrology
+    title: "Ancient Astrology in Theory and Practice: A Manual of Traditional Techniques, Volumes I-II"
+    author_or_editor: Demetra George
+    edition_or_version: Rubedo Press volumes I 2019 and II 2022
+    publication_year: 2022
+    language: English
+    locator: Publisher description and volume structure for planetary condition and delineating planetary meaning
+    url_or_bibliographic_ref: https://rubedo.press/ancient-astrology-volume-two
+    methodology_scope: Natal chart-reading procedure using reconstructed Hellenistic planetary condition and delineation techniques.
+    source_quality_class: TIER_B
+    limitations: Establishes a coherent natal methodology authority; it does not itself establish a P004 high or low rule and is not empirical psychology.
+    review_status: accepted_for_review
+  - source_id: SK-AS-DIGNITY-HOULDING
+    system: astrology
+    source_type: modern_technical_reference
+    evidence_nature: traditional_methodology
+    tradition_or_school: traditional western astrology
+    title: Understanding Planetary Dignity and Debility
+    author_or_editor: Deborah Houlding
+    edition_or_version: online technical series
+    publication_year: 2004
+    language: English
+    locator: 'Part 1, section "Dignity: Essential or Accidental?"'
+    url_or_bibliographic_ref: https://www.skyscript.co.uk/dignities.html
+    methodology_scope: Essential and accidental dignity as planetary condition and strength.
+    source_quality_class: TIER_B
+    limitations: Uses predictive/horary examples; condition and strength are not action-initiation direction.
+    review_status: accepted_for_review
+  - source_id: SK-AS-NATAL-ASPECTS-CAMPION-2003
+    system: astrology
+    source_type: modern_technical_reference
+    evidence_nature: traditional_methodology
+    tradition_or_school: modern western natal astrology
+    title: An Introduction to Aspects and Chart Shaping in Natal Astrology
+    author_or_editor: Nicholas Campion
+    edition_or_version: adapted from The Ultimate Astrologer
+    publication_year: 2003
+    language: English
+    locator: ASPECTS section, definitions of combination, moderation, harmony/tension, orb and exactness
+    url_or_bibliographic_ref: https://www.skyscript.co.uk/aspects2.html
+    methodology_scope: Natal aspect interpretation and orb strength.
+    source_quality_class: TIER_B
+    limitations: Introductory secondary treatment; harmony/tension and aspect strength do not establish P004 direction.
+    review_status: accepted_for_review
