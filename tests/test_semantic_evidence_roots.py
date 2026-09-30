@@ -60,7 +60,7 @@ def test_mechanism_without_evidence_root_is_rejected() -> None:
     }
 
 
-def test_registry_loads_the_two_approved_fact_identity_roots() -> None:
+def test_registry_loads_the_three_approved_fact_identity_roots() -> None:
     from destiny_personality.semantic_mechanisms import (
         load_approved_evidence_root_ids,
         load_evidence_root_registry,
@@ -76,7 +76,17 @@ def test_registry_loads_the_two_approved_fact_identity_roots() -> None:
     assert load_approved_evidence_root_ids(_candidate_root()) == {
         "ER-BZ-TEN-GOD-INSTANCE-V1",
         "ER-AS-ASPECT-INSTANCE-V1",
+        "ER-AS-PLANET-PLACEMENT-V1",
     }
+
+    placement_root = next(
+        root for root in roots if root["evidence_root_id"] == "ER-AS-PLANET-PLACEMENT-V1"
+    )
+    assert placement_root["product_owner_decision_ref"] == (
+        "PO-P004-D2-PLANET-PLACEMENT-ROOT-2026-09-30"
+    )
+    assert "direct_primitive_state_assertion" in placement_root["prohibited_use"]
+    assert "mapping_rule_creation" in placement_root["prohibited_use"]
 
 
 @pytest.mark.parametrize(
@@ -117,7 +127,7 @@ def test_registry_rejects_duplicate_root_ids(tmp_path) -> None:
     assert error.value.code == "CONFIG_VALUE_ERROR"
 
 
-def test_root_audit_reports_two_approved_and_zero_other_roots() -> None:
+def test_root_audit_reports_three_approved_and_zero_other_roots() -> None:
     from destiny_personality.semantic_mechanisms import (
         build_evidence_root_audit_report,
         load_evidence_root_registry,
@@ -129,8 +139,8 @@ def test_root_audit_reports_two_approved_and_zero_other_roots() -> None:
 
     assert report == {
         "root_count": 3,
-        "approved_count": 2,
-        "non_approved_count": 1,
+        "approved_count": 3,
+        "non_approved_count": 0,
     }
 
 
@@ -159,9 +169,11 @@ def test_proposed_mechanism_cannot_be_made_eligible_by_caller_supplied_id() -> N
     }
 
 
-def test_authoritative_loader_does_not_approve_current_proposed_mechanism() -> None:
+def test_authoritative_loader_exposes_only_the_po_approved_rule_gate() -> None:
     from destiny_personality.semantic_mechanisms import (
         load_approved_semantic_mechanism_ids,
     )
 
-    assert load_approved_semantic_mechanism_ids(_candidate_root()) == frozenset()
+    assert load_approved_semantic_mechanism_ids(_candidate_root()) == frozenset(
+        {"SMC-AS-ASPECT-ELIGIBILITY-GATE-P004-V1"}
+    )

@@ -1,5 +1,6 @@
 candidate_id: SMC-AS-ASPECT-ELIGIBILITY-GATE-P004-V1
-review_status: proposed
+review_status: approved
+product_owner_decision_ref: PO-P004-D1-ASPECT-RULE-GATE-2026-09-30
 source_system: astrology
 source_fact_classes: [deterministic_facts.astrology.aspects]
 evidence_root_refs: [ER-AS-ASPECT-INSTANCE-V1]

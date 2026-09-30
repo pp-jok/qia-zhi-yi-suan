@@ -66,5 +66,5 @@ roots:
     provenance:
       origin: project_owned_deterministic_facts
       methodology_ref: western-tropical-v1.0
-    review_status: proposed
-    product_owner_decision_ref: PENDING-C2-SK-P004-ROOT-DECISION
+    review_status: approved
+    product_owner_decision_ref: PO-P004-D2-PLANET-PLACEMENT-ROOT-2026-09-30

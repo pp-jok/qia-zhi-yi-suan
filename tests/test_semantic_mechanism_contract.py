@@ -52,6 +52,12 @@ def test_loads_aspect_eligibility_gate_candidate_without_findings() -> None:
 
     assert len(candidates) == 1
     assert candidates[0]["candidate_id"] == "SMC-AS-ASPECT-ELIGIBILITY-GATE-P004-V1"
+    assert candidates[0]["review_status"] == "approved"
+    assert candidates[0]["evidence_role"] == "RULE_GATE"
+    assert candidates[0]["asserts_primitive_state"] is False
+    assert candidates[0]["product_owner_decision_ref"] == (
+        "PO-P004-D1-ASPECT-RULE-GATE-2026-09-30"
+    )
     assert validate_semantic_mechanism_candidate(
         candidates[0], {"ER-AS-ASPECT-INSTANCE-V1"}
     ) == ()

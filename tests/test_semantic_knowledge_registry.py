@@ -64,10 +64,14 @@ def test_methodology_candidate_is_inactive_and_references_known_assets() -> None
 
     assert len(candidates) == 1
     assert candidates[0]["methodology_candidate_id"] == "AMC-AS-P004-HELLENISTIC-NATAL-V1"
-    assert candidates[0]["review_status"] == "proposed"
-    assert candidates[0]["product_owner_decision_ref"] is None
+    assert candidates[0]["review_status"] == "approved_for_semantic_design"
+    assert candidates[0]["product_owner_decision_ref"] == (
+        "PO-P004-D3-HELLENISTIC-METHOD-2026-09-30"
+    )
     assert candidates[0]["candidate_validation_status"] == "READY_FOR_PO_REVIEW"
-    assert candidates[0]["product_owner_selection_status"] == "PENDING"
+    assert candidates[0]["product_owner_selection_status"] == (
+        "SELECTED_FOR_SEMANTIC_DESIGN"
+    )
 
 
 def test_methodology_evidence_roles_are_separated_and_materiality_is_explicit() -> None:
@@ -200,12 +204,11 @@ def test_proposed_methodology_cannot_claim_product_owner_selection(tmp_path: Pat
     from destiny_personality.config_errors import ConfigError
 
     root = _copy_knowledge_assets(tmp_path)
-    _rewrite_candidate(
-        root,
-        lambda candidate: candidate.__setitem__(
-            "product_owner_selection_status", "SELECTED_FOR_SEMANTIC_DESIGN"
-        ),
-    )
+    def revert_to_invalid_proposed_state(candidate: dict) -> None:
+        candidate["review_status"] = "proposed"
+        candidate["product_owner_decision_ref"] = None
+
+    _rewrite_candidate(root, revert_to_invalid_proposed_state)
 
     with pytest.raises(ConfigError, match="proposed methodology must remain pending"):
         _load_candidates(root)
