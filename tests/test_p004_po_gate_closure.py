@@ -114,3 +114,35 @@ def test_construct_discovery_closes_only_the_current_astrology_p004_path() -> No
         "Next Gate:\nP004_BAZI_CONSTRUCT_DISCOVERY",
     ):
         assert expected_state in final_report
+
+
+def test_bazi_construct_discovery_closes_only_reviewed_methodologies() -> None:
+    required_reports = {
+        "c2-sm-p004-bazi-construct-source-corpus.md",
+        "c2-sm-p004-bazi-construct-candidate-matrix.md",
+        "c2-sm-p004-bazi-methodology-coverage.md",
+        "c2-sm-p004-bazi-structural-gap-matrix.md",
+        "c2-sm-p004-bazi-construct-discovery-final-report.md",
+    }
+    assert required_reports.issubset(
+        {path.name for path in REVIEW_ROOT.glob("*.md")}
+    )
+
+    final_report = (
+        REVIEW_ROOT / "c2-sm-p004-bazi-construct-discovery-final-report.md"
+    ).read_text(encoding="utf-8")
+    for expected_state in (
+        "P004 Astrology:\nCLOSED_UNDER_CURRENT_HELLENISTIC_METHODOLOGY",
+        "P004 Bazi Construct Discovery:\nNO_DEFENSIBLE_P004_CONSTRUCT",
+        "Direct High Constructs:\n0",
+        "Direct Low Constructs:\n0",
+        "Bazi Methodology Candidate:\n0",
+        "New Sources:\n0",
+        "New Claims:\n0",
+        "Proposed Evidence Roots:\n0",
+        "Proposed PRIMARY_EVIDENCE:\n0",
+        "Mapping Proposals:\n0",
+        "P004 Bazi Path:\nCLOSED_UNDER_REVIEWED_METHODOLOGIES",
+        "Next Gate:\nP004_MATERIALLY_NEW_EVIDENCE_OR_NEXT_PRIMITIVE",
+    ):
+        assert expected_state in final_report
