@@ -149,7 +149,26 @@ def load_astrology_methodology_candidates(
     material_roles = set(
         _string_list(contract, "material_p004_roles_requiring_evidence", METHODOLOGY_CONTRACT)
     )
+    definitive_non_p004_roles = set(
+        _string_list(
+            contract,
+            "definitive_non_p004_roles_requiring_boundary_evidence",
+            METHODOLOGY_CONTRACT,
+        )
+    )
+    allowed_evidence_classes = set(
+        _string_list(contract, "allowed_materiality_evidence_classes", METHODOLOGY_CONTRACT)
+    )
+    evidence_class_allowed_roles = _string_list_mapping(
+        contract, "evidence_class_allowed_roles", METHODOLOGY_CONTRACT
+    )
+    direct_p004_relevance = set(
+        _string_list(contract, "direct_p004_relevance_classes", METHODOLOGY_CONTRACT)
+    )
     audit_fields = set(_string_list(contract, "required_condition_audit_fields", METHODOLOGY_CONTRACT))
+    basis_fields = set(
+        _string_list(contract, "required_materiality_basis_fields", METHODOLOGY_CONTRACT)
+    )
     source_ids = {item["source_id"] for item in sources}
     claim_ids = {item["claim_id"] for item in claims}
     sources_by_id = {item["source_id"]: item for item in sources}
@@ -223,10 +242,17 @@ def load_astrology_methodology_candidates(
             candidate,
             index,
             audit_fields,
+            basis_fields,
             allowed_materiality,
             material_roles,
+            definitive_non_p004_roles,
+            allowed_evidence_classes,
+            evidence_class_allowed_roles,
+            direct_p004_relevance,
             source_ids,
             claim_ids,
+            claims_by_id,
+            set(boundary_claims) | set(project_claims),
         )
     return tuple(candidates)
 
@@ -261,10 +287,17 @@ def _validate_condition_technique_audit(
     candidate: Mapping[str, object],
     candidate_index: int,
     required_fields: set[str],
+    required_basis_fields: set[str],
     allowed_materiality: set[str],
     material_roles: set[str],
+    definitive_non_p004_roles: set[str],
+    allowed_evidence_classes: set[str],
+    evidence_class_allowed_roles: Mapping[str, Tuple[str, ...]],
+    direct_p004_relevance: set[str],
     source_ids: set[str],
     claim_ids: set[str],
+    claims_by_id: Mapping[str, Mapping[str, object]],
+    boundary_claim_ids: set[str],
 ) -> None:
     audit = candidate.get("condition_technique_audit")
     if type(audit) is not list or not audit or any(type(item) is not dict for item in audit):
@@ -300,8 +333,43 @@ def _validate_condition_technique_audit(
             raise _error("unknown condition source reference", METHODOLOGY_REGISTRY, field + ".source_refs")
         if not set(claim_refs).issubset(claim_ids):
             raise _error("unknown condition claim reference", METHODOLOGY_REGISTRY, field + ".claim_refs")
-        if role in material_roles and (not source_refs or not claim_refs):
+
+        basis = item.get("materiality_basis")
+        if type(basis) is not dict or not required_basis_fields.issubset(basis):
+            raise _error("materiality_basis field missing", METHODOLOGY_REGISTRY, field + ".materiality_basis")
+        evidence_class = basis.get("evidence_class")
+        if evidence_class not in allowed_evidence_classes:
+            raise _error("invalid materiality evidence class", METHODOLOGY_REGISTRY, field + ".materiality_basis.evidence_class")
+        if role not in evidence_class_allowed_roles[evidence_class]:
+            if role in material_roles:
+                message = "P004 material role requires direct P004 materiality evidence"
+            elif role in definitive_non_p004_roles:
+                message = "definitive non-P004 role requires direct boundary evidence"
+            else:
+                message = "UNRESOLVED requires method-role-only or insufficient evidence"
+            raise _error(message, METHODOLOGY_REGISTRY, field + ".materiality_basis.evidence_class")
+        if not _nonempty(basis.get("scope")):
+            raise _error("materiality basis scope must be non-empty", METHODOLOGY_REGISTRY, field + ".materiality_basis.scope")
+        basis_sources = basis.get("source_refs")
+        basis_claims = basis.get("claim_refs")
+        if type(basis_sources) is not list or any(not _nonempty(ref) for ref in basis_sources):
+            raise _error("materiality basis source_refs must be a string list", METHODOLOGY_REGISTRY, field + ".materiality_basis.source_refs")
+        if type(basis_claims) is not list or any(not _nonempty(ref) for ref in basis_claims):
+            raise _error("materiality basis claim_refs must be a string list", METHODOLOGY_REGISTRY, field + ".materiality_basis.claim_refs")
+        if not set(basis_sources).issubset(source_ids) or not set(basis_sources).issubset(source_refs):
+            raise _error("unknown or unbound materiality basis source", METHODOLOGY_REGISTRY, field + ".materiality_basis.source_refs")
+        if not set(basis_claims).issubset(claim_ids) or not set(basis_claims).issubset(claim_refs):
+            raise _error("unknown or unbound materiality basis claim", METHODOLOGY_REGISTRY, field + ".materiality_basis.claim_refs")
+        if role in material_roles and (not basis_sources or not basis_claims):
             raise _error("P004 material role requires source and claim evidence", METHODOLOGY_REGISTRY, field)
+        if role in definitive_non_p004_roles and (not basis_sources or not basis_claims):
+            raise _error("definitive non-P004 role requires source and claim evidence", METHODOLOGY_REGISTRY, field)
+        if evidence_class == "DIRECT_NON_P004_BOUNDARY" and not set(basis_claims).issubset(boundary_claim_ids):
+            raise _error("definitive non-P004 role requires candidate boundary claim", METHODOLOGY_REGISTRY, field)
+        if evidence_class == "DIRECT_P004_MATERIALITY" and any(
+            claims_by_id[ref].get("p004_relevance") not in direct_p004_relevance for ref in basis_claims
+        ):
+            raise _error("direct P004 materiality requires a P004-relevant claim", METHODOLOGY_REGISTRY, field)
         if item["required_by_p004"] and role not in material_roles:
             raise _error("required_by_p004 needs a material P004 role", METHODOLOGY_REGISTRY, field)
 
@@ -317,6 +385,20 @@ def _known_refs(
     if not _nonempty_strings(refs) or not set(refs).issubset(known):
         raise _error(message, METHODOLOGY_REGISTRY, f"candidates.{candidate_index}.{field}")
     return tuple(refs)
+
+
+def _string_list_mapping(
+    payload: Mapping[str, object], field: str, file: str
+) -> Mapping[str, Tuple[str, ...]]:
+    value = payload.get(field)
+    if type(value) is not dict or not value:
+        raise _error(f"{field} must be a non-empty mapping", file, field)
+    result = {}
+    for key, entries in value.items():
+        if not _nonempty(key) or not _nonempty_strings(entries):
+            raise _error(f"{field} values must be non-empty string lists", file, field)
+        result[key] = tuple(entries)
+    return result
 
 
 def _mapping(path: Path) -> Mapping[str, object]:

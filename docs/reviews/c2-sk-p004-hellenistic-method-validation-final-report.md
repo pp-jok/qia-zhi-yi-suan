@@ -27,7 +27,7 @@ Houlding, Campion, CPA, Skyscript horary glossary, and the project ontology are 
 
 ## 6–10. Condition inventory and materiality
 
-Sect, essential dignity, triplicity, bounds, reception, solar phase, visibility, speed, direction, phasis, bonification, maltreatment, overcoming, and aspects are `QUALITY_ONLY`. House/angularity is `PROMINENCE_ONLY`. Horary application/perfection event timing is `NOT_P004`. Mars identity is `UNRESOLVED` inside the selected authority.
+This report's first materiality pass was superseded by `c2-sk-p004-materiality-hardening-final-report.md`. The hardened audit reclassifies method-role-only techniques as `UNRESOLVED`; only automatic transfer of horary application/perfection event timing remains a scoped `NOT_P004` conclusion.
 
 No technique is `P004_REQUIRED`, `P004_MODIFIER`, `P004_CONTEXTUALIZER`, or `P004_COUNTEREVIDENCE`. Consequently:
 

@@ -1,5 +1,5 @@
 schema_version: astrology-methodology-candidate-v1
-contract_version: candidate-astrology-methodology-contract-v1
+contract_version: candidate-astrology-methodology-contract-v2-materiality-semantics
 review_status: candidate_only
 activation_status: inactive
 required_candidate_fields: [methodology_candidate_id, system, domain, use_case, tradition_or_school, method_authority_source_refs, method_authority_claim_refs, boundary_source_refs, boundary_claim_refs, project_boundary_source_refs, project_boundary_claim_refs, condition_technique_audit, included_techniques, excluded_techniques, required_canonical_fact_families, optional_fact_families, known_gaps, known_conflicts, limitations, candidate_validation_status, product_owner_selection_status, review_status]
@@ -9,4 +9,13 @@ allowed_candidate_validation_statuses: [READY_FOR_PO_REVIEW, NOT_READY]
 allowed_product_owner_selection_statuses: [PENDING, SELECTED_FOR_SEMANTIC_DESIGN, DEFERRED, REJECTED]
 allowed_p004_materiality_roles: [P004_REQUIRED, P004_MODIFIER, P004_CONTEXTUALIZER, P004_COUNTEREVIDENCE, QUALITY_ONLY, PROMINENCE_ONLY, NOT_P004, UNRESOLVED]
 material_p004_roles_requiring_evidence: [P004_REQUIRED, P004_MODIFIER, P004_CONTEXTUALIZER, P004_COUNTEREVIDENCE]
-required_condition_audit_fields: [technique, method_role, p004_role, direction, required_by_method, required_by_p004, canonical_fact_family, evidence_root_ref, source_refs, claim_refs, result]
+definitive_non_p004_roles_requiring_boundary_evidence: [QUALITY_ONLY, PROMINENCE_ONLY, NOT_P004]
+allowed_materiality_evidence_classes: [DIRECT_P004_MATERIALITY, DIRECT_NON_P004_BOUNDARY, METHOD_ROLE_ONLY, INSUFFICIENT]
+evidence_class_allowed_roles:
+  DIRECT_P004_MATERIALITY: [P004_REQUIRED, P004_MODIFIER, P004_CONTEXTUALIZER, P004_COUNTEREVIDENCE]
+  DIRECT_NON_P004_BOUNDARY: [QUALITY_ONLY, PROMINENCE_ONLY, NOT_P004]
+  METHOD_ROLE_ONLY: [UNRESOLVED]
+  INSUFFICIENT: [UNRESOLVED]
+direct_p004_relevance_classes: [DIRECT_ACTION_INITIATION, ACTION_ADVANCEMENT, PRE_ACTION_RESTRAINT]
+required_condition_audit_fields: [technique, method_role, p004_role, direction, required_by_method, required_by_p004, canonical_fact_family, evidence_root_ref, source_refs, claim_refs, materiality_basis, result]
+required_materiality_basis_fields: [evidence_class, scope, source_refs, claim_refs]

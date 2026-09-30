@@ -86,11 +86,17 @@ def test_methodology_evidence_roles_are_separated_and_materiality_is_explicit() 
     assert candidate["project_boundary_source_refs"] == ["SK-PROJECT-P004-ONTOLOGY-V2"]
 
     audit = {item["technique"]: item for item in candidate["condition_technique_audit"]}
-    assert audit["sect"]["p004_role"] == "QUALITY_ONLY"
-    assert audit["essential dignity"]["p004_role"] == "QUALITY_ONLY"
-    assert audit["house/angularity"]["p004_role"] == "PROMINENCE_ONLY"
+    assert audit["sect"]["p004_role"] == "UNRESOLVED"
+    assert audit["essential dignity"]["p004_role"] == "UNRESOLVED"
+    assert audit["house/angularity"]["p004_role"] == "UNRESOLVED"
     assert audit["application/perfection event timing"]["p004_role"] == "NOT_P004"
     assert audit["Mars significator identity"]["p004_role"] == "UNRESOLVED"
+    assert audit["sect"]["materiality_basis"]["evidence_class"] == "METHOD_ROLE_ONLY"
+    assert audit["Mars significator identity"]["materiality_basis"]["evidence_class"] == "INSUFFICIENT"
+    assert (
+        audit["application/perfection event timing"]["materiality_basis"]["evidence_class"]
+        == "DIRECT_NON_P004_BOUNDARY"
+    )
     assert all(item["required_by_p004"] is False for item in audit.values())
 
 
@@ -105,6 +111,10 @@ def _rewrite_candidate(root: Path, mutator) -> None:
     payload = yaml.safe_load(path.read_text(encoding="utf-8"))
     mutator(payload["candidates"][0])
     path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
+
+
+def _technique(candidate: dict, name: str) -> dict:
+    return next(item for item in candidate["condition_technique_audit"] if item["technique"] == name)
 
 
 def _load_candidates(root: Path):
@@ -207,15 +217,87 @@ def test_material_p004_role_requires_source_and_claim_evidence(tmp_path: Path) -
     root = _copy_knowledge_assets(tmp_path)
 
     def make_unbacked(candidate: dict) -> None:
-        item = candidate["condition_technique_audit"][0]
+        item = _technique(candidate, "sect")
         item["p004_role"] = "P004_MODIFIER"
+        item["materiality_basis"]["evidence_class"] = "DIRECT_P004_MATERIALITY"
         item["source_refs"] = []
         item["claim_refs"] = []
+        item["materiality_basis"]["source_refs"] = []
+        item["materiality_basis"]["claim_refs"] = []
 
     _rewrite_candidate(root, make_unbacked)
 
     with pytest.raises(ConfigError, match="P004 material role requires source and claim evidence"):
         _load_candidates(root)
+
+
+@pytest.mark.parametrize("definitive_role", ["QUALITY_ONLY", "PROMINENCE_ONLY", "NOT_P004"])
+def test_method_role_only_does_not_imply_definitive_non_p004_role(
+    tmp_path: Path, definitive_role: str
+) -> None:
+    from destiny_personality.config_errors import ConfigError
+
+    root = _copy_knowledge_assets(tmp_path)
+
+    def collapse_unknown(candidate: dict) -> None:
+        _technique(candidate, "sect")["p004_role"] = definitive_role
+
+    _rewrite_candidate(root, collapse_unknown)
+
+    with pytest.raises(ConfigError, match="definitive non-P004 role requires direct boundary evidence"):
+        _load_candidates(root)
+
+
+@pytest.mark.parametrize("material_role", ["P004_REQUIRED", "P004_MODIFIER"])
+def test_material_p004_role_requires_direct_materiality_evidence_class(
+    tmp_path: Path, material_role: str
+) -> None:
+    from destiny_personality.config_errors import ConfigError
+
+    root = _copy_knowledge_assets(tmp_path)
+
+    def promote_without_materiality(candidate: dict) -> None:
+        _technique(candidate, "sect")["p004_role"] = material_role
+
+    _rewrite_candidate(root, promote_without_materiality)
+
+    with pytest.raises(ConfigError, match="P004 material role requires direct P004 materiality evidence"):
+        _load_candidates(root)
+
+
+def test_definitive_non_p004_requires_candidate_boundary_claim(tmp_path: Path) -> None:
+    from destiny_personality.config_errors import ConfigError
+
+    root = _copy_knowledge_assets(tmp_path)
+
+    def replace_boundary(candidate: dict) -> None:
+        item = _technique(candidate, "application/perfection event timing")
+        authority_claim = "SKC-AS-HELLENISTIC-CONDITION-INVENTORY-P004-V1"
+        item["claim_refs"] = [authority_claim]
+        item["materiality_basis"]["claim_refs"] = [authority_claim]
+
+    _rewrite_candidate(root, replace_boundary)
+
+    with pytest.raises(ConfigError, match="definitive non-P004 role requires candidate boundary claim"):
+        _load_candidates(root)
+
+
+def test_unresolved_is_valid_and_does_not_block_ready_candidate() -> None:
+    candidate = _load_candidates(KNOWLEDGE_ROOT)[0]
+    audit = candidate["condition_technique_audit"]
+
+    assert any(item["p004_role"] == "UNRESOLVED" for item in audit)
+    assert candidate["candidate_validation_status"] == "READY_FOR_PO_REVIEW"
+
+
+def test_required_by_method_does_not_imply_required_by_p004() -> None:
+    candidate = _load_candidates(KNOWLEDGE_ROOT)[0]
+    method_required = [
+        item for item in candidate["condition_technique_audit"] if item["required_by_method"]
+    ]
+
+    assert method_required
+    assert all(item["required_by_p004"] is False for item in method_required)
 
 
 def test_claim_with_unknown_source_reference_is_rejected(tmp_path: Path) -> None:

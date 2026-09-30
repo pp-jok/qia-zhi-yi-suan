@@ -8,9 +8,10 @@
 - **Mars:** cross-school relevance hypothesis; no Hellenistic-authority direction rule.
 - **Dignity:** planetary condition/suitability/strength, not initiation direction.
 - **Aspects:** qualify combination and expression; ease/tension is not high/low.
-- **Sect:** method-relevant `QUALITY_ONLY`; not canonicalized and not a P004 blocker without a separate materiality claim.
+- **Sect:** method-relevant but P004 materiality `UNRESOLVED`; not canonicalized and not a current P004 blocker without a direct materiality claim.
 - **Application/separation:** excluded from the required method unless natal P004 materiality is separately established.
 - **Compatibility:** placements identify the candidate input and the placement Root is pending; aspects/dignities/houses are optional until a future P004 mechanism proves materiality.
+- **Materiality:** 16 techniques/hypotheses are honestly `UNRESOLVED`; horary application/perfection has one scoped automatic-transfer exclusion.
 - **Disposition:** Candidate Validation `READY_FOR_PO_REVIEW`; Product Owner Selection `PENDING`.
 
 ## Traditional Renaissance / horary-informed

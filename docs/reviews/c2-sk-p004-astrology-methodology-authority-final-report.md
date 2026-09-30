@@ -12,7 +12,7 @@ The new candidate is `AMC-AS-P004-HELLENISTIC-NATAL-V1`, proposed/inactive. Thre
 
 ## Readiness
 
-This earlier selection did not yield a direction rule. The subsequent full materiality audit classifies sect as `QUALITY_ONLY`, not a PRIMARY blocker, and separates candidate validation from Product Owner selection. No new Root or Semantic Mechanism is proposed.
+This historical selection did not yield a direction rule. The later materiality-semantics hardening reclassifies sect and other method-role-only techniques as `UNRESOLVED`, not as definitive exclusions, while keeping them outside current PRIMARY evidence. No new Root or Semantic Mechanism is proposed.
 
 Legacy remains 14/14 `NO_MAPPING` / `NO_PORT`; no Golden or personal profile informed selection. Active semantic and presentation fingerprints remain unchanged.
 

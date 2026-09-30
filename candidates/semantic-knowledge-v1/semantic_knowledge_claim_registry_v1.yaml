@@ -186,18 +186,18 @@ claims:
         relation: limits
     tradition_or_school: reconstructed Hellenistic natal astrology
     canonical_fact_family: none_until_p004_materiality_is_established
-    semantic_claim: The selected authority organizes sect, rulerships and dignities, reception, solar-phase conditions, planetary motion and visibility, aspects, bonification, maltreatment, overcoming, and related techniques as an assessment of planetary condition and effectiveness; that methodological role does not by itself determine P004 action-initiation direction.
+    semantic_claim: The selected authority places sect, rulerships and dignities, reception, solar-phase conditions, planetary motion and visibility, aspects, bonification, maltreatment, overcoming, and related techniques inside its planetary-condition framework. This establishes method membership and blocks direct word-level P004 shortcuts; it does not determine whether any technique could later become P004 material under a separate claim.
     target_primitive_id: P004
     target_primitive_question: When and how is concrete action started and advanced?
     p004_relevance: NOT_P004
     direction_relevance: none
-    scope: complete Hellenistic planetary-condition inventory boundary
+    scope: complete Hellenistic planetary-condition inventory and method-role boundary
     contexts: []
     conditions: [A technique needs a separate source-backed P004 bridge before it can act as required evidence, modifier, context, or counterevidence.]
     counter_conditions: [Traditional importance and planetary effectiveness are not equivalent to action initiation or restraint.]
     exclusions: [good condition equals high, difficult condition equals low, speed equals initiation, prominence equals initiation]
     support_class: INDIRECT_NEARBY_CONSTRUCT
-    limitations: This claim classifies the authority's technique families and blocks semantic shortcuts; it does not determine a future mechanism or deny that later direct evidence could establish materiality.
+    limitations: METHOD_ROLE_ONLY evidence. It cannot by itself justify QUALITY_ONLY, PROMINENCE_ONLY, NOT_P004, or any material P004 role; future direct evidence may establish a modifier, context, counterevidence, or other materiality.
     review_status: accepted_for_review
   - claim_id: SKC-AS-PSYCHOLOGICAL-METHOD-BOUNDARY-P004-V1
     system: astrology
@@ -282,5 +282,5 @@ claims:
     counter_conditions: [Unknown and absent evidence cannot be converted into restraint or waiting.]
     exclusions: [strength equals high, weakness equals low, activity equals initiation, absence equals low]
     support_class: DIRECT_EXPLICIT
-    limitations: Project-normative boundary only; it does not validate or invalidate any astrological tradition.
+    limitations: Project-normative direct-evidence boundary only. It rejects direct semantic shortcuts and absence-to-low inference, but does not prove that a technique can never become a governed P004 modifier, contextualizer, or counterevidence under later evidence.
     review_status: accepted_for_review
