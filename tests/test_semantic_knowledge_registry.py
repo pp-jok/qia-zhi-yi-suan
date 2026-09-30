@@ -1,6 +1,9 @@
 from pathlib import Path
+import shutil
+from typing import Optional
 
 import pytest
+import yaml
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +28,9 @@ def test_loads_candidate_only_p004_semantic_knowledge_registries() -> None:
         "SK-AS-HELLENISTIC-GEORGE-2019-2022",
         "SK-AS-DIGNITY-HOULDING",
         "SK-AS-NATAL-ASPECTS-CAMPION-2003",
+        "SK-AS-PSYCHOLOGICAL-CPA",
+        "SK-AS-HORARY-APPLICATION-SKYSCRIPT",
+        "SK-AS-HORARY-PERFECTION-SKYSCRIPT",
         "SK-PROJECT-P004-ONTOLOGY-V2",
     }
     assert {claim["claim_id"] for claim in claims} == {
@@ -34,9 +40,13 @@ def test_loads_candidate_only_p004_semantic_knowledge_registries() -> None:
         "SKC-AS-HELLENISTIC-NATAL-CONDITION-V1",
         "SKC-AS-DIGNITY-CONDITION-NOT-DIRECTION-P004-V1",
         "SKC-AS-NATAL-ASPECTS-QUALIFY-NOT-DIRECT-P004-V1",
+        "SKC-AS-HELLENISTIC-CONDITION-INVENTORY-P004-V1",
+        "SKC-AS-PSYCHOLOGICAL-METHOD-BOUNDARY-P004-V1",
+        "SKC-AS-HORARY-EVENT-BOUNDARY-P004-V1",
+        "SKC-PROJECT-P004-CONDITION-NOT-DIRECTION-V1",
     }
     audit = build_semantic_knowledge_audit(sources, claims)
-    assert audit["source_quality_distribution"] == {"TIER_A": 1, "TIER_B": 6, "TIER_C": 1}
+    assert audit["source_quality_distribution"] == {"TIER_A": 1, "TIER_B": 9, "TIER_C": 1}
     assert audit["direct_p004_claim_count"] == 1
     assert audit["school_specific_direct_claim_count"] == 1
 
@@ -55,6 +65,157 @@ def test_methodology_candidate_is_inactive_and_references_known_assets() -> None
     assert len(candidates) == 1
     assert candidates[0]["methodology_candidate_id"] == "AMC-AS-P004-HELLENISTIC-NATAL-V1"
     assert candidates[0]["review_status"] == "proposed"
+    assert candidates[0]["product_owner_decision_ref"] is None
+    assert candidates[0]["candidate_validation_status"] == "READY_FOR_PO_REVIEW"
+    assert candidates[0]["product_owner_selection_status"] == "PENDING"
+
+
+def test_methodology_evidence_roles_are_separated_and_materiality_is_explicit() -> None:
+    from destiny_personality.semantic_knowledge import (
+        load_astrology_methodology_candidates,
+        load_semantic_knowledge_claim_registry,
+        load_semantic_knowledge_source_registry,
+    )
+
+    sources = load_semantic_knowledge_source_registry(KNOWLEDGE_ROOT)
+    claims = load_semantic_knowledge_claim_registry(KNOWLEDGE_ROOT, sources)
+    candidate = load_astrology_methodology_candidates(KNOWLEDGE_ROOT, sources, claims)[0]
+
+    assert candidate["method_authority_source_refs"] == ["SK-AS-HELLENISTIC-GEORGE-2019-2022"]
+    assert "SK-AS-NATAL-ASPECTS-CAMPION-2003" in candidate["boundary_source_refs"]
+    assert candidate["project_boundary_source_refs"] == ["SK-PROJECT-P004-ONTOLOGY-V2"]
+
+    audit = {item["technique"]: item for item in candidate["condition_technique_audit"]}
+    assert audit["sect"]["p004_role"] == "QUALITY_ONLY"
+    assert audit["essential dignity"]["p004_role"] == "QUALITY_ONLY"
+    assert audit["house/angularity"]["p004_role"] == "PROMINENCE_ONLY"
+    assert audit["application/perfection event timing"]["p004_role"] == "NOT_P004"
+    assert audit["Mars significator identity"]["p004_role"] == "UNRESOLVED"
+    assert all(item["required_by_p004"] is False for item in audit.values())
+
+
+def _copy_knowledge_assets(tmp_path: Path) -> Path:
+    target = tmp_path / "semantic-knowledge-v1"
+    shutil.copytree(KNOWLEDGE_ROOT, target)
+    return target
+
+
+def _rewrite_candidate(root: Path, mutator) -> None:
+    path = root / "astrology_methodology_candidate_registry_v1.yaml"
+    payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+    mutator(payload["candidates"][0])
+    path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
+
+
+def _load_candidates(root: Path):
+    from destiny_personality.semantic_knowledge import (
+        load_astrology_methodology_candidates,
+        load_semantic_knowledge_claim_registry,
+        load_semantic_knowledge_source_registry,
+    )
+
+    sources = load_semantic_knowledge_source_registry(root)
+    claims = load_semantic_knowledge_claim_registry(root, sources)
+    return load_astrology_methodology_candidates(root, sources, claims)
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement", "message"),
+    [
+        ("method_authority_source_refs", ["SK-MISSING"], "unknown methodology authority source"),
+        ("boundary_claim_refs", ["SKC-MISSING"], "unknown methodology boundary claim"),
+    ],
+)
+def test_methodology_role_references_fail_closed(
+    tmp_path: Path, field: str, replacement: list[str], message: str
+) -> None:
+    from destiny_personality.config_errors import ConfigError
+
+    root = _copy_knowledge_assets(tmp_path)
+    _rewrite_candidate(root, lambda candidate: candidate.__setitem__(field, replacement))
+
+    with pytest.raises(ConfigError, match=message):
+        _load_candidates(root)
+
+
+def test_cross_school_boundary_source_cannot_become_method_authority(tmp_path: Path) -> None:
+    from destiny_personality.config_errors import ConfigError
+
+    root = _copy_knowledge_assets(tmp_path)
+    def promote_cross_school_source(candidate: dict) -> None:
+        candidate["boundary_source_refs"].remove("SK-AS-NATAL-ASPECTS-CAMPION-2003")
+        candidate["method_authority_source_refs"].append("SK-AS-NATAL-ASPECTS-CAMPION-2003")
+
+    _rewrite_candidate(root, promote_cross_school_source)
+
+    with pytest.raises(ConfigError, match="method authority source must match candidate tradition"):
+        _load_candidates(root)
+
+
+def test_method_authority_cannot_overlap_boundary_roles(tmp_path: Path) -> None:
+    from destiny_personality.config_errors import ConfigError
+
+    root = _copy_knowledge_assets(tmp_path)
+    _rewrite_candidate(
+        root,
+        lambda candidate: candidate["boundary_source_refs"].append(
+            candidate["method_authority_source_refs"][0]
+        ),
+    )
+
+    with pytest.raises(ConfigError, match="method authority and boundary source roles must be disjoint"):
+        _load_candidates(root)
+
+
+@pytest.mark.parametrize("decision_ref", [None, "", "   "])
+def test_approved_methodology_requires_nonempty_po_decision_ref(
+    tmp_path: Path, decision_ref: Optional[str]
+) -> None:
+    from destiny_personality.config_errors import ConfigError
+
+    root = _copy_knowledge_assets(tmp_path)
+
+    def approve(candidate: dict) -> None:
+        candidate["review_status"] = "approved_for_semantic_design"
+        candidate["product_owner_decision_ref"] = decision_ref
+        candidate["product_owner_selection_status"] = "SELECTED_FOR_SEMANTIC_DESIGN"
+
+    _rewrite_candidate(root, approve)
+
+    with pytest.raises(ConfigError, match="approved methodology requires product_owner_decision_ref"):
+        _load_candidates(root)
+
+
+def test_proposed_methodology_cannot_claim_product_owner_selection(tmp_path: Path) -> None:
+    from destiny_personality.config_errors import ConfigError
+
+    root = _copy_knowledge_assets(tmp_path)
+    _rewrite_candidate(
+        root,
+        lambda candidate: candidate.__setitem__(
+            "product_owner_selection_status", "SELECTED_FOR_SEMANTIC_DESIGN"
+        ),
+    )
+
+    with pytest.raises(ConfigError, match="proposed methodology must remain pending"):
+        _load_candidates(root)
+
+
+def test_material_p004_role_requires_source_and_claim_evidence(tmp_path: Path) -> None:
+    from destiny_personality.config_errors import ConfigError
+
+    root = _copy_knowledge_assets(tmp_path)
+
+    def make_unbacked(candidate: dict) -> None:
+        item = candidate["condition_technique_audit"][0]
+        item["p004_role"] = "P004_MODIFIER"
+        item["source_refs"] = []
+        item["claim_refs"] = []
+
+    _rewrite_candidate(root, make_unbacked)
+
+    with pytest.raises(ConfigError, match="P004 material role requires source and claim evidence"):
+        _load_candidates(root)
 
 
 def test_claim_with_unknown_source_reference_is_rejected(tmp_path: Path) -> None:

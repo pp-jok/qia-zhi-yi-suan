@@ -2,5 +2,11 @@ schema_version: astrology-methodology-candidate-v1
 contract_version: candidate-astrology-methodology-contract-v1
 review_status: candidate_only
 activation_status: inactive
-required_candidate_fields: [methodology_candidate_id, system, domain, use_case, tradition_or_school, source_refs, claim_refs, included_techniques, excluded_techniques, required_canonical_fact_families, optional_fact_families, known_gaps, known_conflicts, limitations, review_status]
+required_candidate_fields: [methodology_candidate_id, system, domain, use_case, tradition_or_school, method_authority_source_refs, method_authority_claim_refs, boundary_source_refs, boundary_claim_refs, project_boundary_source_refs, project_boundary_claim_refs, condition_technique_audit, included_techniques, excluded_techniques, required_canonical_fact_families, optional_fact_families, known_gaps, known_conflicts, limitations, candidate_validation_status, product_owner_selection_status, review_status]
+required_nullable_candidate_fields: [product_owner_decision_ref]
 allowed_review_statuses: [proposed, approved_for_semantic_design, deferred, rejected]
+allowed_candidate_validation_statuses: [READY_FOR_PO_REVIEW, NOT_READY]
+allowed_product_owner_selection_statuses: [PENDING, SELECTED_FOR_SEMANTIC_DESIGN, DEFERRED, REJECTED]
+allowed_p004_materiality_roles: [P004_REQUIRED, P004_MODIFIER, P004_CONTEXTUALIZER, P004_COUNTEREVIDENCE, QUALITY_ONLY, PROMINENCE_ONLY, NOT_P004, UNRESOLVED]
+material_p004_roles_requiring_evidence: [P004_REQUIRED, P004_MODIFIER, P004_CONTEXTUALIZER, P004_COUNTEREVIDENCE]
+required_condition_audit_fields: [technique, method_role, p004_role, direction, required_by_method, required_by_p004, canonical_fact_family, evidence_root_ref, source_refs, claim_refs, result]

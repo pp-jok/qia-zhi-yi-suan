@@ -170,3 +170,117 @@ claims:
     support_class: INDIRECT_NEARBY_CONSTRUCT
     limitations: The source is introductory and does not supply a condition-complete P004 rule.
     review_status: accepted_for_review
+  - claim_id: SKC-AS-HELLENISTIC-CONDITION-INVENTORY-P004-V1
+    system: astrology
+    citations:
+      - source_ref: SK-AS-HELLENISTIC-GEORGE-2019-2022
+        locator: "Volume One publisher description and contents: classification, rulerships, solar phase cycle, lunar conditions, aspects, and final synthesis"
+        support_role: primary
+      - source_ref: SK-PROJECT-P004-ONTOLOGY-V2
+        locator: P004 definition, included meanings, excluded meanings, and non-evidence semantics
+        support_role: contextual
+    related_claims:
+      - claim_ref: SKC-AS-HELLENISTIC-NATAL-CONDITION-V1
+        relation: supports
+      - claim_ref: SKC-AS-MARS-ACTION-INITIATIVE-P004-V1
+        relation: limits
+    tradition_or_school: reconstructed Hellenistic natal astrology
+    canonical_fact_family: none_until_p004_materiality_is_established
+    semantic_claim: The selected authority organizes sect, rulerships and dignities, reception, solar-phase conditions, planetary motion and visibility, aspects, bonification, maltreatment, overcoming, and related techniques as an assessment of planetary condition and effectiveness; that methodological role does not by itself determine P004 action-initiation direction.
+    target_primitive_id: P004
+    target_primitive_question: When and how is concrete action started and advanced?
+    p004_relevance: NOT_P004
+    direction_relevance: none
+    scope: complete Hellenistic planetary-condition inventory boundary
+    contexts: []
+    conditions: [A technique needs a separate source-backed P004 bridge before it can act as required evidence, modifier, context, or counterevidence.]
+    counter_conditions: [Traditional importance and planetary effectiveness are not equivalent to action initiation or restraint.]
+    exclusions: [good condition equals high, difficult condition equals low, speed equals initiation, prominence equals initiation]
+    support_class: INDIRECT_NEARBY_CONSTRUCT
+    limitations: This claim classifies the authority's technique families and blocks semantic shortcuts; it does not determine a future mechanism or deny that later direct evidence could establish materiality.
+    review_status: accepted_for_review
+  - claim_id: SKC-AS-PSYCHOLOGICAL-METHOD-BOUNDARY-P004-V1
+    system: astrology
+    citations:
+      - source_ref: SK-AS-PSYCHOLOGICAL-CPA
+        locator: Official CPA description of integrating astrology with depth, humanistic, and transpersonal psychology
+        support_role: primary
+      - source_ref: SK-PROJECT-P004-ONTOLOGY-V2
+        locator: P004 action-initiation definition and excluded impulsivity meanings
+        support_role: contextual
+    related_claims:
+      - claim_ref: SKC-AS-MARS-ACTION-INITIATIVE-P004-V1
+        relation: contextualizes
+    tradition_or_school: modern psychological astrology
+    canonical_fact_family: none_declared
+    semantic_claim: Modern psychological astrology explicitly interprets horoscopes through links with depth, humanistic, and transpersonal psychology; the reviewed institutional authority does not specify a reproducible canonical-fact rule for P004 action initiation or advancement.
+    target_primitive_id: P004
+    target_primitive_question: When and how is concrete action started and advanced?
+    p004_relevance: NOT_P004
+    direction_relevance: none
+    scope: method-selection defer boundary
+    contexts: []
+    conditions: [A future candidate would need an auditable fact model and a direct P004 bridge without collapsing drive, desire, assertion, or impulse into action initiation.]
+    counter_conditions: [Psychological synthesis is a legitimate method orientation but is not equivalent to the selected condition-based Hellenistic method.]
+    exclusions: [school mixing, psychological keyword shortcut, impulse equals P004 high]
+    support_class: INDIRECT_NEARBY_CONSTRUCT
+    limitations: Supports DEFER for this project use case only; it does not reject psychological astrology generally or claim Hellenistic truth.
+    review_status: accepted_for_review
+  - claim_id: SKC-AS-HORARY-EVENT-BOUNDARY-P004-V1
+    system: astrology
+    citations:
+      - source_ref: SK-AS-HORARY-APPLICATION-SKYSCRIPT
+        locator: Definition of application and its symbolism for developing horary events
+        support_role: primary
+      - source_ref: SK-AS-HORARY-PERFECTION-SKYSCRIPT
+        locator: Definition of perfection and accomplishment of the matter asked about in horary
+        support_role: primary
+      - source_ref: SK-PROJECT-P004-ONTOLOGY-V2
+        locator: P004 natal action-initiation boundary and non-evidence semantics
+        support_role: contextual
+    related_claims:
+      - claim_ref: SKC-AS-ASPECT-TECHNIQUE-DISPUTE-P004-V1
+        relation: supports
+      - claim_ref: SKC-AS-MARS-ACTION-INITIATIVE-P004-V1
+        relation: limits
+    tradition_or_school: traditional horary astrology
+    canonical_fact_family: none_for_natal_p004
+    semantic_claim: Application and perfection describe aspect motion toward exactness and, in horary, development or fulfilment of the matter asked about; this event-oriented role cannot be silently transferred into a natal P004 personality direction.
+    target_primitive_id: P004
+    target_primitive_question: When and how is concrete action started and advanced?
+    p004_relevance: NOT_P004
+    direction_relevance: none
+    scope: cross-school event-versus-natal boundary
+    contexts: []
+    conditions: [Any natal use would require a separate natal authority and direct P004 materiality claim.]
+    counter_conditions: [Event development or fulfilment is not a stable preference for initiating concrete action.]
+    exclusions: [applying aspect equals high, separating aspect equals low, horary perfection equals natal action advancement]
+    support_class: INDIRECT_NEARBY_CONSTRUCT
+    limitations: Does not deny historical natal uses of aspect motion; it prevents unsupported automatic transfer from horary event judgement.
+    review_status: accepted_for_review
+  - claim_id: SKC-PROJECT-P004-CONDITION-NOT-DIRECTION-V1
+    system: project
+    citations:
+      - source_ref: SK-PROJECT-P004-ONTOLOGY-V2
+        locator: P004 canonical definition, included/excluded meanings, counter-evidence semantics, and non-evidence semantics
+        support_role: primary
+    related_claims:
+      - claim_ref: SKC-AS-HELLENISTIC-CONDITION-INVENTORY-P004-V1
+        relation: contextualizes
+      - claim_ref: SKC-AS-DIGNITY-CONDITION-NOT-DIRECTION-P004-V1
+        relation: supports
+    tradition_or_school: qia-zhi-yi-suan candidate ontology
+    canonical_fact_family: project_semantic_boundary
+    semantic_claim: Under the project ontology, planetary quality, effectiveness, speed, visibility, prominence, or general activity is not P004 evidence unless a governed claim directly addresses when and how concrete action starts or advances; missing evidence is not P004 low.
+    target_primitive_id: P004
+    target_primitive_question: When and how is concrete action started and advanced?
+    p004_relevance: NOT_P004
+    direction_relevance: none
+    scope: project semantic boundary
+    contexts: []
+    conditions: [Only governed action-start or action-advancement evidence may cross the P004 ownership boundary.]
+    counter_conditions: [Unknown and absent evidence cannot be converted into restraint or waiting.]
+    exclusions: [strength equals high, weakness equals low, activity equals initiation, absence equals low]
+    support_class: DIRECT_EXPLICIT
+    limitations: Project-normative boundary only; it does not validate or invalidate any astrological tradition.
+    review_status: accepted_for_review

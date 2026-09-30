@@ -93,9 +93,9 @@ sources:
     edition_or_version: Rubedo Press volumes I 2019 and II 2022
     publication_year: 2022
     language: English
-    locator: Publisher description and volume structure for planetary condition and delineating planetary meaning
-    url_or_bibliographic_ref: https://rubedo.press/ancient-astrology-volume-two
-    methodology_scope: Natal chart-reading procedure using reconstructed Hellenistic planetary condition and delineation techniques.
+    locator: "Volume One: Assessing Planetary Condition, publisher description and contents, Parts One through Six"
+    url_or_bibliographic_ref: https://rubedo.press/ancient-astrology
+    methodology_scope: Natal chart-reading procedure using reconstructed Hellenistic classification, rulership, solar/lunar phase, aspect-condition, and synthesis techniques.
     source_quality_class: TIER_B
     limitations: Establishes a coherent natal methodology authority; it does not itself establish a P004 high or low rule and is not empirical psychology.
     review_status: accepted_for_review
@@ -130,4 +130,52 @@ sources:
     methodology_scope: Natal aspect interpretation and orb strength.
     source_quality_class: TIER_B
     limitations: Introductory secondary treatment; harmony/tension and aspect strength do not establish P004 direction.
+    review_status: accepted_for_review
+  - source_id: SK-AS-PSYCHOLOGICAL-CPA
+    system: astrology
+    source_type: modern_technical_reference
+    evidence_nature: traditional_methodology
+    tradition_or_school: modern psychological astrology
+    title: Centre for Psychological Astrology Method and Press Description
+    author_or_editor: Centre for Psychological Astrology
+    edition_or_version: official institutional website
+    publication_year: 2026
+    language: English
+    locator: "CPA description of cross-fertilisation with depth, humanistic, and transpersonal psychology; CPA Press description of links between astrology and psychology"
+    url_or_bibliographic_ref: https://cpalondon.com/cpa-press/
+    methodology_scope: Psychological and human-centered horoscope interpretation through links between astrology and multiple schools of psychology.
+    source_quality_class: TIER_B
+    limitations: Establishes the school's interpretive orientation, not a deterministic fact-conditioned P004 high/low rule or empirical personality validation.
+    review_status: accepted_for_review
+  - source_id: SK-AS-HORARY-APPLICATION-SKYSCRIPT
+    system: astrology
+    source_type: modern_technical_reference
+    evidence_nature: traditional_methodology
+    tradition_or_school: traditional horary astrology
+    title: Application — Skyscript Glossary
+    author_or_editor: Deborah Houlding / Skyscript
+    edition_or_version: online glossary
+    publication_year: 2026
+    language: English
+    locator: Definition of application and paragraph describing developing events in horary astrology
+    url_or_bibliographic_ref: https://www.skyscript.co.uk/glossary/application/
+    methodology_scope: Applying aspect motion toward exactness and its event-development use in horary astrology.
+    source_quality_class: TIER_B
+    limitations: A technical glossary boundary source; it does not authorize natal personality transfer or P004 direction.
+    review_status: accepted_for_review
+  - source_id: SK-AS-HORARY-PERFECTION-SKYSCRIPT
+    system: astrology
+    source_type: modern_technical_reference
+    evidence_nature: traditional_methodology
+    tradition_or_school: traditional horary astrology
+    title: Perfection / Perfect Aspect — Skyscript Glossary
+    author_or_editor: Deborah Houlding / Skyscript
+    edition_or_version: online glossary
+    publication_year: 2026
+    language: English
+    locator: Definition of perfection and paragraph describing accomplishment of a horary matter
+    url_or_bibliographic_ref: https://www.skyscript.co.uk/glossary/perfection/
+    methodology_scope: Exact aspect perfection and its event-fulfilment use in horary astrology.
+    source_quality_class: TIER_B
+    limitations: A technical glossary boundary source; event fulfilment is not natal action-initiation preference.
     review_status: accepted_for_review

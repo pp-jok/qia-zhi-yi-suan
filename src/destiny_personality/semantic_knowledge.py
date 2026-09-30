@@ -135,24 +135,188 @@ def load_astrology_methodology_candidates(
     _equal(registry, "schema_version", "astrology-methodology-candidate-registry-v1", METHODOLOGY_REGISTRY)
     _candidate_only(registry, METHODOLOGY_REGISTRY)
     required = _string_list(contract, "required_candidate_fields", METHODOLOGY_CONTRACT)
+    required_nullable = _string_list(contract, "required_nullable_candidate_fields", METHODOLOGY_CONTRACT)
     allowed_status = set(_string_list(contract, "allowed_review_statuses", METHODOLOGY_CONTRACT))
+    allowed_validation = set(
+        _string_list(contract, "allowed_candidate_validation_statuses", METHODOLOGY_CONTRACT)
+    )
+    allowed_selection = set(
+        _string_list(contract, "allowed_product_owner_selection_statuses", METHODOLOGY_CONTRACT)
+    )
+    allowed_materiality = set(
+        _string_list(contract, "allowed_p004_materiality_roles", METHODOLOGY_CONTRACT)
+    )
+    material_roles = set(
+        _string_list(contract, "material_p004_roles_requiring_evidence", METHODOLOGY_CONTRACT)
+    )
+    audit_fields = set(_string_list(contract, "required_condition_audit_fields", METHODOLOGY_CONTRACT))
     source_ids = {item["source_id"] for item in sources}
     claim_ids = {item["claim_id"] for item in claims}
+    sources_by_id = {item["source_id"]: item for item in sources}
+    claims_by_id = {item["claim_id"]: item for item in claims}
     candidates = _list(registry, "candidates", METHODOLOGY_REGISTRY)
     seen = set()
     for index, candidate in enumerate(candidates):
         _required(candidate, required, METHODOLOGY_REGISTRY, index)
+        for field in required_nullable:
+            if field not in candidate:
+                raise _error("required nullable field missing", METHODOLOGY_REGISTRY, f"candidates.{index}.{field}")
         candidate_id = candidate.get("methodology_candidate_id")
         if not _nonempty(candidate_id) or candidate_id in seen:
             raise _error("duplicate or invalid methodology candidate id", METHODOLOGY_REGISTRY, f"candidates.{index}.methodology_candidate_id")
         seen.add(candidate_id)
         if candidate.get("review_status") not in allowed_status:
             raise _error("invalid methodology review_status", METHODOLOGY_REGISTRY, f"candidates.{index}.review_status")
-        if not _nonempty_strings(candidate.get("source_refs")) or not set(candidate["source_refs"]).issubset(source_ids):
-            raise _error("unknown methodology source reference", METHODOLOGY_REGISTRY, f"candidates.{index}.source_refs")
-        if not _nonempty_strings(candidate.get("claim_refs")) or not set(candidate["claim_refs"]).issubset(claim_ids):
-            raise _error("unknown methodology claim reference", METHODOLOGY_REGISTRY, f"candidates.{index}.claim_refs")
+        if candidate.get("candidate_validation_status") not in allowed_validation:
+            raise _error("invalid candidate validation status", METHODOLOGY_REGISTRY, f"candidates.{index}.candidate_validation_status")
+        if candidate.get("product_owner_selection_status") not in allowed_selection:
+            raise _error("invalid product owner selection status", METHODOLOGY_REGISTRY, f"candidates.{index}.product_owner_selection_status")
+
+        authority_sources = _known_refs(
+            candidate, "method_authority_source_refs", source_ids, "unknown methodology authority source", index
+        )
+        authority_claims = _known_refs(
+            candidate, "method_authority_claim_refs", claim_ids, "unknown methodology authority claim", index
+        )
+        boundary_sources = _known_refs(
+            candidate, "boundary_source_refs", source_ids, "unknown methodology boundary source", index
+        )
+        boundary_claims = _known_refs(
+            candidate, "boundary_claim_refs", claim_ids, "unknown methodology boundary claim", index
+        )
+        project_sources = _known_refs(
+            candidate, "project_boundary_source_refs", source_ids, "unknown project boundary source", index
+        )
+        project_claims = _known_refs(
+            candidate, "project_boundary_claim_refs", claim_ids, "unknown project boundary claim", index
+        )
+        if set(authority_sources) & (set(boundary_sources) | set(project_sources)):
+            raise _error(
+                "method authority and boundary source roles must be disjoint",
+                METHODOLOGY_REGISTRY,
+                f"candidates.{index}",
+            )
+        if set(authority_claims) & (set(boundary_claims) | set(project_claims)):
+            raise _error(
+                "method authority and boundary claim roles must be disjoint",
+                METHODOLOGY_REGISTRY,
+                f"candidates.{index}",
+            )
+        tradition = candidate["tradition_or_school"]
+        for source_ref in authority_sources:
+            if sources_by_id[source_ref].get("tradition_or_school") != tradition:
+                raise _error(
+                    "method authority source must match candidate tradition",
+                    METHODOLOGY_REGISTRY,
+                    f"candidates.{index}.method_authority_source_refs",
+                )
+        for claim_ref in authority_claims:
+            if claims_by_id[claim_ref].get("tradition_or_school") != tradition:
+                raise _error(
+                    "method authority claim must match candidate tradition",
+                    METHODOLOGY_REGISTRY,
+                    f"candidates.{index}.method_authority_claim_refs",
+                )
+
+        _validate_methodology_approval(candidate, index)
+        _validate_condition_technique_audit(
+            candidate,
+            index,
+            audit_fields,
+            allowed_materiality,
+            material_roles,
+            source_ids,
+            claim_ids,
+        )
     return tuple(candidates)
+
+
+def _validate_methodology_approval(candidate: Mapping[str, object], index: int) -> None:
+    status = candidate["review_status"]
+    selection = candidate["product_owner_selection_status"]
+    decision_ref = candidate["product_owner_decision_ref"]
+    if status == "approved_for_semantic_design":
+        if not _nonempty(decision_ref):
+            raise _error(
+                "approved methodology requires product_owner_decision_ref",
+                METHODOLOGY_REGISTRY,
+                f"candidates.{index}.product_owner_decision_ref",
+            )
+        if selection != "SELECTED_FOR_SEMANTIC_DESIGN":
+            raise _error(
+                "approved methodology must record product owner selection",
+                METHODOLOGY_REGISTRY,
+                f"candidates.{index}.product_owner_selection_status",
+            )
+    elif status == "proposed":
+        if selection != "PENDING" or decision_ref is not None:
+            raise _error(
+                "proposed methodology must remain pending without a decision reference",
+                METHODOLOGY_REGISTRY,
+                f"candidates.{index}.product_owner_selection_status",
+            )
+
+
+def _validate_condition_technique_audit(
+    candidate: Mapping[str, object],
+    candidate_index: int,
+    required_fields: set[str],
+    allowed_materiality: set[str],
+    material_roles: set[str],
+    source_ids: set[str],
+    claim_ids: set[str],
+) -> None:
+    audit = candidate.get("condition_technique_audit")
+    if type(audit) is not list or not audit or any(type(item) is not dict for item in audit):
+        raise _error(
+            "condition_technique_audit must be a non-empty list of mappings",
+            METHODOLOGY_REGISTRY,
+            f"candidates.{candidate_index}.condition_technique_audit",
+        )
+    seen = set()
+    for audit_index, item in enumerate(audit):
+        field = f"candidates.{candidate_index}.condition_technique_audit.{audit_index}"
+        if not required_fields.issubset(item):
+            raise _error("condition audit field missing", METHODOLOGY_REGISTRY, field)
+        technique = item.get("technique")
+        if not _nonempty(technique) or technique in seen:
+            raise _error("duplicate or invalid condition technique", METHODOLOGY_REGISTRY, field + ".technique")
+        seen.add(technique)
+        for text_field in ("method_role", "direction", "result"):
+            if not _nonempty(item.get(text_field)):
+                raise _error("condition audit text must be non-empty", METHODOLOGY_REGISTRY, field + "." + text_field)
+        if type(item.get("required_by_method")) is not bool or type(item.get("required_by_p004")) is not bool:
+            raise _error("condition audit requirement flags must be booleans", METHODOLOGY_REGISTRY, field)
+        role = item.get("p004_role")
+        if role not in allowed_materiality:
+            raise _error("invalid P004 materiality role", METHODOLOGY_REGISTRY, field + ".p004_role")
+        source_refs = item.get("source_refs")
+        claim_refs = item.get("claim_refs")
+        if type(source_refs) is not list or any(not _nonempty(ref) for ref in source_refs):
+            raise _error("condition source_refs must be a string list", METHODOLOGY_REGISTRY, field + ".source_refs")
+        if type(claim_refs) is not list or any(not _nonempty(ref) for ref in claim_refs):
+            raise _error("condition claim_refs must be a string list", METHODOLOGY_REGISTRY, field + ".claim_refs")
+        if not set(source_refs).issubset(source_ids):
+            raise _error("unknown condition source reference", METHODOLOGY_REGISTRY, field + ".source_refs")
+        if not set(claim_refs).issubset(claim_ids):
+            raise _error("unknown condition claim reference", METHODOLOGY_REGISTRY, field + ".claim_refs")
+        if role in material_roles and (not source_refs or not claim_refs):
+            raise _error("P004 material role requires source and claim evidence", METHODOLOGY_REGISTRY, field)
+        if item["required_by_p004"] and role not in material_roles:
+            raise _error("required_by_p004 needs a material P004 role", METHODOLOGY_REGISTRY, field)
+
+
+def _known_refs(
+    candidate: Mapping[str, object],
+    field: str,
+    known: set[str],
+    message: str,
+    candidate_index: int,
+) -> Tuple[str, ...]:
+    refs = candidate.get(field)
+    if not _nonempty_strings(refs) or not set(refs).issubset(known):
+        raise _error(message, METHODOLOGY_REGISTRY, f"candidates.{candidate_index}.{field}")
+    return tuple(refs)
 
 
 def _mapping(path: Path) -> Mapping[str, object]:

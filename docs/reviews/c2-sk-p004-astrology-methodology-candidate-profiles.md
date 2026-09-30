@@ -4,19 +4,19 @@
 
 - **Scope:** reconstructed Hellenistic natal astrology, limited to P004 semantic design.
 - **Natal applicability:** explicit.
-- **Authorities:** Demetra George; supporting traditional dignity and natal-aspect sources.
-- **Mars:** relevant significator for action/initiative, but not a direction rule.
+- **Method authority:** Demetra George only. Houlding, Campion, CPA, and Skyscript sources are boundary evidence, not definitions of the Hellenistic method.
+- **Mars:** cross-school relevance hypothesis; no Hellenistic-authority direction rule.
 - **Dignity:** planetary condition/suitability/strength, not initiation direction.
 - **Aspects:** qualify combination and expression; ease/tension is not high/low.
-- **Sect:** method-relevant and not canonicalized; exact P004 materiality remains unresolved.
+- **Sect:** method-relevant `QUALITY_ONLY`; not canonicalized and not a P004 blocker without a separate materiality claim.
 - **Application/separation:** excluded from the required method unless natal P004 materiality is separately established.
-- **Compatibility:** placements/aspects/dignities exist; placement Root is pending; sect is a calculation gap.
-- **Disposition:** `METHOD_CANDIDATE_SELECTED_FOR_PO_REVIEW`.
+- **Compatibility:** placements identify the candidate input and the placement Root is pending; aspects/dignities/houses are optional until a future P004 mechanism proves materiality.
+- **Disposition:** Candidate Validation `READY_FOR_PO_REVIEW`; Product Owner Selection `PENDING`.
 
 ## Traditional Renaissance / horary-informed
 
-Technically explicit but scope-mixed for the current question. Application, perfection, reception and event timing cannot be assumed natal. Disposition: `INCOMPATIBLE_SCOPE` for direct selection.
+Technically explicit but scope-mixed for the current question. Registry-backed evidence identifies application/perfection as horary event-development/fulfilment constructs; automatic natal transfer is prohibited. Reception remains part of the Hellenistic condition inventory, but condition does not imply P004 direction. Disposition: `INCOMPATIBLE_SCOPE_FOR_AUTOMATIC_TRANSFER`.
 
 ## Modern psychological natal
 
-Clearly natal and often Mars-relevant, but symbolic language is less reproducible as a fact-conditioned P004 rule and risks mixing constructs such as drive, desire, assertion and impulse. Disposition: `DEFER`.
+Clearly natal and institutionally defined through links with depth, humanistic, and transpersonal psychology. The reviewed authority does not specify a canonical-fact P004 direction rule; drive, desire, assertion, and impulse cannot be collapsed into P004. Disposition: `DEFER`.
