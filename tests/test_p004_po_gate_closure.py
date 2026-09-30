@@ -7,6 +7,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MECHANISM_ROOT = PROJECT_ROOT / "candidates" / "semantic-mechanisms-v1"
 KNOWLEDGE_ROOT = PROJECT_ROOT / "candidates" / "semantic-knowledge-v1"
 MAPPING_ROOT = PROJECT_ROOT / "candidates" / "mapping-v2"
+REVIEW_ROOT = PROJECT_ROOT / "docs" / "reviews"
 
 
 def test_p004_po_decisions_close_only_the_authorized_gates() -> None:
@@ -87,3 +88,29 @@ def test_p004_po_gate_closure_keeps_active_fingerprints_frozen() -> None:
     assert candidate_presentation_bundle_fingerprint() == (
         "2f1d3866638074485351ada0c6a9aaa9bd1acd916f65973ca2b319a75b99b91d"
     )
+
+
+def test_construct_discovery_closes_only_the_current_astrology_p004_path() -> None:
+    required_reports = {
+        "c2-sm-p004-hellenistic-construct-source-corpus.md",
+        "c2-sm-p004-hellenistic-construct-candidate-matrix.md",
+        "c2-sm-p004-hellenistic-construct-discovery-final-report.md",
+    }
+    assert required_reports.issubset(
+        {path.name for path in REVIEW_ROOT.glob("*.md")}
+    )
+
+    final_report = (
+        REVIEW_ROOT / "c2-sm-p004-hellenistic-construct-discovery-final-report.md"
+    ).read_text(encoding="utf-8")
+    for expected_state in (
+        "P004 Hellenistic Construct Discovery:\nNO_DEFENSIBLE_P004_CONSTRUCT",
+        "Direct High Constructs:\n0",
+        "Direct Low Constructs:\n0",
+        "Proposed PRIMARY_EVIDENCE:\n0",
+        "Mapping Proposals:\n0",
+        "P004 Astrology Path:\nCLOSED_UNDER_CURRENT_METHODOLOGY",
+        "Primitive P004 Status:\nVALID",
+        "Next Gate:\nP004_BAZI_CONSTRUCT_DISCOVERY",
+    ):
+        assert expected_state in final_report
