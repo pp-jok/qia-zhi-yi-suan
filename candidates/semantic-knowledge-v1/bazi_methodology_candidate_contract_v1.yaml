@@ -15,14 +15,16 @@ required_candidate_fields:
   - target_construct
   - direction_semantics
   - condition_audit
+  - method_rule_decomposition
   - required_canonical_fact_families
-  - proposed_evidence_root_ref
+  - canonical_fact_boundary_status
+  - evidence_root_status
   - known_gaps
   - limitations
   - candidate_validation_status
   - product_owner_selection_status
   - review_status
-required_nullable_candidate_fields: [product_owner_decision_ref]
+required_nullable_candidate_fields: [proposed_evidence_root_ref, product_owner_decision_ref]
 allowed_review_statuses: [proposed, approved_for_semantic_design, deferred, rejected]
 allowed_candidate_validation_statuses: [READY_FOR_PO_REVIEW, NOT_READY]
 allowed_product_owner_selection_statuses: [PENDING, SELECTED_FOR_SEMANTIC_DESIGN, DEFERRED, REJECTED]

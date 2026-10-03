@@ -135,6 +135,13 @@ def load_evidence_root_registry(root: Path) -> Tuple[Mapping[str, object], ...]:
             contract, "prohibited_origins", EVIDENCE_ROOT_CONTRACT_FILE
         )
     )
+    permitted_source_refs = set(
+        _require_string_list(
+            contract,
+            "permitted_canonical_source_refs",
+            EVIDENCE_ROOT_CONTRACT_FILE,
+        )
+    )
 
     seen_ids = set()
     for index, root_entry in enumerate(roots):
@@ -145,6 +152,7 @@ def load_evidence_root_registry(root: Path) -> Tuple[Mapping[str, object], ...]:
             required_fields,
             allowed_statuses,
             prohibited_origins,
+            permitted_source_refs,
         )
     return tuple(roots)
 
@@ -503,6 +511,7 @@ def _validate_evidence_root(
     required_fields: Collection[str],
     allowed_statuses: Collection[str],
     prohibited_origins: Collection[str],
+    permitted_source_refs: Collection[str],
 ) -> None:
     field_prefix = f"roots[{index}]"
     if type(root_entry) is not dict:
@@ -546,6 +555,14 @@ def _validate_evidence_root(
             field=f"{field_prefix}.evidence_root_id",
         )
     seen_ids.add(root_id)
+
+    if root_entry["source_ref"] not in permitted_source_refs:
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "source_ref must point to a permitted canonical fact family",
+            file=EVIDENCE_ROOT_REGISTRY_FILE,
+            field=f"{field_prefix}.source_ref",
+        )
 
     review_status = root_entry["review_status"]
     if type(review_status) is not str or review_status not in allowed_statuses:

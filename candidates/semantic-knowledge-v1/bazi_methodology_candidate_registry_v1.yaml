@@ -30,10 +30,43 @@ candidates:
         method_role: countercondition gate
         reproducibility: blocked
         blocker: wealth rescue, strength, combination transformations, and source-listed exceptions require governed whole-chart synthesis
+    method_rule_decomposition:
+      - question: Which Eating God instance is evaluated?
+        current_boundary: Canonical identities exist, but no source-bounded selection rule identifies the operative instance.
+        resolution_status: UNRESOLVED
+      - question: When does Indirect Resource constitute effective control?
+        current_boundary: Element control is not sufficient to establish an operative Dao-Shi relation.
+        resolution_status: UNRESOLVED
+      - question: How does position affect the judgement?
+        current_boundary: Pillar provenance exists, but no governed position weighting or eligibility rule exists.
+        resolution_status: UNRESOLVED
+      - question: How does visible or hidden status affect the judgement?
+        current_boundary: Source kind is canonical for Ten-God instances; its method effect is undefined.
+        resolution_status: UNRESOLVED
+      - question: How does season participate?
+        current_boundary: Month branch and season context can be supplied, but their method role is undefined.
+        resolution_status: UNRESOLVED
+      - question: Is strength required and how is it evaluated?
+        current_boundary: Strength is school-dependent and no versioned project policy exists.
+        resolution_status: UNRESOLVED
+      - question: When does Wealth constitute an effective rescue?
+        current_boundary: Wealth identity may be observed, but effective rescue is a methodology judgement.
+        resolution_status: UNRESOLVED
+      - question: How do stem combinations affect the relation?
+        current_boundary: Combination presence may be neutral; cancellation or transformation effects are undefined.
+        resolution_status: UNRESOLVED
+      - question: How are classical exceptions handled?
+        current_boundary: Exceptions are source fragments without a complete precedence and applicability policy.
+        resolution_status: UNRESOLVED
+      - question: How are multiple Eating Gods or Resources handled?
+        current_boundary: No deterministic pairing, precedence, or aggregation rule exists.
+        resolution_status: UNRESOLVED
     required_canonical_fact_families:
       - deterministic_facts.bazi.ten_gods
-      - proposed_facts.bazi.qualified_ten_god_interactions
-    proposed_evidence_root_ref: ER-BZ-TEN-GOD-INTERACTION-V1
+      - proposed_contract.bazi.ten_god_relation_instances
+    canonical_fact_boundary_status: BLOCKED_BY_CANONICAL_FACT_DESIGN
+    evidence_root_status: WITHDRAWN
+    proposed_evidence_root_ref: null
     known_gaps:
       - no governed rule determines when 食遇梟 becomes operative 倒食
       - no qualified Ten-God interaction fact exists
@@ -43,7 +76,7 @@ candidates:
       - Direct semantic ownership is source-bounded and does not establish empirical personality truth.
       - The candidate limits supported-high advancement; it does not support pre-action Low.
       - Approval would select a methodology for semantic design only, not a mechanism, Mapping, state, or runtime behavior.
-    candidate_validation_status: READY_FOR_PO_REVIEW
+    candidate_validation_status: NOT_READY
     product_owner_selection_status: PENDING
     product_owner_decision_ref: null
     review_status: proposed

@@ -120,6 +120,98 @@ def _rewrite_candidate(root: Path, mutator) -> None:
     path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
 
 
+def _rewrite_bazi_candidate(root: Path, mutator) -> None:
+    path = root / "bazi_methodology_candidate_registry_v1.yaml"
+    payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+    mutator(payload["candidates"][0])
+    path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
+
+
+def _load_bazi_candidates(root: Path):
+    from destiny_personality.semantic_knowledge import (
+        load_bazi_methodology_candidates,
+        load_semantic_knowledge_claim_registry,
+        load_semantic_knowledge_source_registry,
+    )
+
+    sources = load_semantic_knowledge_source_registry(root)
+    claims = load_semantic_knowledge_claim_registry(root, sources)
+    return load_bazi_methodology_candidates(root, sources, claims)
+
+
+def test_bazi_methodology_records_unresolved_rule_and_fact_boundary() -> None:
+    candidate = _load_bazi_candidates(KNOWLEDGE_ROOT)[0]
+
+    assert candidate["candidate_validation_status"] == "NOT_READY"
+    assert candidate["canonical_fact_boundary_status"] == (
+        "BLOCKED_BY_CANONICAL_FACT_DESIGN"
+    )
+    assert candidate["evidence_root_status"] == "WITHDRAWN"
+    assert candidate["proposed_evidence_root_ref"] is None
+    assert len(candidate["method_rule_decomposition"]) == 10
+    assert all(
+        item["resolution_status"] == "UNRESOLVED"
+        for item in candidate["method_rule_decomposition"]
+    )
+
+
+@pytest.mark.parametrize(
+    ("review_status", "selection_status", "decision_ref", "message"),
+    [
+        (
+            "approved_for_semantic_design",
+            "SELECTED_FOR_SEMANTIC_DESIGN",
+            None,
+            "approved methodology requires non-empty product_owner_decision_ref",
+        ),
+        (
+            "approved_for_semantic_design",
+            "PENDING",
+            "PO-TEST",
+            "approved methodology requires SELECTED_FOR_SEMANTIC_DESIGN",
+        ),
+        (
+            "proposed",
+            "SELECTED_FOR_SEMANTIC_DESIGN",
+            None,
+            "proposed methodology must remain pending",
+        ),
+        (
+            "deferred",
+            "SELECTED_FOR_SEMANTIC_DESIGN",
+            None,
+            "deferred methodology requires DEFERRED",
+        ),
+        (
+            "rejected",
+            "SELECTED_FOR_SEMANTIC_DESIGN",
+            None,
+            "rejected methodology requires REJECTED",
+        ),
+    ],
+)
+def test_bazi_methodology_po_provenance_fails_closed(
+    tmp_path: Path,
+    review_status: str,
+    selection_status: str,
+    decision_ref: Optional[str],
+    message: str,
+) -> None:
+    from destiny_personality.config_errors import ConfigError
+
+    root = _copy_knowledge_assets(tmp_path)
+
+    def mutate(candidate: dict) -> None:
+        candidate["review_status"] = review_status
+        candidate["product_owner_selection_status"] = selection_status
+        candidate["product_owner_decision_ref"] = decision_ref
+
+    _rewrite_bazi_candidate(root, mutate)
+
+    with pytest.raises(ConfigError, match=message):
+        _load_bazi_candidates(root)
+
+
 def _technique(candidate: dict, name: str) -> dict:
     return next(item for item in candidate["condition_technique_audit"] if item["technique"] == name)
 

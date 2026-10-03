@@ -218,17 +218,20 @@ def test_bazi_advancement_candidate_chain_is_governed_but_not_activated() -> Non
     methodology = methodologies[0]
     assert methodology["methodology_candidate_id"] == "BMC-BZ-P004-DAO-SHI-V1"
     assert methodology["review_status"] == "proposed"
+    assert methodology["candidate_validation_status"] == "NOT_READY"
     assert methodology["product_owner_selection_status"] == "PENDING"
     assert methodology["product_owner_decision_ref"] is None
+    assert methodology["canonical_fact_boundary_status"] == (
+        "BLOCKED_BY_CANONICAL_FACT_DESIGN"
+    )
+    assert methodology["evidence_root_status"] == "WITHDRAWN"
+    assert methodology["proposed_evidence_root_ref"] is None
 
     roots = load_evidence_root_registry(MECHANISM_ROOT)
-    proposed_root = next(
-        item
-        for item in roots
-        if item["evidence_root_id"] == "ER-BZ-TEN-GOD-INTERACTION-V1"
-    )
-    assert proposed_root["review_status"] == "proposed"
-    assert proposed_root["evidence_root_id"] not in load_approved_evidence_root_ids(
+    assert "ER-BZ-TEN-GOD-INTERACTION-V1" not in {
+        item["evidence_root_id"] for item in roots
+    }
+    assert "ER-BZ-TEN-GOD-INTERACTION-V1" not in load_approved_evidence_root_ids(
         MECHANISM_ROOT
     )
     assert [
@@ -236,3 +239,34 @@ def test_bazi_advancement_candidate_chain_is_governed_but_not_activated() -> Non
         for item in load_semantic_mechanism_candidates(MECHANISM_ROOT)
         if item["evidence_role"] == "PRIMARY_EVIDENCE"
     ] == []
+
+
+def test_bazi_dao_shi_boundary_review_closes_without_a_fake_po_gate() -> None:
+    required_reports = {
+        "c2-sm-p004-bazi-dao-shi-canonical-boundary-matrix.md",
+        "c2-sm-p004-bazi-dao-shi-method-rule-decomposition.md",
+        "c2-sm-p004-bazi-dao-shi-canonical-fact-design.md",
+        "c2-sm-p004-bazi-dao-shi-evidence-root-review.md",
+        "c2-sm-p004-bazi-dao-shi-methodology-readiness.md",
+        "c2-sm-p004-bazi-dao-shi-boundary-final-report.md",
+    }
+    assert required_reports.issubset({path.name for path in REVIEW_ROOT.glob("*.md")})
+    assert not (
+        REVIEW_ROOT / "c2-sm-p004-bazi-dao-shi-product-owner-packet.md"
+    ).exists()
+
+    report = (
+        REVIEW_ROOT / "c2-sm-p004-bazi-dao-shi-boundary-final-report.md"
+    ).read_text(encoding="utf-8")
+    for state in (
+        "Bazi Dao-Shi Methodology Candidate:\nNOT_READY",
+        "Canonical Fact Boundary:\nBLOCKED_BY_CANONICAL_FACT_DESIGN",
+        "Current ER-BZ-TEN-GOD-INTERACTION-V1:\nWITHDRAWN",
+        "Evidence Root Ready:\nNO",
+        "Bazi Method Ready:\nNO",
+        "Proposed PRIMARY_EVIDENCE:\n0",
+        "Mapping Proposals:\n0",
+        "Production Activation:\nNOT AUTHORIZED",
+        "Next Gate:\nP004_BAZI_DAO_SHI_METHOD_RESEARCH_AND_CANONICAL_FACT_DESIGN",
+    ):
+        assert state in report
