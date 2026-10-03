@@ -19,7 +19,10 @@ destiny-personality-reference-validate = "destiny_personality.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-destiny_personality = ["candidate_assets/core-profile-v1/*.yaml"]
+destiny_personality = [
+    "candidate_assets/core-profile-v1/*.yaml",
+    "canonical_assets/calculation-v1/*.yaml",
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
