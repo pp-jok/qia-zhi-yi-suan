@@ -112,7 +112,23 @@ def validate_decision_binding(
     record: Union[AutonomousDecision, Mapping[str, Any]], *, asset_id: str, asset_fingerprint: str
 ) -> AutonomousDecision:
     """Return a validated decision only when it belongs to the exact asset revision."""
-    decision = record if isinstance(record, AutonomousDecision) else validate_autonomous_decision(record)
+    if isinstance(record, AutonomousDecision):
+        record = {
+            "decision_id": record.decision_id,
+            "asset_id": record.asset_id,
+            "asset_type": record.asset_type,
+            "outcome": record.outcome,
+            "decision_authority": record.decision_authority,
+            "decision_mode": record.decision_mode,
+            "decision_ref": record.decision_ref,
+            "reason": record.reason,
+            "evidence_refs": list(record.evidence_refs),
+            "test_refs": list(record.test_refs),
+            "timestamp": record.timestamp,
+            "version": record.version,
+            "asset_fingerprint": record.asset_fingerprint,
+        }
+    decision = validate_autonomous_decision(record)
     if decision.asset_id != asset_id or decision.asset_fingerprint != asset_fingerprint:
         raise _error("AUTONOMOUS_DECISION_BINDING_MISMATCH")
     return decision

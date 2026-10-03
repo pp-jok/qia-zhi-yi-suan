@@ -1,3 +1,4 @@
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -110,4 +111,18 @@ def test_decision_binding_rejects_another_asset_or_fingerprint() -> None:
             record,
             asset_id="TEST-ASSET-V1",
             asset_fingerprint="sha256:other-fingerprint",
+        )
+
+
+def test_decision_binding_revalidates_a_forged_decision_dataclass() -> None:
+    forged = replace(
+        validate_autonomous_decision(VALID),
+        decision_authority="human_product_owner",
+    )
+
+    with pytest.raises(ValueError, match="AUTONOMOUS_DECISION_AUTHORITY_INVALID"):
+        validate_decision_binding(
+            forged,
+            asset_id="TEST-ASSET-V1",
+            asset_fingerprint="sha256:test-fingerprint",
         )
