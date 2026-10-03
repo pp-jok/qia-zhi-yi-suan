@@ -108,6 +108,21 @@ def validate_bazi_facts(
         if item.relation_type == "five_element_controls":
             _validate_five_element_control_relation(item, index)
 
+    # Import locally to avoid coupling package initialization to the optional
+    # canonical asset loader.
+    from destiny_personality.canonical_bazi_relations import (
+        CanonicalBaziRelationError,
+        load_canonical_bazi_relation_policy,
+        validate_canonical_bazi_relations,
+    )
+
+    try:
+        validate_canonical_bazi_relations(
+            facts, load_canonical_bazi_relation_policy()
+        )
+    except CanonicalBaziRelationError as error:
+        raise contract_error("bazi", error.detail, error.field) from error
+
 
 def _validate_pillar(value: object, field: str) -> None:
     if type(value) is not BaziPillar:

@@ -7,7 +7,7 @@ from typing import Mapping, Optional, Tuple
 
 import yaml
 
-from .calculation.models import BaziRelationFact
+from .calculation.models import BaziChartFacts, BaziRelationFact, PillarPosition
 
 
 ASSET_FILES = (
@@ -57,6 +57,15 @@ class CanonicalBaziRelationPolicy:
     prohibited_fields: frozenset[str]
     provider_authority: str
     default_provider_activation: bool
+
+
+class CanonicalBaziRelationError(ValueError):
+    """Stable fail-closed error at the canonical relation boundary."""
+
+    def __init__(self, detail: str, field: str) -> None:
+        super().__init__(f"{detail} | {field}")
+        self.detail = detail
+        self.field = field
 
 
 def canonical_bazi_relation_asset_root() -> Path:
@@ -220,6 +229,132 @@ def canonical_relation_identity(
     relation: BaziRelationFact,
 ) -> Tuple[str, Tuple[str, ...], str]:
     return relation.relation_type, relation.participant_refs, relation.rule_version
+
+
+def validate_canonical_bazi_relations(
+    facts: BaziChartFacts,
+    policy: CanonicalBaziRelationPolicy,
+) -> None:
+    """Validate governed relations against actual chart subjects and rules.
+
+    Empty collections and unrelated legacy relation families are intentionally
+    outside this contract and remain backward compatible.
+    """
+
+    governed = [
+        (index, relation)
+        for index, relation in enumerate(facts.relations)
+        if relation.relation_type == policy.relation_type
+    ]
+    if not governed:
+        return
+
+    subjects = _canonical_subject_catalog(facts, policy)
+    identities = [canonical_relation_identity(item) for _, item in governed]
+    if len(identities) != len(set(identities)):
+        raise CanonicalBaziRelationError(
+            "DUPLICATE_IDENTITY", "relations"
+        )
+    if identities != sorted(identities):
+        raise CanonicalBaziRelationError("ORDER_INVALID", "relations")
+
+    for index, relation in governed:
+        field = f"relations.{index}"
+        approved = policy.approved_rule_versions.get(relation.relation_type)
+        if relation.rule_version != approved:
+            raise CanonicalBaziRelationError(
+                "RULE_VERSION_UNAPPROVED", f"{field}.rule_version"
+            )
+        if (
+            len(relation.participant_refs) != 2
+            or len(set(relation.participant_refs)) != 2
+        ):
+            raise CanonicalBaziRelationError(
+                "PARTICIPANT_ARITY_INVALID", f"{field}.participant_refs"
+            )
+        try:
+            controller = subjects[relation.participant_refs[0]]
+            controlled = subjects[relation.participant_refs[1]]
+        except KeyError as error:
+            raise CanonicalBaziRelationError(
+                "SUBJECT_REF_UNRESOLVED", f"{field}.participant_refs"
+            ) from error
+        expected_pillars = _ordered_pillars(
+            controller[1], controlled[1]
+        )
+        if relation.source_pillars != expected_pillars:
+            raise CanonicalBaziRelationError(
+                "SOURCE_PILLARS_MISMATCH", f"{field}.source_pillars"
+            )
+        controller_element = policy.stem_elements[controller[0]]
+        controlled_element = policy.stem_elements[controlled[0]]
+        if policy.controls[controller_element] != controlled_element:
+            raise CanonicalBaziRelationError(
+                "CONTROL_TRUTH_MISMATCH", f"{field}.participant_refs"
+            )
+
+
+def _canonical_subject_catalog(
+    facts: BaziChartFacts,
+    policy: CanonicalBaziRelationPolicy,
+) -> Mapping[str, Tuple[str, PillarPosition]]:
+    pillars = {
+        PillarPosition.YEAR: facts.year_pillar,
+        PillarPosition.MONTH: facts.month_pillar,
+        PillarPosition.DAY: facts.day_pillar,
+    }
+    if facts.hour_pillar is not None:
+        pillars[PillarPosition.HOUR] = facts.hour_pillar
+
+    hidden_by_pillar = {}
+    for index, item in enumerate(facts.hidden_stems):
+        if item.pillar in hidden_by_pillar:
+            raise CanonicalBaziRelationError(
+                "HIDDEN_STEM_PILLAR_DUPLICATE", f"hidden_stems.{index}.pillar"
+            )
+        hidden_by_pillar[item.pillar] = item.stems
+    if set(hidden_by_pillar) != set(pillars):
+        raise CanonicalBaziRelationError(
+            "HIDDEN_STEM_COVERAGE_INVALID", "hidden_stems"
+        )
+
+    catalog = {}
+    for position in PillarPosition:
+        pillar = pillars.get(position)
+        if pillar is None:
+            continue
+        if pillar.heavenly_stem not in policy.stem_elements:
+            raise CanonicalBaziRelationError(
+                "VISIBLE_STEM_UNRECOGNIZED",
+                f"{position.value}_pillar.heavenly_stem",
+            )
+        expected = policy.hidden_stems.get(pillar.earthly_branch)
+        actual = hidden_by_pillar[position]
+        if expected is None or actual != expected:
+            raise CanonicalBaziRelationError(
+                "HIDDEN_STEM_ORDER_MISMATCH",
+                f"hidden_stems.{position.value}",
+            )
+        catalog[
+            policy.visible_stem_template.format(pillar=position.value)
+        ] = (pillar.heavenly_stem, position)
+        for hidden_index, stem in enumerate(actual):
+            catalog[
+                policy.hidden_stem_template.format(
+                    pillar=position.value, index=hidden_index
+                )
+            ] = (stem, position)
+    return catalog
+
+
+def _ordered_pillars(
+    first: PillarPosition, second: PillarPosition
+) -> Tuple[PillarPosition, ...]:
+    return tuple(
+        position
+        for position in PillarPosition
+        if position == first or position == second
+    )
 
 
 def canonical_relation_policy_fingerprint(root: Optional[Path] = None) -> str:

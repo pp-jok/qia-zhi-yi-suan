@@ -138,6 +138,18 @@ def load_validated_deterministic_facts(path: Path) -> DeterministicChartFacts:
     versions = payload["methodology_versions"]
     if versions["bazi"] != facts.bazi.methodology_version or versions["astrology"] != facts.astrology.methodology_version:
         raise ValueError("FACT_QUALIFICATION_INVALID")
+    from .canonical_bazi_relations import (
+        CanonicalBaziRelationError,
+        load_canonical_bazi_relation_policy,
+        validate_canonical_bazi_relations,
+    )
+
+    try:
+        validate_canonical_bazi_relations(
+            facts.bazi, load_canonical_bazi_relation_policy()
+        )
+    except CanonicalBaziRelationError as error:
+        raise ValueError("BAZI_RELATION_FACT_INVALID") from error
     return facts
 
 
