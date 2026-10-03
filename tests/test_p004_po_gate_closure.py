@@ -222,10 +222,10 @@ def test_bazi_advancement_candidate_chain_is_governed_but_not_activated() -> Non
     assert methodology["product_owner_selection_status"] == "PENDING"
     assert methodology["product_owner_decision_ref"] is None
     assert methodology["canonical_fact_boundary_status"] == (
-        "PARTIAL_CANDIDATE_RELATION_IMPLEMENTATION"
+        "CANDIDATE_RELATION_PROVIDER_AVAILABLE"
     )
     assert methodology["neutral_relation_fact_status"] == (
-        "PARTIAL_CANDIDATE_IMPLEMENTATION_NOT_EMITTED"
+        "CANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED"
     )
     assert methodology["evidence_root_status"] == "WITHDRAWN"
     assert methodology["proposed_evidence_root_ref"] is None
@@ -281,6 +281,7 @@ def test_bazi_dao_shi_reconstruction_closes_at_partial_relation_gate() -> None:
         "c2-sm-p004-bazi-dao-shi-method-reconstruction-final-report.md",
         "c2-sm-p004-bazi-neutral-relation-fact-report.md",
         "c2-sm-p004-bazi-neutral-relation-fact-final-report.md",
+        "c2-sm-p004-bazi-neutral-relation-provider-final-report.md",
         "c2-sm-p004-bazi-dao-shi-integration-readiness.md",
     }
     assert required_reports.issubset({path.name for path in REVIEW_ROOT.glob("*.md")})
@@ -295,13 +296,25 @@ def test_bazi_dao_shi_reconstruction_closes_at_partial_relation_gate() -> None:
         "Dao-Shi Method Reconstruction:\nNO_REPRODUCIBLE_DAO_SHI_METHOD_UNDER_REVIEWED_SOURCES",
         "Resolved Method Questions:\n0",
         "Unresolved Method Questions:\n10",
-        "Neutral Bazi Relation Facts:\nPARTIAL_CANDIDATE_IMPLEMENTATION",
-        "deterministic_facts.bazi.relations:\nPARTIAL",
+        "Neutral Bazi Relation Facts:\nCANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED",
+        "deterministic_facts.bazi.relations:\nCANDIDATE_EMITTED_ON_EXPLICIT_INJECTION",
         "Dao-Shi Method Candidate:\nNOT_READY",
         "Evidence Root:\n0",
         "Proposed PRIMARY_EVIDENCE:\n0",
         "Mapping Proposals:\n0",
         "Production Activation:\nNOT AUTHORIZED",
-        "Next Gate:\nNEUTRAL_RELATION_PROVIDER_INTEGRATION_AND_TEN_GOD_SUBJECT_REF_CONFORMANCE",
+        "Next Gate:\nEVIDENCE_ROOT_PROPOSAL_REVIEW",
     ):
         assert state in report
+
+    provider_report = (
+        REVIEW_ROOT / "c2-sm-p004-bazi-neutral-relation-provider-final-report.md"
+    ).read_text(encoding="utf-8")
+    for state in (
+        "Provider Status:\nCANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED",
+        "Ten-God Subject-Ref Conformance:\nPASS",
+        "Evidence Root Proposal:\nNOT_CREATED",
+        "Production Activation:\nNOT AUTHORIZED",
+        "Dao-Shi Method Candidate:\nNOT_READY",
+    ):
+        assert state in provider_report

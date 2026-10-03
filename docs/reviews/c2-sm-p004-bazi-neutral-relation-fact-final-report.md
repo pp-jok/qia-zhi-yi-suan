@@ -4,7 +4,9 @@ Date: 2026-10-03
 
 ## Result
 
-Track B delivers a real candidate implementation of raw `five_element_controls` derivation while deliberately withholding canonical-family readiness.
+Track B delivers a candidate provider for raw `five_element_controls`
+derivation while deliberately withholding Evidence Root and production
+authority.
 
 | Gate | Result | Evidence |
 |---|---|---|
@@ -15,10 +17,10 @@ Track B delivers a real candidate implementation of raw `five_element_controls` 
 | Stable ordering | `PASS` | Generator uses canonical relation/ref/pillar ordering. |
 | Deduplication | `PASS` | Relation identity is emitted once. |
 | Prohibited fields | `PASS` | Methodology and semantic fields are excluded by model and contract. |
-| Provider emission | `FAIL` | Calculation service and external providers are unchanged. |
-| Ten-God join conformance | `FAIL` | `TenGodFact.subject_ref` does not yet enforce the new convention. |
-| Emitted rule provenance | `PARTIAL` | Policy version exists, but no provider envelope emits it. |
-| Evidence Root readiness | `FAIL` | Canonical emitted family does not yet exist. |
+| Provider emission | `PASS_CANDIDATE` | Explicit provider decorator emits immutable facts; default runtime remains unchanged. |
+| Ten-God join conformance | `PASS` | Visible/hidden kind, governed ref, index, and source pillar are enforced. |
+| Emitted rule provenance | `PASS` | `rule_version: wuxing-control-v1` survives codec round-trip. |
+| Evidence Root readiness | `PROPOSAL_REVIEW_ONLY` | No Root is created or approved by this engineering change. |
 
 ## Tests
 
@@ -26,11 +28,11 @@ The focused tests cover all five control pairs, direction, deterministic repeata
 
 ```text
 Neutral Bazi Relation Facts:
-PARTIAL_CANDIDATE_IMPLEMENTATION
+CANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED
 
 deterministic_facts.bazi.relations:
-PARTIAL
+CANDIDATE_EMITTED_ON_EXPLICIT_INJECTION
 
 Evidence Root Proposal:
-0
+NOT_CREATED
 ```

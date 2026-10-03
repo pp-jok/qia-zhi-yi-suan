@@ -54,6 +54,7 @@ def test_raw_five_element_control_pairs_are_project_deterministic(
         "five_element_controls",
         ("year.stem", "month.stem"),
         (PillarPosition.YEAR, PillarPosition.MONTH),
+        "wuxing-control-v1",
     ) in relations
 
 
@@ -122,7 +123,12 @@ def test_relation_fact_contains_no_methodology_fields() -> None:
     policy = _load_policy()
     model_fields = {field.name for field in fields(BaziRelationFact)}
 
-    assert model_fields == {"relation_type", "participant_refs", "source_pillars"}
+    assert model_fields == {
+        "relation_type",
+        "participant_refs",
+        "source_pillars",
+        "rule_version",
+    }
     assert model_fields.isdisjoint(policy.prohibited_fields)
     assert {
         "operative",
@@ -152,6 +158,8 @@ def test_candidate_relations_round_trip_existing_fact_codec(
     chart = replace(chart, relations=_derive(chart))
     facts = DeterministicChartFacts(normalized_time, chart, astrology_facts)
 
-    decoded = deterministic_facts_from_dict(deterministic_facts_to_dict(facts))
+    payload = deterministic_facts_to_dict(facts)
+    decoded = deterministic_facts_from_dict(payload)
 
+    assert payload["bazi"]["relations"][0]["rule_version"] == "wuxing-control-v1"
     assert decoded.bazi.relations == chart.relations

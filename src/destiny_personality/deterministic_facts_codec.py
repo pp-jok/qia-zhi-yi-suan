@@ -61,7 +61,7 @@ def deterministic_facts_to_dict(facts: DeterministicChartFacts) -> dict:
             "hour_pillar": _pillar_dict(facts.bazi.hour_pillar),
             "hidden_stems": [{"pillar": item.pillar.value, "stems": list(item.stems)} for item in facts.bazi.hidden_stems],
             "ten_gods": [{"subject_ref": item.subject_ref, "ten_god": item.ten_god, "source_pillars": [pillar.value for pillar in item.source_pillars], "source_kind": item.source_kind.value} for item in facts.bazi.ten_gods],
-            "relations": [{"relation_type": item.relation_type, "participant_refs": list(item.participant_refs), "source_pillars": [pillar.value for pillar in item.source_pillars]} for item in facts.bazi.relations],
+            "relations": [{"relation_type": item.relation_type, "participant_refs": list(item.participant_refs), "source_pillars": [pillar.value for pillar in item.source_pillars], "rule_version": item.rule_version} for item in facts.bazi.relations],
         },
         "astrology": {
             "methodology_version": facts.astrology.methodology_version,
@@ -100,7 +100,7 @@ def deterministic_facts_from_dict(payload: Mapping[str, object]) -> Deterministi
                 month_pillar=_pillar(bazi["month_pillar"]), day_pillar=_pillar(bazi["day_pillar"]), hour_pillar=_pillar(bazi["hour_pillar"]),
                 hidden_stems=tuple(HiddenStemsFact(PillarPosition(item["pillar"]), tuple(item["stems"])) for item in bazi["hidden_stems"]),
                 ten_gods=tuple(TenGodFact(item["subject_ref"], item["ten_god"], tuple(PillarPosition(value) for value in item["source_pillars"]), TenGodSourceKind(item["source_kind"])) for item in bazi["ten_gods"]),
-                relations=tuple(BaziRelationFact(item["relation_type"], tuple(item["participant_refs"]), tuple(PillarPosition(value) for value in item["source_pillars"])) for item in bazi["relations"]),
+                relations=tuple(BaziRelationFact(item["relation_type"], tuple(item["participant_refs"]), tuple(PillarPosition(value) for value in item["source_pillars"]), item.get("rule_version", "unversioned")) for item in bazi["relations"]),
             ),
             astrology=AstrologyChartFacts(
                 methodology_version=astrology["methodology_version"],

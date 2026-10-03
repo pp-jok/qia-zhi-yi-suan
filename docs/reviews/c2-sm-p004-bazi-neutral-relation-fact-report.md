@@ -4,12 +4,13 @@ Date: 2026-10-03
 
 ## Existing shape
 
-`BaziRelationFact` already transports three fields:
+`BaziRelationFact` transports four fields:
 
 ```text
 relation_type
 participant_refs
 source_pillars
+rule_version
 ```
 
 The codec preserves those fields and calculation validation checks non-empty values and pillar provenance. Before this work, however, no project-owned policy generated relations, participant order was undefined, and the model was only a shape.
@@ -35,7 +36,9 @@ fire -> metal
 metal -> wood
 ```
 
-The policy is candidate-only, inactive, and explicitly not emitted by the calculation service.
+The policy is candidate-only and inactive. An explicitly injected candidate
+provider can emit the relation, but the default calculation service does not
+construct or activate that provider.
 
 ## Stable subject references
 
@@ -69,25 +72,32 @@ primitive_direction
 
 It does not reference the Dao-Shi Claim or any Semantic Knowledge asset.
 
-## Remaining gaps
+## Provider boundary
 
-- `ChartCalculationService` does not invoke the generator.
-- No provider merges these candidate relations into its emitted deterministic facts.
-- Existing `TenGodFact.subject_ref` is required to be non-empty but is not yet constrained to the candidate subject-reference convention.
-- Calculation-rule version is governed by the candidate policy, not yet carried through an emitted provider provenance envelope.
-- Backward-compatible provider integration and independent calculation comparison have not been completed.
+- `CandidateNeutralRelationBaziCalculator` composes a caller-supplied Bazi
+  calculator and emits versioned relations only when explicitly selected.
+- Visible and hidden Ten-God references must resolve to the same governed
+  subject catalogue; unknown kinds, bad indices, and pillar mismatches fail
+  closed.
+- Existing unrelated relation families are preserved. A pre-existing governed
+  relation is rejected so two authorities cannot silently compete.
+- `ChartCalculationService`, CLI construction, Evidence Roots, and semantic
+  activation registries remain unchanged.
 
 ## Root readiness
 
-Because the canonical family is not emitted and joinability to Ten-God instances is not enforced, `deterministic_facts.bazi.relations` is not added to permitted Evidence Root sources. No Root is proposed.
+The candidate family is reproducibly emitted under explicit injection and its
+Ten-God join boundary is enforced. It is therefore ready for a separate
+Evidence Root proposal review, but it is not added to permitted Evidence Root
+sources in this change. No Root is proposed or approved.
 
 ```text
 Neutral Relation Candidate Implementation:
 PASS
 
 Canonical Family Emitted:
-NO
+CANDIDATE_ONLY_ON_EXPLICIT_INJECTION
 
 Root Ready:
-NO
+READY_FOR_PROPOSAL_REVIEW_ONLY
 ```

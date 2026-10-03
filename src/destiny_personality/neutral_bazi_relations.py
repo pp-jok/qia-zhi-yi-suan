@@ -14,6 +14,7 @@ from .calculation.models import (
     BaziChartFacts,
     BaziRelationFact,
     PillarPosition,
+    TenGodSourceKind,
 )
 
 
@@ -54,6 +55,7 @@ class _StemSubject:
     subject_ref: str
     stem: str
     pillar: PillarPosition
+    source_kind: TenGodSourceKind
 
 
 def load_neutral_bazi_relation_policy(root: Path) -> NeutralBaziRelationPolicy:
@@ -71,7 +73,7 @@ def load_neutral_bazi_relation_policy(root: Path) -> NeutralBaziRelationPolicy:
         or payload["review_status"] != "candidate_only"
         or payload["activation_status"] != "inactive"
         or payload["implementation_status"]
-        != "candidate_implementation_not_emitted"
+        != "candidate_provider_available_not_activated"
     ):
         raise ValueError("NEUTRAL_BAZI_RELATION_CONTRACT_INVALID")
 
@@ -123,6 +125,7 @@ def derive_candidate_neutral_relations(
             relation_type=policy.relation_type,
             participant_refs=(controller.subject_ref, controlled.subject_ref),
             source_pillars=_source_pillars(controller.pillar, controlled.pillar),
+            rule_version=policy.rule_version,
         )
         for controller in subjects
         for controlled in subjects
@@ -140,6 +143,23 @@ def derive_candidate_neutral_relations(
             ),
         )
     )
+
+
+def validate_ten_god_subject_refs(
+    facts: BaziChartFacts,
+    policy: NeutralBaziRelationPolicy,
+) -> None:
+    """Require Ten-God instances to join to the governed stem catalogue."""
+
+    subjects = {item.subject_ref: item for item in _stem_subjects(facts, policy)}
+    for fact in facts.ten_gods:
+        if fact.source_kind is TenGodSourceKind.UNKNOWN:
+            raise ValueError("TEN_GOD_SUBJECT_KIND_UNRESOLVED")
+        subject = subjects.get(fact.subject_ref)
+        if subject is None or subject.source_kind is not fact.source_kind:
+            raise ValueError("TEN_GOD_SUBJECT_REF_INVALID")
+        if subject.pillar not in fact.source_pillars:
+            raise ValueError("TEN_GOD_SOURCE_PILLAR_MISMATCH")
 
 
 def _stem_subjects(
@@ -161,6 +181,7 @@ def _stem_subjects(
                 policy.visible_stem_template.format(pillar=position.value),
                 pillar.heavenly_stem,
                 position,
+                TenGodSourceKind.VISIBLE_STEM,
             )
         )
 
@@ -179,6 +200,7 @@ def _stem_subjects(
                     ),
                     stem,
                     position,
+                    TenGodSourceKind.HIDDEN_STEM,
                 )
             )
     return tuple(subjects)

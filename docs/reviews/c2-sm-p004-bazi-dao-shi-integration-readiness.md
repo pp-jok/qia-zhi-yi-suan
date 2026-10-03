@@ -8,7 +8,7 @@ Date: 2026-10-03
 |---|---|
 | Semantic Claim | `READY / ACCEPTED_FOR_REVIEW` |
 | Dao-Shi Method | `NOT_READY` |
-| Neutral Relation Fact | `PARTIAL_CANDIDATE_IMPLEMENTATION` |
+| Neutral Relation Fact | `CANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED` |
 | Evidence Root | `NOT_READY / 0 NEW` |
 | PRIMARY_EVIDENCE | `NOT STARTED / 0` |
 | Mapping | `NOT STARTED / 0` |
@@ -33,7 +33,10 @@ source_pillars
 rule/provenance version
 ```
 
-The current candidate implements the first three through the existing `BaziRelationFact` shape and a versioned candidate policy. Provider emission, Ten-God subject-ref conformance, and emitted provenance remain the next engineering gate.
+The candidate now implements all five through `BaziRelationFact`, a versioned
+policy, an explicitly injected provider, and fail-closed Ten-God subject-ref
+conformance. This completes the candidate engineering gate without granting
+Evidence Root or production authority.
 
 ## Machine-readable summary
 
@@ -75,10 +78,10 @@ Strictly Unresolved Method Questions:
 2
 
 Neutral Bazi Relation Facts:
-PARTIAL_CANDIDATE_IMPLEMENTATION
+CANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED
 
 deterministic_facts.bazi.relations:
-PARTIAL
+CANDIDATE_EMITTED_ON_EXPLICIT_INJECTION
 
 Dao-Shi Method Candidate:
 NOT_READY
@@ -102,7 +105,9 @@ Production Activation:
 NOT AUTHORIZED
 
 Next Gate:
-NEUTRAL_RELATION_PROVIDER_INTEGRATION_AND_TEN_GOD_SUBJECT_REF_CONFORMANCE
+EVIDENCE_ROOT_PROPOSAL_REVIEW
 ```
 
-Final scenario: Track A follows Exit A; Track B remains partial and does not enter Root proposal review.
+Final scenario: Track A follows Exit A. Track B may enter a separate Evidence
+Root proposal review, but no Root exists and the Dao-Shi method remains
+`NOT_READY`.

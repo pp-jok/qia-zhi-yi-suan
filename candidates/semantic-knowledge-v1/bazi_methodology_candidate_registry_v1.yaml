@@ -96,14 +96,13 @@ candidates:
     required_canonical_fact_families:
       - deterministic_facts.bazi.ten_gods
       - candidate_contract.bazi.neutral_relations
-    canonical_fact_boundary_status: PARTIAL_CANDIDATE_RELATION_IMPLEMENTATION
-    neutral_relation_fact_status: PARTIAL_CANDIDATE_IMPLEMENTATION_NOT_EMITTED
+    canonical_fact_boundary_status: CANDIDATE_RELATION_PROVIDER_AVAILABLE
+    neutral_relation_fact_status: CANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED
     evidence_root_status: WITHDRAWN
     proposed_evidence_root_ref: null
     known_gaps:
       - no governed rule determines when 食遇梟 becomes operative 倒食
-      - candidate raw element-control relations are not emitted by the calculation provider
-      - Ten-God subject_ref conformance to the candidate relation subject convention is not enforced
+      - the neutral relation provider requires explicit injection and is not an approved production authority
       - no approved Evidence Root represents the relation or its counterconditions
       - whole-chart exception and rescue policy is undefined
     limitations:

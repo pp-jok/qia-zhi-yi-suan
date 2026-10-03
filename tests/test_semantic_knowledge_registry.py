@@ -144,10 +144,10 @@ def test_bazi_methodology_records_source_bound_rule_and_fact_boundary() -> None:
 
     assert candidate["candidate_validation_status"] == "NOT_READY"
     assert candidate["canonical_fact_boundary_status"] == (
-        "PARTIAL_CANDIDATE_RELATION_IMPLEMENTATION"
+        "CANDIDATE_RELATION_PROVIDER_AVAILABLE"
     )
     assert candidate["neutral_relation_fact_status"] == (
-        "PARTIAL_CANDIDATE_IMPLEMENTATION_NOT_EMITTED"
+        "CANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED"
     )
     assert candidate["evidence_root_status"] == "WITHDRAWN"
     assert candidate["proposed_evidence_root_ref"] is None
