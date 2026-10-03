@@ -221,6 +221,7 @@ def load_bazi_methodology_candidates(
                 BAZI_METHODOLOGY_REGISTRY,
                 f"candidates.{index}.product_owner_selection_status",
             )
+        _validate_bazi_po_provenance(candidate, index)
         for field in (
             "method_authority_source_refs",
             "project_boundary_source_refs",
@@ -243,15 +244,6 @@ def load_bazi_methodology_candidates(
                 "unknown methodology claim",
                 index,
             )
-        if candidate["review_status"] == "proposed" and (
-            candidate["product_owner_selection_status"] != "PENDING"
-            or candidate.get("product_owner_decision_ref") is not None
-        ):
-            raise _error(
-                "proposed methodology must remain pending without a decision reference",
-                BAZI_METHODOLOGY_REGISTRY,
-                f"candidates.{index}",
-            )
         conditions = candidate.get("condition_audit")
         if type(conditions) is not list or not conditions or any(
             type(item) is not dict for item in conditions
@@ -261,7 +253,74 @@ def load_bazi_methodology_candidates(
                 BAZI_METHODOLOGY_REGISTRY,
                 f"candidates.{index}.condition_audit",
             )
+        decomposition = candidate.get("method_rule_decomposition")
+        if (
+            type(decomposition) is not list
+            or len(decomposition) != 10
+            or any(
+                type(item) is not dict
+                or set(item) != {"question", "current_boundary", "resolution_status"}
+                or not _nonempty(item["question"])
+                or not _nonempty(item["current_boundary"])
+                or item["resolution_status"] not in {"RESOLVED", "UNRESOLVED"}
+                for item in decomposition
+            )
+        ):
+            raise _error(
+                "method_rule_decomposition must answer exactly ten governed questions",
+                BAZI_METHODOLOGY_REGISTRY,
+                f"candidates.{index}.method_rule_decomposition",
+            )
     return tuple(candidates)
+
+
+def _validate_bazi_po_provenance(
+    candidate: Mapping[str, object], index: int
+) -> None:
+    """Keep every Bazi methodology review state aligned with its PO provenance."""
+
+    review_status = candidate["review_status"]
+    selection_status = candidate["product_owner_selection_status"]
+    decision_ref = candidate.get("product_owner_decision_ref")
+    field = f"candidates.{index}"
+
+    if review_status == "proposed":
+        if selection_status != "PENDING" or decision_ref is not None:
+            raise _error(
+                "proposed methodology must remain pending without a decision reference",
+                BAZI_METHODOLOGY_REGISTRY,
+                field,
+            )
+        return
+    if review_status == "approved_for_semantic_design":
+        if selection_status != "SELECTED_FOR_SEMANTIC_DESIGN":
+            raise _error(
+                "approved methodology requires SELECTED_FOR_SEMANTIC_DESIGN",
+                BAZI_METHODOLOGY_REGISTRY,
+                field,
+            )
+        if not _nonempty(decision_ref):
+            raise _error(
+                "approved methodology requires non-empty product_owner_decision_ref",
+                BAZI_METHODOLOGY_REGISTRY,
+                field,
+            )
+        return
+    expected_selection = {"deferred": "DEFERRED", "rejected": "REJECTED"}[
+        review_status
+    ]
+    if selection_status != expected_selection:
+        raise _error(
+            f"{review_status} methodology requires {expected_selection}",
+            BAZI_METHODOLOGY_REGISTRY,
+            field,
+        )
+    if decision_ref is not None and not _nonempty(decision_ref):
+        raise _error(
+            "methodology decision reference must be null or non-empty",
+            BAZI_METHODOLOGY_REGISTRY,
+            field,
+        )
 
 
 def load_astrology_methodology_candidates(

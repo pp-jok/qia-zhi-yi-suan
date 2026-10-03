@@ -60,7 +60,7 @@ def test_mechanism_without_evidence_root_is_rejected() -> None:
     }
 
 
-def test_registry_loads_approved_roots_and_keeps_proposals_inactive() -> None:
+def test_registry_contains_only_roots_backed_by_real_canonical_families() -> None:
     from destiny_personality.semantic_mechanisms import (
         load_approved_evidence_root_ids,
         load_evidence_root_registry,
@@ -72,7 +72,6 @@ def test_registry_loads_approved_roots_and_keeps_proposals_inactive() -> None:
         "ER-BZ-TEN-GOD-INSTANCE-V1",
         "ER-AS-ASPECT-INSTANCE-V1",
         "ER-AS-PLANET-PLACEMENT-V1",
-        "ER-BZ-TEN-GOD-INTERACTION-V1",
     }
     assert load_approved_evidence_root_ids(_candidate_root()) == {
         "ER-BZ-TEN-GOD-INSTANCE-V1",
@@ -80,13 +79,9 @@ def test_registry_loads_approved_roots_and_keeps_proposals_inactive() -> None:
         "ER-AS-PLANET-PLACEMENT-V1",
     }
 
-    interaction_root = next(
-        root
-        for root in roots
-        if root["evidence_root_id"] == "ER-BZ-TEN-GOD-INTERACTION-V1"
+    assert all(
+        root["source_ref"].startswith("deterministic_facts.") for root in roots
     )
-    assert interaction_root["review_status"] == "proposed"
-    assert interaction_root["product_owner_decision_ref"] is None
 
     placement_root = next(
         root for root in roots if root["evidence_root_id"] == "ER-AS-PLANET-PLACEMENT-V1"
@@ -136,6 +131,21 @@ def test_registry_rejects_duplicate_root_ids(tmp_path) -> None:
     assert error.value.code == "CONFIG_VALUE_ERROR"
 
 
+def test_registry_rejects_source_ref_outside_permitted_canonical_families(
+    tmp_path,
+) -> None:
+    from destiny_personality.semantic_mechanisms import load_evidence_root_registry
+
+    registry = _registry_with_root(tmp_path)
+    registry["roots"][0]["source_ref"] = (
+        "proposed_facts.bazi.qualified_ten_god_interactions"
+    )
+    _write_registry(tmp_path, registry)
+
+    with pytest.raises(ConfigError, match="permitted canonical fact family"):
+        load_evidence_root_registry(tmp_path)
+
+
 def test_root_audit_reports_approved_and_proposed_roots_separately() -> None:
     from destiny_personality.semantic_mechanisms import (
         build_evidence_root_audit_report,
@@ -147,9 +157,9 @@ def test_root_audit_reports_approved_and_proposed_roots_separately() -> None:
     )
 
     assert report == {
-        "root_count": 4,
+        "root_count": 3,
         "approved_count": 3,
-        "non_approved_count": 1,
+        "non_approved_count": 0,
     }
 
 

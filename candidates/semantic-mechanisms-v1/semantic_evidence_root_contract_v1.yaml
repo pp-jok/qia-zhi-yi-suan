@@ -20,6 +20,10 @@ allowed_review_statuses:
   - approved
   - rejected
   - deferred
+permitted_canonical_source_refs:
+  - deterministic_facts.bazi.ten_gods
+  - deterministic_facts.astrology.aspects
+  - deterministic_facts.astrology.placements
 prohibited_origins:
   - golden_sample
   - legacy_output
