@@ -1,0 +1,3 @@
+schema_version: autonomous-completion-decision-registry-v1
+delegation_mode: AUTONOMOUS_COMPLETION
+decisions: []
