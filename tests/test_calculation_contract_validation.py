@@ -6,12 +6,14 @@ import pytest
 
 from destiny_personality.calculation import (
     AstrologyAspectFact,
+    BaziRelationFact,
     DignityFact,
     BaziPillar,
     CalculationError,
     ChartCalculationService,
     FactMode,
     NormalizedBirthTime,
+    PillarPosition,
 )
 
 
@@ -140,6 +142,111 @@ def test_bazi_methodology_version_must_match_runtime_config(
 
     assert caught.value.code == "METHODOLOGY_VERSION_MISMATCH"
     assert caught.value.system == "bazi"
+    assert calls == ["time", "bazi"]
+
+
+def test_bazi_relation_rule_version_must_be_nonempty(
+    birth_input,
+    normalized_time,
+    bazi_facts,
+    astrology_facts,
+    runtime_config,
+) -> None:
+    invalid_bazi = replace(
+        bazi_facts,
+        relations=(
+            BaziRelationFact(
+                "five_element_controls",
+                ("year.stem", "month.stem"),
+                (PillarPosition.YEAR, PillarPosition.MONTH),
+                "",
+            ),
+        ),
+    )
+    calls = []
+    service = _service(
+        normalized_time, invalid_bazi, astrology_facts, calls
+    )
+
+    with pytest.raises(CalculationError) as caught:
+        service.calculate(birth_input, runtime_config)
+
+    assert caught.value.code == "CALCULATION_CONTRACT_ERROR"
+    assert caught.value.field == "relations.0.rule_version"
+    assert calls == ["time", "bazi"]
+
+
+@pytest.mark.parametrize(
+    ("relation", "field"),
+    [
+        (
+            BaziRelationFact(
+                "five_element_controls",
+                ("year.stem",),
+                (PillarPosition.YEAR,),
+                "wuxing-control-v1",
+            ),
+            "relations.0.participant_refs",
+        ),
+        (
+            BaziRelationFact(
+                "five_element_controls",
+                ("year.stem", "year.stem"),
+                (PillarPosition.YEAR,),
+                "wuxing-control-v1",
+            ),
+            "relations.0.participant_refs",
+        ),
+        (
+            BaziRelationFact(
+                "five_element_controls",
+                ("year.unknown", "month.stem"),
+                (PillarPosition.YEAR, PillarPosition.MONTH),
+                "wuxing-control-v1",
+            ),
+            "relations.0.participant_refs.0",
+        ),
+        (
+            BaziRelationFact(
+                "five_element_controls",
+                ("year.stem", "month.stem"),
+                (PillarPosition.DAY,),
+                "wuxing-control-v1",
+            ),
+            "relations.0.source_pillars",
+        ),
+        (
+            BaziRelationFact(
+                "five_element_controls",
+                ("year.stem", "month.stem"),
+                (PillarPosition.YEAR, PillarPosition.MONTH),
+            ),
+            "relations.0.rule_version",
+        ),
+    ],
+)
+def test_five_element_control_relation_requires_governed_identity(
+    birth_input,
+    normalized_time,
+    bazi_facts,
+    astrology_facts,
+    runtime_config,
+    relation,
+    field,
+) -> None:
+    calls = []
+    service = _service(
+        normalized_time,
+        replace(bazi_facts, relations=(relation,)),
+        astrology_facts,
+        calls,
+    )
+
+    with pytest.raises(CalculationError) as caught:
+        service.calculate(birth_input, runtime_config)
+
+    assert caught.value.code == "CALCULATION_CONTRACT_ERROR"
+    assert caught.value.field == field
     assert calls == ["time", "bazi"]
 
 

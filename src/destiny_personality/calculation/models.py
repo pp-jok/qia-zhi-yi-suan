@@ -78,6 +78,7 @@ class BaziRelationFact:
     relation_type: str
     participant_refs: Tuple[str, ...]
     source_pillars: Tuple[PillarPosition, ...]
+    rule_version: str = "unversioned"
 
 
 @dataclass(frozen=True)

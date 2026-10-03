@@ -1,0 +1,53 @@
+schema_version: bazi-relation-canonical-contract-v1
+contract_version: bazi-relation-canonical-v1
+review_status: canonical
+family_id: deterministic_facts.bazi.relations
+fact_type: BaziRelationFact
+allowed_relations:
+  - relation_type: five_element_controls
+    rule_version: wuxing-control-v1
+    direction: [controller, controlled]
+    arity: 2
+identity_fields: [relation_type, participant_refs, rule_version]
+provenance_fields: [source_pillars]
+ordering_fields: [relation_type, participant_refs, rule_version]
+deduplication_fields: [relation_type, participant_refs, rule_version]
+stem_elements:
+  甲: wood
+  乙: wood
+  丙: fire
+  丁: fire
+  戊: earth
+  己: earth
+  庚: metal
+  辛: metal
+  壬: water
+  癸: water
+controls:
+  wood: earth
+  earth: water
+  water: fire
+  fire: metal
+  metal: wood
+provider_authority: conformance_reference_only
+default_provider_activation: false
+validation:
+  - canonical_hidden_stem_order
+  - participant_ref_resolution
+  - approved_rule_version
+  - directed_element_control_truth
+  - source_pillar_provenance
+  - duplicate_identity_rejection
+prohibited_fields:
+  - operative
+  - qualification
+  - rescue
+  - effective
+  - strength
+  - strength_score
+  - dao_shi
+  - personality
+  - primitive
+  - primitive_direction
+  - supported_high
+  - supported_low

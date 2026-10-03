@@ -1,3 +1,5 @@
+from typing import Optional
+
 from destiny_personality.config_models import RuntimeConfig
 
 from ..errors import CalculationError
@@ -86,6 +88,9 @@ def validate_bazi_facts(
         validate_nonempty_string(
             item.relation_type, "bazi", f"relations.{index}.relation_type"
         )
+        validate_nonempty_string(
+            item.rule_version, "bazi", f"relations.{index}.rule_version"
+        )
         if type(item.participant_refs) is not tuple or any(
             type(ref) is not str or not ref.strip()
             for ref in item.participant_refs
@@ -100,6 +105,23 @@ def validate_bazi_facts(
             f"relations.{index}.source_pillars",
             fact_mode,
         )
+        if item.relation_type == "five_element_controls":
+            _validate_five_element_control_relation(item, index)
+
+    # Import locally to avoid coupling package initialization to the optional
+    # canonical asset loader.
+    from destiny_personality.canonical_bazi_relations import (
+        CanonicalBaziRelationError,
+        load_canonical_bazi_relation_policy,
+        validate_canonical_bazi_relations,
+    )
+
+    try:
+        validate_canonical_bazi_relations(
+            facts, load_canonical_bazi_relation_policy()
+        )
+    except CanonicalBaziRelationError as error:
+        raise contract_error("bazi", error.detail, error.field) from error
 
 
 def _validate_pillar(value: object, field: str) -> None:
@@ -121,6 +143,56 @@ def _validate_collection(value: object, item_type: type, field: str) -> None:
             raise contract_error(
                 "bazi", f"invalid {item_type.__name__}", f"{field}.{index}"
             )
+
+
+def _validate_five_element_control_relation(
+    relation: BaziRelationFact, index: int
+) -> None:
+    refs_field = f"relations.{index}.participant_refs"
+    if len(relation.participant_refs) != 2 or len(set(relation.participant_refs)) != 2:
+        raise contract_error(
+            "bazi", "element control requires two distinct participants", refs_field
+        )
+    participant_pillars = set()
+    for ref_index, subject_ref in enumerate(relation.participant_refs):
+        pillar = _subject_ref_pillar(subject_ref)
+        if pillar is None:
+            raise contract_error(
+                "bazi",
+                "element control participant reference is invalid",
+                f"{refs_field}.{ref_index}",
+            )
+        participant_pillars.add(pillar)
+    if set(relation.source_pillars) != participant_pillars:
+        raise contract_error(
+            "bazi",
+            "element control source pillars must match participant references",
+            f"relations.{index}.source_pillars",
+        )
+    if relation.rule_version == "unversioned":
+        raise contract_error(
+            "bazi",
+            "element control rule version must be governed",
+            f"relations.{index}.rule_version",
+        )
+
+
+def _subject_ref_pillar(subject_ref: str) -> Optional[PillarPosition]:
+    parts = subject_ref.split(".")
+    if len(parts) == 2 and parts[1] == "stem":
+        pass
+    elif (
+        len(parts) == 3
+        and parts[1] == "hidden_stem"
+        and parts[2].isdigit()
+    ):
+        pass
+    else:
+        return None
+    try:
+        return PillarPosition(parts[0])
+    except ValueError:
+        return None
 
 
 def _validate_source_pillars(

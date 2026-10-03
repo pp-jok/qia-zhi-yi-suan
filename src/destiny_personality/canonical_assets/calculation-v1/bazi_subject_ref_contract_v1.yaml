@@ -1,0 +1,20 @@
+schema_version: bazi-subject-ref-contract-v1
+contract_version: bazi-subject-ref-v1
+review_status: canonical
+hidden_stem_order_policy_ref: bazi-hidden-stem-order-v1
+pillars: [year, month, day, hour]
+templates:
+  visible_stem: "{pillar}.stem"
+  hidden_stem: "{pillar}.hidden_stem.{index}"
+source_kind_mapping:
+  visible_stem: visible_stem
+  hidden_stem: hidden_stem
+valid_examples:
+  - year.stem
+  - month.hidden_stem.0
+  - hour.hidden_stem.2
+invalid_examples:
+  - month.hidden_stem.primary
+  - month.hidden_stem.strongest
+  - month.hidden_stem.operative
+  - unknown.stem
