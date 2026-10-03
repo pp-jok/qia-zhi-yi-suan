@@ -176,6 +176,20 @@ def load_bazi_methodology_candidates(
             BAZI_METHODOLOGY_CONTRACT,
         )
     )
+    allowed_rule_statuses = set(
+        _string_list(
+            contract,
+            "allowed_method_rule_statuses",
+            BAZI_METHODOLOGY_CONTRACT,
+        )
+    )
+    allowed_rule_materialities = set(
+        _string_list(
+            contract,
+            "allowed_method_rule_materialities",
+            BAZI_METHODOLOGY_CONTRACT,
+        )
+    )
     source_ids = {item["source_id"] for item in sources}
     claim_ids = {item["claim_id"] for item in claims}
     candidates = _list(registry, "candidates", BAZI_METHODOLOGY_REGISTRY)
@@ -259,15 +273,41 @@ def load_bazi_methodology_candidates(
             or len(decomposition) != 10
             or any(
                 type(item) is not dict
-                or set(item) != {"question", "current_boundary", "resolution_status"}
+                or set(item)
+                != {
+                    "question",
+                    "current_boundary",
+                    "resolution_status",
+                    "materiality",
+                    "source_refs",
+                    "exact_locator",
+                }
                 or not _nonempty(item["question"])
                 or not _nonempty(item["current_boundary"])
-                or item["resolution_status"] not in {"RESOLVED", "UNRESOLVED"}
+                or item["resolution_status"] not in allowed_rule_statuses
+                or item["materiality"] not in allowed_rule_materialities
+                or not _nonempty_strings(item["source_refs"])
+                or not set(item["source_refs"]).issubset(source_ids)
+                or not set(item["source_refs"]).issubset(
+                    set(candidate["method_authority_source_refs"])
+                )
+                or not _nonempty(item["exact_locator"])
                 for item in decomposition
             )
         ):
             raise _error(
-                "method_rule_decomposition must answer exactly ten governed questions",
+                "method_rule_decomposition must answer ten source-bound governed questions",
+                BAZI_METHODOLOGY_REGISTRY,
+                f"candidates.{index}.method_rule_decomposition",
+            )
+        if candidate["candidate_validation_status"] == "READY_FOR_PO_REVIEW" and any(
+            item["materiality"] == "MATERIAL"
+            and item["resolution_status"]
+            in {"PARTIALLY_RESOLVED", "UNRESOLVED", "CONFLICTING"}
+            for item in decomposition
+        ):
+            raise _error(
+                "material method conditions are unresolved",
                 BAZI_METHODOLOGY_REGISTRY,
                 f"candidates.{index}.method_rule_decomposition",
             )

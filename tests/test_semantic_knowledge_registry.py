@@ -139,20 +139,83 @@ def _load_bazi_candidates(root: Path):
     return load_bazi_methodology_candidates(root, sources, claims)
 
 
-def test_bazi_methodology_records_unresolved_rule_and_fact_boundary() -> None:
+def test_bazi_methodology_records_source_bound_rule_and_fact_boundary() -> None:
     candidate = _load_bazi_candidates(KNOWLEDGE_ROOT)[0]
 
     assert candidate["candidate_validation_status"] == "NOT_READY"
     assert candidate["canonical_fact_boundary_status"] == (
-        "BLOCKED_BY_CANONICAL_FACT_DESIGN"
+        "PARTIAL_CANDIDATE_RELATION_IMPLEMENTATION"
+    )
+    assert candidate["neutral_relation_fact_status"] == (
+        "PARTIAL_CANDIDATE_IMPLEMENTATION_NOT_EMITTED"
     )
     assert candidate["evidence_root_status"] == "WITHDRAWN"
     assert candidate["proposed_evidence_root_ref"] is None
     assert len(candidate["method_rule_decomposition"]) == 10
-    assert all(
-        item["resolution_status"] == "UNRESOLVED"
+    statuses = {
+        item["question"]: item["resolution_status"]
         for item in candidate["method_rule_decomposition"]
+    }
+    assert set(statuses.values()) == {"PARTIALLY_RESOLVED", "UNRESOLVED"}
+    assert statuses["Which Eating God instance is evaluated?"] == (
+        "PARTIALLY_RESOLVED"
     )
+    assert statuses["How are multiple Eating Gods or Resources handled?"] == (
+        "UNRESOLVED"
+    )
+
+
+def test_dao_shi_coexistence_is_not_operational_rule() -> None:
+    candidate = _load_bazi_candidates(KNOWLEDGE_ROOT)[0]
+    coexistence = candidate["condition_audit"][0]
+
+    assert coexistence["method_role"] == "minimum identity inputs only"
+    assert "does not prove" in coexistence["blocker"]
+    assert candidate["candidate_validation_status"] == "NOT_READY"
+
+
+def test_dao_shi_method_requires_source_backed_material_conditions() -> None:
+    candidate = _load_bazi_candidates(KNOWLEDGE_ROOT)[0]
+    known_sources = set(candidate["method_authority_source_refs"])
+
+    material = [
+        item
+        for item in candidate["method_rule_decomposition"]
+        if item["materiality"] == "MATERIAL"
+    ]
+    assert material
+    assert all(item["source_refs"] for item in material)
+    assert all(set(item["source_refs"]).issubset(known_sources) for item in material)
+    assert all(item["exact_locator"].strip() for item in material)
+
+
+def test_dao_shi_unresolved_material_condition_blocks_readiness(tmp_path: Path) -> None:
+    from destiny_personality.config_errors import ConfigError
+
+    root = _copy_knowledge_assets(tmp_path)
+    _rewrite_bazi_candidate(
+        root,
+        lambda candidate: candidate.__setitem__(
+            "candidate_validation_status", "READY_FOR_PO_REVIEW"
+        ),
+    )
+
+    with pytest.raises(ConfigError, match="material method conditions are unresolved"):
+        _load_bazi_candidates(root)
+
+
+def test_dao_shi_method_never_supports_low() -> None:
+    candidate = _load_bazi_candidates(KNOWLEDGE_ROOT)[0]
+
+    assert "conditional_limits_supported_high" in candidate["direction_semantics"]
+    assert "never supports_low" in candidate["direction_semantics"]
+
+
+def test_dao_shi_candidate_does_not_assert_primitive_state() -> None:
+    candidate = _load_bazi_candidates(KNOWLEDGE_ROOT)[0]
+
+    assert "primitive_state" not in candidate
+    assert "asserts_primitive_state" not in candidate
 
 
 @pytest.mark.parametrize(

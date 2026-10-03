@@ -32,44 +32,78 @@ candidates:
         blocker: wealth rescue, strength, combination transformations, and source-listed exceptions require governed whole-chart synthesis
     method_rule_decomposition:
       - question: Which Eating God instance is evaluated?
-        current_boundary: Canonical identities exist, but no source-bounded selection rule identifies the operative instance.
-        resolution_status: UNRESOLVED
+        current_boundary: An Eating God must exist and be used; the sources do not define a deterministic selector when several instances exist.
+        resolution_status: PARTIALLY_RESOLVED
+        materiality: MATERIAL
+        source_refs: [SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1]
+        exact_locator: "卷05論倒食: 所謂用食忌見者此也; 柱中無食只以偏印論"
       - question: When does Indirect Resource constitute effective control?
-        current_boundary: Element control is not sufficient to establish an operative Dao-Shi relation.
-        resolution_status: UNRESOLVED
+        current_boundary: The source requires the Indirect Resource to control the Eating God and illustrates 壬旺 controlling 丙; raw control alone does not resolve effective strength.
+        resolution_status: PARTIALLY_RESOLVED
+        materiality: MATERIAL
+        source_refs: [SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1]
+        exact_locator: "卷05論倒食: 今甲見壬為倒食者，壬旺則尅了丙火"
       - question: How does position affect the judgement?
-        current_boundary: Pillar provenance exists, but no governed position weighting or eligibility rule exists.
+        current_boundary: The text mentions year, hour, and month-command positions but supplies no general position eligibility or precedence rule.
         resolution_status: UNRESOLVED
+        materiality: CONTEXTUAL
+        source_refs: [SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1]
+        exact_locator: "卷05論倒食: 奥旨賦云年時月令有偏印，凶吉未明"
       - question: How does visible or hidden status affect the judgement?
-        current_boundary: Source kind is canonical for Ten-God instances; its method effect is undefined.
-        resolution_status: UNRESOLVED
+        current_boundary: Listed exceptions use stems hidden in branches as restraints, proving hidden contents can be material; no general visible-hidden weighting rule is given.
+        resolution_status: PARTIALLY_RESOLVED
+        materiality: CONTEXTUAL
+        source_refs: [SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1]
+        exact_locator: "卷05論倒食: 壬辰壬戌，辰戌中有土制丁合; 癸未癸丑，丑未中有己制癸"
       - question: How does season participate?
-        current_boundary: Month branch and season context can be supplied, but their method role is undefined.
-        resolution_status: UNRESOLVED
+        current_boundary: The examples use birth month and 生旺/衰 terminology, so season participates in strength context; no reproducible seasonal algorithm is specified.
+        resolution_status: PARTIALLY_RESOLVED
+        materiality: CONTEXTUAL
+        source_refs: [SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1]
+        exact_locator: "卷05論倒食: 甲生申月受煞制無氣; 食神生旺"
       - question: Is strength required and how is it evaluated?
-        current_boundary: Strength is school-dependent and no versioned project policy exists.
-        resolution_status: UNRESOLVED
+        current_boundary: Strength is explicitly material through 壬旺, 食神生旺, 身旺身弱, and 食衰梟旺, but the reviewed sources do not provide one executable strength method.
+        resolution_status: PARTIALLY_RESOLVED
+        materiality: MATERIAL
+        source_refs:
+          - SK-BZ-YUANHAI-ZIPING-PROCESS-P004-V1
+          - SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1
+        exact_locator: "論倒食: 壬旺則尅了丙火; 身旺為貴身弱乃常; 古賦: 食衰梟旺"
       - question: When does Wealth constitute an effective rescue?
-        current_boundary: Wealth identity may be observed, but effective rescue is a methodology judgement.
-        resolution_status: UNRESOLVED
+        current_boundary: Wealth restraining Indirect Resource is a stated rescue direction, but presence alone is insufficient and no strength or reach threshold is defined.
+        resolution_status: PARTIALLY_RESOLVED
+        materiality: MATERIAL
+        source_refs: [SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1]
+        exact_locator: "卷05論倒食: 柱內最喜見財星; 偏印遇財曜反辱為榮"
       - question: How do stem combinations affect the relation?
-        current_boundary: Combination presence may be neutral; cancellation or transformation effects are undefined.
-        resolution_status: UNRESOLVED
+        current_boundary: The source lists concrete 制合 exceptions and says restrained Indirect Resource cannot harm Food God, but gives no general transformation-success algorithm.
+        resolution_status: PARTIALLY_RESOLVED
+        materiality: MATERIAL
+        source_refs: [SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1]
+        exact_locator: "卷05論倒食: 若有制合…此等偏印不能為食害，有尅制故也"
       - question: How are classical exceptions handled?
-        current_boundary: Exceptions are source fragments without a complete precedence and applicability policy.
-        resolution_status: UNRESOLVED
+        current_boundary: Concrete exceptions and contrary examples are source-backed, including 制合反貴, but completeness, conflict handling, and precedence remain undefined.
+        resolution_status: PARTIALLY_RESOLVED
+        materiality: MATERIAL
+        source_refs: [SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1]
+        exact_locator: "卷05論倒食: 前忌倒食，逢制合反貴; 切不可一見倒食便以凶論"
       - question: How are multiple Eating Gods or Resources handled?
-        current_boundary: No deterministic pairing, precedence, or aggregation rule exists.
+        current_boundary: The text distinguishes first encounter from repeated occurrence but supplies no stable pairing, precedence, or aggregation procedure.
         resolution_status: UNRESOLVED
+        materiality: MATERIAL
+        source_refs: [SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1]
+        exact_locator: "卷05論倒食: 始遇者精神慵懶，重犯者容貌欹斜"
     required_canonical_fact_families:
       - deterministic_facts.bazi.ten_gods
-      - proposed_contract.bazi.ten_god_relation_instances
-    canonical_fact_boundary_status: BLOCKED_BY_CANONICAL_FACT_DESIGN
+      - candidate_contract.bazi.neutral_relations
+    canonical_fact_boundary_status: PARTIAL_CANDIDATE_RELATION_IMPLEMENTATION
+    neutral_relation_fact_status: PARTIAL_CANDIDATE_IMPLEMENTATION_NOT_EMITTED
     evidence_root_status: WITHDRAWN
     proposed_evidence_root_ref: null
     known_gaps:
       - no governed rule determines when 食遇梟 becomes operative 倒食
-      - no qualified Ten-God interaction fact exists
+      - candidate raw element-control relations are not emitted by the calculation provider
+      - Ten-God subject_ref conformance to the candidate relation subject convention is not enforced
       - no approved Evidence Root represents the relation or its counterconditions
       - whole-chart exception and rescue policy is undefined
     limitations:

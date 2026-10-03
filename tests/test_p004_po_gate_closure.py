@@ -222,7 +222,10 @@ def test_bazi_advancement_candidate_chain_is_governed_but_not_activated() -> Non
     assert methodology["product_owner_selection_status"] == "PENDING"
     assert methodology["product_owner_decision_ref"] is None
     assert methodology["canonical_fact_boundary_status"] == (
-        "BLOCKED_BY_CANONICAL_FACT_DESIGN"
+        "PARTIAL_CANDIDATE_RELATION_IMPLEMENTATION"
+    )
+    assert methodology["neutral_relation_fact_status"] == (
+        "PARTIAL_CANDIDATE_IMPLEMENTATION_NOT_EMITTED"
     )
     assert methodology["evidence_root_status"] == "WITHDRAWN"
     assert methodology["proposed_evidence_root_ref"] is None
@@ -268,5 +271,37 @@ def test_bazi_dao_shi_boundary_review_closes_without_a_fake_po_gate() -> None:
         "Mapping Proposals:\n0",
         "Production Activation:\nNOT AUTHORIZED",
         "Next Gate:\nP004_BAZI_DAO_SHI_METHOD_RESEARCH_AND_CANONICAL_FACT_DESIGN",
+    ):
+        assert state in report
+
+
+def test_bazi_dao_shi_reconstruction_closes_at_partial_relation_gate() -> None:
+    required_reports = {
+        "c2-sm-p004-bazi-dao-shi-method-reconstruction-matrix.md",
+        "c2-sm-p004-bazi-dao-shi-method-reconstruction-final-report.md",
+        "c2-sm-p004-bazi-neutral-relation-fact-report.md",
+        "c2-sm-p004-bazi-neutral-relation-fact-final-report.md",
+        "c2-sm-p004-bazi-dao-shi-integration-readiness.md",
+    }
+    assert required_reports.issubset({path.name for path in REVIEW_ROOT.glob("*.md")})
+    assert not (
+        REVIEW_ROOT / "c2-sm-p004-bazi-dao-shi-product-owner-packet.md"
+    ).exists()
+
+    report = (
+        REVIEW_ROOT / "c2-sm-p004-bazi-dao-shi-integration-readiness.md"
+    ).read_text(encoding="utf-8")
+    for state in (
+        "Dao-Shi Method Reconstruction:\nNO_REPRODUCIBLE_DAO_SHI_METHOD_UNDER_REVIEWED_SOURCES",
+        "Resolved Method Questions:\n0",
+        "Unresolved Method Questions:\n10",
+        "Neutral Bazi Relation Facts:\nPARTIAL_CANDIDATE_IMPLEMENTATION",
+        "deterministic_facts.bazi.relations:\nPARTIAL",
+        "Dao-Shi Method Candidate:\nNOT_READY",
+        "Evidence Root:\n0",
+        "Proposed PRIMARY_EVIDENCE:\n0",
+        "Mapping Proposals:\n0",
+        "Production Activation:\nNOT AUTHORIZED",
+        "Next Gate:\nNEUTRAL_RELATION_PROVIDER_INTEGRATION_AND_TEN_GOD_SUBJECT_REF_CONFORMANCE",
     ):
         assert state in report

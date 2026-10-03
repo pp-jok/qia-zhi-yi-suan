@@ -18,6 +18,7 @@ required_candidate_fields:
   - method_rule_decomposition
   - required_canonical_fact_families
   - canonical_fact_boundary_status
+  - neutral_relation_fact_status
   - evidence_root_status
   - known_gaps
   - limitations
@@ -28,3 +29,5 @@ required_nullable_candidate_fields: [proposed_evidence_root_ref, product_owner_d
 allowed_review_statuses: [proposed, approved_for_semantic_design, deferred, rejected]
 allowed_candidate_validation_statuses: [READY_FOR_PO_REVIEW, NOT_READY]
 allowed_product_owner_selection_statuses: [PENDING, SELECTED_FOR_SEMANTIC_DESIGN, DEFERRED, REJECTED]
+allowed_method_rule_statuses: [RESOLVED, PARTIALLY_RESOLVED, UNRESOLVED, CONFLICTING, NOT_REQUIRED]
+allowed_method_rule_materialities: [MATERIAL, CONTEXTUAL]

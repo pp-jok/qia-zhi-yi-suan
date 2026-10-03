@@ -82,6 +82,14 @@ def test_registry_contains_only_roots_backed_by_real_canonical_families() -> Non
     assert all(
         root["source_ref"].startswith("deterministic_facts.") for root in roots
     )
+    contract = yaml.safe_load(
+        (_candidate_root() / "semantic_evidence_root_contract_v1.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert "deterministic_facts.bazi.relations" not in contract[
+        "permitted_canonical_source_refs"
+    ]
 
     placement_root = next(
         root for root in roots if root["evidence_root_id"] == "ER-AS-PLANET-PLACEMENT-V1"

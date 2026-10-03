@@ -1,0 +1,41 @@
+schema_version: candidate-bazi-neutral-relation-v1
+contract_version: candidate-bazi-neutral-relations-v1
+review_status: candidate_only
+activation_status: inactive
+implementation_status: candidate_implementation_not_emitted
+relation:
+  relation_type: five_element_controls
+  rule_version: wuxing-control-v1
+  participant_roles: [controller, controlled]
+subject_ref_templates:
+  visible_stem: "{pillar}.stem"
+  hidden_stem: "{pillar}.hidden_stem.{index}"
+stem_elements:
+  甲: wood
+  乙: wood
+  丙: fire
+  丁: fire
+  戊: earth
+  己: earth
+  庚: metal
+  辛: metal
+  壬: water
+  癸: water
+controls:
+  wood: earth
+  earth: water
+  water: fire
+  fire: metal
+  metal: wood
+prohibited_fields:
+  - operative
+  - qualification
+  - rescue
+  - effective
+  - strength_score
+  - dao_shi
+  - primitive_direction
+limitations:
+  - This candidate policy emits raw directed element-control presence only.
+  - It does not decide effective control, strength, rescue, exception, Dao-Shi, or Primitive direction.
+  - It is not wired into ChartCalculationService or any Evidence Root.
