@@ -1,8 +1,8 @@
 schema_version: candidate-bazi-neutral-relation-v1
 contract_version: candidate-bazi-neutral-relations-v1
-review_status: candidate_only
+review_status: historical_superseded
 activation_status: inactive
-implementation_status: candidate_provider_available_not_activated
+implementation_status: superseded_by_bazi_relation_canonical_v1
 relation:
   relation_type: five_element_controls
   rule_version: wuxing-control-v1
@@ -36,6 +36,7 @@ prohibited_fields:
   - dao_shi
   - primitive_direction
 limitations:
+  - This file is retained as the historical candidate record and is superseded by the packaged bazi-relation-canonical-v1 contract.
   - This candidate policy emits raw directed element-control presence only.
   - It does not decide effective control, strength, rescue, exception, Dao-Shi, or Primitive direction.
   - It is available only through an explicitly injected candidate provider and is not wired into any default runtime or Evidence Root.

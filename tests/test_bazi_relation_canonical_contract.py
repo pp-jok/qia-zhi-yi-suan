@@ -131,3 +131,19 @@ def test_canonical_policy_rejects_incomplete_hidden_stem_table(tmp_path: Path) -
 
     with pytest.raises(ValueError, match="CANONICAL_BAZI_RELATION_POLICY_INVALID"):
         load_canonical_bazi_relation_policy(copied)
+
+
+def test_candidate_contract_is_retained_as_historical_transition_record() -> None:
+    path = (
+        Path(__file__).resolve().parents[1]
+        / "candidates"
+        / "calculation-v1"
+        / "bazi_neutral_relation_contract_v1.yaml"
+    )
+    payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+
+    assert payload["review_status"] == "historical_superseded"
+    assert payload["activation_status"] == "inactive"
+    assert payload["implementation_status"] == (
+        "superseded_by_bazi_relation_canonical_v1"
+    )

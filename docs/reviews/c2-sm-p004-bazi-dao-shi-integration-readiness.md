@@ -8,7 +8,7 @@ Date: 2026-10-03
 |---|---|
 | Semantic Claim | `READY / ACCEPTED_FOR_REVIEW` |
 | Dao-Shi Method | `NOT_READY` |
-| Neutral Relation Fact | `CANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED` |
+| Neutral Relation Fact | `CANONICAL_CONTRACT_REFERENCE_PROVIDER_NOT_ACTIVATED` |
 | Evidence Root | `NOT_READY / 0 NEW` |
 | PRIMARY_EVIDENCE | `NOT STARTED / 0` |
 | Mapping | `NOT STARTED / 0` |
@@ -65,23 +65,23 @@ ACCEPTED_FOR_REVIEW
 Dao-Shi Method Reconstruction:
 NO_REPRODUCIBLE_DAO_SHI_METHOD_UNDER_REVIEWED_SOURCES
 
-Resolved Method Questions:
+Fully Resolved Method Questions:
 0
-
-Unresolved Method Questions:
-10
 
 Partially Resolved Method Questions:
 8
 
-Strictly Unresolved Method Questions:
+Unresolved Method Questions:
 2
 
+Not Fully Resolved Method Questions:
+10
+
 Neutral Bazi Relation Facts:
-CANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED
+CANONICAL_CONTRACT_REFERENCE_PROVIDER_NOT_ACTIVATED
 
 deterministic_facts.bazi.relations:
-CANDIDATE_EMITTED_ON_EXPLICIT_INJECTION
+CANONICAL
 
 Dao-Shi Method Candidate:
 NOT_READY
@@ -105,7 +105,7 @@ Production Activation:
 NOT AUTHORIZED
 
 Next Gate:
-EVIDENCE_ROOT_PROPOSAL_REVIEW
+GENERIC_BAZI_RELATION_EVIDENCE_ROOT_PROPOSAL
 ```
 
 Final scenario: Track A follows Exit A. Track B may enter a separate Evidence

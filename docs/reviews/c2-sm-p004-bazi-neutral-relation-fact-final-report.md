@@ -28,10 +28,10 @@ The focused tests cover all five control pairs, direction, deterministic repeata
 
 ```text
 Neutral Bazi Relation Facts:
-CANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED
+CANONICAL_CONTRACT_REFERENCE_PROVIDER_NOT_ACTIVATED
 
 deterministic_facts.bazi.relations:
-CANDIDATE_EMITTED_ON_EXPLICIT_INJECTION
+CANONICAL
 
 Evidence Root Proposal:
 NOT_CREATED

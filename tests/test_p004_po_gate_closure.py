@@ -222,10 +222,10 @@ def test_bazi_advancement_candidate_chain_is_governed_but_not_activated() -> Non
     assert methodology["product_owner_selection_status"] == "PENDING"
     assert methodology["product_owner_decision_ref"] is None
     assert methodology["canonical_fact_boundary_status"] == (
-        "CANDIDATE_RELATION_PROVIDER_AVAILABLE"
+        "CANONICAL_RELATION_FAMILY_RECOGNIZED"
     )
     assert methodology["neutral_relation_fact_status"] == (
-        "CANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED"
+        "CANONICAL_CONTRACT_REFERENCE_PROVIDER_NOT_ACTIVATED"
     )
     assert methodology["evidence_root_status"] == "WITHDRAWN"
     assert methodology["proposed_evidence_root_ref"] is None
@@ -283,6 +283,11 @@ def test_bazi_dao_shi_reconstruction_closes_at_partial_relation_gate() -> None:
         "c2-sm-p004-bazi-neutral-relation-fact-final-report.md",
         "c2-sm-p004-bazi-neutral-relation-provider-final-report.md",
         "c2-sm-p004-bazi-dao-shi-integration-readiness.md",
+        "c2-sm-p004-bazi-hidden-stem-identity-audit.md",
+        "c2-sm-p004-bazi-subject-ref-contract-review.md",
+        "c2-sm-p004-bazi-relation-canonical-contract-review.md",
+        "c2-sm-p004-bazi-neutral-relation-canonical-adoption.md",
+        "c2-sm-p004-bazi-neutral-relation-canonical-adoption-final-report.md",
     }
     assert required_reports.issubset({path.name for path in REVIEW_ROOT.glob("*.md")})
     assert not (
@@ -294,16 +299,18 @@ def test_bazi_dao_shi_reconstruction_closes_at_partial_relation_gate() -> None:
     ).read_text(encoding="utf-8")
     for state in (
         "Dao-Shi Method Reconstruction:\nNO_REPRODUCIBLE_DAO_SHI_METHOD_UNDER_REVIEWED_SOURCES",
-        "Resolved Method Questions:\n0",
-        "Unresolved Method Questions:\n10",
-        "Neutral Bazi Relation Facts:\nCANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED",
-        "deterministic_facts.bazi.relations:\nCANDIDATE_EMITTED_ON_EXPLICIT_INJECTION",
+        "Fully Resolved Method Questions:\n0",
+        "Partially Resolved Method Questions:\n8",
+        "Unresolved Method Questions:\n2",
+        "Not Fully Resolved Method Questions:\n10",
+        "Neutral Bazi Relation Facts:\nCANONICAL_CONTRACT_REFERENCE_PROVIDER_NOT_ACTIVATED",
+        "deterministic_facts.bazi.relations:\nCANONICAL",
         "Dao-Shi Method Candidate:\nNOT_READY",
         "Evidence Root:\n0",
         "Proposed PRIMARY_EVIDENCE:\n0",
         "Mapping Proposals:\n0",
         "Production Activation:\nNOT AUTHORIZED",
-        "Next Gate:\nEVIDENCE_ROOT_PROPOSAL_REVIEW",
+        "Next Gate:\nGENERIC_BAZI_RELATION_EVIDENCE_ROOT_PROPOSAL",
     ):
         assert state in report
 
@@ -311,10 +318,30 @@ def test_bazi_dao_shi_reconstruction_closes_at_partial_relation_gate() -> None:
         REVIEW_ROOT / "c2-sm-p004-bazi-neutral-relation-provider-final-report.md"
     ).read_text(encoding="utf-8")
     for state in (
-        "Provider Status:\nCANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED",
+        "Provider Status:\nCANONICAL_CONTRACT_REFERENCE_PROVIDER_NOT_ACTIVATED",
         "Ten-God Subject-Ref Conformance:\nPASS",
         "Evidence Root Proposal:\nNOT_CREATED",
         "Production Activation:\nNOT AUTHORIZED",
         "Dao-Shi Method Candidate:\nNOT_READY",
     ):
         assert state in provider_report
+
+    final_report = (
+        REVIEW_ROOT
+        / "c2-sm-p004-bazi-neutral-relation-canonical-adoption-final-report.md"
+    ).read_text(encoding="utf-8")
+    for state in (
+        "Hidden Stem Identity:\nREADY",
+        "Subject Ref Contract:\nREADY",
+        "five_element_controls:\nCANONICAL",
+        "deterministic_facts.bazi.relations:\nCANONICAL",
+        "Canonical Provider Authority:\nCONFORMANCE_REFERENCE_ONLY",
+        "Default Production Provider:\nUNCHANGED",
+        "Evidence Root Proposal Readiness:\nREADY",
+        "Evidence Root:\n0",
+        "PRIMARY_EVIDENCE:\n0",
+        "Mapping:\n0",
+        "Production Activation:\nNOT AUTHORIZED",
+        "Next Gate:\nGENERIC_BAZI_RELATION_EVIDENCE_ROOT_PROPOSAL",
+    ):
+        assert state in final_report

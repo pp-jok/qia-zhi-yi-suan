@@ -95,9 +95,9 @@ candidates:
         exact_locator: "卷05論倒食: 始遇者精神慵懶，重犯者容貌欹斜"
     required_canonical_fact_families:
       - deterministic_facts.bazi.ten_gods
-      - candidate_contract.bazi.neutral_relations
-    canonical_fact_boundary_status: CANDIDATE_RELATION_PROVIDER_AVAILABLE
-    neutral_relation_fact_status: CANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED
+      - deterministic_facts.bazi.relations
+    canonical_fact_boundary_status: CANONICAL_RELATION_FAMILY_RECOGNIZED
+    neutral_relation_fact_status: CANONICAL_CONTRACT_REFERENCE_PROVIDER_NOT_ACTIVATED
     evidence_root_status: WITHDRAWN
     proposed_evidence_root_ref: null
     known_gaps:

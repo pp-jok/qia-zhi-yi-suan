@@ -4,9 +4,10 @@ Date: 2026-10-03
 
 ## Decision
 
-The candidate neutral relation family now has a reproducible provider boundary.
-It remains explicitly selected, candidate-only, inactive by default, and
-outside every approved Evidence Root and semantic runtime path.
+The neutral relation family now has a canonical contract and a reproducible
+reference-provider boundary. The provider remains explicitly selected,
+inactive by default, and outside every approved Evidence Root and semantic
+runtime path.
 
 ## Engineering evidence
 
@@ -39,13 +40,13 @@ is created here.
 
 ```text
 Provider Status:
-CANDIDATE_PROVIDER_AVAILABLE_NOT_ACTIVATED
+CANONICAL_CONTRACT_REFERENCE_PROVIDER_NOT_ACTIVATED
 
 Ten-God Subject-Ref Conformance:
 PASS
 
 deterministic_facts.bazi.relations:
-CANDIDATE_EMITTED_ON_EXPLICIT_INJECTION
+CANONICAL
 
 Evidence Root Proposal:
 NOT_CREATED
@@ -57,5 +58,5 @@ Dao-Shi Method Candidate:
 NOT_READY
 
 Next Gate:
-EVIDENCE_ROOT_PROPOSAL_REVIEW
+GENERIC_BAZI_RELATION_EVIDENCE_ROOT_PROPOSAL
 ```

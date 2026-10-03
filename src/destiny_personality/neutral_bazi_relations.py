@@ -64,7 +64,7 @@ class _StemSubject:
 
 
 def load_neutral_bazi_relation_policy(root: Path) -> NeutralBaziRelationPolicy:
-    """Load the inactive candidate policy and reject incomplete contracts."""
+    """Load the retained historical policy for compatibility and audit."""
 
     path = Path(root) / CONTRACT_FILE
     try:
@@ -75,10 +75,10 @@ def load_neutral_bazi_relation_policy(root: Path) -> NeutralBaziRelationPolicy:
         raise ValueError("NEUTRAL_BAZI_RELATION_CONTRACT_INVALID")
     if (
         payload["schema_version"] != SCHEMA_VERSION
-        or payload["review_status"] != "candidate_only"
+        or payload["review_status"] != "historical_superseded"
         or payload["activation_status"] != "inactive"
         or payload["implementation_status"]
-        != "candidate_provider_available_not_activated"
+        != "superseded_by_bazi_relation_canonical_v1"
     ):
         raise ValueError("NEUTRAL_BAZI_RELATION_CONTRACT_INVALID")
 

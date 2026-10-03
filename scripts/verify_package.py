@@ -109,7 +109,10 @@ def main() -> int:
                 "load_canonical_fact_vocabulary, "
                 "load_fact_comparison_policy; "
                 "from destiny_personality.calculation_fingerprint import "
-                "build_calculation_bundle_fingerprint",
+                "build_calculation_bundle_fingerprint; "
+                "from destiny_personality.canonical_bazi_relations import "
+                "load_canonical_bazi_relation_policy; "
+                "load_canonical_bazi_relation_policy()",
             ]
         )
         run([cli, "validate-config", config_dir])
