@@ -31,6 +31,36 @@ claims:
     support_class: INDIRECT_NEARBY_CONSTRUCT
     limitations: Neither source supplies a directly locatable P004 action-initiation rule; current canonical facts do not encode a complete traditional structural judgement.
     review_status: accepted_for_review
+  - claim_id: SKC-BZ-DAO-SHI-ADVANCEMENT-LIMIT-P004-V1
+    system: bazi
+    citations:
+      - source_ref: SK-BZ-YUANHAI-ZIPING-PROCESS-P004-V1
+        locator: "論倒食: 凡命中犯此者…作事進退悔懶、有始無終"
+        support_role: primary
+      - source_ref: SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1
+        locator: "卷05論食神: 凡命有食遇梟…作事進退悔懶，有始無終"
+        support_role: supporting
+      - source_ref: SK-PROJECT-P004-ONTOLOGY-V2
+        locator: P004 advancement boundary, exclusions, and counterevidence semantics
+        support_role: contextual
+    related_claims:
+      - claim_ref: SKC-BZ-TEN-GODS-STRUCTURAL-ONLY-P004-V1
+        relation: qualifies
+    tradition_or_school: classical Zi Ping food-god and inverted-food method
+    canonical_fact_family: proposed_facts.bazi.qualified_ten_god_interactions
+    semantic_claim: Under the cited classical Zi Ping passages, an operative Eating-God-meets-Indirect-Resource or inverted-food condition is associated with vacillation and laziness while doing matters and with beginning without carrying them to an end; this directly limits supported-high action advancement but does not support pre-action Low.
+    target_primitive_id: P004
+    target_primitive_question: When and how is concrete action started and advanced?
+    p004_relevance: ACTION_ADVANCEMENT
+    direction_relevance: conditional_limits_supported_high
+    scope: source-bounded natal counterevidence for advancement only
+    contexts: [action]
+    conditions: [An operative 食神遇梟 or 偏印倒食 relation must be established under an approved classical Zi Ping method.]
+    counter_conditions: [Identity-only coexistence is insufficient; strength, season, position, wealth rescue, combinations, and source-listed exceptions must be governed before the relation can be asserted.]
+    exclusions: [supports_low inference, 梟印 identity shortcut, 偏印 count shortcut, generic diligence score, completion-outcome shortcut, direct Primitive state assertion]
+    support_class: DIRECT_BUT_SCHOOL_SPECIFIC
+    limitations: Direct semantic ownership is established for the combined 作事進退悔懶、有始無終 passage, not for the standalone idiom 有始無終. Method, facts, and Evidence Root remain blocked, so this claim cannot create PRIMARY_EVIDENCE or Mapping.
+    review_status: accepted_for_review
   - claim_id: SKC-AS-MARS-ACTION-INITIATIVE-P004-V1
     system: astrology
     citations:

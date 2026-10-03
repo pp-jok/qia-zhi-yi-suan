@@ -19,6 +19,8 @@ CLAIM_REGISTRY = "semantic_knowledge_claim_registry_v1.yaml"
 SOURCE_QUALITY_POLICY = "semantic_knowledge_source_quality_policy_v1.yaml"
 METHODOLOGY_CONTRACT = "astrology_methodology_candidate_contract_v1.yaml"
 METHODOLOGY_REGISTRY = "astrology_methodology_candidate_registry_v1.yaml"
+BAZI_METHODOLOGY_CONTRACT = "bazi_methodology_candidate_contract_v1.yaml"
+BAZI_METHODOLOGY_REGISTRY = "bazi_methodology_candidate_registry_v1.yaml"
 
 
 def load_semantic_knowledge_source_registry(root: Path) -> Tuple[Mapping[str, object], ...]:
@@ -113,12 +115,153 @@ def build_semantic_knowledge_audit(
         "invalid_claim_relations": 0,
         "self_relations": 0,
         "dangling_relations": 0,
-        "direct_p004_claim_count": sum(item["p004_relevance"] == "DIRECT_ACTION_INITIATION" for item in claims),
+        "direct_p004_claim_count": sum(
+            item["p004_relevance"]
+            in {"DIRECT_ACTION_INITIATION", "ACTION_ADVANCEMENT", "PRE_ACTION_RESTRAINT"}
+            for item in claims
+        ),
         "school_specific_direct_claim_count": sum(item["support_class"] == "DIRECT_BUT_SCHOOL_SPECIFIC" for item in claims),
         "ambiguous_claim_count": sum(item["support_class"] == "AMBIGUOUS" for item in claims),
         "empirical_source_count": sum(item["evidence_nature"] == "empirical" for item in sources),
         "traditional_methodology_source_count": sum(item["evidence_nature"] == "traditional_methodology" for item in sources),
     }
+
+
+def load_bazi_methodology_candidates(
+    root: Path,
+    sources: Tuple[Mapping[str, object], ...],
+    claims: Tuple[Mapping[str, object], ...],
+) -> Tuple[Mapping[str, object], ...]:
+    """Load inactive Bazi methodology proposals for the reopened P004 path."""
+
+    directory = Path(root)
+    contract = _mapping(directory / BAZI_METHODOLOGY_CONTRACT)
+    registry = _mapping(directory / BAZI_METHODOLOGY_REGISTRY)
+    _equal(
+        contract,
+        "schema_version",
+        "bazi-methodology-candidate-v1",
+        BAZI_METHODOLOGY_CONTRACT,
+    )
+    _equal(
+        registry,
+        "schema_version",
+        "bazi-methodology-candidate-registry-v1",
+        BAZI_METHODOLOGY_REGISTRY,
+    )
+    _candidate_only(registry, BAZI_METHODOLOGY_REGISTRY)
+
+    required = _string_list(
+        contract, "required_candidate_fields", BAZI_METHODOLOGY_CONTRACT
+    )
+    required_nullable = _string_list(
+        contract,
+        "required_nullable_candidate_fields",
+        BAZI_METHODOLOGY_CONTRACT,
+    )
+    allowed_status = set(
+        _string_list(contract, "allowed_review_statuses", BAZI_METHODOLOGY_CONTRACT)
+    )
+    allowed_validation = set(
+        _string_list(
+            contract,
+            "allowed_candidate_validation_statuses",
+            BAZI_METHODOLOGY_CONTRACT,
+        )
+    )
+    allowed_selection = set(
+        _string_list(
+            contract,
+            "allowed_product_owner_selection_statuses",
+            BAZI_METHODOLOGY_CONTRACT,
+        )
+    )
+    source_ids = {item["source_id"] for item in sources}
+    claim_ids = {item["claim_id"] for item in claims}
+    candidates = _list(registry, "candidates", BAZI_METHODOLOGY_REGISTRY)
+    seen = set()
+    for index, candidate in enumerate(candidates):
+        _required(candidate, required, BAZI_METHODOLOGY_REGISTRY, index)
+        for field in required_nullable:
+            if field not in candidate:
+                raise _error(
+                    "required nullable field missing",
+                    BAZI_METHODOLOGY_REGISTRY,
+                    f"candidates.{index}.{field}",
+                )
+        candidate_id = candidate.get("methodology_candidate_id")
+        if not _nonempty(candidate_id) or candidate_id in seen:
+            raise _error(
+                "duplicate or invalid methodology candidate id",
+                BAZI_METHODOLOGY_REGISTRY,
+                f"candidates.{index}.methodology_candidate_id",
+            )
+        seen.add(candidate_id)
+        if candidate.get("system") != "bazi":
+            raise _error(
+                "Bazi methodology candidate must use the bazi system",
+                BAZI_METHODOLOGY_REGISTRY,
+                f"candidates.{index}.system",
+            )
+        if candidate.get("review_status") not in allowed_status:
+            raise _error(
+                "invalid methodology review_status",
+                BAZI_METHODOLOGY_REGISTRY,
+                f"candidates.{index}.review_status",
+            )
+        if candidate.get("candidate_validation_status") not in allowed_validation:
+            raise _error(
+                "invalid candidate validation status",
+                BAZI_METHODOLOGY_REGISTRY,
+                f"candidates.{index}.candidate_validation_status",
+            )
+        if candidate.get("product_owner_selection_status") not in allowed_selection:
+            raise _error(
+                "invalid product owner selection status",
+                BAZI_METHODOLOGY_REGISTRY,
+                f"candidates.{index}.product_owner_selection_status",
+            )
+        for field in (
+            "method_authority_source_refs",
+            "project_boundary_source_refs",
+        ):
+            _known_refs(
+                candidate,
+                field,
+                source_ids,
+                "unknown methodology source",
+                index,
+            )
+        for field in (
+            "method_authority_claim_refs",
+            "project_boundary_claim_refs",
+        ):
+            _known_refs(
+                candidate,
+                field,
+                claim_ids,
+                "unknown methodology claim",
+                index,
+            )
+        if candidate["review_status"] == "proposed" and (
+            candidate["product_owner_selection_status"] != "PENDING"
+            or candidate.get("product_owner_decision_ref") is not None
+        ):
+            raise _error(
+                "proposed methodology must remain pending without a decision reference",
+                BAZI_METHODOLOGY_REGISTRY,
+                f"candidates.{index}",
+            )
+        conditions = candidate.get("condition_audit")
+        if type(conditions) is not list or not conditions or any(
+            type(item) is not dict for item in conditions
+        ):
+            raise _error(
+                "condition_audit must be a non-empty list of mappings",
+                BAZI_METHODOLOGY_REGISTRY,
+                f"candidates.{index}.condition_audit",
+            )
+    return tuple(candidates)
 
 
 def load_astrology_methodology_candidates(

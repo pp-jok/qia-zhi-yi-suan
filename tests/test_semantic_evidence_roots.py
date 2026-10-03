@@ -60,7 +60,7 @@ def test_mechanism_without_evidence_root_is_rejected() -> None:
     }
 
 
-def test_registry_loads_the_three_approved_fact_identity_roots() -> None:
+def test_registry_loads_approved_roots_and_keeps_proposals_inactive() -> None:
     from destiny_personality.semantic_mechanisms import (
         load_approved_evidence_root_ids,
         load_evidence_root_registry,
@@ -72,12 +72,21 @@ def test_registry_loads_the_three_approved_fact_identity_roots() -> None:
         "ER-BZ-TEN-GOD-INSTANCE-V1",
         "ER-AS-ASPECT-INSTANCE-V1",
         "ER-AS-PLANET-PLACEMENT-V1",
+        "ER-BZ-TEN-GOD-INTERACTION-V1",
     }
     assert load_approved_evidence_root_ids(_candidate_root()) == {
         "ER-BZ-TEN-GOD-INSTANCE-V1",
         "ER-AS-ASPECT-INSTANCE-V1",
         "ER-AS-PLANET-PLACEMENT-V1",
     }
+
+    interaction_root = next(
+        root
+        for root in roots
+        if root["evidence_root_id"] == "ER-BZ-TEN-GOD-INTERACTION-V1"
+    )
+    assert interaction_root["review_status"] == "proposed"
+    assert interaction_root["product_owner_decision_ref"] is None
 
     placement_root = next(
         root for root in roots if root["evidence_root_id"] == "ER-AS-PLANET-PLACEMENT-V1"
@@ -127,7 +136,7 @@ def test_registry_rejects_duplicate_root_ids(tmp_path) -> None:
     assert error.value.code == "CONFIG_VALUE_ERROR"
 
 
-def test_root_audit_reports_three_approved_and_zero_other_roots() -> None:
+def test_root_audit_reports_approved_and_proposed_roots_separately() -> None:
     from destiny_personality.semantic_mechanisms import (
         build_evidence_root_audit_report,
         load_evidence_root_registry,
@@ -138,9 +147,9 @@ def test_root_audit_reports_three_approved_and_zero_other_roots() -> None:
     )
 
     assert report == {
-        "root_count": 3,
+        "root_count": 4,
         "approved_count": 3,
-        "non_approved_count": 0,
+        "non_approved_count": 1,
     }
 
 

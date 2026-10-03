@@ -116,7 +116,7 @@ def test_construct_discovery_closes_only_the_current_astrology_p004_path() -> No
         assert expected_state in final_report
 
 
-def test_bazi_construct_discovery_closes_only_reviewed_methodologies() -> None:
+def test_bazi_construct_discovery_is_superseded_only_for_advancement() -> None:
     required_reports = {
         "c2-sm-p004-bazi-construct-source-corpus.md",
         "c2-sm-p004-bazi-construct-candidate-matrix.md",
@@ -133,16 +133,106 @@ def test_bazi_construct_discovery_closes_only_reviewed_methodologies() -> None:
     ).read_text(encoding="utf-8")
     for expected_state in (
         "P004 Astrology:\nCLOSED_UNDER_CURRENT_HELLENISTIC_METHODOLOGY",
-        "P004 Bazi Construct Discovery:\nNO_DEFENSIBLE_P004_CONSTRUCT",
-        "Direct High Constructs:\n0",
+        "P004 Bazi Construct Discovery:\nPARTIALLY_SUPERSEDED_FOR_ADVANCEMENT",
+        "Direct High Support Constructs:\n0",
+        "Direct Advancement Limitation Constructs:\n1",
         "Direct Low Constructs:\n0",
-        "Bazi Methodology Candidate:\n0",
-        "New Sources:\n0",
-        "New Claims:\n0",
-        "Proposed Evidence Roots:\n0",
+        "Bazi Methodology Candidate:\n1",
+        "New Sources:\n2",
+        "New Claims:\n1",
+        "Proposed Evidence Roots:\n1",
         "Proposed PRIMARY_EVIDENCE:\n0",
         "Mapping Proposals:\n0",
-        "P004 Bazi Path:\nCLOSED_UNDER_REVIEWED_METHODOLOGIES",
-        "Next Gate:\nP004_MATERIALLY_NEW_EVIDENCE_OR_NEXT_PRIMITIVE",
+        "P004 Bazi Path:\nOPEN",
+        "Next Gate:\nP004_BAZI_METHOD_AND_ROOT_PO_REVIEW",
     ):
         assert expected_state in final_report
+
+
+def test_bazi_advancement_review_records_the_reopened_counterevidence_path() -> None:
+    required_reports = {
+        "c2-sm-p004-bazi-advancement-source-audit.md",
+        "c2-sm-p004-bazi-advancement-semantic-matrix.md",
+        "c2-sm-p004-bazi-advancement-method-condition-audit.md",
+        "c2-sm-p004-bazi-advancement-readiness.md",
+        "c2-sm-p004-bazi-advancement-counterevidence-final-report.md",
+    }
+    assert required_reports.issubset(
+        {path.name for path in REVIEW_ROOT.glob("*.md")}
+    )
+
+    final_report = (
+        REVIEW_ROOT
+        / "c2-sm-p004-bazi-advancement-counterevidence-final-report.md"
+    ).read_text(encoding="utf-8")
+    for expected_state in (
+        "P004 Bazi Initiation:\nSATURATED",
+        "P004 Bazi Pre-action Low:\nSATURATED",
+        "P004 Bazi Advancement Review:\nDIRECT_ADVANCEMENT_LIMITATION_FOUND",
+        "始勤终惰:\nNEARBY_DILIGENCE_AND_PERSISTENCE",
+        "有始无终:\nNEARBY_COMPLETION_STANDALONE",
+        "Direct Advancement Constructs:\n1",
+        "Advancement Counterevidence Candidates:\n1",
+        "Bazi Methodology Candidate:\n1",
+        "Proposed Evidence Roots:\n1",
+        "Proposed PRIMARY_EVIDENCE:\n0",
+        "Mapping Proposals:\n0",
+        "P004 Bazi Path:\nOPEN",
+        "Next Gate:\nP004_BAZI_METHOD_AND_ROOT_PO_REVIEW",
+    ):
+        assert expected_state in final_report
+
+
+def test_bazi_advancement_candidate_chain_is_governed_but_not_activated() -> None:
+    from destiny_personality.semantic_knowledge import (
+        load_bazi_methodology_candidates,
+        load_semantic_knowledge_claim_registry,
+        load_semantic_knowledge_source_registry,
+    )
+    from destiny_personality.semantic_mechanisms import (
+        load_approved_evidence_root_ids,
+        load_evidence_root_registry,
+        load_semantic_mechanism_candidates,
+    )
+
+    sources = load_semantic_knowledge_source_registry(KNOWLEDGE_ROOT)
+    claims = load_semantic_knowledge_claim_registry(KNOWLEDGE_ROOT, sources)
+    methodologies = load_bazi_methodology_candidates(
+        KNOWLEDGE_ROOT, sources, claims
+    )
+
+    assert {
+        "SK-BZ-YUANHAI-ZIPING-PROCESS-P004-V1",
+        "SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1",
+    }.issubset({item["source_id"] for item in sources})
+    claim = next(
+        item
+        for item in claims
+        if item["claim_id"] == "SKC-BZ-DAO-SHI-ADVANCEMENT-LIMIT-P004-V1"
+    )
+    assert claim["p004_relevance"] == "ACTION_ADVANCEMENT"
+    assert claim["direction_relevance"] == "conditional_limits_supported_high"
+    assert claim["support_class"] == "DIRECT_BUT_SCHOOL_SPECIFIC"
+
+    assert len(methodologies) == 1
+    methodology = methodologies[0]
+    assert methodology["methodology_candidate_id"] == "BMC-BZ-P004-DAO-SHI-V1"
+    assert methodology["review_status"] == "proposed"
+    assert methodology["product_owner_selection_status"] == "PENDING"
+    assert methodology["product_owner_decision_ref"] is None
+
+    roots = load_evidence_root_registry(MECHANISM_ROOT)
+    proposed_root = next(
+        item
+        for item in roots
+        if item["evidence_root_id"] == "ER-BZ-TEN-GOD-INTERACTION-V1"
+    )
+    assert proposed_root["review_status"] == "proposed"
+    assert proposed_root["evidence_root_id"] not in load_approved_evidence_root_ids(
+        MECHANISM_ROOT
+    )
+    assert [
+        item
+        for item in load_semantic_mechanism_candidates(MECHANISM_ROOT)
+        if item["evidence_role"] == "PRIMARY_EVIDENCE"
+    ] == []

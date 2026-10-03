@@ -1,0 +1,49 @@
+schema_version: bazi-methodology-candidate-registry-v1
+registry_version: candidate-p004-bazi-dao-shi-methodology-v1
+review_status: candidate_only
+activation_status: inactive
+candidates:
+  - methodology_candidate_id: BMC-BZ-P004-DAO-SHI-V1
+    system: bazi
+    domain: P004 action-advancement counterevidence review
+    use_case: natal interpretation governance only
+    tradition_or_school: classical Zi Ping food-god and inverted-food method
+    method_authority_source_refs:
+      - SK-BZ-YUANHAI-ZIPING-PROCESS-P004-V1
+      - SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1
+    method_authority_claim_refs:
+      - SKC-BZ-DAO-SHI-ADVANCEMENT-LIMIT-P004-V1
+    project_boundary_source_refs: [SK-PROJECT-P004-ONTOLOGY-V2]
+    project_boundary_claim_refs: [SKC-PROJECT-P004-CONDITION-NOT-DIRECTION-V1]
+    target_construct: A source-bounded 食神遇梟 or 偏印倒食 condition associated with 作事進退悔懶、有始無終.
+    direction_semantics: conditional_limits_supported_high; never supports_low by itself
+    condition_audit:
+      - condition: eating-god and indirect-resource identities are both present
+        method_role: minimum identity inputs only
+        reproducibility: canonical identities available
+        blocker: coexistence does not prove an operative 倒食 relation
+      - condition: indirect resource controls or injures the operative eating god
+        method_role: core 倒食 relation
+        reproducibility: blocked
+        blocker: relation, position, strength, season, and operative-role policy are undefined
+      - condition: source exceptions and rescues do not neutralize the relation
+        method_role: countercondition gate
+        reproducibility: blocked
+        blocker: wealth rescue, strength, combination transformations, and source-listed exceptions require governed whole-chart synthesis
+    required_canonical_fact_families:
+      - deterministic_facts.bazi.ten_gods
+      - proposed_facts.bazi.qualified_ten_god_interactions
+    proposed_evidence_root_ref: ER-BZ-TEN-GOD-INTERACTION-V1
+    known_gaps:
+      - no governed rule determines when 食遇梟 becomes operative 倒食
+      - no qualified Ten-God interaction fact exists
+      - no approved Evidence Root represents the relation or its counterconditions
+      - whole-chart exception and rescue policy is undefined
+    limitations:
+      - Direct semantic ownership is source-bounded and does not establish empirical personality truth.
+      - The candidate limits supported-high advancement; it does not support pre-action Low.
+      - Approval would select a methodology for semantic design only, not a mechanism, Mapping, state, or runtime behavior.
+    candidate_validation_status: READY_FOR_PO_REVIEW
+    product_owner_selection_status: PENDING
+    product_owner_decision_ref: null
+    review_status: proposed

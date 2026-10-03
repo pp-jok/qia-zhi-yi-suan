@@ -527,7 +527,6 @@ def _validate_evidence_root(
         "source_type",
         "source_ref",
         "version",
-        "product_owner_decision_ref",
     ):
         value = root_entry[field]
         if type(value) is not str or not value.strip():
@@ -555,6 +554,22 @@ def _validate_evidence_root(
             "review_status is not allowed by the root contract",
             file=EVIDENCE_ROOT_REGISTRY_FILE,
             field=f"{field_prefix}.review_status",
+        )
+    decision_ref = root_entry["product_owner_decision_ref"]
+    if review_status == "approved":
+        if type(decision_ref) is not str or not decision_ref.strip():
+            raise ConfigError(
+                "CONFIG_VALUE_ERROR",
+                "approved evidence root requires a Product Owner decision reference",
+                file=EVIDENCE_ROOT_REGISTRY_FILE,
+                field=f"{field_prefix}.product_owner_decision_ref",
+            )
+    elif decision_ref is not None:
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "non-approved evidence root must not claim a Product Owner decision",
+            file=EVIDENCE_ROOT_REGISTRY_FILE,
+            field=f"{field_prefix}.product_owner_decision_ref",
         )
     for field in ("scope", "provenance"):
         if type(root_entry[field]) is not dict or not root_entry[field]:

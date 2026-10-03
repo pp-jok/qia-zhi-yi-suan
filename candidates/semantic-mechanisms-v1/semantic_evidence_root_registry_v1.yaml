@@ -24,6 +24,38 @@ roots:
       methodology_ref: bazi-core-v1.0
     review_status: approved
     product_owner_decision_ref: PO-DELEGATED-C2-SM-PHASE-2A-2026-09-22
+  - evidence_root_id: ER-BZ-TEN-GOD-INTERACTION-V1
+    system: bazi
+    source_type: proposed_qualified_fact_relation
+    source_ref: proposed_facts.bazi.qualified_ten_god_interactions
+    version: proposal-v1
+    scope:
+      identity_fields:
+        - subject_ref
+        - eating_god_instance_ref
+        - indirect_resource_instance_ref
+        - relation_type
+        - qualification_status
+      required_qualifiers:
+        - position_and_visibility
+        - season_and_strength_method
+        - operative_eating_god_status
+        - wealth_rescue_status
+        - combination_exception_status
+    approved_use:
+      - proposal_review_only
+      - future_qualified_ten_god_interaction_reference_after_approval
+    prohibited_use:
+      - identity_only_coexistence_inference
+      - direct_primitive_state_assertion
+      - supports_low_inference
+      - mapping_rule_creation
+      - runtime_activation
+    provenance:
+      origin: source_bounded_methodology_proposal
+      methodology_ref: BMC-BZ-P004-DAO-SHI-V1
+    review_status: proposed
+    product_owner_decision_ref: null
   - evidence_root_id: ER-AS-ASPECT-INSTANCE-V1
     system: astrology
     source_type: canonical_fact_instance

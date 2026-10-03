@@ -1,0 +1,28 @@
+schema_version: bazi-methodology-candidate-v1
+contract_version: candidate-bazi-methodology-contract-v1
+review_status: candidate_only
+activation_status: inactive
+required_candidate_fields:
+  - methodology_candidate_id
+  - system
+  - domain
+  - use_case
+  - tradition_or_school
+  - method_authority_source_refs
+  - method_authority_claim_refs
+  - project_boundary_source_refs
+  - project_boundary_claim_refs
+  - target_construct
+  - direction_semantics
+  - condition_audit
+  - required_canonical_fact_families
+  - proposed_evidence_root_ref
+  - known_gaps
+  - limitations
+  - candidate_validation_status
+  - product_owner_selection_status
+  - review_status
+required_nullable_candidate_fields: [product_owner_decision_ref]
+allowed_review_statuses: [proposed, approved_for_semantic_design, deferred, rejected]
+allowed_candidate_validation_statuses: [READY_FOR_PO_REVIEW, NOT_READY]
+allowed_product_owner_selection_statuses: [PENDING, SELECTED_FOR_SEMANTIC_DESIGN, DEFERRED, REJECTED]

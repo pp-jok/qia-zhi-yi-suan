@@ -35,6 +35,38 @@ sources:
     source_quality_class: TIER_C
     limitations: Recent self-published technical reference; supports a methodological caution rather than a direct P004 direction; not empirical psychology.
     review_status: accepted_for_review
+  - source_id: SK-BZ-YUANHAI-ZIPING-PROCESS-P004-V1
+    system: bazi
+    source_type: classical_primary_text
+    evidence_nature: traditional_methodology
+    tradition_or_school: classical Zi Ping food-god and inverted-food method
+    title: "淵海子平 / 增補淵海子平音義評註"
+    author_or_editor: "徐升編; 楊淙增校; 趙燕生編輯"
+    edition_or_version: "章福記書局康德七年本; 中國國家圖書館 MG/B992.3/28 掃描"
+    publication_year: 1940
+    language: Classical Chinese
+    locator: "論倒食: 作事進退悔懶、有始無終; 相心賦: 梟印當權及始勤終惰/始動終怠異文; 論性情: 火不及、有始無終"
+    url_or_bibliographic_ref: https://commons.wikimedia.org/wiki/File:NLC416-12jh002712-40330_%E5%A2%9E%E8%A3%9C%E6%B7%B5%E6%B5%B7%E5%AD%90%E5%B9%B3%E9%9F%B3%E7%BE%A9%E8%A9%95%E8%A8%BB.pdf
+    methodology_scope: Classical Zi Ping descriptions of inverted food, temperament, and process-like conduct language.
+    source_quality_class: TIER_A
+    limitations: The Tier-A classification belongs to the classical work and identified scan edition, not to Wikisource or any OCR website. Digital transcriptions are access witnesses only; the 始勤終惰/始動終怠 reading varies across witnesses, and the scan does not itself supply a reproducible whole-chart 倒食 policy.
+    review_status: accepted_for_review
+  - source_id: SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1
+    system: bazi
+    source_type: classical_primary_text
+    evidence_nature: traditional_methodology
+    tradition_or_school: classical Zi Ping food-god and inverted-food method
+    title: "三命通會"
+    author_or_editor: "萬民英"
+    edition_or_version: "文淵閣四庫全書本卷五數字轉寫"
+    publication_year: 1782
+    language: Classical Chinese
+    locator: "卷05論食神: 食神大忌偏印為倒食，主為人有始無終; 凡命有食遇梟，作事進退悔懶，有始無終"
+    url_or_bibliographic_ref: https://zh.wikisource.org/zh/%E4%B8%89%E5%91%BD%E9%80%9A%E6%9C%83_(%E5%9B%9B%E5%BA%AB%E5%85%A8%E6%9B%B8%E6%9C%AC)/%E5%8D%B705
+    methodology_scope: Classical compendium treatment of Eating God, Indirect Resource as inverted food, stated tendencies, exceptions, and rescues.
+    source_quality_class: TIER_A
+    limitations: The classical work is the authority; Wikisource is only the digital access representation. The passage supplies direct process language but also lists strength, resource, wealth, combination, and exception conditions that prevent an identity-only rule.
+    review_status: accepted_for_review
   - source_id: SK-AS-MARS-HOULDING-2004
     system: astrology
     source_type: modern_technical_reference

@@ -5,9 +5,9 @@ Actual baseline: `6d255c725e91b0da1d7fde4970b6c4abcde9ce7f`
 
 ## 1. Executive result
 
-`NO_DEFENSIBLE_P004_CONSTRUCT UNDER REVIEWED BAZI METHODOLOGIES`
+`PARTIALLY_SUPERSEDED BY P004 BAZI ADVANCEMENT REVIEW`
 
-No reviewed Bazi method supplies a technical construct that is simultaneously direct to P004, stable/natal, source-bounded, school-aware and capable of receiving a deterministic fact pattern. P004 therefore remains unknown in both reviewed systems. This is a valid fail-closed result.
+Initiation and pre-action Low remain closed. The later bounded process-phrase audit found one direct advancement limitation in `作事進退悔懶、有始無終`. Its method, fact pattern and Evidence Root remain blocked, so no mechanism or Mapping is activated. See `c2-sm-p004-bazi-advancement-counterevidence-final-report.md`.
 
 ## 2. Frozen governance state
 
@@ -35,7 +35,7 @@ None. “急躁如风”, “意速心焦”, force, courage, Yang Blade and Sev
 
 ## 8. Advancement constructs
 
-No qualifying direct construct. “始勤终惰” is the closest process-like phrase, but it is an isolated diligence/completion maxim under undefined `梟印当权`, not a governed P004 mechanism. “有始无终” similarly describes continuity or outcome rather than an auditable advancement rule.
+`始勤终惰` remains nearby diligence/persistence and standalone `有始无终` remains nearby completion. The independently reviewed compound `作事进退悔懒、有始无终`, however, directly describes the advancement process and is now a source-bounded `DIRECT_ADVANCEMENT_LIMITATION` candidate.
 
 ## 9. Pre-action restraint constructs
 
@@ -63,7 +63,7 @@ The reviewed texts differ in center of method, interpretive layer and received t
 
 ## 15. High result
 
-`NO_DEFENSIBLE_P004_CONSTRUCT`. High was not inferred from force, fire, activity, courage, Seven Killings, Yang Blade, Output, Wealth, strength or favorable-element status.
+No High-support construct was found. One construct can conditionally limit supported-high advancement. Counterevidence is not Low and does not itself set a state.
 
 ## 16. Low result
 
@@ -71,26 +71,24 @@ The reviewed texts differ in center of method, interpretive layer and received t
 
 ## 17. Canonical fact feasibility
 
-The deterministic contract represents pillars, hidden stems, Ten Gods and configured relations. A candidate day-master environment provides element, month branch and season descriptors. It does not provide strength, dominance, roots-as-strength, pattern formation, useful-god selection, clear/clouded configuration, flow or whole-chart synthesis. No direct construct reached this gate.
+The direct advancement limitation reaches this gate. Existing facts identify Eating God and Indirect Resource instances, but do not establish an operative 食遇梟/倒食 relation, strength, rescue or source-listed exceptions. Fact feasibility is blocked.
 
 ## 18. Evidence Root feasibility
 
-`ER-BZ-TEN-GOD-INSTANCE-V1` remains approved only for Ten-God identity and candidate evidence reference. It cannot absorb strength, pattern, relations, dominance or synthesis. No new Root is proposed because semantic ownership fails first.
+`ER-BZ-TEN-GOD-INSTANCE-V1` remains identity-only. `ER-BZ-TEN-GOD-INTERACTION-V1` is proposed and inactive for the qualified relation; it is not approved and cannot support a mechanism.
 
 ## 19. Methodology authority gaps
 
-Reproducible policies for strength, pattern formation and whole-chart configuration are absent. This is documented as `POLICY_NOT_DEFINED` / `WHOLE_CHART_SYNTHESIS_UNDEFINED`, but no Bazi Methodology Candidate is triggered because no direct P004 construct exists.
+Reproducible operative-倒食 and whole-chart exception policies are absent. `BMC-BZ-P004-DAO-SHI-V1` is therefore proposed, inactive and pending Product Owner review.
 
 ## 20–23. New governed assets
 
-- New Sources: 0.
-- New Claims: 0.
-- New Methodology Candidates: 0.
-- Proposed Evidence Roots: 0.
+- New Sources: 2.
+- New Claims: 1.
+- New Methodology Candidates: 1 proposed, inactive.
+- Proposed Evidence Roots: 1 proposed, inactive.
 - Proposed `PRIMARY_EVIDENCE`: 0.
 - Approved `PRIMARY_EVIDENCE`: 0.
-
-The research corpus adds governance documentation only. Registering generic Ten-God or temperament keywords would duplicate the existing boundary and lower the Source-to-Claim gate.
 
 ## 24. Legacy guard
 
@@ -123,11 +121,11 @@ Mapping Proposal and Mapping Candidate registries remain empty. No production ac
 
 ## 29. Path status
 
-The P004 Bazi path is closed **under the reviewed methodologies and source corpus**. This is not a permanent rejection of all Bazi scholarship. Reopening requires materially new, source-locatable evidence of a direct action-process construct, not additional synonyms for decisiveness, activity, caution or success.
+The P004 Bazi path is open only for advancement method-and-Root review. Initiation and pre-action Low remain saturated. No runtime or Mapping work is authorized.
 
 ## 30. Next gate
 
-P004 is now unknown across the reviewed Astrology and Bazi paths. The project may proceed to the next primitive's governed asset discovery, or reopen P004 only on materially new evidence. It must not continue searching merely to force primitive coverage.
+`P004_BAZI_METHOD_AND_ROOT_PO_REVIEW`. Until the method and Root are approved, no `PRIMARY_EVIDENCE` candidate may be created.
 
 ## Machine-readable summary
 
@@ -145,25 +143,28 @@ P004 Astrology:
 CLOSED_UNDER_CURRENT_HELLENISTIC_METHODOLOGY
 
 P004 Bazi Construct Discovery:
-NO_DEFENSIBLE_P004_CONSTRUCT
+PARTIALLY_SUPERSEDED_FOR_ADVANCEMENT
 
-Direct High Constructs:
+Direct High Support Constructs:
 0
+
+Direct Advancement Limitation Constructs:
+1
 
 Direct Low Constructs:
 0
 
 Bazi Methodology Candidate:
-0
+1
 
 New Sources:
-0
+2
 
 New Claims:
-0
+1
 
 Proposed Evidence Roots:
-0
+1
 
 Proposed PRIMARY_EVIDENCE:
 0
@@ -181,11 +182,11 @@ Production Activation:
 NOT AUTHORIZED
 
 P004 Bazi Path:
-CLOSED_UNDER_REVIEWED_METHODOLOGIES
+OPEN
 
 P004 Cross-System State:
-UNKNOWN_UNDER_REVIEWED_METHODOLOGIES
+NO_RUNTIME_STATE__BAZI_ADVANCEMENT_CANDIDATE_BLOCKED
 
 Next Gate:
-P004_MATERIALLY_NEW_EVIDENCE_OR_NEXT_PRIMITIVE
+P004_BAZI_METHOD_AND_ROOT_PO_REVIEW
 ```

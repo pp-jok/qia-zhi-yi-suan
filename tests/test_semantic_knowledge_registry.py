@@ -23,6 +23,8 @@ def test_loads_candidate_only_p004_semantic_knowledge_registries() -> None:
     assert {source["source_id"] for source in sources} == {
         "SK-BZ-TEN-GODS-YAP-2010",
         "SK-BZ-PATTERNS-ALSAYED-2026",
+        "SK-BZ-YUANHAI-ZIPING-PROCESS-P004-V1",
+        "SK-BZ-SANMING-TONGHUI-DAO-SHI-P004-V1",
         "SK-AS-MARS-HOULDING-2004",
         "SK-AS-ASPECTS-HOULDING-2004",
         "SK-AS-HELLENISTIC-GEORGE-2019-2022",
@@ -35,6 +37,7 @@ def test_loads_candidate_only_p004_semantic_knowledge_registries() -> None:
     }
     assert {claim["claim_id"] for claim in claims} == {
         "SKC-BZ-TEN-GODS-STRUCTURAL-ONLY-P004-V1",
+        "SKC-BZ-DAO-SHI-ADVANCEMENT-LIMIT-P004-V1",
         "SKC-AS-MARS-ACTION-INITIATIVE-P004-V1",
         "SKC-AS-ASPECT-TECHNIQUE-DISPUTE-P004-V1",
         "SKC-AS-HELLENISTIC-NATAL-CONDITION-V1",
@@ -46,9 +49,9 @@ def test_loads_candidate_only_p004_semantic_knowledge_registries() -> None:
         "SKC-PROJECT-P004-CONDITION-NOT-DIRECTION-V1",
     }
     audit = build_semantic_knowledge_audit(sources, claims)
-    assert audit["source_quality_distribution"] == {"TIER_A": 1, "TIER_B": 9, "TIER_C": 1}
-    assert audit["direct_p004_claim_count"] == 1
-    assert audit["school_specific_direct_claim_count"] == 1
+    assert audit["source_quality_distribution"] == {"TIER_A": 3, "TIER_B": 9, "TIER_C": 1}
+    assert audit["direct_p004_claim_count"] == 2
+    assert audit["school_specific_direct_claim_count"] == 2
 
 
 def test_methodology_candidate_is_inactive_and_references_known_assets() -> None:
