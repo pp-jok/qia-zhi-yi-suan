@@ -4,7 +4,7 @@ This module deliberately stops at raw, directed control presence. It is not
 called by the calculation service and cannot establish an operative method.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Mapping, Tuple
 
@@ -13,8 +13,13 @@ import yaml
 from .calculation.models import (
     BaziChartFacts,
     BaziRelationFact,
+    HiddenStemsFact,
     PillarPosition,
     TenGodSourceKind,
+)
+from .canonical_bazi_relations import (
+    CanonicalBaziRelationPolicy,
+    canonical_relation_identity,
 )
 
 
@@ -115,33 +120,112 @@ def derive_candidate_neutral_relations(
     facts: BaziChartFacts,
     policy: NeutralBaziRelationPolicy,
 ) -> Tuple[BaziRelationFact, ...]:
+    """Compatibility alias for canonical neutral relation derivation."""
+
+    return derive_canonical_neutral_relations(facts, policy)
+
+
+def derive_canonical_neutral_relations(
+    facts: BaziChartFacts,
+    policy: CanonicalBaziRelationPolicy,
+) -> Tuple[BaziRelationFact, ...]:
     """Derive deterministic raw control relations without method judgements."""
 
     if type(facts) is not BaziChartFacts:
         raise TypeError("BAZI_CHART_FACTS_REQUIRED")
     subjects = _stem_subjects(facts, policy)
-    relations = {
-        BaziRelationFact(
-            relation_type=policy.relation_type,
-            participant_refs=(controller.subject_ref, controlled.subject_ref),
-            source_pillars=_source_pillars(controller.pillar, controlled.pillar),
-            rule_version=policy.rule_version,
-        )
-        for controller in subjects
-        for controlled in subjects
-        if controller.subject_ref != controlled.subject_ref
-        and policy.controls[policy.stem_elements[controller.stem]]
-        == policy.stem_elements[controlled.stem]
+    relations = {}
+    for controller in subjects:
+        for controlled in subjects:
+            if (
+                controller.subject_ref == controlled.subject_ref
+                or policy.controls[policy.stem_elements[controller.stem]]
+                != policy.stem_elements[controlled.stem]
+            ):
+                continue
+            relation = BaziRelationFact(
+                relation_type=policy.relation_type,
+                participant_refs=(controller.subject_ref, controlled.subject_ref),
+                source_pillars=_source_pillars(
+                    controller.pillar, controlled.pillar
+                ),
+                rule_version=policy.rule_version,
+            )
+            relations[canonical_relation_identity(relation)] = relation
+    return tuple(relations[key] for key in sorted(relations))
+
+
+def canonicalize_bazi_subjects(
+    facts: BaziChartFacts,
+    policy: CanonicalBaziRelationPolicy,
+) -> BaziChartFacts:
+    """Normalize provider-specific hidden-stem order to canonical identity."""
+
+    if type(facts) is not BaziChartFacts:
+        raise TypeError("BAZI_CHART_FACTS_REQUIRED")
+    pillars = {
+        PillarPosition.YEAR: facts.year_pillar,
+        PillarPosition.MONTH: facts.month_pillar,
+        PillarPosition.DAY: facts.day_pillar,
     }
-    return tuple(
-        sorted(
-            relations,
-            key=lambda item: (
-                item.relation_type,
-                item.participant_refs,
-                tuple(position.value for position in item.source_pillars),
-            ),
+    if facts.hour_pillar is not None:
+        pillars[PillarPosition.HOUR] = facts.hour_pillar
+
+    raw_hidden = {}
+    for item in facts.hidden_stems:
+        if item.pillar in raw_hidden:
+            raise ValueError("DUPLICATE_HIDDEN_STEM_PROVENANCE")
+        raw_hidden[item.pillar] = item.stems
+    if set(raw_hidden) != set(pillars):
+        if set(pillars) - set(raw_hidden):
+            raise ValueError("HIDDEN_STEM_PILLAR_MISSING")
+        raise ValueError("HIDDEN_STEM_PILLAR_UNAVAILABLE")
+
+    index_maps = {}
+    normalized_hidden = []
+    for position in PillarPosition:
+        pillar = pillars.get(position)
+        if pillar is None:
+            continue
+        expected = policy.hidden_stems.get(pillar.earthly_branch)
+        actual = raw_hidden[position]
+        if expected is None or len(actual) != len(expected) or set(actual) != set(expected):
+            raise ValueError("HIDDEN_STEM_SET_MISMATCH")
+        index_maps[position] = {
+            old_index: expected.index(stem) for old_index, stem in enumerate(actual)
+        }
+        normalized_hidden.append(HiddenStemsFact(position, expected))
+
+    def remap_ref(subject_ref: str) -> str:
+        parts = subject_ref.split(".")
+        if len(parts) != 3 or parts[1] != "hidden_stem" or not parts[2].isdigit():
+            return subject_ref
+        try:
+            position = PillarPosition(parts[0])
+            new_index = index_maps[position][int(parts[2])]
+        except (ValueError, KeyError, IndexError) as error:
+            raise ValueError("TEN_GOD_SUBJECT_REF_INVALID") from error
+        return policy.hidden_stem_template.format(
+            pillar=position.value, index=new_index
         )
+
+    ten_gods = tuple(
+        replace(item, subject_ref=remap_ref(item.subject_ref))
+        for item in facts.ten_gods
+    )
+    relations = []
+    for item in facts.relations:
+        participant_refs = tuple(remap_ref(ref) for ref in item.participant_refs)
+        relations.append(
+            item
+            if participant_refs == item.participant_refs
+            else replace(item, participant_refs=participant_refs)
+        )
+    return replace(
+        facts,
+        hidden_stems=tuple(normalized_hidden),
+        ten_gods=ten_gods,
+        relations=tuple(relations),
     )
 
 

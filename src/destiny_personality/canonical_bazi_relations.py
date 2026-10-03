@@ -48,6 +48,8 @@ class CanonicalBaziRelationPolicy:
     stem_elements: Mapping[str, str]
     controls: Mapping[str, str]
     approved_rule_versions: Mapping[str, str]
+    relation_type: str
+    rule_version: str
     participant_roles: Tuple[str, str]
     identity_fields: Tuple[str, ...]
     provenance_fields: Tuple[str, ...]
@@ -200,6 +202,8 @@ def load_canonical_bazi_relation_policy(
             stem_elements=stem_elements,
             controls=controls,
             approved_rule_versions={relation["relation_type"]: relation["rule_version"]},
+            relation_type=relation["relation_type"],
+            rule_version=relation["rule_version"],
             participant_roles=("controller", "controlled"),
             identity_fields=identity,
             provenance_fields=provenance,

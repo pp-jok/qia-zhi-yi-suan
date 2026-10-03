@@ -1,6 +1,4 @@
 from dataclasses import fields, replace
-from pathlib import Path
-
 import pytest
 
 from destiny_personality.calculation import HiddenStemsFact, PillarPosition
@@ -8,16 +6,12 @@ from destiny_personality.calculation.models import BaziRelationFact
 from destiny_personality.calculation import DeterministicChartFacts
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-POLICY_ROOT = PROJECT_ROOT / "candidates" / "calculation-v1"
-
-
 def _load_policy():
-    from destiny_personality.neutral_bazi_relations import (
-        load_neutral_bazi_relation_policy,
+    from destiny_personality.canonical_bazi_relations import (
+        load_canonical_bazi_relation_policy,
     )
 
-    return load_neutral_bazi_relation_policy(POLICY_ROOT)
+    return load_canonical_bazi_relation_policy()
 
 
 def _derive(facts):

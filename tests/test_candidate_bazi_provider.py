@@ -1,6 +1,4 @@
 from dataclasses import replace
-from pathlib import Path
-
 import pytest
 
 from destiny_personality.calculation import (
@@ -14,13 +12,10 @@ from destiny_personality.calculation import (
 from destiny_personality.candidate_bazi_provider import (
     CandidateNeutralRelationBaziCalculator,
 )
-from destiny_personality.neutral_bazi_relations import (
-    load_neutral_bazi_relation_policy,
+from destiny_personality.canonical_bazi_relations import (
+    canonical_relation_identity,
+    load_canonical_bazi_relation_policy,
 )
-
-
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-POLICY_ROOT = PROJECT_ROOT / "candidates" / "calculation-v1"
 
 
 class FixedCalculator:
@@ -40,7 +35,7 @@ class FixedNormalizer:
 
 
 def _policy():
-    return load_neutral_bazi_relation_policy(POLICY_ROOT)
+    return load_canonical_bazi_relation_policy()
 
 
 def _provider(facts):
@@ -50,10 +45,17 @@ def _provider(facts):
 def _conforming_facts(bazi_facts):
     return replace(
         bazi_facts,
-        year_pillar=replace(bazi_facts.year_pillar, heavenly_stem="甲"),
-        month_pillar=replace(bazi_facts.month_pillar, heavenly_stem="戊"),
+        year_pillar=replace(
+            bazi_facts.year_pillar, heavenly_stem="甲", earthly_branch="午"
+        ),
+        month_pillar=replace(
+            bazi_facts.month_pillar, heavenly_stem="戊", earthly_branch="辰"
+        ),
         hidden_stems=(
-            HiddenStemsFact(PillarPosition.MONTH, ("戊", "己")),
+            HiddenStemsFact(PillarPosition.YEAR, ("丁", "己")),
+            HiddenStemsFact(PillarPosition.MONTH, ("戊", "乙", "癸")),
+            HiddenStemsFact(PillarPosition.DAY, ("丁", "己")),
+            HiddenStemsFact(PillarPosition.HOUR, ("丁", "己")),
         ),
         ten_gods=(
             TenGodFact(
@@ -80,9 +82,8 @@ def test_explicit_candidate_provider_emits_versioned_relations_through_service(
     runtime_config,
 ) -> None:
     policy = _policy()
-    assert policy.implementation_status == (
-        "candidate_provider_available_not_activated"
-    )
+    assert policy.provider_authority == "conformance_reference_only"
+    assert policy.default_provider_activation is False
     provider = CandidateNeutralRelationBaziCalculator(
         FixedCalculator(_conforming_facts(bazi_facts)), policy
     )
@@ -192,6 +193,70 @@ def test_candidate_provider_is_deterministic(bazi_facts) -> None:
     second = _provider(facts).calculate(None, None, None)
 
     assert first == second
+
+
+def test_provider_hidden_stem_order_cannot_change_subject_identity(
+    bazi_facts,
+) -> None:
+    canonical = _conforming_facts(bazi_facts)
+    reversed_month = replace(
+        canonical,
+        hidden_stems=tuple(
+            HiddenStemsFact(item.pillar, ("癸", "乙", "戊"))
+            if item.pillar is PillarPosition.MONTH
+            else item
+            for item in canonical.hidden_stems
+        ),
+        ten_gods=tuple(
+            replace(item, subject_ref="month.hidden_stem.2")
+            if item.source_kind is TenGodSourceKind.HIDDEN_STEM
+            else item
+            for item in canonical.ten_gods
+        ),
+    )
+
+    canonical_result = _provider(canonical).calculate(None, None, None)
+    reversed_result = _provider(reversed_month).calculate(None, None, None)
+
+    assert canonical_result == reversed_result
+    assert canonical_result.hidden_stems[1].stems == ("戊", "乙", "癸")
+    assert canonical_result.ten_gods[1].subject_ref == "month.hidden_stem.0"
+    assert tuple(map(canonical_relation_identity, canonical_result.relations)) == tuple(
+        map(canonical_relation_identity, reversed_result.relations)
+    )
+
+
+def test_candidate_provider_rejects_wrong_hidden_stem_membership(bazi_facts) -> None:
+    facts = _conforming_facts(bazi_facts)
+    invalid = replace(
+        facts,
+        hidden_stems=tuple(
+            HiddenStemsFact(item.pillar, ("戊", "乙", "壬"))
+            if item.pillar is PillarPosition.MONTH
+            else item
+            for item in facts.hidden_stems
+        ),
+    )
+
+    with pytest.raises(ValueError, match="HIDDEN_STEM_SET_MISMATCH"):
+        _provider(invalid).calculate(None, None, None)
+
+
+def test_candidate_provider_requires_hidden_stems_for_every_present_pillar(
+    bazi_facts,
+) -> None:
+    facts = _conforming_facts(bazi_facts)
+    incomplete = replace(
+        facts,
+        hidden_stems=tuple(
+            item
+            for item in facts.hidden_stems
+            if item.pillar is not PillarPosition.HOUR
+        ),
+    )
+
+    with pytest.raises(ValueError, match="HIDDEN_STEM_PILLAR_MISSING"):
+        _provider(incomplete).calculate(None, None, None)
 
 
 def test_default_service_does_not_activate_candidate_provider(
