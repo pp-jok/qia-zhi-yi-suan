@@ -628,6 +628,7 @@ def _validate_evidence_root_authority(
 ) -> None:
     """Accept one historic human record or one verified delegated record."""
 
+    has_human_ref = "product_owner_decision_ref" in root_entry
     human_ref = root_entry.get("product_owner_decision_ref")
     autonomous_fields = (
         "decision_authority",
@@ -636,7 +637,7 @@ def _validate_evidence_root_authority(
     )
     present_autonomous = [field for field in autonomous_fields if field in root_entry]
 
-    if human_ref is not None and present_autonomous:
+    if has_human_ref and present_autonomous:
         raise ConfigError(
             "CONFIG_VALUE_ERROR",
             "autonomous evidence root cannot claim a Product Owner decision",
@@ -645,7 +646,7 @@ def _validate_evidence_root_authority(
         )
 
     if review_status != "approved":
-        if human_ref is not None or present_autonomous:
+        if has_human_ref or present_autonomous:
             raise ConfigError(
                 "CONFIG_VALUE_ERROR",
                 "non-approved evidence root must not claim a decision authority",
@@ -654,7 +655,7 @@ def _validate_evidence_root_authority(
             )
         return
 
-    if human_ref is not None:
+    if has_human_ref:
         if type(human_ref) is not str or not human_ref.strip():
             raise ConfigError(
                 "CONFIG_VALUE_ERROR",
@@ -701,6 +702,15 @@ def _validate_autonomous_evidence_root_decision(
             or decision.decision_mode != root_entry["decision_mode"]
         ):
             raise ValueError("AUTONOMOUS_DECISION_AUTHORITY_MISMATCH")
+        if decision.outcome != "PASS":
+            raise ConfigError(
+                "CONFIG_VALUE_ERROR",
+                "approved autonomous evidence root requires a passing autonomous decision",
+                file=EVIDENCE_ROOT_REGISTRY_FILE,
+                field=field_prefix,
+            )
+    except ConfigError:
+        raise
     except (TypeError, ValueError) as error:
         raise ConfigError(
             "CONFIG_VALUE_ERROR",

@@ -37,6 +37,14 @@ def _write_registry(root: Path, registry: dict) -> None:
     )
 
 
+def _copy_project_decision_registry(root: Path) -> Path:
+    governance = root / "governance" / "autonomous-completion-v1"
+    governance.mkdir(parents=True)
+    source = PROJECT_ROOT / "governance" / "autonomous-completion-v1" / "decision_registry_v1.yaml"
+    shutil.copy(source, governance / "decision_registry_v1.yaml")
+    return governance
+
+
 def test_generic_relation_root_is_identity_only_and_autonomously_decided() -> None:
     root = _root_by_id("ER-BZ-RELATION-INSTANCE-V1")
 
@@ -86,6 +94,30 @@ def test_autonomous_root_cannot_claim_product_owner_decision(tmp_path: Path) -> 
         load_evidence_root_registry(candidate_root)
 
 
+def test_autonomous_root_rejects_explicit_null_product_owner_field(
+    tmp_path: Path,
+) -> None:
+    from destiny_personality.semantic_mechanisms import load_evidence_root_registry
+
+    candidate_root = _copied_candidate_root(tmp_path)
+    registry = yaml.safe_load(
+        (candidate_root / "semantic_evidence_root_registry_v1.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    autonomous_root = next(
+        item
+        for item in registry["roots"]
+        if item["evidence_root_id"] == "ER-BZ-RELATION-INSTANCE-V1"
+    )
+    autonomous_root["product_owner_decision_ref"] = None
+    _write_registry(candidate_root, registry)
+    _copy_project_decision_registry(tmp_path)
+
+    with pytest.raises(ConfigError, match="cannot claim a Product Owner"):
+        load_evidence_root_registry(candidate_root)
+
+
 def test_autonomous_root_without_registry_decision_fails_closed(tmp_path: Path) -> None:
     from destiny_personality.semantic_mechanisms import load_evidence_root_registry
 
@@ -128,4 +160,28 @@ def test_autonomous_root_fails_closed_when_registry_binding_is_forged(
     )
 
     with pytest.raises(ConfigError, match="autonomous decision"):
+        load_evidence_root_registry(candidate_root)
+
+
+@pytest.mark.parametrize("outcome", ("FAIL", "DEFER", "CLOSE_ZERO"))
+def test_autonomous_root_requires_a_passing_bound_decision(
+    tmp_path: Path, outcome: str
+) -> None:
+    from destiny_personality.semantic_mechanisms import load_evidence_root_registry
+
+    candidate_root = _copied_candidate_root(tmp_path)
+    governance = tmp_path / "governance" / "autonomous-completion-v1"
+    governance.mkdir(parents=True)
+    registry = yaml.safe_load(
+        (PROJECT_ROOT / "governance" / "autonomous-completion-v1" / "decision_registry_v1.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    registry["decisions"] = copy.deepcopy(registry["decisions"])
+    registry["decisions"][0]["outcome"] = outcome
+    (governance / "decision_registry_v1.yaml").write_text(
+        yaml.safe_dump(registry, sort_keys=False), encoding="utf-8"
+    )
+
+    with pytest.raises(ConfigError, match="requires a passing autonomous decision"):
         load_evidence_root_registry(candidate_root)
