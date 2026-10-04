@@ -49,6 +49,7 @@ def test_context_evidence_requires_explicit_promotion_before_global_state():
         "primitive_id": "P001",
         "source_system": "bazi",
         "review_status": "approved",
+        "activation_status": "active",
         "proposed_direction": {"state": "supported_high"},
         "contexts": ["work"],
         "canonical_fact_requirements": ["fact:test"],
@@ -72,6 +73,7 @@ def test_context_promotion_requires_independent_evidence_roots():
             "primitive_id": "P001",
             "source_system": "bazi",
             "review_status": "approved",
+            "activation_status": "active",
             "proposed_direction": {"state": "supported_high"},
             "contexts": ["work"],
             "canonical_fact_requirements": ["fact:work"],
@@ -83,6 +85,7 @@ def test_context_promotion_requires_independent_evidence_roots():
             "primitive_id": "P001",
             "source_system": "astrology",
             "review_status": "approved",
+            "activation_status": "active",
             "proposed_direction": {"state": "supported_high"},
             "contexts": ["relationship"],
             "canonical_fact_requirements": ["fact:relationship"],
@@ -105,6 +108,7 @@ def test_context_promotion_rejects_material_counterevidence():
             "primitive_id": "P001",
             "source_system": "bazi",
             "review_status": "approved",
+            "activation_status": "active",
             "proposed_direction": {"state": "supported_high"},
             "contexts": [context],
             "canonical_fact_requirements": ["fact:" + context],
@@ -127,3 +131,40 @@ def test_missing_system_evidence_is_non_comparable():
 
     assert alignment.status == "non_comparable"
     assert alignment.salience_delta == 0
+    assert alignment.bazi_rule_refs == ()
+    assert alignment.astrology_rule_refs == ()
+
+
+def test_formal_mapping_rejects_direct_candidate_injection():
+    import pytest
+
+    from destiny_personality.release_semantics import release_mapping_candidates
+
+    with pytest.raises(ValueError, match="FORMAL_MAPPING_RECORD_REQUIRED"):
+        release_mapping_candidates((_candidate("bazi", "high"),), load_release_manifest())
+
+
+def test_formal_mapping_requires_active_approval_and_rejects_candidate_references():
+    import pytest
+
+    from destiny_personality.release_semantics import release_mapping_candidates
+
+    mapping = {
+        "mapping_candidate_id": "MAP-FORMAL",
+        "primitive_id": "P001",
+        "source_system": "bazi",
+        "review_status": "approved",
+        "proposed_direction": {"state": "supported_high"},
+        "contexts": ["work"],
+        "canonical_fact_requirements": ["fact:test"],
+        "semantic_mechanism_refs": ["SMC-TEST"],
+        "evidence_root_refs": ["ER-TEST"],
+    }
+
+    with pytest.raises(ValueError, match="FORMAL_MAPPING_INPUT_INVALID"):
+        release_mapping_candidates((mapping,), load_release_manifest())
+
+    mapping["activation_status"] = "active"
+    mapping["semantic_mechanism_refs"] = ["candidate-SMC"]
+    with pytest.raises(ValueError, match="FORMAL_CANDIDATE_RULE_REF_PROHIBITED"):
+        release_mapping_candidates((mapping,), load_release_manifest())

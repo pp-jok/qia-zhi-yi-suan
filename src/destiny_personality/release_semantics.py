@@ -51,10 +51,10 @@ def release_mapping_candidates(
     result = []
     for item in mappings:
         candidate = _mapping_to_candidate(item)
-        if candidate is None or candidate.primitive_id not in manifest.core_primitives:
-            continue
+        if candidate.primitive_id not in manifest.core_primitives:
+            raise ValueError("FORMAL_MAPPING_INPUT_INVALID")
         if _has_candidate_only_ref(candidate):
-            continue
+            raise ValueError("FORMAL_CANDIDATE_RULE_REF_PROHIBITED")
         result.append(candidate)
     return tuple(sorted(result, key=_candidate_key))
 
@@ -79,13 +79,14 @@ def align_release_states(
     astrology_has_evidence = _has_approved_evidence(astrology)
     if not bazi_has_evidence or not astrology_has_evidence:
         status, relation = "non_comparable", "insufficient_approved_evidence"
+        bazi_refs, astrology_refs = (), ()
     elif bazi.direction == astrology.direction:
         status, relation = "validation", "agreement"
+        bazi_refs, astrology_refs = bazi.semantic_rule_refs, astrology.semantic_rule_refs
     else:
         status, relation = "unresolved", "opposed"
+        bazi_refs, astrology_refs = bazi.semantic_rule_refs, astrology.semantic_rule_refs
     contexts = tuple(sorted(set((bazi.contexts if bazi else ()) + (astrology.contexts if astrology else ()))))
-    bazi_refs = bazi.semantic_rule_refs if bazi_has_evidence and bazi else ()
-    astrology_refs = astrology.semantic_rule_refs if astrology_has_evidence and astrology else ()
     return CrossSystemAlignment(
         alignment_id="{}:{}:{}:{}".format(
             resolved_primitive_id, relation, "|".join(bazi_refs), "|".join(astrology_refs)
@@ -141,14 +142,24 @@ def _resolve_primitive_state(
     else:
         state = "unknown"
     supporting = tuple(
-        _candidate_ref(candidate)
-        for candidate in candidates
-        if _direction(candidate.direction) == "supported_high"
+        sorted(
+            {
+                reference
+                for candidate in candidates
+                if _direction(candidate.direction) == "supported_high"
+                for reference in candidate.semantic_rule_refs
+            }
+        )
     )
     counter = tuple(
-        _candidate_ref(candidate)
-        for candidate in candidates
-        if _direction(candidate.direction) == "supported_low"
+        sorted(
+            {
+                reference
+                for candidate in candidates
+                if _direction(candidate.direction) == "supported_low"
+                for reference in candidate.semantic_rule_refs
+            }
+        )
     )
     contradictions = (
         ("approved directions conflict",) if len(directions) > 1 else ()
@@ -172,26 +183,34 @@ def _resolve_primitive_state(
     )
 
 
-def _mapping_to_candidate(item: object) -> Optional[PrimitiveCandidate]:
+def _mapping_to_candidate(item: object) -> PrimitiveCandidate:
     if isinstance(item, PrimitiveCandidate):
-        return item
-    if not isinstance(item, Mapping) or item.get("review_status") != "approved":
-        return None
+        raise ValueError("FORMAL_MAPPING_RECORD_REQUIRED")
+    if not isinstance(item, Mapping):
+        raise ValueError("FORMAL_MAPPING_RECORD_REQUIRED")
+    if (
+        item.get("review_status") != "approved"
+        or item.get("activation_status") != "active"
+    ):
+        raise ValueError("FORMAL_MAPPING_INPUT_INVALID")
     primitive_id = item.get("primitive_id")
     source_system = item.get("source_system")
     direction = _mapping_direction(item.get("proposed_direction"))
-    rule_refs = _strings(item.get("semantic_mechanism_refs"))
-    fact_refs = _strings(item.get("canonical_fact_requirements"))
-    roots = _strings(item.get("evidence_root_refs"))
+    mapping_id = item.get("mapping_candidate_id")
+    rule_refs = _required_strings(item.get("semantic_mechanism_refs"))
+    fact_refs = _required_strings(item.get("canonical_fact_requirements"))
+    roots = _required_strings(item.get("evidence_root_refs"))
     if (
         not isinstance(primitive_id, str)
         or source_system not in {"bazi", "astrology"}
         or direction is None
+        or not isinstance(mapping_id, str)
+        or not mapping_id
         or not rule_refs
         or not fact_refs
         or not roots
     ):
-        return None
+        raise ValueError("FORMAL_MAPPING_INPUT_INVALID")
     modifiers = _strings(item.get("modifiers")) + tuple(
         "evidence_root:" + root for root in roots
     )
@@ -312,10 +331,6 @@ def _candidate_key(candidate: PrimitiveCandidate) -> Tuple[str, str, str, Tuple[
     return (candidate.primitive_id, candidate.source_system, candidate.direction, candidate.semantic_rule_refs)
 
 
-def _candidate_ref(candidate: PrimitiveCandidate) -> str:
-    return "|".join(candidate.semantic_rule_refs)
-
-
 def _direction(value: str) -> str:
     return _DIRECTIONS.get(value, value)
 
@@ -330,3 +345,12 @@ def _strings(value: object) -> Tuple[str, ...]:
     if not isinstance(value, (list, tuple)):
         return ()
     return tuple(item for item in value if isinstance(item, str) and item)
+
+
+def _required_strings(value: object) -> Tuple[str, ...]:
+    if not isinstance(value, (list, tuple)):
+        raise ValueError("FORMAL_MAPPING_INPUT_INVALID")
+    values = _strings(value)
+    if not values or len(values) != len(value):
+        raise ValueError("FORMAL_MAPPING_INPUT_INVALID")
+    return values

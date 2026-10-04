@@ -75,3 +75,63 @@ def test_codec_rejects_candidate_rule_reference(normalized_time, bazi_facts, ast
 
     with pytest.raises(ValueError, match="FORMAL_CANDIDATE_RULE_REF_PROHIBITED"):
         core_destiny_profile_from_dict(payload)
+
+
+def test_validator_rejects_duplicate_alignment_primitive_ids(normalized_time, bazi_facts, astrology_facts):
+    from dataclasses import replace
+
+    from destiny_personality.core_destiny_profile import build_core_destiny_profile
+    from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
+
+    profile = build_core_destiny_profile(
+        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
+        fact_assurance="capability_reported",
+    )
+    duplicated = replace(profile.cross_system_alignment[1], primitive_id="P001")
+    malformed = replace(
+        profile,
+        cross_system_alignment=(profile.cross_system_alignment[0], duplicated)
+        + profile.cross_system_alignment[2:],
+    )
+
+    assert "FORMAL_ALIGNMENT_PRIMITIVE_COVERAGE_INVALID" in validate_core_destiny_profile(malformed)
+
+
+def test_validator_rejects_fabricated_non_comparable_alignment_refs(normalized_time, bazi_facts, astrology_facts):
+    from dataclasses import replace
+
+    from destiny_personality.core_destiny_profile import build_core_destiny_profile
+    from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
+
+    profile = build_core_destiny_profile(
+        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
+        fact_assurance="capability_reported",
+    )
+    fabricated = replace(
+        profile.cross_system_alignment[0],
+        bazi_rule_refs=("SMC-FORGED",),
+    )
+    malformed = replace(
+        profile,
+        cross_system_alignment=(fabricated,) + profile.cross_system_alignment[1:],
+    )
+
+    errors = validate_core_destiny_profile(malformed)
+    assert "FORMAL_ALIGNMENT_REFERENCE_INVALID" in errors
+    assert "FORMAL_NON_COMPARABLE_ALIGNMENT_INVALID" in errors
+
+
+def test_mapped_semantic_assurance_requires_traceable_admitted_candidates(normalized_time, bazi_facts, astrology_facts):
+    from dataclasses import replace
+
+    from destiny_personality.core_destiny_profile import build_core_destiny_profile
+    from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
+
+    profile = build_core_destiny_profile(
+        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
+        fact_assurance="capability_reported",
+    )
+
+    assert "FORMAL_MAPPED_ASSURANCE_TRACEABILITY_REQUIRED" in validate_core_destiny_profile(
+        replace(profile, semantic_model_assurance="limited_coverage_approved_mapping")
+    )
