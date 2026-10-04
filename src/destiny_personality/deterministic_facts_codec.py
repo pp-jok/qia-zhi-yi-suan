@@ -43,6 +43,7 @@ class QualifiedFacts:
     fact_assurance: str
     fact_fingerprint: str
     qualification_fingerprint: str
+    _qualification_json: str = field(repr=False, compare=False)
     _seal: object = field(repr=False, compare=False)
 
 
@@ -173,15 +174,15 @@ def load_qualified_deterministic_facts(
         qualification = json.loads(qualification_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
         raise ValueError("FACT_QUALIFICATION_REQUIRED") from error
+    qualification_json = json.dumps(
+        qualification, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    )
     return QualifiedFacts(
         facts=facts,
         fact_assurance=derive_fact_assurance(facts, qualification),
         fact_fingerprint=deterministic_facts_fingerprint(facts),
-        qualification_fingerprint=sha256(
-            json.dumps(
-                qualification, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-            ).encode("utf-8")
-        ).hexdigest(),
+        qualification_fingerprint=sha256(qualification_json.encode("utf-8")).hexdigest(),
+        _qualification_json=qualification_json,
         _seal=_QUALIFIED_FACTS_SEAL,
     )
 
@@ -192,9 +193,23 @@ def require_qualified_facts(value: object) -> QualifiedFacts:
     if (
         not isinstance(value, QualifiedFacts)
         or value._seal is not _QUALIFIED_FACTS_SEAL
+        or not isinstance(value.facts, DeterministicChartFacts)
         or value.fact_fingerprint != deterministic_facts_fingerprint(value.facts)
-        or value.fact_assurance not in {"capability_reported", "project_verified"}
-        or not value.qualification_fingerprint
+    ):
+        raise ValueError("QUALIFIED_FACTS_REQUIRED")
+    try:
+        qualification = json.loads(value._qualification_json)
+        canonical = json.dumps(
+            qualification, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        )
+        expected_assurance = derive_fact_assurance(value.facts, qualification)
+    except (AttributeError, TypeError, ValueError, json.JSONDecodeError) as error:
+        raise ValueError("QUALIFIED_FACTS_REQUIRED") from error
+    if (
+        canonical != value._qualification_json
+        or value.qualification_fingerprint
+        != sha256(canonical.encode("utf-8")).hexdigest()
+        or value.fact_assurance != expected_assurance
     ):
         raise ValueError("QUALIFIED_FACTS_REQUIRED")
     return value

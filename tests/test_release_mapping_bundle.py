@@ -45,3 +45,21 @@ def test_bundle_decision_matches_autonomous_registry():
     assert record.outcome == "CLOSE_ZERO"
     assert record.asset_fingerprint == bundle.asset_fingerprint
     assert record.decision_ref == bundle.decision_ref
+
+
+def test_active_mapping_bundle_fails_when_runtime_decision_is_missing(tmp_path):
+    from destiny_personality.release_mapping_bundle import (
+        active_release_mapping_bundle_path,
+        load_active_release_mapping_bundle,
+        release_decision_registry_path,
+    )
+
+    bundle_path = tmp_path / "bundle.yaml"
+    bundle_path.write_bytes(active_release_mapping_bundle_path().read_bytes())
+    registry = yaml.safe_load(release_decision_registry_path().read_text(encoding="utf-8"))
+    registry["decisions"] = []
+    registry_path = tmp_path / "registry.yaml"
+    registry_path.write_text(yaml.safe_dump(registry, sort_keys=False), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="RELEASE_MAPPING_BUNDLE_INVALID"):
+        load_active_release_mapping_bundle(bundle_path, registry_path)

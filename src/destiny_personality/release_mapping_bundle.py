@@ -8,6 +8,11 @@ from typing import Mapping, Optional, Tuple
 
 import yaml
 
+from .autonomous_governance import (
+    validate_autonomous_decision,
+    validate_decision_binding,
+)
+
 
 SCHEMA_VERSION = "active-release-mapping-bundle-v1"
 BUNDLE_ID = "ACTIVE-RELEASE-MAPPING-BUNDLE-V1"
@@ -34,6 +39,15 @@ def active_release_mapping_bundle_path() -> Path:
     )
 
 
+def release_decision_registry_path() -> Path:
+    return (
+        Path(__file__).resolve().parent
+        / "release_assets"
+        / "v1"
+        / "runtime_decision_registry_v1.yaml"
+    )
+
+
 def mapping_payload_fingerprint(mappings: object) -> str:
     canonical = json.dumps(
         mappings, ensure_ascii=False, sort_keys=True, separators=(",", ":")
@@ -43,6 +57,7 @@ def mapping_payload_fingerprint(mappings: object) -> str:
 
 def load_active_release_mapping_bundle(
     path: Optional[Path] = None,
+    decision_registry_path: Optional[Path] = None,
 ) -> ActiveReleaseMappingBundle:
     bundle_path = Path(path) if path is not None else active_release_mapping_bundle_path()
     try:
@@ -83,7 +98,7 @@ def load_active_release_mapping_bundle(
         or not all(isinstance(item, str) and item for item in limitations)
     ):
         raise ValueError("RELEASE_MAPPING_BUNDLE_INVALID")
-    return ActiveReleaseMappingBundle(
+    bundle = ActiveReleaseMappingBundle(
         schema_version=SCHEMA_VERSION,
         bundle_id=BUNDLE_ID,
         activation_status="active",
@@ -92,6 +107,35 @@ def load_active_release_mapping_bundle(
         decision_ref=DECISION_REF,
         limitations=tuple(limitations),
     )
+    try:
+        registry_path = (
+            Path(decision_registry_path)
+            if decision_registry_path is not None
+            else release_decision_registry_path()
+        )
+        registry = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+        if (
+            not isinstance(registry, dict)
+            or registry.get("schema_version")
+            != "autonomous-completion-decision-registry-v1"
+            or registry.get("delegation_mode") != "AUTONOMOUS_COMPLETION"
+            or not isinstance(registry.get("decisions"), list)
+        ):
+            raise ValueError("RELEASE_MAPPING_BUNDLE_INVALID")
+        decisions = tuple(
+            validate_autonomous_decision(item) for item in registry["decisions"]
+        )
+        record = next(item for item in decisions if item.asset_id == bundle.bundle_id)
+        validate_decision_binding(
+            record,
+            asset_id=bundle.bundle_id,
+            asset_fingerprint=bundle.asset_fingerprint,
+        )
+        if record.outcome != "CLOSE_ZERO" or record.decision_ref != bundle.decision_ref:
+            raise ValueError("RELEASE_MAPPING_BUNDLE_INVALID")
+    except (OSError, StopIteration, TypeError, ValueError, yaml.YAMLError) as error:
+        raise ValueError("RELEASE_MAPPING_BUNDLE_INVALID") from error
+    return bundle
 
 
 def require_active_release_mapping_bundle(

@@ -27,7 +27,7 @@ def test_formal_profile_is_complete_and_zero_safe(qualified_facts):
 
 
 def test_formal_builder_rejects_raw_facts_and_caller_selected_assurance(
-    normalized_time, bazi_facts, astrology_facts
+    normalized_time, bazi_facts, astrology_facts, qualified_facts
 ):
     from destiny_personality.core_destiny_profile import build_core_destiny_profile
 
@@ -36,6 +36,14 @@ def test_formal_builder_rejects_raw_facts_and_caller_selected_assurance(
         build_core_destiny_profile(raw)
     with pytest.raises(TypeError):
         build_core_destiny_profile(raw, fact_assurance="project_verified")
+    with pytest.raises(ValueError, match="QUALIFIED_FACTS_REQUIRED"):
+        build_core_destiny_profile(
+            replace(qualified_facts, fact_assurance="project_verified")
+        )
+    with pytest.raises(ValueError, match="QUALIFIED_FACTS_REQUIRED"):
+        build_core_destiny_profile(
+            replace(qualified_facts, qualification_fingerprint="made-up")
+        )
 
 
 def test_formal_profile_codec_is_deterministic_and_round_trips(tmp_path, qualified_facts):
