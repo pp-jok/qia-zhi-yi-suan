@@ -197,3 +197,38 @@ def test_mapped_non_unknown_state_rejects_unadmitted_facts_and_rules(normalized_
     )
 
     assert "FORMAL_MAPPED_STATE_TRACEABILITY_INVALID" in validate_core_destiny_profile(malformed)
+
+
+def test_mapped_profile_rejects_unrelated_non_unknown_state_without_evidence(normalized_time, bazi_facts, astrology_facts):
+    from dataclasses import replace
+
+    from destiny_personality.core_destiny_profile import build_core_destiny_profile
+    from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
+
+    mapping = {
+        "mapping_candidate_id": "MAP-1",
+        "primitive_id": "P001",
+        "source_system": "bazi",
+        "review_status": "approved",
+        "activation_status": "active",
+        "proposed_direction": {"state": "supported_high"},
+        "contexts": [],
+        "global_authority": True,
+        "canonical_fact_requirements": ["fact:admitted"],
+        "semantic_mechanism_refs": ["SMC-ADMITTED"],
+        "evidence_root_refs": ["ER-ADMITTED"],
+    }
+    profile = build_core_destiny_profile(
+        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
+        fact_assurance="capability_reported",
+        approved_mappings=(mapping,),
+    )
+    forged = replace(profile.primitive_states["P002"], state="supported_high")
+    malformed = replace(
+        profile,
+        primitive_states={**profile.primitive_states, "P002": forged},
+    )
+
+    errors = validate_core_destiny_profile(malformed)
+    assert "FORMAL_MAPPED_STATE_EVIDENCE_REQUIRED" in errors
+    assert "FORMAL_MAPPED_STATE_TRACEABILITY_INVALID" in errors

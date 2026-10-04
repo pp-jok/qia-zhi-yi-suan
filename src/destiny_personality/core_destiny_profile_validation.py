@@ -161,8 +161,6 @@ def _validate_semantic_state_assurance(profile: CoreDestinyProfile) -> Tuple[str
         return ()
     if profile.semantic_model_assurance != "limited_coverage_approved_mapping" or not candidates:
         return ("FORMAL_MAPPED_ASSURANCE_TRACEABILITY_REQUIRED",)
-    facts_by_primitive = _refs_by_primitive_values(candidates, "fact_refs")
-    rules_by_primitive = _refs_by_primitive(candidates)
     errors = []
     for candidate in candidates:
         state = profile.primitive_states.get(candidate.primitive_id)
@@ -178,19 +176,62 @@ def _validate_semantic_state_assurance(profile: CoreDestinyProfile) -> Tuple[str
     for primitive_id, state in profile.primitive_states.items():
         if state.state == "unknown":
             continue
-        if not set(state.evidence_refs).issubset(
-            facts_by_primitive.get(primitive_id, set())
-        ) or not set(state.supporting_candidates + state.counter_candidates).issubset(
-            rules_by_primitive.get(primitive_id, set())
+        matching_candidates = _matching_candidates_for_state(
+            candidates, primitive_id, state.state
+        )
+        if not state.evidence_refs or not _has_required_direction_refs(state):
+            errors.append("FORMAL_MAPPED_STATE_EVIDENCE_REQUIRED")
+        admitted_facts = {
+            reference
+            for candidate in matching_candidates
+            for reference in candidate.fact_refs
+        }
+        admitted_rules = {
+            reference
+            for candidate in matching_candidates
+            for reference in candidate.semantic_rule_refs
+        }
+        if (
+            not matching_candidates
+            or not set(state.evidence_refs).issubset(admitted_facts)
+            or not set(state.supporting_candidates + state.counter_candidates).issubset(
+                admitted_rules
+            )
         ):
             errors.append("FORMAL_MAPPED_STATE_TRACEABILITY_INVALID")
     return tuple(sorted(set(errors)))
 
 
-def _refs_by_primitive_values(
-    candidates: Iterable[PrimitiveCandidate], attribute: str
-) -> dict:
-    refs = {}
-    for candidate in candidates:
-        refs.setdefault(candidate.primitive_id, set()).update(getattr(candidate, attribute))
-    return refs
+def _matching_candidates_for_state(
+    candidates: Iterable[PrimitiveCandidate], primitive_id: str, state: str
+) -> Tuple[PrimitiveCandidate, ...]:
+    primitive_candidates = tuple(
+        candidate for candidate in candidates if candidate.primitive_id == primitive_id
+    )
+    high = tuple(
+        candidate
+        for candidate in primitive_candidates
+        if candidate.direction in {"high", "supported_high"}
+    )
+    low = tuple(
+        candidate
+        for candidate in primitive_candidates
+        if candidate.direction in {"low", "supported_low"}
+    )
+    if state == "supported_high":
+        return high
+    if state == "supported_low":
+        return low
+    if state in {"mixed", "context_differentiated"}:
+        return high + low
+    return ()
+
+
+def _has_required_direction_refs(state: PrimitiveState) -> bool:
+    if state.state == "supported_high":
+        return bool(state.supporting_candidates)
+    if state.state == "supported_low":
+        return bool(state.counter_candidates)
+    if state.state in {"mixed", "context_differentiated"}:
+        return bool(state.supporting_candidates and state.counter_candidates)
+    return False
