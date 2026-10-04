@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+import yaml
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -66,3 +67,40 @@ def test_manifest_loader_fails_closed_for_malformed_coverage(tmp_path: Path) -> 
 
     with pytest.raises(ValueError, match="RELEASE_MANIFEST_INVALID"):
         load_release_manifest(malformed)
+
+
+@pytest.mark.parametrize(
+    ("primitive_id", "field", "value"),
+    (
+        (
+            "P001",
+            "system_closures",
+            {
+                "bazi": "CLOSED_UNDER_CURRENT_HELLENISTIC_METHODOLOGY",
+                "astrology": "NO_CURRENT_DEFENSIBLE_MAPPING",
+            },
+        ),
+        ("P004", "final_status", "CLOSED_NO_DEFENSIBLE_CONSTRUCT_UNDER_REVIEWED_ASSETS"),
+    ),
+)
+def test_manifest_loader_rejects_tampered_system_closure_semantics(
+    tmp_path: Path, primitive_id: str, field: str, value: object
+) -> None:
+    from destiny_personality.release_manifest import (
+        load_release_manifest,
+        release_manifest_path,
+    )
+
+    payload = yaml.safe_load(release_manifest_path().read_text(encoding="utf-8"))
+    payload["core_primitives"][primitive_id][field] = value
+    tampered = tmp_path / "primitive_coverage_v1.yaml"
+    tampered.write_text(yaml.safe_dump(payload), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="RELEASE_MANIFEST_INVALID"):
+        load_release_manifest(tampered)
+
+
+def test_release_manifest_asset_is_declared_for_wheel_packaging() -> None:
+    pyproject = (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+
+    assert '"release_assets/v1/*.yaml"' in pyproject

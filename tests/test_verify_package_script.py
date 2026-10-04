@@ -64,3 +64,12 @@ def test_package_verifier_covers_calculation_contract_public_api_and_cli() -> No
     assert '"validate-calculation-contracts"' in script
     assert "CONFIG_GAP | canonical_fact_vocabulary_v1.yaml" in script
     assert '"--force-reinstall"' in script
+
+
+def test_package_verifier_loads_the_packaged_release_manifest() -> None:
+    script = (Path(__file__).resolve().parents[1] / "scripts" / "verify_package.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "from destiny_personality.release_manifest import" in script
+    assert "load_release_manifest" in script

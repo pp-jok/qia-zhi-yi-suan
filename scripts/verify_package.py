@@ -112,7 +112,13 @@ def main() -> int:
                 "build_calculation_bundle_fingerprint; "
                 "from destiny_personality.canonical_bazi_relations import "
                 "load_canonical_bazi_relation_policy; "
-                "load_canonical_bazi_relation_policy()",
+                "from destiny_personality.release_manifest import "
+                "load_release_manifest; "
+                "load_canonical_bazi_relation_policy(); "
+                "manifest = load_release_manifest(); "
+                "assert len(manifest.core_primitives) == 6; "
+                "assert all(item.resolver_capability == 'unknown' "
+                "for item in manifest.core_primitives.values())",
             ]
         )
         run([cli, "validate-config", config_dir])

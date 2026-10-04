@@ -15,6 +15,25 @@ _TERMINAL_STATUSES = frozenset(
         "CLOSED_SYSTEM_SPECIFIC_RESEARCH",
     }
 )
+_CLOSED_UNDER_REVIEWED_ASSETS = "CLOSED_NO_DEFENSIBLE_CONSTRUCT_UNDER_REVIEWED_ASSETS"
+_P004_CLOSURE = "CLOSED_SYSTEM_SPECIFIC_RESEARCH"
+_NO_CURRENT_DEFENSIBLE_MAPPING = "NO_CURRENT_DEFENSIBLE_MAPPING"
+_EXPECTED_FINAL_STATUS = {
+    primitive_id: _CLOSED_UNDER_REVIEWED_ASSETS
+    for primitive_id in CORE_PRIMITIVE_IDS - {"P004"}
+}
+_EXPECTED_FINAL_STATUS["P004"] = _P004_CLOSURE
+_EXPECTED_SYSTEM_CLOSURES = {
+    primitive_id: {
+        "bazi": _NO_CURRENT_DEFENSIBLE_MAPPING,
+        "astrology": _NO_CURRENT_DEFENSIBLE_MAPPING,
+    }
+    for primitive_id in CORE_PRIMITIVE_IDS - {"P004"}
+}
+_EXPECTED_SYSTEM_CLOSURES["P004"] = {
+    "astrology": "CLOSED_UNDER_CURRENT_HELLENISTIC_METHODOLOGY",
+    "bazi": "DEFERRED_WITH_REASON:METHOD_RESEARCH_SATURATED",
+}
 
 
 @dataclass(frozen=True)
@@ -87,7 +106,11 @@ def _parse_primitive_closure(primitive_id: str, payload: object) -> PrimitiveClo
     if not isinstance(payload, dict):
         raise ValueError("RELEASE_MANIFEST_INVALID")
     final_status = payload.get("final_status")
-    if final_status not in _TERMINAL_STATUSES or payload.get("resolver_capability") != "unknown":
+    if (
+        final_status not in _TERMINAL_STATUSES
+        or final_status != _EXPECTED_FINAL_STATUS[primitive_id]
+        or payload.get("resolver_capability") != "unknown"
+    ):
         raise ValueError("RELEASE_MANIFEST_INVALID")
     primary_evidence_refs = _string_tuple(payload.get("primary_evidence_refs"))
     mapping_refs = _string_tuple(payload.get("mapping_refs"))
@@ -95,9 +118,7 @@ def _parse_primitive_closure(primitive_id: str, payload: object) -> PrimitiveClo
     if primary_evidence_refs or mapping_refs:
         raise ValueError("RELEASE_MANIFEST_INVALID")
     system_closures = payload.get("system_closures")
-    if not isinstance(system_closures, dict) or set(system_closures) != {"bazi", "astrology"}:
-        raise ValueError("RELEASE_MANIFEST_INVALID")
-    if not all(isinstance(status, str) and status for status in system_closures.values()):
+    if system_closures != _EXPECTED_SYSTEM_CLOSURES[primitive_id]:
         raise ValueError("RELEASE_MANIFEST_INVALID")
     report_ref = payload.get("research_report_ref")
     if not isinstance(report_ref, str) or not report_ref:

@@ -22,6 +22,7 @@ where = ["src"]
 destiny_personality = [
     "candidate_assets/core-profile-v1/*.yaml",
     "canonical_assets/calculation-v1/*.yaml",
+    "release_assets/v1/*.yaml",
 ]
 
 [tool.pytest.ini_options]
