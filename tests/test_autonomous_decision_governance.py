@@ -126,3 +126,28 @@ def test_decision_binding_revalidates_a_forged_decision_dataclass() -> None:
             asset_id="TEST-ASSET-V1",
             asset_fingerprint="sha256:test-fingerprint",
         )
+
+
+def test_v040_release_decision_is_bound_to_audited_implementation_snapshot() -> None:
+    registry = load_autonomous_decisions(PROJECT_ROOT)
+    decision = next(
+        item
+        for item in registry.records
+        if item.asset_id == "QIA-ZHI-YI-SUAN-V0.4.0-RELEASE-CANDIDATE"
+    )
+
+    assert decision.outcome == "PASS"
+    assert decision.asset_fingerprint == (
+        "git-commit-sha1:25787d45ceaeab26130630d6d88c6d54754006b3"
+    )
+    assert decision.decision_ref == (
+        "docs/governance/decisions/auto-release-v0.4.0.md"
+    )
+    assert {
+        "tests/test_release_end_to_end.py",
+        "tests/test_verify_package_script.py",
+        "tests/test_core_destiny_profile.py",
+        "tests/test_skill_package.py",
+    }.issubset(decision.test_refs)
+    assert (PROJECT_ROOT / decision.decision_ref).is_file()
+    assert (PROJECT_ROOT / "docs/reviews/autonomous-completion-final-report.md").is_file()
