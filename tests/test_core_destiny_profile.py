@@ -135,3 +135,65 @@ def test_mapped_semantic_assurance_requires_traceable_admitted_candidates(normal
     assert "FORMAL_MAPPED_ASSURANCE_TRACEABILITY_REQUIRED" in validate_core_destiny_profile(
         replace(profile, semantic_model_assurance="limited_coverage_approved_mapping")
     )
+
+
+def test_unknown_only_profile_rejects_forged_supported_high_state(normalized_time, bazi_facts, astrology_facts):
+    from dataclasses import replace
+
+    from destiny_personality.core_destiny_profile import build_core_destiny_profile
+    from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
+
+    profile = build_core_destiny_profile(
+        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
+        fact_assurance="capability_reported",
+    )
+    forged = replace(
+        profile.primitive_states["P001"],
+        state="supported_high",
+        evidence_refs=("fact:forged",),
+        supporting_candidates=("SMC-FORGED",),
+        resolution_rule_ref="release-state-resolver-v1:approved-active-mapping",
+    )
+    malformed = replace(
+        profile,
+        primitive_states={**profile.primitive_states, "P001": forged},
+    )
+
+    assert "FORMAL_UNKNOWN_ONLY_STATE_INVALID" in validate_core_destiny_profile(malformed)
+
+
+def test_mapped_non_unknown_state_rejects_unadmitted_facts_and_rules(normalized_time, bazi_facts, astrology_facts):
+    from dataclasses import replace
+
+    from destiny_personality.core_destiny_profile import build_core_destiny_profile
+    from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
+
+    mapping = {
+        "mapping_candidate_id": "MAP-1",
+        "primitive_id": "P001",
+        "source_system": "bazi",
+        "review_status": "approved",
+        "activation_status": "active",
+        "proposed_direction": {"state": "supported_high"},
+        "contexts": [],
+        "global_authority": True,
+        "canonical_fact_requirements": ["fact:admitted"],
+        "semantic_mechanism_refs": ["SMC-ADMITTED"],
+        "evidence_root_refs": ["ER-ADMITTED"],
+    }
+    profile = build_core_destiny_profile(
+        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
+        fact_assurance="capability_reported",
+        approved_mappings=(mapping,),
+    )
+    forged = replace(
+        profile.primitive_states["P001"],
+        evidence_refs=("fact:forged",),
+        supporting_candidates=("SMC-FORGED",),
+    )
+    malformed = replace(
+        profile,
+        primitive_states={**profile.primitive_states, "P001": forged},
+    )
+
+    assert "FORMAL_MAPPED_STATE_TRACEABILITY_INVALID" in validate_core_destiny_profile(malformed)

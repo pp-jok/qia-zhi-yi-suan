@@ -67,8 +67,7 @@ def validate_core_destiny_profile(profile: CoreDestinyProfile) -> Tuple[str, ...
         errors.append("FORMAL_DOWNSTREAM_UNTRACEABLE")
     if not profile.fact_packet_refs or not profile.audit_trail:
         errors.append("FORMAL_AUDIT_TRAIL_REQUIRED")
-    if not _semantic_assurance_is_traceable(profile):
-        errors.append("FORMAL_MAPPED_ASSURANCE_TRACEABILITY_REQUIRED")
+    errors.extend(_validate_semantic_state_assurance(profile))
     return tuple(sorted(set(errors)))
 
 
@@ -145,20 +144,53 @@ def _refs_by_primitive(candidates: Iterable[PrimitiveCandidate]) -> dict:
     return refs
 
 
-def _semantic_assurance_is_traceable(profile: CoreDestinyProfile) -> bool:
+def _validate_semantic_state_assurance(profile: CoreDestinyProfile) -> Tuple[str, ...]:
     candidates = profile.bazi_primitive_candidates + profile.astrology_primitive_candidates
     if profile.semantic_model_assurance == "limited_coverage_unknown_only":
-        return not candidates
+        if candidates:
+            return ("FORMAL_MAPPED_ASSURANCE_TRACEABILITY_REQUIRED",)
+        if any(
+            state.state != "unknown"
+            or state.evidence_refs
+            or state.supporting_candidates
+            or state.counter_candidates
+            or "approved-active-mapping" in state.resolution_rule_ref
+            for state in profile.primitive_states.values()
+        ):
+            return ("FORMAL_UNKNOWN_ONLY_STATE_INVALID",)
+        return ()
     if profile.semantic_model_assurance != "limited_coverage_approved_mapping" or not candidates:
-        return False
+        return ("FORMAL_MAPPED_ASSURANCE_TRACEABILITY_REQUIRED",)
+    facts_by_primitive = _refs_by_primitive_values(candidates, "fact_refs")
+    rules_by_primitive = _refs_by_primitive(candidates)
+    errors = []
     for candidate in candidates:
         state = profile.primitive_states.get(candidate.primitive_id)
         if state is None:
-            return False
-        if not set(candidate.fact_refs).issubset(set(state.evidence_refs)):
-            return False
-        if not set(candidate.semantic_rule_refs).issubset(
+            errors.append("FORMAL_MAPPED_ASSURANCE_TRACEABILITY_REQUIRED")
+            continue
+        if not set(candidate.fact_refs).issubset(set(state.evidence_refs)) or not set(
+            candidate.semantic_rule_refs
+        ).issubset(
             set(state.supporting_candidates + state.counter_candidates)
         ):
-            return False
-    return True
+            errors.append("FORMAL_MAPPED_ASSURANCE_TRACEABILITY_REQUIRED")
+    for primitive_id, state in profile.primitive_states.items():
+        if state.state == "unknown":
+            continue
+        if not set(state.evidence_refs).issubset(
+            facts_by_primitive.get(primitive_id, set())
+        ) or not set(state.supporting_candidates + state.counter_candidates).issubset(
+            rules_by_primitive.get(primitive_id, set())
+        ):
+            errors.append("FORMAL_MAPPED_STATE_TRACEABILITY_INVALID")
+    return tuple(sorted(set(errors)))
+
+
+def _refs_by_primitive_values(
+    candidates: Iterable[PrimitiveCandidate], attribute: str
+) -> dict:
+    refs = {}
+    for candidate in candidates:
+        refs.setdefault(candidate.primitive_id, set()).update(getattr(candidate, attribute))
+    return refs
