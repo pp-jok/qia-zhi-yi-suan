@@ -135,6 +135,20 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _write_release_report(output_path: Path, report: object) -> None:
+    """Persist a completed release report while preserving CLI error semantics."""
+
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            json.dumps(asdict(report), ensure_ascii=False, indent=2, sort_keys=True)
+            + "\n",
+            encoding="utf-8",
+        )
+    except OSError as error:
+        raise ValueError("RELEASE_REPORT_WRITE_FAILED") from error
+
+
 def _runtime_config_summary(config) -> dict:
     return {
         "status": "ok",
@@ -316,12 +330,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             )
             plan = build_release_report_plan(profile, args.mode)
             report = render_release_report(profile, plan)
-            args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(
-                json.dumps(asdict(report), ensure_ascii=False, indent=2, sort_keys=True)
-                + "\n",
-                encoding="utf-8",
-            )
+            _write_release_report(args.output, report)
             summary = {
                 "status": "ok",
                 "output": str(args.output),

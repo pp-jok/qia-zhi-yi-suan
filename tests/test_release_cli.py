@@ -83,3 +83,25 @@ def test_cli_rejects_unqualified_facts(tmp_path, capsys):
         "--mode", "concise-portrait-v1", "--output", str(tmp_path / "output.json"),
     ]) == 2
     assert "DETERMINISTIC_FACTS_SCHEMA_INVALID" in capsys.readouterr().err
+
+
+def test_cli_reports_a_controlled_error_when_output_is_a_directory(
+    tmp_path, normalized_time, bazi_facts, astrology_facts, capsys
+):
+    from destiny_personality.cli import main
+
+    facts, payload = _facts_payload(normalized_time, bazi_facts, astrology_facts)
+    facts_path = tmp_path / "facts.json"
+    qualification_path = tmp_path / "qualification.json"
+    output_path = tmp_path / "report-directory"
+    facts_path.write_text(json.dumps(payload), encoding="utf-8")
+    qualification_path.write_text(json.dumps(_qualification(facts)), encoding="utf-8")
+    output_path.mkdir()
+
+    assert main([
+        "build-release-report", str(facts_path), "--qualification", str(qualification_path),
+        "--mode", "concise-portrait-v1", "--output", str(output_path),
+    ]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "RELEASE_REPORT_WRITE_FAILED" in captured.err
