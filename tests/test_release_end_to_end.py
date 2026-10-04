@@ -38,6 +38,8 @@ def _mappings(variant):
         return ()
     if variant == "high":
         return (_mapping("high", "supported_high", global_authority=True),)
+    if variant == "low":
+        return (_mapping("low", "supported_low", global_authority=True),)
     if variant == "contradiction":
         return (
             _mapping("high", "supported_high", global_authority=True),
@@ -116,6 +118,11 @@ def test_precomputed_facts_to_cdp_to_report(
     assert report["assurance"]["fact_assurance"] != report["assurance"]["semantic_model_assurance"]
     assert profile.primitive_states["P001"].state == scenario["expected_state"]
     assert all(item.salience_delta == 0 for item in profile.cross_system_alignment)
+    if scenario["semantic_variant"] == "low":
+        low = profile.primitive_states["P001"]
+        assert low.evidence_refs == ("synthetic-fact:low",)
+        assert low.counter_candidates == ("release-mechanism:low",)
+        assert report["report"]["primitive_interpretations"][0]["state"] == "supported_low"
     if facts.normalized_time.fact_mode is FactMode.STABLE_ONLY:
         assert facts.bazi.hour_pillar is None
         assert facts.astrology.ascendant is None
@@ -128,7 +135,7 @@ def test_scenario_matrix_covers_required_release_cases():
         "known-time-zero-coverage", "unknown-hour-stable-only", "time-boundary",
         "timezone-normalization", "dst-normalization", "diverse-bazi-structure",
         "diverse-astrology-structure", "test-only-high-coverage", "contradiction",
-        "context-differentiation",
+        "test-only-low-coverage", "context-differentiation",
     }
 
 

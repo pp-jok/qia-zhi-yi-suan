@@ -32,6 +32,10 @@ scenarios:
     fact_variant: known_time
     semantic_variant: high
     expected_state: supported_high
+  - id: test-only-low-coverage
+    fact_variant: known_time
+    semantic_variant: low
+    expected_state: supported_low
   - id: contradiction
     fact_variant: known_time
     semantic_variant: contradiction
