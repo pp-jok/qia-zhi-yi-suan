@@ -13,7 +13,13 @@ required_root_fields:
   - prohibited_use
   - provenance
   - review_status
-  - product_owner_decision_ref
+decision_authority:
+  legacy_human_required_field: product_owner_decision_ref
+  autonomous_required_fields:
+    - decision_authority
+    - decision_mode
+    - decision_ref
+  mutually_exclusive: true
 approved_root_review_status: approved
 allowed_review_statuses:
   - proposed
@@ -22,6 +28,7 @@ allowed_review_statuses:
   - deferred
 permitted_canonical_source_refs:
   - deterministic_facts.bazi.ten_gods
+  - deterministic_facts.bazi.relations
   - deterministic_facts.astrology.aspects
   - deterministic_facts.astrology.placements
 prohibited_origins:

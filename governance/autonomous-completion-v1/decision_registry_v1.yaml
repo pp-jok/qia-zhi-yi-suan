@@ -1,3 +1,21 @@
 schema_version: autonomous-completion-decision-registry-v1
 delegation_mode: AUTONOMOUS_COMPLETION
-decisions: []
+decisions:
+  - decision_id: AUTO-ER-BZ-RELATION-INSTANCE-V1
+    asset_id: ER-BZ-RELATION-INSTANCE-V1
+    asset_type: semantic_evidence_root
+    outcome: PASS
+    decision_authority: delegated_autonomous_executor
+    decision_mode: AUTONOMOUS_COMPLETION
+    decision_ref: docs/governance/decisions/auto-er-bz-relation-instance-v1.md
+    reason: The canonical relation family is identity-only and can be admitted as generic candidate evidence without approving Dao-Shi or any semantic conclusion.
+    evidence_refs:
+      - src/destiny_personality/canonical_assets/calculation-v1/bazi_relation_canonical_contract_v1.yaml
+      - docs/reviews/c2-sm-p004-bazi-neutral-relation-canonical-adoption-final-report.md
+    test_refs:
+      - tests/test_autonomous_evidence_root.py
+      - tests/test_semantic_evidence_roots.py
+      - tests/test_bazi_relation_canonical_contract.py
+    timestamp: "2026-10-04T00:00:00Z"
+    version: autonomous-completion-v1
+    asset_fingerprint: b1fa64f2ed4b1255ddd245d4fbdf5b33c660939bf43a5934b638256e5a0295c9
