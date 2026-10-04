@@ -1,17 +1,11 @@
 from dataclasses import asdict
 
-from destiny_personality.calculation import DeterministicChartFacts
-
-
-def test_release_report_is_traceable_to_profile_and_plan(
-    normalized_time, bazi_facts, astrology_facts
-):
+def test_release_report_is_traceable_to_profile_and_plan(qualified_facts):
     from destiny_personality.core_destiny_profile import build_core_destiny_profile
     from destiny_personality.release_renderer import render_release_report
     from destiny_personality.report_planner import build_release_report_plan
 
-    facts = DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts)
-    profile = build_core_destiny_profile(facts, fact_assurance="capability_reported")
+    profile = build_core_destiny_profile(qualified_facts)
     plan = build_release_report_plan(profile, "standard-portrait-v1")
     report = asdict(render_release_report(profile, plan))
 

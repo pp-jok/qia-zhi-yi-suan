@@ -4,7 +4,7 @@ The codec deliberately transports facts only. It does not accept birth input or
 invoke a chart calculation engine.
 """
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import date, datetime
 from decimal import Decimal
 from hashlib import sha256
@@ -32,10 +32,18 @@ from .calculation.models import (
 )
 
 
+_QUALIFIED_FACTS_SEAL = object()
+
+
 @dataclass(frozen=True)
 class QualifiedFacts:
+    """Qualification-bound facts created only by the public validated loader."""
+
     facts: DeterministicChartFacts
     fact_assurance: str
+    fact_fingerprint: str
+    qualification_fingerprint: str
+    _seal: object = field(repr=False, compare=False)
 
 
 def deterministic_facts_to_dict(facts: DeterministicChartFacts) -> dict:
@@ -165,7 +173,31 @@ def load_qualified_deterministic_facts(
         qualification = json.loads(qualification_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
         raise ValueError("FACT_QUALIFICATION_REQUIRED") from error
-    return QualifiedFacts(facts, derive_fact_assurance(facts, qualification))
+    return QualifiedFacts(
+        facts=facts,
+        fact_assurance=derive_fact_assurance(facts, qualification),
+        fact_fingerprint=deterministic_facts_fingerprint(facts),
+        qualification_fingerprint=sha256(
+            json.dumps(
+                qualification, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+            ).encode("utf-8")
+        ).hexdigest(),
+        _seal=_QUALIFIED_FACTS_SEAL,
+    )
+
+
+def require_qualified_facts(value: object) -> QualifiedFacts:
+    """Reject raw facts and caller-selected assurance at the formal boundary."""
+
+    if (
+        not isinstance(value, QualifiedFacts)
+        or value._seal is not _QUALIFIED_FACTS_SEAL
+        or value.fact_fingerprint != deterministic_facts_fingerprint(value.facts)
+        or value.fact_assurance not in {"capability_reported", "project_verified"}
+        or not value.qualification_fingerprint
+    ):
+        raise ValueError("QUALIFIED_FACTS_REQUIRED")
+    return value
 
 
 def deterministic_facts_fingerprint(facts: DeterministicChartFacts) -> str:

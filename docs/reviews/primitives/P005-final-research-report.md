@@ -1,6 +1,6 @@
 # P005 Final Research Closure
 
-Primitive: `P005` — Affect Regulation Orientation  
+Primitive: `P005` — Affect Regulation Orientation
 Terminal status: `CLOSED_NO_DEFENSIBLE_CONSTRUCT_UNDER_REVIEWED_ASSETS`
 
 ## Closure record

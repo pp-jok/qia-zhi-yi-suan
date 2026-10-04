@@ -1,6 +1,6 @@
 # P002 Final Research Closure
 
-Primitive: `P002` — Predictability Orientation  
+Primitive: `P002` — Predictability Orientation
 Terminal status: `CLOSED_NO_DEFENSIBLE_CONSTRUCT_UNDER_REVIEWED_ASSETS`
 
 ## Closure record

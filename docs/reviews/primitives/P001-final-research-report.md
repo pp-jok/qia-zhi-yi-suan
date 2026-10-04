@@ -1,6 +1,6 @@
 # P001 Final Research Closure
 
-Primitive: `P001` — Self-Directed Judgement  
+Primitive: `P001` — Self-Directed Judgement
 Terminal status: `CLOSED_NO_DEFENSIBLE_CONSTRUCT_UNDER_REVIEWED_ASSETS`
 
 ## Closure record

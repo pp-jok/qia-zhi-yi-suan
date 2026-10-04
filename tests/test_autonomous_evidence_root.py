@@ -154,7 +154,12 @@ def test_autonomous_root_fails_closed_when_registry_binding_is_forged(
         )
     )
     registry["decisions"] = copy.deepcopy(registry["decisions"])
-    registry["decisions"][0]["asset_id"] = "ER-FORGED"
+    decision = next(
+        item
+        for item in registry["decisions"]
+        if item["asset_id"] == "ER-BZ-RELATION-INSTANCE-V1"
+    )
+    decision["asset_id"] = "ER-FORGED"
     (governance / "decision_registry_v1.yaml").write_text(
         yaml.safe_dump(registry, sort_keys=False), encoding="utf-8"
     )
@@ -178,7 +183,12 @@ def test_autonomous_root_requires_a_passing_bound_decision(
         )
     )
     registry["decisions"] = copy.deepcopy(registry["decisions"])
-    registry["decisions"][0]["outcome"] = outcome
+    decision = next(
+        item
+        for item in registry["decisions"]
+        if item["asset_id"] == "ER-BZ-RELATION-INSTANCE-V1"
+    )
+    decision["outcome"] = outcome
     (governance / "decision_registry_v1.yaml").write_text(
         yaml.safe_dump(registry, sort_keys=False), encoding="utf-8"
     )

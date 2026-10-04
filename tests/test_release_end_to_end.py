@@ -1,4 +1,5 @@
 from dataclasses import asdict, replace
+import json
 from pathlib import Path
 
 import pytest
@@ -90,17 +91,53 @@ def _facts_for_variant(base, variant):
     return DeterministicChartFacts(normalized, bazi, astrology)
 
 
-def _execute_precomputed_provider_flow(scenario, base_facts):
+def _qualify_precomputed_facts(facts, directory, scenario_id):
+    from destiny_personality.deterministic_facts_codec import (
+        deterministic_facts_fingerprint,
+        deterministic_facts_to_dict,
+        load_qualified_deterministic_facts,
+    )
+
+    payload = deterministic_facts_to_dict(facts)
+    payload.update({
+        "schema_version": "deterministic-facts-v1",
+        "fact_mode": facts.normalized_time.fact_mode.value,
+        "methodology_versions": {"bazi": facts.bazi.methodology_version, "astrology": facts.astrology.methodology_version},
+        "provenance_refs": ["synthetic-provider:" + scenario_id],
+        "validation_summary": {"structure": "passed"},
+    })
+    qualification = {
+        "schema_version": "fact-qualification-v1",
+        "fact_fingerprint": deterministic_facts_fingerprint(facts),
+        "qualification_status": "passed",
+        "derived_fact_assurance": "capability_reported",
+        "fact_contract_version": "deterministic-facts-v1",
+        "methodology_versions": payload["methodology_versions"],
+        "validation_refs": ["synthetic-validation:" + scenario_id],
+        "provenance_refs": ["synthetic-provenance:" + scenario_id],
+        "calculation_envelope_refs": ["synthetic-envelope:" + scenario_id],
+        "comparison": {"required": False, "status": "not_required"},
+        "validation_summary": {
+            "structure": "passed", "methodology": "passed", "provenance": "passed",
+            "internal_consistency": "passed", "time_scope": "passed",
+            "calculation_config": "not_available",
+        },
+    }
+    facts_path = directory / (scenario_id + "-facts.json")
+    qualification_path = directory / (scenario_id + "-qualification.json")
+    facts_path.write_text(json.dumps(payload), encoding="utf-8")
+    qualification_path.write_text(json.dumps(qualification), encoding="utf-8")
+    return load_qualified_deterministic_facts(facts_path, qualification_path)
+
+
+def _execute_precomputed_provider_flow(scenario, base_facts, directory):
     from destiny_personality.core_destiny_profile import build_core_destiny_profile
     from destiny_personality.release_renderer import render_release_report
     from destiny_personality.report_planner import build_release_report_plan
 
     facts = _facts_for_variant(base_facts, scenario["fact_variant"])
-    profile = build_core_destiny_profile(
-        facts,
-        fact_assurance="capability_reported",
-        approved_mappings=_mappings(scenario["semantic_variant"]),
-    )
+    qualified = _qualify_precomputed_facts(facts, directory, scenario["id"])
+    profile = build_core_destiny_profile(qualified)
     plan = build_release_report_plan(profile, "standard-portrait-v1")
     report = render_release_report(profile, plan)
     return facts, profile, asdict(report)
@@ -108,21 +145,22 @@ def _execute_precomputed_provider_flow(scenario, base_facts):
 
 @pytest.mark.parametrize("scenario", _scenarios(), ids=lambda item: item["id"])
 def test_precomputed_facts_to_cdp_to_report(
-    scenario, normalized_time, bazi_facts, astrology_facts
+    scenario, normalized_time, bazi_facts, astrology_facts, tmp_path
 ):
     base = DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts)
 
-    facts, profile, report = _execute_precomputed_provider_flow(scenario, base)
+    facts, profile, report = _execute_precomputed_provider_flow(scenario, base, tmp_path)
 
     assert report["audit_refs"]
     assert report["assurance"]["fact_assurance"] != report["assurance"]["semantic_model_assurance"]
     assert profile.primitive_states["P001"].state == scenario["expected_state"]
     assert all(item.salience_delta == 0 for item in profile.cross_system_alignment)
-    if scenario["semantic_variant"] == "low":
-        low = profile.primitive_states["P001"]
-        assert low.evidence_refs == ("synthetic-fact:low",)
-        assert low.counter_candidates == ("release-mechanism:low",)
-        assert report["report"]["primitive_interpretations"][0]["state"] == "supported_low"
+    if scenario["semantic_variant"] != "zero":
+        from destiny_personality.core_destiny_profile import build_core_destiny_profile
+
+        with pytest.raises(TypeError):
+            build_core_destiny_profile(facts, approved_mappings=_mappings(scenario["semantic_variant"]))
+        assert report["report"]["primitive_interpretations"] == ()
     if facts.normalized_time.fact_mode is FactMode.STABLE_ONLY:
         assert facts.bazi.hour_pillar is None
         assert facts.astrology.ascendant is None
@@ -140,13 +178,13 @@ def test_scenario_matrix_covers_required_release_cases():
 
 
 def test_repeat_execution_is_normalized_equivalent(
-    normalized_time, bazi_facts, astrology_facts
+    normalized_time, bazi_facts, astrology_facts, tmp_path
 ):
     scenario = _scenarios()[0]
     base = DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts)
 
-    first = _execute_precomputed_provider_flow(scenario, base)
-    second = _execute_precomputed_provider_flow(scenario, base)
+    first = _execute_precomputed_provider_flow(scenario, base, tmp_path)
+    second = _execute_precomputed_provider_flow(scenario, base, tmp_path)
 
     assert first[1] == second[1]
     assert first[2] == second[2]

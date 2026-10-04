@@ -1,6 +1,6 @@
 # Semantic Core Final Coverage Report
 
-Release scope: `autonomous-limited-coverage-v1`  
+Release scope: `autonomous-limited-coverage-v1`
 Machine-readable authority: `src/destiny_personality/release_assets/v1/primitive_coverage_v1.yaml`
 
 ## Coverage outcome

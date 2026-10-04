@@ -1,6 +1,6 @@
 # Semantic Asset Master Backlog
 
-Status date: 2026-10-04  
+Status date: 2026-10-04
 Scope: release asset work after the v1 Core lifecycle closure.
 
 ## Closed in this release

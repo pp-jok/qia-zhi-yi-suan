@@ -1,6 +1,6 @@
 # P006 Final Research Closure
 
-Primitive: `P006` — Organizational Orientation  
+Primitive: `P006` — Organizational Orientation
 Terminal status: `CLOSED_NO_DEFENSIBLE_CONSTRUCT_UNDER_REVIEWED_ASSETS`
 
 ## Closure record

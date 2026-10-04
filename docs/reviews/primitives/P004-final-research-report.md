@@ -1,6 +1,6 @@
 # P004 Final Research Closure
 
-Primitive: `P004` — action initiation and advancement  
+Primitive: `P004` — action initiation and advancement
 Scope: current reviewed evidence and Hellenistic methodology only
 
 ## Terminal evidence states

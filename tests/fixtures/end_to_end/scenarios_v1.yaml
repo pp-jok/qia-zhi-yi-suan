@@ -31,16 +31,20 @@ scenarios:
   - id: test-only-high-coverage
     fact_variant: known_time
     semantic_variant: high
-    expected_state: supported_high
+    expected_state: unknown
+    rejected_test_only_state: supported_high
   - id: test-only-low-coverage
     fact_variant: known_time
     semantic_variant: low
-    expected_state: supported_low
+    expected_state: unknown
+    rejected_test_only_state: supported_low
   - id: contradiction
     fact_variant: known_time
     semantic_variant: contradiction
-    expected_state: mixed
+    expected_state: unknown
+    rejected_test_only_state: mixed
   - id: context-differentiation
     fact_variant: known_time
     semantic_variant: context
-    expected_state: context_differentiated
+    expected_state: unknown
+    rejected_test_only_state: context_differentiated

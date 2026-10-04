@@ -325,9 +325,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             qualified = load_qualified_deterministic_facts(
                 args.facts, args.qualification
             )
-            profile = build_core_destiny_profile(
-                qualified.facts, fact_assurance=qualified.fact_assurance
-            )
+            profile = build_core_destiny_profile(qualified)
             plan = build_release_report_plan(profile, args.mode)
             report = render_release_report(profile, plan)
             _write_release_report(args.output, report)

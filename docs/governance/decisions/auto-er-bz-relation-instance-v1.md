@@ -1,8 +1,8 @@
 # Delegated Decision: ER-BZ-RELATION-INSTANCE-V1
 
-Decision ID: `AUTO-ER-BZ-RELATION-INSTANCE-V1`  
-Authority: `delegated_autonomous_executor`  
-Mode: `AUTONOMOUS_COMPLETION`  
+Decision ID: `AUTO-ER-BZ-RELATION-INSTANCE-V1`
+Authority: `delegated_autonomous_executor`
+Mode: `AUTONOMOUS_COMPLETION`
 Outcome: `PASS`
 
 The approved asset is limited to the canonical identity of an observed Bazi

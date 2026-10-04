@@ -4,6 +4,7 @@ from typing import Iterable, Tuple
 
 from .core_profile_models import CoreDestinyProfile, PrimitiveCandidate, PrimitiveState
 from .release_manifest import CORE_PRIMITIVE_IDS
+from .release_mapping_bundle import load_active_release_mapping_bundle
 
 
 _ALLOWED_STATES = {
@@ -21,6 +22,7 @@ _ALLOWED_ALIGNMENT_STATUSES = {"validation", "unresolved", "non_comparable"}
 _ALLOWED_DIRECTION_RELATIONS = {
     "agreement",
     "opposed",
+    "internal_contradiction",
     "insufficient_approved_evidence",
 }
 
@@ -31,7 +33,7 @@ def validate_core_destiny_profile(profile: CoreDestinyProfile) -> Tuple[str, ...
     errors = []
     if profile.schema_version != "core-destiny-profile-v1":
         errors.append("FORMAL_CDP_SCHEMA_INVALID")
-    if profile.fact_assurance not in {"none", "capability_reported", "project_verified"}:
+    if profile.fact_assurance not in {"capability_reported", "project_verified"}:
         errors.append("FORMAL_FACT_ASSURANCE_INVALID")
     if (
         profile.semantic_model_assurance not in _ALLOWED_ASSURANCE
@@ -68,6 +70,7 @@ def validate_core_destiny_profile(profile: CoreDestinyProfile) -> Tuple[str, ...
     if not profile.fact_packet_refs or not profile.audit_trail:
         errors.append("FORMAL_AUDIT_TRAIL_REQUIRED")
     errors.extend(_validate_semantic_state_assurance(profile))
+    errors.extend(_validate_release_bundle_binding(profile))
     return tuple(sorted(set(errors)))
 
 
@@ -113,7 +116,7 @@ def _validate_alignments(profile: CoreDestinyProfile) -> Tuple[str, ...]:
             )
             or (
                 alignment.status == "unresolved"
-                and alignment.direction_relation != "opposed"
+                and alignment.direction_relation not in {"opposed", "internal_contradiction"}
             )
             or (
                 alignment.status == "non_comparable"
@@ -142,6 +145,28 @@ def _refs_by_primitive(candidates: Iterable[PrimitiveCandidate]) -> dict:
     for candidate in candidates:
         refs.setdefault(candidate.primitive_id, set()).update(candidate.semantic_rule_refs)
     return refs
+
+
+def _validate_release_bundle_binding(profile: CoreDestinyProfile) -> Tuple[str, ...]:
+    bundle = load_active_release_mapping_bundle()
+    versions = dict(profile.semantic_model_versions)
+    expected_audit = {
+        "active_mapping_bundle:" + bundle.bundle_id,
+        "active_mapping_bundle_fingerprint:" + bundle.asset_fingerprint,
+    }
+    if (
+        versions.get("active_mapping_bundle") != bundle.asset_fingerprint
+        or not expected_audit.issubset(set(profile.audit_trail))
+    ):
+        return ("FORMAL_RELEASE_MAPPING_BUNDLE_BINDING_INVALID",)
+    if not bundle.mappings and (
+        profile.bazi_primitive_candidates
+        or profile.astrology_primitive_candidates
+        or profile.semantic_model_assurance != "limited_coverage_unknown_only"
+        or any(state.state != "unknown" for state in profile.primitive_states.values())
+    ):
+        return ("FORMAL_RELEASE_MAPPING_BUNDLE_COVERAGE_INVALID",)
+    return ()
 
 
 def _validate_semantic_state_assurance(profile: CoreDestinyProfile) -> Tuple[str, ...]:

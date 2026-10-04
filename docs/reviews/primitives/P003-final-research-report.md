@@ -1,6 +1,6 @@
 # P003 Final Research Closure
 
-Primitive: `P003` — Relational Responsiveness  
+Primitive: `P003` — Relational Responsiveness
 Terminal status: `CLOSED_NO_DEFENSIBLE_CONSTRUCT_UNDER_REVIEWED_ASSETS`
 
 ## Closure record

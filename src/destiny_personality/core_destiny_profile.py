@@ -1,38 +1,33 @@
 """Builder for the formal, limited-coverage Core Destiny Profile."""
 
 from hashlib import sha256
-from typing import Iterable, Optional
-
 from .core_profile_models import CoreDestinyProfile, PrimitiveCandidate
-from .deterministic_facts_codec import deterministic_facts_fingerprint
-from .release_manifest import ReleaseManifest, load_release_manifest
-from .release_semantics import align_release_states, release_mapping_candidates, resolve_release_primitive_states
+from .deterministic_facts_codec import QualifiedFacts, require_qualified_facts
+from .release_manifest import load_release_manifest
+from .release_mapping_bundle import load_active_release_mapping_bundle
+from .release_semantics import align_release_candidate_sets, release_mapping_candidates, resolve_release_primitive_states
 
 
 _SEMANTIC_ASSURANCE_UNKNOWN_ONLY = "limited_coverage_unknown_only"
-_SEMANTIC_ASSURANCE_MAPPED = "limited_coverage_approved_mapping"
 
 
 def build_core_destiny_profile(
-    facts: object,
-    *,
-    fact_assurance: str,
-    approved_mappings: Iterable[object] = (),
-    manifest: Optional[ReleaseManifest] = None,
+    qualified_facts: QualifiedFacts,
 ) -> CoreDestinyProfile:
-    """Build a formal profile from facts and explicitly approved active mappings only.
+    """Build from loader-produced qualified facts and the governed release bundle.
 
-    The default release asset has no approved mappings.  That is a valid result:
+    The v0.4.0 release asset has no approved mappings.  That is a valid result:
     the profile remains complete, carries six ``unknown`` primitive states, and
     records its semantic limitation instead of inventing a conclusion.
     """
 
-    if fact_assurance not in {"none", "capability_reported", "project_verified"}:
-        raise ValueError("FACT_ASSURANCE_INVALID")
-    release_manifest = manifest or load_release_manifest()
-    mapping_items = tuple(approved_mappings)
-    candidates = release_mapping_candidates(mapping_items, release_manifest)
-    primitive_states = resolve_release_primitive_states(mapping_items, release_manifest)
+    qualified = require_qualified_facts(qualified_facts)
+    facts = qualified.facts
+    fact_assurance = qualified.fact_assurance
+    release_manifest = load_release_manifest()
+    mapping_bundle = load_active_release_mapping_bundle()
+    candidates = release_mapping_candidates(mapping_bundle, release_manifest)
+    primitive_states = resolve_release_primitive_states(mapping_bundle, release_manifest)
     bazi_candidates = tuple(
         candidate for candidate in candidates if candidate.source_system == "bazi"
     )
@@ -40,17 +35,14 @@ def build_core_destiny_profile(
         candidate for candidate in candidates if candidate.source_system == "astrology"
     )
     alignments = tuple(
-        align_release_states(
-            _first_for_primitive(bazi_candidates, primitive_id),
-            _first_for_primitive(astrology_candidates, primitive_id),
+        align_release_candidate_sets(
+            tuple(item for item in bazi_candidates if item.primitive_id == primitive_id),
+            tuple(item for item in astrology_candidates if item.primitive_id == primitive_id),
             primitive_id=primitive_id,
         )
         for primitive_id in sorted(release_manifest.core_primitives)
     )
-    fact_fingerprint = deterministic_facts_fingerprint(facts)
-    semantic_assurance = (
-        _SEMANTIC_ASSURANCE_MAPPED if candidates else _SEMANTIC_ASSURANCE_UNKNOWN_ONLY
-    )
+    fact_fingerprint = qualified.fact_fingerprint
     profile_id_input = "{}:{}:{}".format(
         fact_fingerprint,
         release_manifest.release_id,
@@ -63,8 +55,6 @@ def build_core_destiny_profile(
     ]
     if not candidates:
         limitations.append("no approved active mappings are available in this release")
-    if fact_assurance == "none":
-        limitations.append("fact assurance is none; semantic conclusions remain unavailable")
     unresolved_questions = tuple(
         "{}: no approved active mapping resolves this primitive".format(primitive_id)
         for primitive_id, state in sorted(primitive_states.items())
@@ -75,9 +65,10 @@ def build_core_destiny_profile(
         core_profile_id="cdp-" + sha256(profile_id_input.encode("utf-8")).hexdigest()[:16],
         fact_packet_refs=("deterministic-facts:" + fact_fingerprint,),
         fact_assurance=fact_assurance,
-        semantic_model_assurance=semantic_assurance,
+        semantic_model_assurance=_SEMANTIC_ASSURANCE_UNKNOWN_ONLY,
         semantic_model_versions=(
             ("release_manifest", release_manifest.schema_version),
+            ("active_mapping_bundle", mapping_bundle.asset_fingerprint),
             ("release_semantics", "release-semantics-v1"),
         ),
         bazi_primitive_candidates=bazi_candidates,
@@ -103,19 +94,13 @@ def build_core_destiny_profile(
         audit_trail=(
             "release_manifest:" + release_manifest.release_id,
             "release_manifest_schema:" + release_manifest.schema_version,
+            "active_mapping_bundle:" + mapping_bundle.bundle_id,
+            "active_mapping_bundle_fingerprint:" + mapping_bundle.asset_fingerprint,
             "fact_fingerprint:" + fact_fingerprint,
+            "qualification_fingerprint:" + qualified.qualification_fingerprint,
             "approved_active_mapping_count:" + str(len(candidates)),
             "formal_resolver:release-semantics-v1",
         ),
-    )
-
-
-def _first_for_primitive(
-    candidates: Iterable[PrimitiveCandidate], primitive_id: str
-) -> Optional[PrimitiveCandidate]:
-    return next(
-        (candidate for candidate in candidates if candidate.primitive_id == primitive_id),
-        None,
     )
 
 

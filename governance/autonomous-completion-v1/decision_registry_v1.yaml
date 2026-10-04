@@ -1,6 +1,23 @@
 schema_version: autonomous-completion-decision-registry-v1
 delegation_mode: AUTONOMOUS_COMPLETION
 decisions:
+  - decision_id: AUTO-RELEASE-MAPPING-BUNDLE-V1
+    asset_id: ACTIVE-RELEASE-MAPPING-BUNDLE-V1
+    asset_type: active_release_mapping_bundle
+    outcome: CLOSE_ZERO
+    decision_authority: delegated_autonomous_executor
+    decision_mode: AUTONOMOUS_COMPLETION
+    decision_ref: docs/governance/decisions/auto-release-mapping-bundle-v1.md
+    reason: No PRIMARY_EVIDENCE or Mapping is active; the formal release must bind to an explicit empty bundle and reject caller-supplied records.
+    evidence_refs:
+      - src/destiny_personality/release_assets/v1/primitive_coverage_v1.yaml
+      - candidates/mapping-v2/mapping_v2_candidate_registry_v1.yaml
+    test_refs:
+      - tests/test_release_mapping_bundle.py
+      - tests/test_core_destiny_profile.py
+    timestamp: "2026-10-04T00:00:00Z"
+    version: autonomous-completion-v1
+    asset_fingerprint: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945
   - decision_id: AUTO-ER-BZ-RELATION-INSTANCE-V1
     asset_id: ER-BZ-RELATION-INSTANCE-V1
     asset_type: semantic_evidence_root

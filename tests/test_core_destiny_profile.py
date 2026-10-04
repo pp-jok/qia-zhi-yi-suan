@@ -1,15 +1,14 @@
+from dataclasses import replace
+
 import pytest
 
 from destiny_personality.calculation import DeterministicChartFacts
 
 
-def test_formal_profile_is_complete_and_zero_safe(normalized_time, bazi_facts, astrology_facts):
+def test_formal_profile_is_complete_and_zero_safe(qualified_facts):
     from destiny_personality.core_destiny_profile import build_core_destiny_profile
 
-    profile = build_core_destiny_profile(
-        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
-        fact_assurance="capability_reported",
-    )
+    profile = build_core_destiny_profile(qualified_facts)
 
     assert profile.schema_version == "core-destiny-profile-v1"
     assert set(profile.primitive_states) == {"P001", "P002", "P003", "P004", "P005", "P006"}
@@ -24,19 +23,29 @@ def test_formal_profile_is_complete_and_zero_safe(normalized_time, bazi_facts, a
     assert profile.fate_themes == ()
     assert profile.archetype is None
     assert profile.fact_assurance != profile.semantic_model_assurance
+    assert dict(profile.semantic_model_versions)["active_mapping_bundle"]
 
 
-def test_formal_profile_codec_is_deterministic_and_round_trips(tmp_path, normalized_time, bazi_facts, astrology_facts):
+def test_formal_builder_rejects_raw_facts_and_caller_selected_assurance(
+    normalized_time, bazi_facts, astrology_facts
+):
+    from destiny_personality.core_destiny_profile import build_core_destiny_profile
+
+    raw = DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts)
+    with pytest.raises(ValueError, match="QUALIFIED_FACTS_REQUIRED"):
+        build_core_destiny_profile(raw)
+    with pytest.raises(TypeError):
+        build_core_destiny_profile(raw, fact_assurance="project_verified")
+
+
+def test_formal_profile_codec_is_deterministic_and_round_trips(tmp_path, qualified_facts):
     from destiny_personality.core_destiny_profile import build_core_destiny_profile
     from destiny_personality.core_destiny_profile_codec import (
         load_core_destiny_profile,
         write_core_destiny_profile,
     )
 
-    profile = build_core_destiny_profile(
-        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
-        fact_assurance="capability_reported",
-    )
+    profile = build_core_destiny_profile(qualified_facts)
     left = tmp_path / "left.json"
     right = tmp_path / "right.json"
     write_core_destiny_profile(profile, left)
@@ -46,189 +55,78 @@ def test_formal_profile_codec_is_deterministic_and_round_trips(tmp_path, normali
     assert load_core_destiny_profile(left) == profile
 
 
-def test_formal_profile_rejects_semantic_assurance_copied_from_fact_assurance(normalized_time, bazi_facts, astrology_facts):
-    from dataclasses import replace
-
+def test_formal_profile_rejects_semantic_assurance_copied_from_fact_assurance(
+    qualified_facts,
+):
     from destiny_personality.core_destiny_profile import build_core_destiny_profile
     from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
 
-    profile = build_core_destiny_profile(
-        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
-        fact_assurance="capability_reported",
-    )
-
+    profile = build_core_destiny_profile(qualified_facts)
     assert "FORMAL_SEMANTIC_ASSURANCE_SEPARATION_REQUIRED" in validate_core_destiny_profile(
         replace(profile, semantic_model_assurance="capability_reported")
     )
 
 
-def test_codec_rejects_candidate_rule_reference(normalized_time, bazi_facts, astrology_facts):
+def test_codec_rejects_candidate_rule_reference(qualified_facts):
     from destiny_personality.core_destiny_profile import build_core_destiny_profile
     from destiny_personality.core_destiny_profile_codec import core_destiny_profile_from_dict, core_destiny_profile_to_dict
 
-    profile = build_core_destiny_profile(
-        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
-        fact_assurance="capability_reported",
-    )
-    payload = core_destiny_profile_to_dict(profile)
+    payload = core_destiny_profile_to_dict(build_core_destiny_profile(qualified_facts))
     payload["primitive_states"]["P001"]["resolution_rule_ref"] = "candidate-rule-v1"
-
     with pytest.raises(ValueError, match="FORMAL_CANDIDATE_RULE_REF_PROHIBITED"):
         core_destiny_profile_from_dict(payload)
 
 
-def test_validator_rejects_duplicate_alignment_primitive_ids(normalized_time, bazi_facts, astrology_facts):
-    from dataclasses import replace
-
+def test_validator_rejects_duplicate_or_fabricated_alignment(qualified_facts):
     from destiny_personality.core_destiny_profile import build_core_destiny_profile
     from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
 
-    profile = build_core_destiny_profile(
-        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
-        fact_assurance="capability_reported",
-    )
+    profile = build_core_destiny_profile(qualified_facts)
     duplicated = replace(profile.cross_system_alignment[1], primitive_id="P001")
     malformed = replace(
         profile,
         cross_system_alignment=(profile.cross_system_alignment[0], duplicated)
         + profile.cross_system_alignment[2:],
     )
-
     assert "FORMAL_ALIGNMENT_PRIMITIVE_COVERAGE_INVALID" in validate_core_destiny_profile(malformed)
 
-
-def test_validator_rejects_fabricated_non_comparable_alignment_refs(normalized_time, bazi_facts, astrology_facts):
-    from dataclasses import replace
-
-    from destiny_personality.core_destiny_profile import build_core_destiny_profile
-    from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
-
-    profile = build_core_destiny_profile(
-        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
-        fact_assurance="capability_reported",
-    )
-    fabricated = replace(
-        profile.cross_system_alignment[0],
-        bazi_rule_refs=("SMC-FORGED",),
-    )
-    malformed = replace(
-        profile,
-        cross_system_alignment=(fabricated,) + profile.cross_system_alignment[1:],
-    )
-
+    fabricated = replace(profile.cross_system_alignment[0], bazi_rule_refs=("SMC-FORGED",))
+    malformed = replace(profile, cross_system_alignment=(fabricated,) + profile.cross_system_alignment[1:])
     errors = validate_core_destiny_profile(malformed)
     assert "FORMAL_ALIGNMENT_REFERENCE_INVALID" in errors
     assert "FORMAL_NON_COMPARABLE_ALIGNMENT_INVALID" in errors
 
 
-def test_mapped_semantic_assurance_requires_traceable_admitted_candidates(normalized_time, bazi_facts, astrology_facts):
-    from dataclasses import replace
-
+def test_current_release_rejects_mapped_or_non_unknown_profile(qualified_facts):
     from destiny_personality.core_destiny_profile import build_core_destiny_profile
     from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
 
-    profile = build_core_destiny_profile(
-        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
-        fact_assurance="capability_reported",
-    )
-
-    assert "FORMAL_MAPPED_ASSURANCE_TRACEABILITY_REQUIRED" in validate_core_destiny_profile(
-        replace(profile, semantic_model_assurance="limited_coverage_approved_mapping")
-    )
-
-
-def test_unknown_only_profile_rejects_forged_supported_high_state(normalized_time, bazi_facts, astrology_facts):
-    from dataclasses import replace
-
-    from destiny_personality.core_destiny_profile import build_core_destiny_profile
-    from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
-
-    profile = build_core_destiny_profile(
-        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
-        fact_assurance="capability_reported",
-    )
+    profile = build_core_destiny_profile(qualified_facts)
     forged = replace(
         profile.primitive_states["P001"],
         state="supported_high",
         evidence_refs=("fact:forged",),
         supporting_candidates=("SMC-FORGED",),
-        resolution_rule_ref="release-state-resolver-v1:approved-active-mapping",
     )
     malformed = replace(
         profile,
+        semantic_model_assurance="limited_coverage_approved_mapping",
         primitive_states={**profile.primitive_states, "P001": forged},
     )
-
-    assert "FORMAL_UNKNOWN_ONLY_STATE_INVALID" in validate_core_destiny_profile(malformed)
-
-
-def test_mapped_non_unknown_state_rejects_unadmitted_facts_and_rules(normalized_time, bazi_facts, astrology_facts):
-    from dataclasses import replace
-
-    from destiny_personality.core_destiny_profile import build_core_destiny_profile
-    from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
-
-    mapping = {
-        "mapping_candidate_id": "MAP-1",
-        "primitive_id": "P001",
-        "source_system": "bazi",
-        "review_status": "approved",
-        "activation_status": "active",
-        "proposed_direction": {"state": "supported_high"},
-        "contexts": [],
-        "global_authority": True,
-        "canonical_fact_requirements": ["fact:admitted"],
-        "semantic_mechanism_refs": ["SMC-ADMITTED"],
-        "evidence_root_refs": ["ER-ADMITTED"],
-    }
-    profile = build_core_destiny_profile(
-        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
-        fact_assurance="capability_reported",
-        approved_mappings=(mapping,),
-    )
-    forged = replace(
-        profile.primitive_states["P001"],
-        evidence_refs=("fact:forged",),
-        supporting_candidates=("SMC-FORGED",),
-    )
-    malformed = replace(
-        profile,
-        primitive_states={**profile.primitive_states, "P001": forged},
-    )
-
-    assert "FORMAL_MAPPED_STATE_TRACEABILITY_INVALID" in validate_core_destiny_profile(malformed)
-
-
-def test_mapped_profile_rejects_unrelated_non_unknown_state_without_evidence(normalized_time, bazi_facts, astrology_facts):
-    from dataclasses import replace
-
-    from destiny_personality.core_destiny_profile import build_core_destiny_profile
-    from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
-
-    mapping = {
-        "mapping_candidate_id": "MAP-1",
-        "primitive_id": "P001",
-        "source_system": "bazi",
-        "review_status": "approved",
-        "activation_status": "active",
-        "proposed_direction": {"state": "supported_high"},
-        "contexts": [],
-        "global_authority": True,
-        "canonical_fact_requirements": ["fact:admitted"],
-        "semantic_mechanism_refs": ["SMC-ADMITTED"],
-        "evidence_root_refs": ["ER-ADMITTED"],
-    }
-    profile = build_core_destiny_profile(
-        DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts),
-        fact_assurance="capability_reported",
-        approved_mappings=(mapping,),
-    )
-    forged = replace(profile.primitive_states["P002"], state="supported_high")
-    malformed = replace(
-        profile,
-        primitive_states={**profile.primitive_states, "P002": forged},
-    )
-
     errors = validate_core_destiny_profile(malformed)
-    assert "FORMAL_MAPPED_STATE_EVIDENCE_REQUIRED" in errors
-    assert "FORMAL_MAPPED_STATE_TRACEABILITY_INVALID" in errors
+    assert "FORMAL_RELEASE_MAPPING_BUNDLE_COVERAGE_INVALID" in errors
+    assert "FORMAL_MAPPED_ASSURANCE_TRACEABILITY_REQUIRED" in errors
+
+
+def test_profile_must_bind_exact_packaged_mapping_bundle(qualified_facts):
+    from destiny_personality.core_destiny_profile import build_core_destiny_profile
+    from destiny_personality.core_destiny_profile_validation import validate_core_destiny_profile
+
+    profile = build_core_destiny_profile(qualified_facts)
+    versions = tuple(
+        (key, "forged") if key == "active_mapping_bundle" else (key, value)
+        for key, value in profile.semantic_model_versions
+    )
+    assert "FORMAL_RELEASE_MAPPING_BUNDLE_BINDING_INVALID" in validate_core_destiny_profile(
+        replace(profile, semantic_model_versions=versions)
+    )
