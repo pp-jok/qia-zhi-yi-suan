@@ -8,13 +8,17 @@
 
 它不是排盘软件，也不把计算程序封装进 Skill。使用它的智能体会在运行时寻找并调用合格的外部计算能力；Skill 负责输入规范、方法校验、事实边界、推演许可、报告结构与最终审计。
 
-## 发布通道：v0.3.9 Fact Qualification & Profile Identity Freeze
+## 发布通道：v0.4.0 Autonomous Limited Coverage
 
-本版本额外包含一个可复现的候选 Core Profile 引擎与经审核的候选语义包。它能够基于已资格校验的事实，产出六个基础人格维度的结构化、可审计候选结果；十神来源、日主—月令环境、主相位与可用的修饰事实都会保留在审计引用中。
+本版本新增正式的 `Facts → Core Destiny Profile → Report Plan → Report` 主链。它只从已资格校验的命盘事实、包内发布清单与已批准且已激活的 Mapping 构建正式 CDP。当前发布的六个 Core Primitive 已完成生命周期闭环，但有效 PRIMARY_EVIDENCE 与 Mapping 仍为零，因此正式报告会诚实地输出六个 `unknown`，而不是伪造一份低可信人格结论。
+
+`unknown` 不等于 `low`。零语义结论也是一种可发布结果：报告仍包含事实包引用、事实/语义 assurance、限制、未决问题与审计链，但不会形成 Signature、Dynamic、Shadow/Mature、Theme 或 Archetype。
+
+原有候选 Core Profile 引擎与经审核的候选语义包继续保留，仅作 Candidate Preview，不具有正式发布权威。
 
 候选包提供 Context taxonomy、局部跨体系对齐、版本化证据权重，以及与当前语义 Bundle 精确绑定的 Design Set / Holdout 审计记录。新版 `core_concise` 与 `core_standard` 可以把 Primitive、情境、证据、合参和出生时间限制输出为可追问的用户画像；它**不是严格生产推演**：不会自动成为默认报告路径，也不替代外部排盘能力或专业判断。
 
-Core Runtime 进一步将语义推演与用户展示分离：语义 Bundle、Profile Runtime 与展示 Bundle 分别版本化；普通画像会保留高/低方向及情境差异，不泄露内部 Primitive 编号或情境键。它只从正式 `deterministic-facts-v1` 加独立 `fact-qualification-v1` 构建 Profile，资格必须与事实指纹绑定，调用方不能自行指定或提升事实 assurance；运行时不计算命盘，显式解释和审计命令保留完整事实与规则回链。
+Core Runtime 将语义推演与用户展示分离。正式命令只接受 `deterministic-facts-v1` 与独立的 `fact-qualification-v1`，资格必须与事实指纹绑定；调用方不能自行指定或提升事实 assurance。运行时不计算命盘，也不从候选或旧版注册表偷取结论。
 
 ## 它能做什么
 
@@ -26,6 +30,7 @@ Core Runtime 进一步将语义推演与用户展示分离：语义 Bundle、Pro
 - 将来源、限制、缺失事实和推演边界保存在审计附录
 - 在证据不足时使用 `insufficient_basis`，而不是用套话填补空白
 - 在严格配置不完整时主动停止，不伪造确定性结论
+- 从合格事实生成可安装验证的有限覆盖正式报告
 
 ## 一次占示如何发生
 
@@ -81,6 +86,15 @@ pip install ./qia-zhi-yi-suan
 使用 $destiny-personality，审计这份已有的事实包和执行报告。
 ```
 
+已有合格事实包时，可直接生成正式有限覆盖报告：
+
+```bash
+destiny-personality-reference-validate build-release-report FACTS.json \
+  --qualification FACT_QUALIFICATION.json \
+  --mode standard-portrait-v1 \
+  --output REPORT.json
+```
+
 ## 命书结构
 
 长篇画像使用 `portrait-report-v2`、`long-form-personality-book-v2` 与 `reader-first-depth-v2`：
@@ -122,7 +136,8 @@ destiny-personality/
 candidates/core-profile-v1/
                         # 已批准的候选语义资产与校准策略
 src/destiny_personality/
-                        # 候选 Core Profile 引擎与校验器
+                        # 正式有限覆盖主链、候选预览与校验器
+governance/             # 自治决策记录与审计绑定
 docs/domain/             # 候选资产批准、校准与 Holdout 审计记录
 pyproject.toml           # 最小 Python 安装元数据
 ```

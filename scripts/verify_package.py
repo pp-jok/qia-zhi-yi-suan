@@ -5,6 +5,12 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import zipfile
+
+
+FORBIDDEN_WHEEL_SUFFIXES = (
+    ".so", ".dylib", ".dll", ".pyd", ".ttf", ".otf", ".woff", ".woff2"
+)
 
 
 def run(command, *, cwd=None) -> None:
@@ -46,6 +52,48 @@ def find_project_wheel(wheelhouse: Path, distribution_name: str) -> Path:
     return project_wheels[0]
 
 
+def assert_no_forbidden_wheel_members(wheel: Path) -> None:
+    """Keep calculation engines, native binaries, and font assets out of the wheel."""
+
+    with zipfile.ZipFile(wheel) as archive:
+        members = tuple(name.lower() for name in archive.namelist())
+    forbidden = tuple(
+        name
+        for name in members
+        if name.endswith(FORBIDDEN_WHEEL_SUFFIXES) or "swisseph" in name
+    )
+    if forbidden:
+        raise RuntimeError("forbidden bundled wheel members: " + ", ".join(forbidden))
+
+
+def installed_release_smoke_script() -> str:
+    return (
+        "from datetime import date; "
+        "from destiny_personality.calculation import "
+        "AstrologyChartFacts, BaziChartFacts, BaziPillar, DeterministicChartFacts, "
+        "FactMode, NormalizedBirthTime, TimeBasis; "
+        "from destiny_personality.core_destiny_profile import build_core_destiny_profile; "
+        "from destiny_personality.release_manifest import load_release_manifest; "
+        "from destiny_personality.release_renderer import render_release_report; "
+        "from destiny_personality.report_planner import build_release_report_plan; "
+        "pillar = BaziPillar('Jia', 'Zi'); "
+        "facts = DeterministicChartFacts("
+        "NormalizedBirthTime(date(2000,1,1),None,None,None,None,'UTC',False,"
+        "TimeBasis.STANDARD_TIME,FactMode.STABLE_ONLY,('package_smoke',)),"
+        "BaziChartFacts('bazi-core-v1.0',pillar,pillar,pillar,None,(),(),()),"
+        "AstrologyChartFacts('western-tropical-v1.0',(),(),None,None,(),())); "
+        "manifest = load_release_manifest(); "
+        "profile = build_core_destiny_profile(facts,fact_assurance='capability_reported',"
+        "manifest=manifest); "
+        "assert profile.semantic_model_assurance == 'limited_coverage_unknown_only'; "
+        "assert {item.state for item in profile.primitive_states.values()} == {'unknown'}; "
+        "plan = build_release_report_plan(profile,'standard-portrait-v1'); "
+        "report = render_release_report(profile,plan); "
+        "assert report.report['primitive_interpretations'] == (); "
+        "assert report.audit_refs"
+    )
+
+
 def main() -> int:
     project_root = Path(__file__).resolve().parents[1]
     config_dir = project_root / "destiny_personality_skill_docs_v2_2"
@@ -72,6 +120,7 @@ def main() -> int:
         project_wheel = find_project_wheel(
             wheelhouse, project_distribution_name(source_copy)
         )
+        assert_no_forbidden_wheel_members(project_wheel)
 
         venv_dir = workspace / "venv"
         run([sys.executable, "-m", "venv", venv_dir])
@@ -96,6 +145,7 @@ def main() -> int:
                 project_wheel,
             ]
         )
+        run([python, "-c", installed_release_smoke_script()])
         run(
             [
                 python,
