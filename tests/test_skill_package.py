@@ -187,6 +187,43 @@ def test_skill_router_encodes_modes_gates_and_hard_stops() -> None:
     assert "Do not calculate, infer, or repair" in text
 
 
+def test_skill_routes_formal_candidate_legacy_and_failure_paths() -> None:
+    skill = read_skill_file("SKILL.md")
+
+    assert "](references/core-profile-runtime.md)" in skill
+    for mode in (
+        "concise-portrait-v1",
+        "standard-portrait-v1",
+        "dynamic-long-form-v1",
+        "legacy-long-form-v2",
+    ):
+        assert f"`{mode}`" in skill
+    for route in (
+        "formal limited-coverage",
+        "Candidate Preview",
+        "controlled-inference legacy",
+        "strict failure/degradation",
+    ):
+        assert route in skill
+    assert "unknown is not low" in skill.lower()
+    assert "invalid fact qualification" in skill.lower()
+
+
+def test_formal_runtime_reference_preserves_external_provider_boundary() -> None:
+    runtime = read_skill_file("references/core-profile-runtime.md")
+
+    for phrase in (
+        "external calculation capability",
+        "does not bundle a calculator",
+        "Facts -> Core Destiny Profile -> Report Plan -> Report",
+        "build-release-report",
+        "limited_coverage_unknown_only",
+        "semantic gaps degrade",
+        "fact qualification failures stop",
+    ):
+        assert phrase in runtime
+
+
 def test_skill_description_is_trigger_only() -> None:
     skill_text = read_skill_file("SKILL.md")
     frontmatter = yaml.safe_load(skill_text.split("---", 2)[1])

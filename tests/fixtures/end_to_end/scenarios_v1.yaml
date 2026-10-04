@@ -1,0 +1,42 @@
+schema_version: release-e2e-scenarios-v1
+scenarios:
+  - id: known-time-zero-coverage
+    fact_variant: known_time
+    semantic_variant: zero
+    expected_state: unknown
+  - id: unknown-hour-stable-only
+    fact_variant: unknown_hour
+    semantic_variant: zero
+    expected_state: unknown
+  - id: time-boundary
+    fact_variant: time_boundary
+    semantic_variant: zero
+    expected_state: unknown
+  - id: timezone-normalization
+    fact_variant: timezone
+    semantic_variant: zero
+    expected_state: unknown
+  - id: dst-normalization
+    fact_variant: dst
+    semantic_variant: zero
+    expected_state: unknown
+  - id: diverse-bazi-structure
+    fact_variant: bazi_structure
+    semantic_variant: zero
+    expected_state: unknown
+  - id: diverse-astrology-structure
+    fact_variant: astrology_structure
+    semantic_variant: zero
+    expected_state: unknown
+  - id: test-only-high-coverage
+    fact_variant: known_time
+    semantic_variant: high
+    expected_state: supported_high
+  - id: contradiction
+    fact_variant: known_time
+    semantic_variant: contradiction
+    expected_state: mixed
+  - id: context-differentiation
+    fact_variant: known_time
+    semantic_variant: context
+    expected_state: context_differentiated
