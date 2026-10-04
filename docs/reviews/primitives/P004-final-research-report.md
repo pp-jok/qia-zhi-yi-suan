@@ -29,3 +29,19 @@ strength, Dao-Shi, rescue, Primitive state, or Mapping.
 Unknown is not Low and is not a negative conclusion. New primary evidence or
 Mapping work requires a fresh, independently governed methodology and evidence
 review.
+
+## Lifecycle closure accounting
+
+| Dimension | Result |
+| --- | --- |
+| Construct | Action initiation and advancement, distinct from P001 judgement ownership, energy, output, or assertion. |
+| Reviewed sources | `c1-primitive-semantic-cards.md`, `c2-fresh-mapping-feasibility-matrix.md`, `c2-sm-p004-bazi-dao-shi-method-reconstruction-final-report.md`, and the P004 Hellenistic/materiality reviews. |
+| Method | Hellenistic direction was closed under the selected methodology; Bazi Dao-Shi research was deferred because it lacks a reproducible operative and exception method. |
+| Facts | Canonical relation identity may be observed, but it cannot decide effective control, strength, Dao-Shi, rescue, or P004 direction. |
+| Evidence Root | `ER-BZ-RELATION-INSTANCE-V1` is identity-only and candidate-reference-only; it is not PRIMARY_EVIDENCE. |
+| PRIMARY_EVIDENCE | `0`; no active reference. |
+| Mapping | `0`; no active reference. |
+| Counterevidence | Mars/Sun activity, output, energy, and lack of facts cannot be reversed into P004 direction. |
+| Contexts | No action, work, decision, pressure, or change context is emitted without admitted Primary Evidence. |
+| Limitations | The closure is source- and methodology-bounded, not a conclusion about either tradition or a person's initiative. |
+| Saturation | Astrology is closed under the selected methodology; Bazi method research is saturated for the reviewed Dao-Shi corpus until a reproducible whole-chart method is governed. |
