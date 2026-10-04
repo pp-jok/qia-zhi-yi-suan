@@ -153,6 +153,7 @@ def load_evidence_root_registry(root: Path) -> Tuple[Mapping[str, object], ...]:
             allowed_statuses,
             prohibited_origins,
             permitted_source_refs,
+            directory,
         )
     return tuple(roots)
 
@@ -512,6 +513,7 @@ def _validate_evidence_root(
     allowed_statuses: Collection[str],
     prohibited_origins: Collection[str],
     permitted_source_refs: Collection[str],
+    directory: Path,
 ) -> None:
     field_prefix = f"roots[{index}]"
     if type(root_entry) is not dict:
@@ -572,22 +574,12 @@ def _validate_evidence_root(
             file=EVIDENCE_ROOT_REGISTRY_FILE,
             field=f"{field_prefix}.review_status",
         )
-    decision_ref = root_entry["product_owner_decision_ref"]
-    if review_status == "approved":
-        if type(decision_ref) is not str or not decision_ref.strip():
-            raise ConfigError(
-                "CONFIG_VALUE_ERROR",
-                "approved evidence root requires a Product Owner decision reference",
-                file=EVIDENCE_ROOT_REGISTRY_FILE,
-                field=f"{field_prefix}.product_owner_decision_ref",
-            )
-    elif decision_ref is not None:
-        raise ConfigError(
-            "CONFIG_VALUE_ERROR",
-            "non-approved evidence root must not claim a Product Owner decision",
-            file=EVIDENCE_ROOT_REGISTRY_FILE,
-            field=f"{field_prefix}.product_owner_decision_ref",
-        )
+    _validate_evidence_root_authority(
+        root_entry,
+        field_prefix,
+        review_status,
+        directory,
+    )
     for field in ("scope", "provenance"):
         if type(root_entry[field]) is not dict or not root_entry[field]:
             raise ConfigError(
@@ -622,6 +614,165 @@ def _validate_evidence_root(
             "provenance.origin is prohibited by the root contract",
             file=EVIDENCE_ROOT_REGISTRY_FILE,
             field=f"{field_prefix}.provenance.origin",
+        )
+
+    if root_id == "ER-BZ-RELATION-INSTANCE-V1":
+        _validate_generic_bazi_relation_root(root_entry, field_prefix)
+
+
+def _validate_evidence_root_authority(
+    root_entry: Mapping[str, object],
+    field_prefix: str,
+    review_status: str,
+    directory: Path,
+) -> None:
+    """Accept one historic human record or one verified delegated record."""
+
+    has_human_ref = "product_owner_decision_ref" in root_entry
+    human_ref = root_entry.get("product_owner_decision_ref")
+    autonomous_fields = (
+        "decision_authority",
+        "decision_mode",
+        "decision_ref",
+    )
+    present_autonomous = [field for field in autonomous_fields if field in root_entry]
+
+    if has_human_ref and present_autonomous:
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "autonomous evidence root cannot claim a Product Owner decision",
+            file=EVIDENCE_ROOT_REGISTRY_FILE,
+            field=f"{field_prefix}.product_owner_decision_ref",
+        )
+
+    if review_status != "approved":
+        if has_human_ref or present_autonomous:
+            raise ConfigError(
+                "CONFIG_VALUE_ERROR",
+                "non-approved evidence root must not claim a decision authority",
+                file=EVIDENCE_ROOT_REGISTRY_FILE,
+                field=field_prefix,
+            )
+        return
+
+    if has_human_ref:
+        if type(human_ref) is not str or not human_ref.strip():
+            raise ConfigError(
+                "CONFIG_VALUE_ERROR",
+                "approved evidence root requires a Product Owner decision reference",
+                file=EVIDENCE_ROOT_REGISTRY_FILE,
+                field=f"{field_prefix}.product_owner_decision_ref",
+            )
+        return
+
+    if set(present_autonomous) != set(autonomous_fields):
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "approved evidence root requires exactly one complete decision authority",
+            file=EVIDENCE_ROOT_REGISTRY_FILE,
+            field=field_prefix,
+        )
+    _validate_autonomous_evidence_root_decision(root_entry, field_prefix, directory)
+
+
+def _validate_autonomous_evidence_root_decision(
+    root_entry: Mapping[str, object], field_prefix: str, directory: Path
+) -> None:
+    """Bind delegated approval to the current canonical relation policy only."""
+
+    from .autonomous_governance import load_autonomous_decisions, validate_decision_binding
+    from .canonical_bazi_relations import canonical_relation_policy_fingerprint
+
+    try:
+        registry = load_autonomous_decisions(directory.parents[1])
+        decisions = [
+            item
+            for item in registry.records
+            if item.decision_ref == root_entry["decision_ref"]
+        ]
+        if len(decisions) != 1:
+            raise ValueError("AUTONOMOUS_DECISION_REFERENCE_UNRESOLVED")
+        decision = validate_decision_binding(
+            decisions[0],
+            asset_id=root_entry["evidence_root_id"],
+            asset_fingerprint=canonical_relation_policy_fingerprint(),
+        )
+        if (
+            decision.decision_authority != root_entry["decision_authority"]
+            or decision.decision_mode != root_entry["decision_mode"]
+        ):
+            raise ValueError("AUTONOMOUS_DECISION_AUTHORITY_MISMATCH")
+        if decision.outcome != "PASS":
+            raise ConfigError(
+                "CONFIG_VALUE_ERROR",
+                "approved autonomous evidence root requires a passing autonomous decision",
+                file=EVIDENCE_ROOT_REGISTRY_FILE,
+                field=field_prefix,
+            )
+    except ConfigError:
+        raise
+    except (TypeError, ValueError) as error:
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "approved autonomous evidence root requires a valid autonomous decision binding",
+            file=EVIDENCE_ROOT_REGISTRY_FILE,
+            field=field_prefix,
+        ) from error
+
+
+def _validate_generic_bazi_relation_root(
+    root_entry: Mapping[str, object], field_prefix: str
+) -> None:
+    """Keep the generic relation root from asserting Dao-Shi or semantics."""
+
+    if root_entry["system"] != "bazi" or root_entry["source_ref"] != (
+        "deterministic_facts.bazi.relations"
+    ):
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "generic Bazi relation root must reference canonical Bazi relations",
+            file=EVIDENCE_ROOT_REGISTRY_FILE,
+            field=field_prefix,
+        )
+    scope = root_entry["scope"]
+    if scope != {
+        "identity_fields": [
+            "relation_type",
+            "participant_refs",
+            "rule_version",
+        ]
+    }:
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "generic Bazi relation root scope must be identity-only",
+            file=EVIDENCE_ROOT_REGISTRY_FILE,
+            field=f"{field_prefix}.scope",
+        )
+    if set(root_entry["approved_use"]) != {
+        "fact_instance_identification",
+        "candidate_mechanism_evidence_reference",
+    }:
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "generic Bazi relation root has no semantic approval use",
+            file=EVIDENCE_ROOT_REGISTRY_FILE,
+            field=f"{field_prefix}.approved_use",
+        )
+    prohibited = set(root_entry["prohibited_use"])
+    required = {
+        "effective_control_assertion",
+        "strength_assertion",
+        "dao_shi_assertion",
+        "rescue_assertion",
+        "direct_primitive_state_assertion",
+        "mapping_rule_creation",
+    }
+    if not required.issubset(prohibited):
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "generic Bazi relation root must prohibit semantic assertions",
+            file=EVIDENCE_ROOT_REGISTRY_FILE,
+            field=f"{field_prefix}.prohibited_use",
         )
 
 

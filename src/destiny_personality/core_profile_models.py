@@ -44,6 +44,7 @@ class CrossSystemAlignment:
     bazi_rule_refs: Tuple[str, ...]
     astrology_rule_refs: Tuple[str, ...]
     limitations: Tuple[str, ...]
+    salience_delta: int = 0
 
 
 @dataclass(frozen=True)

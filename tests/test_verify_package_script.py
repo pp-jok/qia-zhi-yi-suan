@@ -64,3 +64,55 @@ def test_package_verifier_covers_calculation_contract_public_api_and_cli() -> No
     assert '"validate-calculation-contracts"' in script
     assert "CONFIG_GAP | canonical_fact_vocabulary_v1.yaml" in script
     assert '"--force-reinstall"' in script
+
+
+def test_package_verifier_loads_the_packaged_release_manifest() -> None:
+    script = (Path(__file__).resolve().parents[1] / "scripts" / "verify_package.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "from destiny_personality.release_manifest import" in script
+    assert "load_release_manifest" in script
+
+
+def test_release_metadata_declares_version_readme_license_and_assets() -> None:
+    root = Path(__file__).resolve().parents[1]
+    pyproject = (root / "pyproject.toml").read_text(encoding="utf-8")
+
+    assert 'version = "0.4.0"' in pyproject
+    assert 'readme = "README.md"' in pyproject
+    assert 'license = {file = "LICENSE"}' in pyproject
+    assert '"release_assets/v1/*.yaml"' in pyproject
+
+
+def test_package_verifier_runs_installed_formal_report_smoke_and_binary_audit() -> None:
+    script = (Path(__file__).resolve().parents[1] / "scripts" / "verify_package.py").read_text(
+        encoding="utf-8"
+    )
+
+    for symbol in (
+        "build_core_destiny_profile",
+        "build_release_report_plan",
+        "render_release_report",
+        "limited_coverage_unknown_only",
+        "assert_no_forbidden_wheel_members",
+        ".dylib",
+        ".ttf",
+        "swisseph",
+    ):
+        assert symbol in script
+
+
+def test_release_documentation_and_notices_are_present() -> None:
+    root = Path(__file__).resolve().parents[1]
+    expected = {
+        "CHANGELOG.md": ("0.4.0", "limited coverage"),
+        "THIRD_PARTY_NOTICES.md": ("PyYAML", "pytest", "Swiss Ephemeris"),
+        "docs/architecture/autonomous-release-architecture.md": ("Facts", "Core Destiny Profile", "Report Plan"),
+        "docs/release/v0.4.0-release-readiness.md": ("0.4.0", "unknown", "wheel"),
+        "docs/reviews/archive/README.md": ("historical", "authoritative"),
+    }
+    for relative, phrases in expected.items():
+        text = (root / relative).read_text(encoding="utf-8")
+        for phrase in phrases:
+            assert phrase in text

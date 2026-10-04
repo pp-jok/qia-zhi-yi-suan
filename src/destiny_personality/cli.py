@@ -55,6 +55,23 @@ def _build_parser() -> argparse.ArgumentParser:
     build.add_argument("facts", type=Path)
     build.add_argument("--qualification", type=Path)
     build.add_argument("--output", type=Path, required=True)
+    release_report = subparsers.add_parser(
+        "build-release-report",
+        help="build a contained limited-coverage report from qualified deterministic facts",
+    )
+    release_report.add_argument("facts", type=Path)
+    release_report.add_argument("--qualification", type=Path, required=True)
+    release_report.add_argument(
+        "--mode",
+        choices=(
+            "concise-portrait-v1",
+            "standard-portrait-v1",
+            "dynamic-long-form-v1",
+            "legacy-long-form-v2",
+        ),
+        required=True,
+    )
+    release_report.add_argument("--output", type=Path, required=True)
     semantic_build = subparsers.add_parser("build-semantic-core")
     semantic_build.add_argument("project_root", type=Path)
     semantic_build.add_argument("profile_ref")
@@ -116,6 +133,20 @@ def _build_parser() -> argparse.ArgumentParser:
     semantic_packet = subparsers.add_parser("semantic-core-review-packet")
     semantic_packet.add_argument("project_root", type=Path)
     return parser
+
+
+def _write_release_report(output_path: Path, report: object) -> None:
+    """Persist a completed release report while preserving CLI error semantics."""
+
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            json.dumps(asdict(report), ensure_ascii=False, indent=2, sort_keys=True)
+            + "\n",
+            encoding="utf-8",
+        )
+    except OSError as error:
+        raise ValueError("RELEASE_REPORT_WRITE_FAILED") from error
 
 
 def _runtime_config_summary(config) -> dict:
@@ -285,6 +316,26 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             profile = build_candidate_core_profile(qualified.facts, fact_assurance=qualified.fact_assurance)
             write_candidate_profile(profile, args.output)
             summary = {"status": "ok", "profile": str(args.output), "profile_id": profile.candidate_profile_id}
+        elif args.command == "build-release-report":
+            from .core_destiny_profile import build_core_destiny_profile
+            from .deterministic_facts_codec import load_qualified_deterministic_facts
+            from .release_renderer import render_release_report
+            from .report_planner import build_release_report_plan
+
+            qualified = load_qualified_deterministic_facts(
+                args.facts, args.qualification
+            )
+            profile = build_core_destiny_profile(qualified)
+            plan = build_release_report_plan(profile, args.mode)
+            report = render_release_report(profile, plan)
+            _write_release_report(args.output, report)
+            summary = {
+                "status": "ok",
+                "output": str(args.output),
+                "profile_id": profile.core_profile_id,
+                "mode": args.mode,
+                "coverage": profile.semantic_model_assurance,
+            }
         elif args.command == "build-semantic-core":
             from .mapping_v2 import compile_mapping_v2_from_repository
             from .semantic_pipeline import build_semantic_core_from_approved_mapping, load_enabled_formation_policies

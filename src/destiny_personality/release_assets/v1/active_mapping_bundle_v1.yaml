@@ -1,0 +1,14 @@
+schema_version: active-release-mapping-bundle-v1
+bundle_id: ACTIVE-RELEASE-MAPPING-BUNDLE-V1
+activation_status: active
+mapping_count: 0
+mappings: []
+asset_fingerprint: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945
+decision:
+  authority: delegated_autonomous_executor
+  mode: AUTONOMOUS_COMPLETION
+  outcome: CLOSE_ZERO
+  ref: docs/governance/decisions/auto-release-mapping-bundle-v1.md
+limitations:
+  - No PRIMARY_EVIDENCE or Mapping is active in v0.4.0.
+  - Non-empty mappings require a later governed bundle schema and release decision.

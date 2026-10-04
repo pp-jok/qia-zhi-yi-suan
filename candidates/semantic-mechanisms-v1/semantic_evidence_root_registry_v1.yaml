@@ -24,6 +24,33 @@ roots:
       methodology_ref: bazi-core-v1.0
     review_status: approved
     product_owner_decision_ref: PO-DELEGATED-C2-SM-PHASE-2A-2026-09-22
+  - evidence_root_id: ER-BZ-RELATION-INSTANCE-V1
+    system: bazi
+    source_type: canonical_fact_instance
+    source_ref: deterministic_facts.bazi.relations
+    version: bazi-relation-canonical-v1
+    scope:
+      identity_fields:
+        - relation_type
+        - participant_refs
+        - rule_version
+    approved_use:
+      - fact_instance_identification
+      - candidate_mechanism_evidence_reference
+    prohibited_use:
+      - effective_control_assertion
+      - strength_assertion
+      - dao_shi_assertion
+      - rescue_assertion
+      - direct_primitive_state_assertion
+      - mapping_rule_creation
+    provenance:
+      origin: project_owned_deterministic_facts
+      methodology_ref: bazi-relation-canonical-v1
+    review_status: approved
+    decision_authority: delegated_autonomous_executor
+    decision_mode: AUTONOMOUS_COMPLETION
+    decision_ref: docs/governance/decisions/auto-er-bz-relation-instance-v1.md
   - evidence_root_id: ER-AS-ASPECT-INSTANCE-V1
     system: astrology
     source_type: canonical_fact_instance

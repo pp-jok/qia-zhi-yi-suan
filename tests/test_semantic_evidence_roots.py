@@ -70,11 +70,13 @@ def test_registry_contains_only_roots_backed_by_real_canonical_families() -> Non
 
     assert {root["evidence_root_id"] for root in roots} == {
         "ER-BZ-TEN-GOD-INSTANCE-V1",
+        "ER-BZ-RELATION-INSTANCE-V1",
         "ER-AS-ASPECT-INSTANCE-V1",
         "ER-AS-PLANET-PLACEMENT-V1",
     }
     assert load_approved_evidence_root_ids(_candidate_root()) == {
         "ER-BZ-TEN-GOD-INSTANCE-V1",
+        "ER-BZ-RELATION-INSTANCE-V1",
         "ER-AS-ASPECT-INSTANCE-V1",
         "ER-AS-PLANET-PLACEMENT-V1",
     }
@@ -87,7 +89,7 @@ def test_registry_contains_only_roots_backed_by_real_canonical_families() -> Non
             encoding="utf-8"
         )
     )
-    assert "deterministic_facts.bazi.relations" not in contract[
+    assert "deterministic_facts.bazi.relations" in contract[
         "permitted_canonical_source_refs"
     ]
 
@@ -165,8 +167,8 @@ def test_root_audit_reports_approved_and_proposed_roots_separately() -> None:
     )
 
     assert report == {
-        "root_count": 3,
-        "approved_count": 3,
+        "root_count": 4,
+        "approved_count": 4,
         "non_approved_count": 0,
     }
 

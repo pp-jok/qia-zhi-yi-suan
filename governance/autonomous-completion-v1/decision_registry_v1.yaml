@@ -1,0 +1,64 @@
+schema_version: autonomous-completion-decision-registry-v1
+delegation_mode: AUTONOMOUS_COMPLETION
+decisions:
+  - decision_id: AUTO-RELEASE-V0.4.0
+    asset_id: QIA-ZHI-YI-SUAN-V0.4.0-RELEASE-CANDIDATE
+    asset_type: release_candidate_implementation_snapshot
+    outcome: PASS
+    decision_authority: delegated_autonomous_executor
+    decision_mode: AUTONOMOUS_COMPLETION
+    decision_ref: docs/governance/decisions/auto-release-v0.4.0.md
+    reason: The formal lifecycle, limited-coverage report path, trust boundaries, tests, and package gates are complete without inventing semantic evidence; classification is RELEASE_READY_WITH_LIMITED_SEMANTIC_COVERAGE.
+    evidence_refs:
+      - docs/reviews/autonomous-completion-final-report.md
+      - src/destiny_personality/release_assets/v1/primitive_coverage_v1.yaml
+      - src/destiny_personality/release_assets/v1/active_mapping_bundle_v1.yaml
+      - docs/release/v0.4.0-release-readiness.md
+    test_refs:
+      - tests/test_autonomous_decision_governance.py
+      - tests/test_core_destiny_profile.py
+      - tests/test_release_mapping_bundle.py
+      - tests/test_release_end_to_end.py
+      - tests/test_release_report_planner.py
+      - tests/test_release_renderer.py
+      - tests/test_release_cli.py
+      - tests/test_verify_package_script.py
+      - tests/test_skill_package.py
+    timestamp: "2026-10-04T15:49:53Z"
+    version: 0.4.0
+    asset_fingerprint: git-commit-sha1:25787d45ceaeab26130630d6d88c6d54754006b3
+  - decision_id: AUTO-RELEASE-MAPPING-BUNDLE-V1
+    asset_id: ACTIVE-RELEASE-MAPPING-BUNDLE-V1
+    asset_type: active_release_mapping_bundle
+    outcome: CLOSE_ZERO
+    decision_authority: delegated_autonomous_executor
+    decision_mode: AUTONOMOUS_COMPLETION
+    decision_ref: docs/governance/decisions/auto-release-mapping-bundle-v1.md
+    reason: No PRIMARY_EVIDENCE or Mapping is active; the formal release must bind to an explicit empty bundle and reject caller-supplied records.
+    evidence_refs:
+      - src/destiny_personality/release_assets/v1/primitive_coverage_v1.yaml
+      - candidates/mapping-v2/mapping_v2_candidate_registry_v1.yaml
+    test_refs:
+      - tests/test_release_mapping_bundle.py
+      - tests/test_core_destiny_profile.py
+    timestamp: "2026-10-04T00:00:00Z"
+    version: autonomous-completion-v1
+    asset_fingerprint: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945
+  - decision_id: AUTO-ER-BZ-RELATION-INSTANCE-V1
+    asset_id: ER-BZ-RELATION-INSTANCE-V1
+    asset_type: semantic_evidence_root
+    outcome: PASS
+    decision_authority: delegated_autonomous_executor
+    decision_mode: AUTONOMOUS_COMPLETION
+    decision_ref: docs/governance/decisions/auto-er-bz-relation-instance-v1.md
+    reason: The canonical relation family is identity-only and can be admitted as generic candidate evidence without approving Dao-Shi or any semantic conclusion.
+    evidence_refs:
+      - src/destiny_personality/canonical_assets/calculation-v1/bazi_relation_canonical_contract_v1.yaml
+      - docs/reviews/c2-sm-p004-bazi-neutral-relation-canonical-adoption-final-report.md
+    test_refs:
+      - tests/test_autonomous_evidence_root.py
+      - tests/test_semantic_evidence_roots.py
+      - tests/test_bazi_relation_canonical_contract.py
+    timestamp: "2026-10-04T00:00:00Z"
+    version: autonomous-completion-v1
+    asset_fingerprint: b1fa64f2ed4b1255ddd245d4fbdf5b33c660939bf43a5934b638256e5a0295c9

@@ -21,6 +21,27 @@ Do not read unrelated local projects or undeclared business files without explic
 
 Select an execution profile after the mode. `portrait` defaults to `controlled_inference`, where externally calculated facts may support constrained agent interpretation. `facts_only` requires `strict`, and strict audit claims require `strict`. Use `strict` for a portrait only when the user explicitly requires project-rule-deterministic certification. Record the profile in the Execution Report; never silently upgrade one profile into the other.
 
+## Select the runtime route
+
+Read the [formal Core Profile runtime](references/core-profile-runtime.md) before
+choosing a personality-report path. Select exactly one route from the user's
+requested output and the accepted input artifact:
+
+| Observable condition | Route | Terminal output |
+| --- | --- | --- |
+| Qualified deterministic facts and a request for the current Core result | **formal limited-coverage** | `concise-portrait-v1`, `standard-portrait-v1`, or `dynamic-long-form-v1` |
+| The user explicitly asks to inspect experimental Primitive behavior | **Candidate Preview** | `core`, `core_concise`, or `core_standard`, clearly marked candidate-only |
+| The user explicitly asks for the compatible 56-chapter book | **controlled-inference legacy** | frozen `legacy-long-form-v2` handoff and its controlled-inference workflow |
+| Required birth input, deterministic facts, or fact qualification is invalid | **strict failure/degradation** | stopped Execution Report; no personality conclusion |
+
+The formal route is usable when semantic coverage is zero: preserve all six
+Primitive states as `unknown`, omit unsupported personality sections, and
+render assurance, limitations, unresolved questions, and audit references.
+Unknown is not Low. Missing methodology evidence is a semantic gap and degrades
+the report; invalid fact qualification is a fact-basis failure and stops it.
+Do not silently fall back from the formal route to Candidate Preview or the
+controlled-inference legacy route.
+
 Read the [birth input contract](schemas/birth-input.md) and run the [preflight checklist](checklists/preflight.md). If input fails, return `BIRTH_INPUT_ERROR` in an [Execution Report](schemas/execution-report.md).
 
 For a portrait, normalize both explicit fields and unambiguous compact input
@@ -53,8 +74,8 @@ The default controlled portrait branch continues:
 → REPORT_VALIDATED
 ```
 
-The future Core Profile branch is disabled until the approved Semantic Core
-assets are present. Once enabled, its route is:
+The formal Core Profile branch is available as an auditable limited-coverage
+route even when no Mapping is active. Its route is:
 
 ```text
 FACT_BASIS_VALIDATED
@@ -67,8 +88,8 @@ Before `CORE_PROFILE_VALIDATED`, read the [Core Destiny Profile contract](schema
 and run the [Core Profile checklist](checklists/core-profile.md). Before
 `REPORT_PLAN_VALIDATED`, read the [Report Plan contract](schemas/report-plan.md).
 This route does not authorize candidate assets, calculation, or strict semantic
-claims; it activates only after separately approved production assets pass their
-own gates.
+claims. It produces explicit `unknown` states when approved production mappings
+are absent and includes only conclusions supported by active approved assets.
 
 ### Candidate Core Portrait Preview
 

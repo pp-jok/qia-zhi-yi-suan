@@ -24,6 +24,9 @@ from .primitive_models import PrimitiveFoundationConfig
 from .semantic_bundle import SemanticContractBundle, load_semantic_contract_bundle
 from .vocabulary_loader import load_canonical_fact_vocabulary
 from .vocabulary_models import CanonicalFactVocabularyConfig
+from .core_destiny_profile import build_core_destiny_profile
+from .report_planner import build_release_report_plan
+from .release_renderer import render_release_report
 
 __all__ = [
     "ConfigError",
@@ -51,4 +54,7 @@ __all__ = [
     "load_primitive_foundation",
     "load_runtime_config",
     "load_semantic_contract_bundle",
+    "build_core_destiny_profile",
+    "build_release_report_plan",
+    "render_release_report",
 ]

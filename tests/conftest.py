@@ -1,6 +1,7 @@
 from pathlib import Path
 from datetime import date, datetime, time, timezone
 from decimal import Decimal
+import json
 import shutil
 
 import pytest
@@ -127,3 +128,55 @@ def astrology_facts(runtime_config) -> AstrologyChartFacts:
         house_cusps=cusps,
         dignities=(),
     )
+
+
+@pytest.fixture
+def qualified_facts(tmp_path, normalized_time, bazi_facts, astrology_facts):
+    """Create qualification-bound synthetic facts through the public loader."""
+
+    from destiny_personality.calculation import DeterministicChartFacts
+    from destiny_personality.deterministic_facts_codec import (
+        deterministic_facts_fingerprint,
+        deterministic_facts_to_dict,
+        load_qualified_deterministic_facts,
+    )
+
+    facts = DeterministicChartFacts(normalized_time, bazi_facts, astrology_facts)
+    payload = deterministic_facts_to_dict(facts)
+    payload.update(
+        {
+            "schema_version": "deterministic-facts-v1",
+            "fact_mode": facts.normalized_time.fact_mode.value,
+            "methodology_versions": {
+                "bazi": facts.bazi.methodology_version,
+                "astrology": facts.astrology.methodology_version,
+            },
+            "provenance_refs": ["test:qualified-facts"],
+            "validation_summary": {"structure": "passed"},
+        }
+    )
+    qualification = {
+        "schema_version": "fact-qualification-v1",
+        "fact_fingerprint": deterministic_facts_fingerprint(facts),
+        "qualification_status": "passed",
+        "derived_fact_assurance": "capability_reported",
+        "fact_contract_version": "deterministic-facts-v1",
+        "methodology_versions": payload["methodology_versions"],
+        "validation_refs": ["test:validation"],
+        "provenance_refs": ["test:provenance"],
+        "calculation_envelope_refs": ["test:envelope"],
+        "comparison": {"required": False, "status": "not_required"},
+        "validation_summary": {
+            "structure": "passed",
+            "methodology": "passed",
+            "provenance": "passed",
+            "internal_consistency": "passed",
+            "time_scope": "passed",
+            "calculation_config": "not_available",
+        },
+    }
+    facts_path = tmp_path / "qualified-facts.json"
+    qualification_path = tmp_path / "qualified-facts-qualification.json"
+    facts_path.write_text(json.dumps(payload), encoding="utf-8")
+    qualification_path.write_text(json.dumps(qualification), encoding="utf-8")
+    return load_qualified_deterministic_facts(facts_path, qualification_path)
