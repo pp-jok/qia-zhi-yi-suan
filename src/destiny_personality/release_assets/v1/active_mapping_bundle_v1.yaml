@@ -10,5 +10,5 @@ decision:
   outcome: CLOSE_ZERO
   ref: docs/governance/decisions/auto-release-mapping-bundle-v1.md
 limitations:
-  - No PRIMARY_EVIDENCE or Mapping is active in v0.4.0.
+  - No PRIMARY_EVIDENCE or Mapping is active in v0.4.x.
   - Non-empty mappings require a later governed bundle schema and release decision.

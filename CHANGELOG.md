@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.4.1 - 2026-10-05
+
+### Added
+
+- A deep research closure for P001, P002, P003, P005, and P006 across Bazi and Hellenistic source paths.
+- Auditable source corpora, construct matrices, counterevidence, and method/fact feasibility records.
+- A strict v2 primitive coverage manifest that distinguishes independent saturation from repository-only review.
+- A five-role release review and explicit zero-activation decision.
+
+### Release boundary
+
+This deep research closure does not add a personality conclusion. No candidate
+cleared both the direct-construct and reproducible-method gates, so the formal
+runtime still returns six `unknown` states with zero active Mapping records.
+v0.5.0 remains reserved for approved non-zero formal semantics.
+
 ## 0.4.0 - 2026-10-04
 
 ### Added

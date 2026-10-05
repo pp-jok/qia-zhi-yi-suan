@@ -16,7 +16,7 @@ def build_core_destiny_profile(
 ) -> CoreDestinyProfile:
     """Build from loader-produced qualified facts and the governed release bundle.
 
-    The v0.4.0 release asset has no approved mappings.  That is a valid result:
+    The v0.4.x release asset has no approved mappings.  That is a valid result:
     the profile remains complete, carries six ``unknown`` primitive states, and
     records its semantic limitation instead of inventing a conclusion.
     """

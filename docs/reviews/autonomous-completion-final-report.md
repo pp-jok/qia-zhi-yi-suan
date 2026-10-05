@@ -1,5 +1,11 @@
 # Autonomous Completion Final Report
 
+> Historical v0.4.0 audit record. The current v0.4.1 decision and coverage are
+> recorded in `semantic-content-production-final-report.md`,
+> `semantic-content-production-five-role-review.md`, and
+> `semantic-core-final-coverage-report.md`. This file retains the immutable
+> v0.4.0 snapshot evidence rather than rewriting its commit binding.
+
 ## 1. Outcome
 
 `RELEASE_READY_WITH_LIMITED_SEMANTIC_COVERAGE`

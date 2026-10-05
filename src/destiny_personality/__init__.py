@@ -28,6 +28,8 @@ from .core_destiny_profile import build_core_destiny_profile
 from .report_planner import build_release_report_plan
 from .release_renderer import render_release_report
 
+__version__ = "0.4.1"
+
 __all__ = [
     "ConfigError",
     "AstrologyDignityTableConfig",
@@ -57,4 +59,5 @@ __all__ = [
     "build_core_destiny_profile",
     "build_release_report_plan",
     "render_release_report",
+    "__version__",
 ]
