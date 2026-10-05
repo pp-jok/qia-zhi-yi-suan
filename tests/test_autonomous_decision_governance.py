@@ -151,3 +151,27 @@ def test_v040_release_decision_is_bound_to_audited_implementation_snapshot() -> 
     }.issubset(decision.test_refs)
     assert (PROJECT_ROOT / decision.decision_ref).is_file()
     assert (PROJECT_ROOT / "docs/reviews/autonomous-completion-final-report.md").is_file()
+
+
+def test_v041_research_closure_is_bound_to_audited_implementation_snapshot() -> None:
+    registry = load_autonomous_decisions(PROJECT_ROOT)
+    decision = next(
+        item
+        for item in registry.records
+        if item.asset_id == "QIA-ZHI-YI-SUAN-V0.4.1-RESEARCH-CLOSURE"
+    )
+
+    assert decision.outcome == "PASS"
+    assert decision.asset_fingerprint == (
+        "git-commit-sha1:1b66e6eaf9d15744449c4fc0c4100416b50623b8"
+    )
+    assert decision.decision_ref == (
+        "docs/governance/decisions/auto-release-v0.4.1.md"
+    )
+    assert {
+        "tests/test_semantic_content_production.py",
+        "tests/test_release_primitive_coverage.py",
+        "tests/test_verify_package_script.py",
+        "tests/test_core_destiny_profile.py",
+    }.issubset(decision.test_refs)
+    assert (PROJECT_ROOT / decision.decision_ref).is_file()
