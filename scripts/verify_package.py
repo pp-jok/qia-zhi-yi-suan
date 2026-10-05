@@ -104,6 +104,9 @@ def installed_release_smoke_script() -> str:
         "qualification_path.write_text(json.dumps(qualification),encoding='utf-8'); "
         "qualified=load_qualified_deterministic_facts(facts_path,qualification_path); "
         "manifest = load_release_manifest(); "
+        "assert manifest.schema_version == 'release-primitive-coverage-v2'; "
+        "assert all(not item.primary_evidence_refs and not item.mapping_refs "
+        "for item in manifest.core_primitives.values()); "
         "profile = build_core_destiny_profile(qualified); "
         "assert profile.semantic_model_assurance == 'limited_coverage_unknown_only'; "
         "assert {item.state for item in profile.primitive_states.values()} == {'unknown'}; "
@@ -186,6 +189,7 @@ def main() -> int:
                 "load_release_manifest; "
                 "load_canonical_bazi_relation_policy(); "
                 "manifest = load_release_manifest(); "
+                "assert manifest.schema_version == 'release-primitive-coverage-v2'; "
                 "assert len(manifest.core_primitives) == 6; "
                 "assert all(item.resolver_capability == 'unknown' "
                 "for item in manifest.core_primitives.values())",

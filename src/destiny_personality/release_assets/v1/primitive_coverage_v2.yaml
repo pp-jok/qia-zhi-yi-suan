@@ -1,0 +1,70 @@
+schema_version: release-primitive-coverage-v2
+release_id: semantic-content-deep-research-closure-v2
+coverage_scope: independently-researched-core-primitives
+closure_classification: ALL_REOPENED_CORE_PATHS_DEEP_RESEARCH_SATURATED__NO_FORMAL_RUNTIME_ACTIVATION
+core_primitives:
+  P001:
+    final_status: CLOSED_AFTER_DEEP_INDEPENDENT_RESEARCH_NO_EXECUTABLE_DIRECT_CONSTRUCT
+    resolver_capability: unknown
+    primary_evidence_refs: []
+    mapping_refs: []
+    evidence_root_refs: []
+    system_closures:
+      bazi: NO_CURRENT_DEFENSIBLE_MAPPING
+      astrology: NO_CURRENT_DEFENSIBLE_MAPPING
+    research_report_ref: docs/reviews/primitives/P001-final-research-report.md
+  P002:
+    final_status: CLOSED_AFTER_DEEP_INDEPENDENT_RESEARCH_NO_EXECUTABLE_DIRECT_CONSTRUCT
+    resolver_capability: unknown
+    primary_evidence_refs: []
+    mapping_refs: []
+    evidence_root_refs: []
+    system_closures:
+      bazi: NO_CURRENT_DEFENSIBLE_MAPPING
+      astrology: NO_CURRENT_DEFENSIBLE_MAPPING
+    research_report_ref: docs/reviews/primitives/P002-final-research-report.md
+  P003:
+    final_status: CLOSED_AFTER_DEEP_INDEPENDENT_RESEARCH_NO_EXECUTABLE_DIRECT_CONSTRUCT
+    resolver_capability: unknown
+    primary_evidence_refs: []
+    mapping_refs: []
+    evidence_root_refs: []
+    system_closures:
+      bazi: NO_CURRENT_DEFENSIBLE_MAPPING
+      astrology: NO_CURRENT_DEFENSIBLE_MAPPING
+    research_report_ref: docs/reviews/primitives/P003-final-research-report.md
+  P004:
+    final_status: CLOSED_SYSTEM_SPECIFIC_RESEARCH
+    resolver_capability: unknown
+    primary_evidence_refs: []
+    mapping_refs: []
+    evidence_root_refs:
+      - ER-BZ-RELATION-INSTANCE-V1
+    system_closures:
+      astrology: CLOSED_UNDER_CURRENT_HELLENISTIC_METHODOLOGY
+      bazi: DEFERRED_WITH_REASON:METHOD_RESEARCH_SATURATED
+    research_report_ref: docs/reviews/primitives/P004-final-research-report.md
+  P005:
+    final_status: CLOSED_AFTER_DEEP_INDEPENDENT_RESEARCH_NO_EXECUTABLE_DIRECT_CONSTRUCT
+    resolver_capability: unknown
+    primary_evidence_refs: []
+    mapping_refs: []
+    evidence_root_refs: []
+    system_closures:
+      bazi: NO_CURRENT_DEFENSIBLE_MAPPING
+      astrology: NO_CURRENT_DEFENSIBLE_MAPPING
+    research_report_ref: docs/reviews/primitives/P005-final-research-report.md
+  P006:
+    final_status: CLOSED_AFTER_DEEP_INDEPENDENT_RESEARCH_NO_EXECUTABLE_DIRECT_CONSTRUCT
+    resolver_capability: unknown
+    primary_evidence_refs: []
+    mapping_refs: []
+    evidence_root_refs: []
+    system_closures:
+      bazi: NO_CURRENT_DEFENSIBLE_MAPPING
+      astrology: NO_CURRENT_DEFENSIBLE_MAPPING
+    research_report_ref: docs/reviews/primitives/P006-final-research-report.md
+extended_inventory:
+  status: EMPTY_DEFERRED
+  primitive_ids: []
+  reason: v2 limits lifecycle closure to the approved six Core primitives.

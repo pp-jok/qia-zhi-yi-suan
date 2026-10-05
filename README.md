@@ -8,9 +8,11 @@
 
 它不是排盘软件，也不把计算程序封装进 Skill。使用它的智能体会在运行时寻找并调用合格的外部计算能力；Skill 负责输入规范、方法校验、事实边界、推演许可、报告结构与最终审计。
 
-## 发布通道：v0.4.0 Autonomous Limited Coverage
+## 发布通道：v0.4.1 Deep Research Closure
 
-本版本新增正式的 `Facts → Core Destiny Profile → Report Plan → Report` 主链。它只从已资格校验的命盘事实、包内发布清单与已批准且已激活的 Mapping 构建正式 CDP。当前发布的六个 Core Primitive 已完成生命周期闭环，但有效 PRIMARY_EVIDENCE 与 Mapping 仍为零，因此正式报告会诚实地输出六个 `unknown`，而不是伪造一份低可信人格结论。
+本版本在正式的 `Facts → Core Destiny Profile → Report Plan → Report` 主链之上，完成 P001、P002、P003、P005、P006 的八字与希腊化占星独立深度研究。研究逐项检查构念直达性、传统方法、Canonical Fact、Evidence Root、PRIMARY_EVIDENCE 与 Mapping；P004 保持冻结。最接近的 P006 候选仍属于能力/结果描述或无法复算的全局判断，因此没有被强行激活。
+
+当前六个 Core Primitive 的有效 PRIMARY_EVIDENCE 与 Mapping 仍为零，正式报告会诚实地输出六个 `unknown`。v0.4.1 提升的是 `unknown` 的证据基础和可审计性，不是人格结论数量；v0.5.0 仍保留给至少一个经批准且正式非零的语义路径。
 
 `unknown` 不等于 `low`。零语义结论也是一种可发布结果：报告仍包含事实包引用、事实/语义 assurance、限制、未决问题与审计链，但不会形成 Signature、Dynamic、Shadow/Mature、Theme 或 Archetype。
 

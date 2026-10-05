@@ -1,6 +1,30 @@
 schema_version: autonomous-completion-decision-registry-v1
 delegation_mode: AUTONOMOUS_COMPLETION
 decisions:
+  - decision_id: AUTO-RELEASE-V0.4.1
+    asset_id: QIA-ZHI-YI-SUAN-V0.4.1-RESEARCH-CLOSURE
+    asset_type: semantic_content_research_closure_snapshot
+    outcome: PASS
+    decision_authority: delegated_autonomous_executor
+    decision_mode: AUTONOMOUS_COMPLETION
+    decision_ref: docs/governance/decisions/auto-release-v0.4.1.md
+    reason: Independent Bazi and Hellenistic research saturated P001, P002, P003, P005, and P006 without finding an executable direct construct; v0.4.1 publishes a stronger audited unknown while preserving zero formal activation.
+    evidence_refs:
+      - docs/reviews/semantic-content-production-final-report.md
+      - docs/reviews/semantic-content-production-five-role-review.md
+      - docs/reviews/semantic-core-final-coverage-report.md
+      - src/destiny_personality/release_assets/v1/primitive_coverage_v2.yaml
+      - src/destiny_personality/release_assets/v1/active_mapping_bundle_v1.yaml
+    test_refs:
+      - tests/test_semantic_content_production.py
+      - tests/test_release_primitive_coverage.py
+      - tests/test_verify_package_script.py
+      - tests/test_core_destiny_profile.py
+      - tests/test_release_end_to_end.py
+      - tests/test_autonomous_decision_governance.py
+    timestamp: "2026-10-05T01:07:17Z"
+    version: 0.4.1
+    asset_fingerprint: git-commit-sha1:1b66e6eaf9d15744449c4fc0c4100416b50623b8
   - decision_id: AUTO-RELEASE-V0.4.0
     asset_id: QIA-ZHI-YI-SUAN-V0.4.0-RELEASE-CANDIDATE
     asset_type: release_candidate_implementation_snapshot

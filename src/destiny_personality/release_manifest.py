@@ -8,18 +8,20 @@ import yaml
 
 
 CORE_PRIMITIVE_IDS = frozenset({"P001", "P002", "P003", "P004", "P005", "P006"})
-MANIFEST_SCHEMA_VERSION = "release-primitive-coverage-v1"
+MANIFEST_SCHEMA_VERSION = "release-primitive-coverage-v2"
 _TERMINAL_STATUSES = frozenset(
     {
-        "CLOSED_NO_DEFENSIBLE_CONSTRUCT_UNDER_REVIEWED_ASSETS",
+        "CLOSED_AFTER_DEEP_INDEPENDENT_RESEARCH_NO_EXECUTABLE_DIRECT_CONSTRUCT",
         "CLOSED_SYSTEM_SPECIFIC_RESEARCH",
     }
 )
-_CLOSED_UNDER_REVIEWED_ASSETS = "CLOSED_NO_DEFENSIBLE_CONSTRUCT_UNDER_REVIEWED_ASSETS"
+_DEEP_RESEARCH_CLOSURE = (
+    "CLOSED_AFTER_DEEP_INDEPENDENT_RESEARCH_NO_EXECUTABLE_DIRECT_CONSTRUCT"
+)
 _P004_CLOSURE = "CLOSED_SYSTEM_SPECIFIC_RESEARCH"
 _NO_CURRENT_DEFENSIBLE_MAPPING = "NO_CURRENT_DEFENSIBLE_MAPPING"
 _EXPECTED_FINAL_STATUS = {
-    primitive_id: _CLOSED_UNDER_REVIEWED_ASSETS
+    primitive_id: _DEEP_RESEARCH_CLOSURE
     for primitive_id in CORE_PRIMITIVE_IDS - {"P004"}
 }
 _EXPECTED_FINAL_STATUS["P004"] = _P004_CLOSURE
@@ -65,7 +67,7 @@ class ReleaseManifest:
 
 def release_manifest_path() -> Path:
     """Return the package-owned release asset without consulting candidate assets."""
-    return Path(__file__).resolve().parent / "release_assets" / "v1" / "primitive_coverage_v1.yaml"
+    return Path(__file__).resolve().parent / "release_assets" / "v1" / "primitive_coverage_v2.yaml"
 
 
 def load_release_manifest(path: Optional[Path] = None) -> ReleaseManifest:
