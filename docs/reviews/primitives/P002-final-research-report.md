@@ -1,27 +1,88 @@
 # P002 Final Research Closure
 
 Primitive: `P002` — Predictability Orientation
-Terminal status: `CLOSED_NO_DEFENSIBLE_CONSTRUCT_UNDER_REVIEWED_ASSETS`
+Terminal status: `CLOSED_AFTER_DEEP_INDEPENDENT_RESEARCH_NO_EXECUTABLE_DIRECT_CONSTRUCT`
 
-## Closure record
+## Ontology boundary
 
-| Dimension | Result |
-| --- | --- |
-| Construct | P002 is preference for stability, clarity, and predictability; it is not organizational method. |
-| Reviewed sources | `c1-primitive-semantic-cards.md`, `c1-product-owner-approval-record.md`, `c2-fresh-mapping-feasibility-matrix.md`, and `c2-rule-level-remediation-matrix.md`. |
-| Method | C1 P002/P006 boundary and C2 fresh-mapping admission were applied without creating a new interpretive bridge. |
-| Facts | Reviewed structure, rule, and change-symbolism fact families do not demonstrate a preference for predictability. |
-| Evidence Root | No reviewed Root supplies the required preference-versus-method semantic bridge. |
-| PRIMARY_EVIDENCE | `0`; no active reference. |
-| Mapping | `0`; no active reference. |
-| Counterevidence | Organization or planning is not P002 high; absent facts are not P002 low. |
-| Contexts | No context is emitted because there is no Primary Evidence. |
-| Limitations | This does not reject future evidence that separately establishes preference and organization. |
-| Saturation | The reviewed legacy families were all placed at `NO_MAPPING`; no current construct satisfies the approved boundary. |
+P002 is preference for stable, clear, predictable conditions versus tolerance
+or seeking of change, openness, and lower certainty. It excludes organizational
+method, responsibility, task-planning skill, and risk morality. A task plan or
+orderly rule cannot establish a predictability preference; unknown is not
+openness to change.
+
+## Bazi search
+
+The four-source Bazi corpus reviewed *Yuanhai Ziping*, *Ditian Sui* and *Ditian
+Sui Chanwei*, *Ziping Zhenquan*, and *Sanming Tonghui*. Branch motion/stillness,
+seasonal advance/retreat, five-phase disposition, pattern stability, and
+success/failure were all considered. They describe chart structure, timing,
+temperament, role, or outcome, never a native's preference for predictable
+conditions or its opposite. See the [Bazi source corpus](../semantic-content-bazi-source-corpus.md)
+and [P002 matrix](P002-deep-construct-matrix.md).
+
+## Astrology search
+
+The selected Hellenistic corpus contains firm, changeable, bicorporeal, and
+unstable language, but these are temperament/sign-quality descriptions rather
+than a preference for certainty or an opposite preference for change. See the
+[Hellenistic source corpus](../semantic-content-hellenistic-source-corpus.md).
+
+## Method feasibility
+
+The Bazi texts require whole-chart structural judgement, and the Hellenistic
+method requires integrated multi-factor selection. Neither supplies an
+executable high/low P002 preference rule. Treating branch movement, a pattern,
+or an orderly configuration as a preference would also collapse the approved
+P002/P006 boundary.
+
+## Canonical fact feasibility
+
+Current Bazi canonical facts record pillars, hidden stems, Ten Gods, and
+configured relations, not a governed algorithm for strength, month-command
+weight, pattern/useful-god selection, rescue, or exceptions. The missing facts
+block reproduction of the traditional structural methods; moreover, those
+methods still do not provide the P002 preference construct. Current astrology
+facts do not reconstruct the selected traditional method either.
+
+## Evidence Root
+
+No source yields a P002-specific, construct-direct and method-reproducible
+Evidence Root. Structural stability, movement, planning, order, or role claims
+cannot be promoted as an Evidence Root for preference.
+
+## PRIMARY_EVIDENCE
+
+PRIMARY_EVIDENCE: `0`
+
+No primary evidence is admitted: the direct preference bridge is absent at both
+high and low directions.
+
+## Mapping
+
+Mapping: `0`
+
+No mapping is proposed, activated, or implied. The formal resolver remains
+`unknown` for P002.
+
+## Counterevidence
+
+Organization, planning, rule symbolism, chart motion, and missing facts are
+not P002 direction evidence. In particular, they cannot establish P002 high,
+and their absence cannot establish P002 low.
+
+## Saturation
+
+The research reviewed the four named Zi Ping corpora, including temperament,
+branch dynamics, pattern/useful-god method, and later commentary, plus the
+selected Hellenistic source corpus. Every candidate stopped at structure or
+temperament rather than preference. Status:
+`CLOSED_AFTER_DEEP_INDEPENDENT_RESEARCH_NO_EXECUTABLE_DIRECT_CONSTRUCT`.
 
 ## Result
 
-Bazi and astrology each remain `NO_CURRENT_DEFENSIBLE_MAPPING`. The release
-resolver returns `UNKNOWN`, never a substituted low-stability result. Reopening
-requires a method and Root that establish P002's preference semantics without
-borrowing P006 task-organization meaning.
+This is a source- and methodology-bounded closure, not a conclusion about a
+person or a permanent rejection of either tradition. Reopening requires a
+source, exact locator, reproducible method, canonical fact contract, and
+counter-direction evidence that directly distinguish preference for certainty
+from P006 task-organization method.
