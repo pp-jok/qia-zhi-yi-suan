@@ -22,7 +22,7 @@ _DIRECTIONS = {
 def resolve_release_primitive_states(
     bundle: ActiveReleaseMappingBundle, manifest: ReleaseManifest
 ) -> Dict[str, PrimitiveState]:
-    """Resolve the exact v0.4.0 bundle; caller-supplied mappings are forbidden."""
+    """Resolve the governed v0.4.x bundle; caller-supplied mappings are forbidden."""
 
     admitted = release_mapping_candidates(bundle, manifest)
     if admitted:
@@ -36,7 +36,7 @@ def resolve_release_primitive_states(
 def release_mapping_candidates(
     bundle: ActiveReleaseMappingBundle, manifest: ReleaseManifest
 ) -> Tuple[PrimitiveCandidate, ...]:
-    """Return the governed active candidates; v0.4.0 deliberately has none."""
+    """Return the governed active candidates; v0.4.x deliberately has none."""
 
     governed = require_active_release_mapping_bundle(bundle)
     if set(manifest.core_primitives) != set(CORE_PRIMITIVE_IDS):

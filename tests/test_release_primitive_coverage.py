@@ -13,6 +13,7 @@ def test_every_core_primitive_has_terminal_lifecycle_state() -> None:
 
     manifest = load_release_manifest()
 
+    assert manifest.schema_version == "release-primitive-coverage-v2"
     assert set(manifest.core_primitives) == EXPECTED_CORE_IDS
     assert all(
         item.final_status not in {"TODO", "TBD", "PENDING"}
@@ -59,9 +60,9 @@ def test_extended_inventory_is_explicitly_empty_and_deferred() -> None:
 def test_manifest_loader_fails_closed_for_malformed_coverage(tmp_path: Path) -> None:
     from destiny_personality.release_manifest import load_release_manifest
 
-    malformed = tmp_path / "primitive_coverage_v1.yaml"
+    malformed = tmp_path / "primitive_coverage_v2.yaml"
     malformed.write_text(
-        "schema_version: release-primitive-coverage-v1\ncore_primitives: {}\n",
+        "schema_version: release-primitive-coverage-v2\ncore_primitives: {}\n",
         encoding="utf-8",
     )
 
@@ -80,7 +81,11 @@ def test_manifest_loader_fails_closed_for_malformed_coverage(tmp_path: Path) -> 
                 "astrology": "NO_CURRENT_DEFENSIBLE_MAPPING",
             },
         ),
-        ("P004", "final_status", "CLOSED_NO_DEFENSIBLE_CONSTRUCT_UNDER_REVIEWED_ASSETS"),
+        (
+            "P004",
+            "final_status",
+            "CLOSED_AFTER_DEEP_INDEPENDENT_RESEARCH_NO_EXECUTABLE_DIRECT_CONSTRUCT",
+        ),
     ),
 )
 def test_manifest_loader_rejects_tampered_system_closure_semantics(
@@ -93,7 +98,7 @@ def test_manifest_loader_rejects_tampered_system_closure_semantics(
 
     payload = yaml.safe_load(release_manifest_path().read_text(encoding="utf-8"))
     payload["core_primitives"][primitive_id][field] = value
-    tampered = tmp_path / "primitive_coverage_v1.yaml"
+    tampered = tmp_path / "primitive_coverage_v2.yaml"
     tampered.write_text(yaml.safe_dump(payload), encoding="utf-8")
 
     with pytest.raises(ValueError, match="RELEASE_MANIFEST_INVALID"):
