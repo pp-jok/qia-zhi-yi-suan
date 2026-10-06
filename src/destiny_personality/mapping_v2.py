@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from hashlib import sha256
 import json
 from pathlib import Path
-from typing import Iterable, Mapping, Tuple
+from typing import Iterable, Mapping, Optional, Tuple
 
 import yaml
 
@@ -51,29 +51,48 @@ def load_mapping_proposal_registry(project_root: Path) -> Tuple[Mapping[str, obj
     return tuple(proposals)
 
 
-def validate_mapping_proposal(proposal: object, mapping_eligible_ids: Iterable[str]) -> Tuple[str, ...]:
+def validate_mapping_proposal(
+    proposal: object,
+    mapping_eligible_ids: Iterable[str],
+    approved_semantic_bridge_bindings: Optional[Mapping[str, str]] = None,
+) -> Tuple[str, ...]:
     """Validate authored proposal completeness without converting it to a Mapping."""
     if not isinstance(proposal, dict):
         return ("MAPPING_PROPOSAL_TYPE_ERROR",)
-    required_nonempty = ("proposal_id", "source_system", "canonical_fact_requirements", "semantic_mechanism_refs", "primitive_id", "primitive_question", "proposed_direction", "contexts", "evidence_root_refs", "limitations", "legacy_similarity", "origin", "review_status")
+    required_nonempty = ("proposal_id", "source_system", "canonical_fact_requirements", "semantic_mechanism_refs", "semantic_bridge_refs", "primitive_id", "primitive_question", "proposed_direction", "contexts", "evidence_root_refs", "limitations", "legacy_similarity", "origin", "review_status")
     qualifier_collections = ("modifiers", "contextualizers", "counterevidence", "exclusions")
     findings = ["MAPPING_PROPOSAL_FIELD_REQUIRED"] if any(not proposal.get(field) for field in required_nonempty) or any(field not in proposal or not isinstance(proposal[field], list) for field in qualifier_collections) else []
     refs = proposal.get("semantic_mechanism_refs")
     if not isinstance(refs, list) or not set(refs).issubset(set(mapping_eligible_ids)):
         findings.append("MAPPING_PROPOSAL_ELIGIBLE_MECHANISM_REQUIRED")
+    bridge_bindings = approved_semantic_bridge_bindings or {}
+    bridge_refs = proposal.get("semantic_bridge_refs")
+    if not isinstance(bridge_refs, list) or not bridge_refs or not all(
+        isinstance(ref, str) and ref for ref in bridge_refs
+    ):
+        findings.append("MAPPING_PROPOSAL_BRIDGE_REQUIRED")
+    elif any(
+        bridge_bindings.get(ref) != proposal.get("primitive_id")
+        for ref in bridge_refs
+    ):
+        findings.append("MAPPING_PROPOSAL_BRIDGE_BINDING_INVALID")
     if proposal.get("review_status") != "reviewed":
         findings.append("MAPPING_PROPOSAL_REVIEW_REQUIRED")
     return tuple(sorted(set(findings)))
 
 
 def build_fresh_mapping_candidates(
-    proposals: Iterable[object], mapping_eligible_ids: Iterable[str] = ()
+    proposals: Iterable[object],
+    mapping_eligible_ids: Iterable[str] = (),
+    approved_semantic_bridge_bindings: Optional[Mapping[str, str]] = None,
 ) -> Tuple[object, ...]:
     """Transform only reviewed, valid authored proposals; never auto-approve."""
     eligible = set(mapping_eligible_ids)
     candidates = []
     for proposal in proposals:
-        if validate_mapping_proposal(proposal, eligible):
+        if validate_mapping_proposal(
+            proposal, eligible, approved_semantic_bridge_bindings
+        ):
             continue
         candidate = dict(proposal)
         candidate["mapping_candidate_id"] = candidate.pop("proposal_id")
@@ -84,7 +103,9 @@ def build_fresh_mapping_candidates(
 
 
 def compile_mapping_v2_candidate_bundle(
-    candidates: Iterable[object], approved_mapping_eligible_ids: Iterable[str] = ()
+    candidates: Iterable[object],
+    approved_mapping_eligible_ids: Iterable[str] = (),
+    approved_semantic_bridge_bindings: Optional[Mapping[str, str]] = None,
 ) -> MappingV2CandidateBundle:
     """Compile only independently approved, mechanism-backed mapping records."""
     items = tuple(candidates)
@@ -94,7 +115,9 @@ def compile_mapping_v2_candidate_bundle(
     findings = tuple(
         finding
         for item in items
-        for finding in validate_mapping_candidate(item, eligible_ids)
+        for finding in validate_mapping_candidate(
+            item, eligible_ids, approved_semantic_bridge_bindings
+        )
     )
     if findings:
         return MappingV2CandidateBundle("blocked_by_gate", (), (), tuple(sorted(set(findings))))
@@ -118,10 +141,33 @@ def compile_mapping_v2_from_repository(project_root: Path) -> MappingV2Candidate
         )
     except ConfigError:
         return MappingV2CandidateBundle("blocked_by_gate", (), (), ("MAPPING_AUTHORITY_POLICY_REQUIRED",))
-    return compile_mapping_v2_candidate_bundle(registry.candidates, snapshot.mechanism_ids)
+    bridge_bindings = semantic_bridge_bindings_from_mechanisms(snapshot.mechanisms)
+    return compile_mapping_v2_candidate_bundle(
+        registry.candidates, snapshot.mechanism_ids, bridge_bindings
+    )
 
 
-def validate_mapping_candidate(candidate: object, approved_mapping_eligible_ids: Iterable[str]) -> Tuple[str, ...]:
+def semantic_bridge_bindings_from_mechanisms(
+    mechanisms: Iterable[object],
+) -> Mapping[str, str]:
+    """Derive the only Bridge IDs a downstream Mapping may reference."""
+
+    return {
+        bridge["bridge_id"]: bridge["primitive_id"]
+        for mechanism in mechanisms
+        if isinstance(mechanism, Mapping)
+        for bridge in (mechanism.get("semantic_bridge"),)
+        if isinstance(bridge, Mapping)
+        and isinstance(bridge.get("bridge_id"), str)
+        and isinstance(bridge.get("primitive_id"), str)
+    }
+
+
+def validate_mapping_candidate(
+    candidate: object,
+    approved_mapping_eligible_ids: Iterable[str],
+    approved_semantic_bridge_bindings: Optional[Mapping[str, str]] = None,
+) -> Tuple[str, ...]:
     """Reject direct Fact-to-Primitive mappings and unapproved mechanisms."""
     if not isinstance(candidate, dict):
         return ("MAPPING_CANDIDATE_TYPE_ERROR",)
@@ -135,7 +181,7 @@ def validate_mapping_candidate(candidate: object, approved_mapping_eligible_ids:
         return ("APPROVED_MAPPING_ELIGIBLE_MECHANISM_REQUIRED",)
     required = (
         "mapping_candidate_id", "source_system", "canonical_fact_requirements",
-        "semantic_mechanism_refs", "primitive_id", "primitive_question",
+        "semantic_mechanism_refs", "semantic_bridge_refs", "primitive_id", "primitive_question",
         "proposed_direction", "contexts", "evidence_root_refs", "limitations",
         "legacy_similarity", "audit_trail", "review_status",
     )
@@ -151,6 +197,17 @@ def validate_mapping_candidate(candidate: object, approved_mapping_eligible_ids:
         findings.append("MAPPING_CANDIDATE_DIRECTION_REQUIRED")
     if not isinstance(candidate.get("legacy_similarity"), Mapping):
         findings.append("MAPPING_CANDIDATE_LEGACY_SIMILARITY_REQUIRED")
+    bridge_bindings = approved_semantic_bridge_bindings or {}
+    bridge_refs = candidate.get("semantic_bridge_refs")
+    if not isinstance(bridge_refs, list) or not bridge_refs or not all(
+        isinstance(ref, str) and ref for ref in bridge_refs
+    ):
+        findings.append("MAPPING_CANDIDATE_BRIDGE_REQUIRED")
+    elif any(
+        bridge_bindings.get(ref) != candidate.get("primitive_id")
+        for ref in bridge_refs
+    ):
+        findings.append("MAPPING_CANDIDATE_BRIDGE_BINDING_INVALID")
     if candidate.get("origin") in {"legacy_output", "golden_sample", "runtime_output"}:
         findings.append("MAPPING_CANDIDATE_PROHIBITED_ORIGIN")
     if candidate.get("direct_fact_to_primitive") is True:
@@ -161,14 +218,20 @@ def validate_mapping_candidate(candidate: object, approved_mapping_eligible_ids:
 
 
 def audit_mapping_v2_candidates(
-    candidates: Iterable[object], approved_mapping_eligible_ids: Iterable[str]
+    candidates: Iterable[object],
+    approved_mapping_eligible_ids: Iterable[str],
+    approved_semantic_bridge_bindings: Optional[Mapping[str, str]] = None,
 ) -> Mapping[str, object]:
     """Return a machine-readable candidate audit without activating any record."""
     items = tuple(candidates)
     findings = tuple(
         finding
         for item in items
-        for finding in validate_mapping_candidate(item, approved_mapping_eligible_ids)
+        for finding in validate_mapping_candidate(
+            item,
+            approved_mapping_eligible_ids,
+            approved_semantic_bridge_bindings,
+        )
     )
     return {
         "candidate_count": len(items),

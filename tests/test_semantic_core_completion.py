@@ -11,6 +11,7 @@ def _approved_mapping_candidate(source_system: str = "bazi") -> dict:
         "source_system": source_system,
         "canonical_fact_requirements": ["fact:test"],
         "semantic_mechanism_refs": ["SMC-APPROVED-001"],
+        "semantic_bridge_refs": ["BRIDGE-P004-001"],
         "primitive_id": "P004",
         "primitive_question": "When and how is concrete action started and advanced?",
         "proposed_direction": {"state": "test_only"},
@@ -29,6 +30,7 @@ def test_mapping_v2_compiles_only_separately_approved_candidate() -> None:
     bundle = compile_mapping_v2_candidate_bundle(
         (_approved_mapping_candidate(),),
         approved_mapping_eligible_ids=("SMC-APPROVED-001",),
+        approved_semantic_bridge_bindings={"BRIDGE-P004-001": "P004"},
     )
 
     assert bundle.status == "candidate_compiled"
@@ -43,10 +45,26 @@ def test_mapping_v2_rejects_legacy_contamination_and_direct_fact_path() -> None:
     candidate["origin"] = "legacy_output"
     candidate["direct_fact_to_primitive"] = True
 
-    findings = validate_mapping_candidate(candidate, ("SMC-APPROVED-001",))
+    findings = validate_mapping_candidate(
+        candidate,
+        ("SMC-APPROVED-001",),
+        {"BRIDGE-P004-001": "P004"},
+    )
 
     assert "MAPPING_CANDIDATE_PROHIBITED_ORIGIN" in findings
     assert "MAPPING_CANDIDATE_DIRECT_FACT_TO_PRIMITIVE_PROHIBITED" in findings
+
+
+def test_mapping_v2_rejects_bridge_for_another_primitive() -> None:
+    from destiny_personality.mapping_v2 import validate_mapping_candidate
+
+    findings = validate_mapping_candidate(
+        _approved_mapping_candidate(),
+        ("SMC-APPROVED-001",),
+        {"BRIDGE-P004-001": "P006"},
+    )
+
+    assert "MAPPING_CANDIDATE_BRIDGE_BINDING_INVALID" in findings
 
 
 def test_semantic_core_source_view_and_explain_are_profile_contained() -> None:

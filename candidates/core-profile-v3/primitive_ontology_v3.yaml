@@ -1,0 +1,43 @@
+schema_version: candidate-primitive-ontology-v3
+ontology_version: candidate-discovery-v3
+review_status: discovery_candidate
+activation: candidate_only
+runtime_eligible: false
+replaces: null
+source_policy: evidence_discovered
+limitations:
+  - This asset does not replace v2 and cannot be consumed by the runtime.
+  - It defines a research question, not an approved personality conclusion.
+  - Traditional-system semantics do not claim empirical psychology validity.
+primitives:
+  - primitive_id: TP001
+    canonical_name: Task Continuity Process
+    canonical_definition: How an undertaken matter is sustained, revised, interrupted, or carried through after initiation.
+    semantic_question: Once a matter is underway, how is its course maintained or changed?
+    candidate_status: method_blocked
+    included_meanings:
+      - continuation after initiation
+      - revision during execution
+      - interruption during execution
+      - carrying a matter through
+    excluded_meanings:
+      - achievement or failure
+      - diligence as moral praise
+      - action initiation speed
+      - organizational method
+      - role or occupational capability
+      - outcome quality
+    contexts:
+      - work
+      - decision
+      - pressure
+      - action
+    variation_requirement: Both persistence and revision patterns require independent evidence; absence is not opposite evidence.
+    admission_requirements:
+      - direct_or_behavioral_construct
+      - source_subject_match
+      - executable_traditional_method
+      - canonical_fact_support
+      - counterevidence_definition
+      - contextual_scope
+      - profile_information_value

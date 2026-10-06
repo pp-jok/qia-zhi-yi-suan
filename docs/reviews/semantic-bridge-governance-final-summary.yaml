@@ -1,0 +1,31 @@
+schema_version: semantic-bridge-governance-final-v1
+baseline_release: 0.4.1
+bridge_policy:
+  direct_construct: admissible_after_all_gates
+  behavioral_mechanism: admissible_after_all_gates
+  capability_only: rejected
+  temperament_only: rejected
+  outcome_only: rejected
+  analogical_symbolic: rejected
+single_direction_evidence:
+  supported: true
+p006:
+  bazi_bridge: rejected_capability_or_outcome
+  astrology_bridge: rejected_capability_or_temperament
+  method_status: blocked_after_bridge_rejection
+  canonical_fact_status: not_applicable
+  primary_evidence_count: 0
+  active_mapping_count: 0
+  formal_state: unknown
+ontology_compatibility_review:
+  triggered: true
+  result: systematic_mismatch_v3_candidate_opened
+formal_non_unknown_primitive_count: 0
+release:
+  version: 0.4.2
+  classification: SEMANTIC_BRIDGE_GOVERNANCE_COMPLETE__P006_BRIDGE_REJECTED__ONTOLOGY_V3_CANDIDATE_OPENED__NO_FORMAL_ACTIVATION
+ci:
+  pytest_3_9: required
+  pytest_3_11: required
+  pytest_3_12: required
+  package_verification: required

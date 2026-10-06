@@ -80,7 +80,7 @@ def test_release_metadata_declares_version_readme_license_and_assets() -> None:
     root = Path(__file__).resolve().parents[1]
     pyproject = (root / "pyproject.toml").read_text(encoding="utf-8")
 
-    assert 'version = "0.4.1"' in pyproject
+    assert 'version = "0.4.2"' in pyproject
     assert 'readme = "README.md"' in pyproject
     assert 'license = {file = "LICENSE"}' in pyproject
     assert '"release_assets/v1/*.yaml"' in pyproject
@@ -107,10 +107,10 @@ def test_package_verifier_runs_installed_formal_report_smoke_and_binary_audit() 
 def test_release_documentation_and_notices_are_present() -> None:
     root = Path(__file__).resolve().parents[1]
     expected = {
-        "CHANGELOG.md": ("0.4.1", "deep research closure"),
+        "CHANGELOG.md": ("0.4.2", "Semantic Bridge"),
         "THIRD_PARTY_NOTICES.md": ("PyYAML", "pytest", "Swiss Ephemeris"),
         "docs/architecture/autonomous-release-architecture.md": ("Facts", "Core Destiny Profile", "Report Plan"),
-        "docs/release/v0.4.1-release-readiness.md": ("0.4.1", "unknown", "wheel"),
+        "docs/release/v0.4.2-release-readiness.md": ("0.4.2", "unknown", "wheel"),
         "docs/reviews/archive/README.md": ("historical", "authoritative"),
     }
     for relative, phrases in expected.items():

@@ -62,7 +62,12 @@ def load_enabled_formation_policies(project_root: Path) -> tuple[dict, dict]:
 
 def _form(stage: str, policy: Mapping[str, object], sources: tuple, required_key: str, source_id_key: str, output_id_key: str) -> tuple:
     rules = policy.get("rules", ()) if isinstance(policy, Mapping) else ()
-    source_ids = {item.get(source_id_key) for item in sources}
+    source_ids = {
+        item.get(source_id_key)
+        for item in sources
+        if source_id_key != "primitive_id"
+        or item.get("state") in {"supported_high", "supported_low", "mixed"}
+    }
     result = []
     for rule in rules if isinstance(rules, list) else ():
         required = rule.get(required_key, ()) if isinstance(rule, Mapping) else ()
@@ -92,7 +97,12 @@ def build_semantic_provenance(core: Mapping[str, object]) -> dict:
         mapping_ref = "mapping:" + str(mapping["mapping_candidate_id"])
         primitive_ref = "primitive:" + str(mapping["primitive_id"])
         nodes.update((mapping_ref, primitive_ref)); edges.add((primitive_ref, "derived_from", mapping_ref))
-        for field, kind in (("semantic_mechanism_refs", "semantic_mechanism"), ("evidence_root_refs", "evidence_root"), ("canonical_fact_requirements", "fact")):
+        for field, kind in (
+            ("semantic_bridge_refs", "semantic_bridge"),
+            ("semantic_mechanism_refs", "semantic_mechanism"),
+            ("evidence_root_refs", "evidence_root"),
+            ("canonical_fact_requirements", "fact"),
+        ):
             for ref in mapping.get(field, ()):
                 child = kind + ":" + str(ref); nodes.add(child); edges.add((mapping_ref, "supported_by", child))
         for link in mapping.get("provenance_links", ()):
@@ -162,16 +172,34 @@ def resolve_primitive_states(mappings: Iterable[Mapping[str, object]], policy: M
         grouped.setdefault(mapping["primitive_id"], []).append(mapping)
     results = []
     for primitive_id, items in sorted(grouped.items()):
-        states = {item.get("proposed_direction", {}).get("state", "unknown") for item in items}
         context_states = _context_states(items)
-        state = "context_differentiated" if len(set(context_states.values())) > 1 else _resolve_state(states, policy)
+        global_items = [item for item in items if not item.get("contexts")]
+        if global_items:
+            states = {
+                item.get("proposed_direction", {}).get("state", "unknown")
+                for item in global_items
+            }
+            state = _resolve_state(states, policy)
+        elif context_states:
+            state = (
+                "unknown"
+                if set(context_states.values()) == {"unknown"}
+                else "context_differentiated"
+            )
+        else:
+            state = "unknown"
         result = {"primitive_id": primitive_id, "state": state, "mapping_refs": tuple(item["mapping_candidate_id"] for item in items)}
         if context_states:
             result["context_states"] = context_states
-        if any("semantic_mechanism_refs" in item for item in items):
-            result["mechanism_refs"] = tuple(ref for item in items for ref in item.get("semantic_mechanism_refs", ()))
-            result["evidence_root_refs"] = tuple(ref for item in items for ref in item.get("evidence_root_refs", ()))
-            result["fact_refs"] = tuple(ref for item in items for ref in item.get("canonical_fact_requirements", ()))
+        for field, output_field in (
+            ("semantic_bridge_refs", "bridge_refs"),
+            ("semantic_mechanism_refs", "mechanism_refs"),
+            ("evidence_root_refs", "evidence_root_refs"),
+            ("canonical_fact_requirements", "fact_refs"),
+        ):
+            refs = tuple(ref for item in items for ref in item.get(field, ()))
+            if refs:
+                result[output_field] = refs
         for field, output_field in (("modifiers", "modifier_refs"), ("contextualizers", "contextualizer_refs"), ("counterevidence", "counterevidence_refs")):
             refs = tuple(ref for item in items for ref in item.get(field, ()) if isinstance(ref, str) and ref)
             if refs:

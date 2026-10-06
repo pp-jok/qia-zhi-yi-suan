@@ -13,10 +13,41 @@ from .config_errors import ConfigError
 MECHANISM_CONTRACT_FILE = "semantic_mechanism_contract_v1.yaml"
 EVIDENCE_ROOT_CONTRACT_FILE = "semantic_evidence_root_contract_v1.yaml"
 EVIDENCE_ROOT_REGISTRY_FILE = "semantic_evidence_root_registry_v1.yaml"
+SEMANTIC_BRIDGE_POLICY_FILE = "semantic_bridge_policy_v1.yaml"
+SEMANTIC_CLAIM_REGISTRY_FILE = "semantic_knowledge_claim_registry_v1.yaml"
+PRIMITIVE_ONTOLOGY_V2_FILE = "primitive_ontology_v2.yaml"
 MECHANISM_SCHEMA_VERSION = "semantic-mechanism-v1"
 EVIDENCE_ROOT_SCHEMA_VERSION = "semantic-evidence-root-v1"
 EVIDENCE_ROOT_REGISTRY_SCHEMA_VERSION = "semantic-evidence-root-registry-v1"
+SEMANTIC_BRIDGE_SCHEMA_VERSION = "semantic-bridge-policy-v1"
 DEFAULT_CONTRACT_ROOT = Path(__file__).resolve().parents[2] / "candidates" / "semantic-mechanisms-v1"
+
+_BRIDGE_CLASS_ADMISSION = {
+    "DIRECT_CONSTRUCT_BRIDGE": "admissible",
+    "BEHAVIORAL_MECHANISM_BRIDGE": "admissible",
+    "CAPABILITY_OR_ROLE_BRIDGE": "rejected",
+    "TEMPERAMENT_BRIDGE": "rejected",
+    "OUTCOME_BRIDGE": "rejected",
+    "ANALOGICAL_SYMBOLIC_BRIDGE": "rejected",
+}
+_BRIDGE_REJECTION_CODES = {
+    "CAPABILITY_OR_ROLE_BRIDGE": "SEMANTIC_BRIDGE_CAPABILITY_OR_ROLE_BLOCKED",
+    "TEMPERAMENT_BRIDGE": "SEMANTIC_BRIDGE_TEMPERAMENT_BLOCKED",
+    "OUTCOME_BRIDGE": "SEMANTIC_BRIDGE_OUTCOME_BLOCKED",
+    "ANALOGICAL_SYMBOLIC_BRIDGE": "SEMANTIC_BRIDGE_SYMBOLIC_ANALOGY_BLOCKED",
+}
+_BRIDGE_GATES = {
+    "source_behavior_explicitness",
+    "subject_match",
+    "process_match",
+    "primitive_ownership",
+    "direction_entailment",
+    "context_match",
+    "alternative_interpretation_resolution",
+    "traditional_method_reproducibility",
+    "counterevidence_definition",
+    "scientific_boundary_declaration",
+}
 
 
 @dataclass(frozen=True)
@@ -31,6 +62,20 @@ class SemanticMechanismFinding:
     code: str
     severity: str
     message: str
+
+
+@dataclass(frozen=True)
+class SemanticBridgePolicy:
+    schema_version: str
+    bridge_classes: Tuple[str, ...]
+    admissible_classes: Tuple[str, ...]
+    rejected_classes: Tuple[str, ...]
+    required_gates: Tuple[str, ...]
+    allowed_directions: Tuple[str, ...]
+    allowed_subject_kinds: Tuple[str, ...]
+    allowed_traditional_method_statuses: Tuple[str, ...]
+    context_rule: str
+    scientific_boundary: str
 
 
 class _LoadedSemanticMechanismCandidate(dict):
@@ -71,6 +116,186 @@ def load_semantic_mechanism_contracts(root: Path) -> SemanticMechanismContracts:
         evidence_root_schema_version=EVIDENCE_ROOT_SCHEMA_VERSION,
         allowed_roles=tuple(roles),
     )
+
+
+def load_semantic_bridge_policy(project_root: Path) -> SemanticBridgePolicy:
+    """Load the exact candidate-only Semantic Bridge admission policy."""
+
+    directory = Path(project_root) / "candidates" / "semantic-core-v1"
+    payload = _load_mapping(directory, SEMANTIC_BRIDGE_POLICY_FILE)
+    expected_fields = {
+        "schema_version",
+        "policy_version",
+        "activation_status",
+        "bridge_classes",
+        "required_admission_gates",
+        "allowed_directions",
+        "allowed_subject_kinds",
+        "allowed_traditional_method_statuses",
+        "context_rule",
+        "scientific_boundary",
+    }
+    if set(payload) != expected_fields:
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "semantic bridge policy fields must match the governed schema",
+            file=SEMANTIC_BRIDGE_POLICY_FILE,
+        )
+    _require_equal(
+        payload,
+        "schema_version",
+        SEMANTIC_BRIDGE_SCHEMA_VERSION,
+        SEMANTIC_BRIDGE_POLICY_FILE,
+    )
+    _require_equal(
+        payload,
+        "policy_version",
+        "candidate-semantic-bridge-policy-v1",
+        SEMANTIC_BRIDGE_POLICY_FILE,
+    )
+    _require_equal(
+        payload,
+        "activation_status",
+        "candidate_only",
+        SEMANTIC_BRIDGE_POLICY_FILE,
+    )
+
+    bridge_classes = payload.get("bridge_classes")
+    if type(bridge_classes) is not dict or bridge_classes != _BRIDGE_CLASS_ADMISSION:
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "bridge_classes must define the six governed admission classes",
+            file=SEMANTIC_BRIDGE_POLICY_FILE,
+            field="bridge_classes",
+        )
+    gates = _require_exact_string_values(
+        payload,
+        "required_admission_gates",
+        _BRIDGE_GATES,
+        SEMANTIC_BRIDGE_POLICY_FILE,
+    )
+    directions = _require_exact_string_values(
+        payload,
+        "allowed_directions",
+        {"supported_high", "supported_low"},
+        SEMANTIC_BRIDGE_POLICY_FILE,
+    )
+    subjects = _require_exact_string_values(
+        payload,
+        "allowed_subject_kinds",
+        {"person", "native"},
+        SEMANTIC_BRIDGE_POLICY_FILE,
+    )
+    method_statuses = _require_exact_string_values(
+        payload,
+        "allowed_traditional_method_statuses",
+        {"reproducible", "blocked"},
+        SEMANTIC_BRIDGE_POLICY_FILE,
+    )
+    _require_equal(
+        payload,
+        "context_rule",
+        "local_first",
+        SEMANTIC_BRIDGE_POLICY_FILE,
+    )
+    _require_equal(
+        payload,
+        "scientific_boundary",
+        "traditional_system_semantic_translation",
+        SEMANTIC_BRIDGE_POLICY_FILE,
+    )
+    admissible = tuple(
+        name for name, status in bridge_classes.items() if status == "admissible"
+    )
+    rejected = tuple(
+        name for name, status in bridge_classes.items() if status == "rejected"
+    )
+    return SemanticBridgePolicy(
+        schema_version=SEMANTIC_BRIDGE_SCHEMA_VERSION,
+        bridge_classes=tuple(bridge_classes),
+        admissible_classes=admissible,
+        rejected_classes=rejected,
+        required_gates=gates,
+        allowed_directions=directions,
+        allowed_subject_kinds=subjects,
+        allowed_traditional_method_statuses=method_statuses,
+        context_rule="local_first",
+        scientific_boundary="traditional_system_semantic_translation",
+    )
+
+
+def validate_semantic_bridge_candidate(
+    bridge: Mapping[str, object], policy: SemanticBridgePolicy
+) -> Tuple[SemanticMechanismFinding, ...]:
+    """Return blocking findings for an incomplete or inadmissible Bridge audit."""
+
+    if not isinstance(bridge, Mapping):
+        return (_finding("SEMANTIC_BRIDGE_AUDIT_INVALID", "error"),)
+
+    findings = []
+    if not _is_non_empty_string(bridge.get("bridge_id")):
+        findings.append(_finding("SEMANTIC_BRIDGE_ID_REQUIRED", "error"))
+
+    bridge_class = bridge.get("bridge_class")
+    if bridge_class in policy.rejected_classes:
+        findings.append(
+            _finding(_BRIDGE_REJECTION_CODES[str(bridge_class)], "error")
+        )
+    elif bridge_class not in policy.admissible_classes:
+        findings.append(_finding("SEMANTIC_BRIDGE_INVALID_CLASS", "error"))
+
+    if not _is_non_empty_string_list(bridge.get("source_claim_refs")):
+        findings.append(_finding("SEMANTIC_BRIDGE_SOURCE_CLAIMS_REQUIRED", "error"))
+    if not _is_non_empty_string(bridge.get("source_behavior")):
+        findings.append(_finding("SEMANTIC_BRIDGE_SOURCE_BEHAVIOR_REQUIRED", "error"))
+    if bridge.get("subject_kind") not in policy.allowed_subject_kinds:
+        findings.append(_finding("SEMANTIC_BRIDGE_SUBJECT_MISMATCH", "error"))
+    if not _is_non_empty_string(bridge.get("process_meaning")):
+        findings.append(_finding("SEMANTIC_BRIDGE_PROCESS_MEANING_REQUIRED", "error"))
+    if not _is_non_empty_string(bridge.get("primitive_id")):
+        findings.append(_finding("SEMANTIC_BRIDGE_PRIMITIVE_ID_REQUIRED", "error"))
+    if not _is_non_empty_string(bridge.get("primitive_ownership_rationale")):
+        findings.append(
+            _finding("SEMANTIC_BRIDGE_PRIMITIVE_OWNERSHIP_REQUIRED", "error")
+        )
+    if not _is_non_empty_string(bridge.get("direction_rationale")):
+        findings.append(_finding("SEMANTIC_BRIDGE_DIRECTION_RATIONALE_REQUIRED", "error"))
+    if bridge.get("direction") not in policy.allowed_directions:
+        findings.append(_finding("SEMANTIC_BRIDGE_INVALID_DIRECTION", "error"))
+    if not _is_non_empty_string_list(bridge.get("contexts")):
+        findings.append(_finding("SEMANTIC_BRIDGE_CONTEXTS_REQUIRED", "error"))
+    if not _is_non_empty_string_list(bridge.get("alternative_interpretations")):
+        findings.append(_finding("SEMANTIC_BRIDGE_ALTERNATIVES_REQUIRED", "error"))
+    if not _is_non_empty_string_list(bridge.get("excluded_interpretations")):
+        findings.append(_finding("SEMANTIC_BRIDGE_ALTERNATIVES_UNRESOLVED", "error"))
+    if bridge.get("traditional_method_status") not in (
+        policy.allowed_traditional_method_statuses
+    ):
+        findings.append(_finding("SEMANTIC_BRIDGE_INVALID_METHOD_STATUS", "error"))
+    if not _is_non_empty_string(bridge.get("counterevidence")):
+        findings.append(_finding("SEMANTIC_BRIDGE_COUNTEREVIDENCE_REQUIRED", "error"))
+    if bridge.get("scientific_boundary") != policy.scientific_boundary:
+        findings.append(
+            _finding("SEMANTIC_BRIDGE_EMPIRICAL_PSYCHOLOGY_CLAIM", "error")
+        )
+
+    gates = bridge.get("admission_gates")
+    if type(gates) is not dict or set(gates) != set(policy.required_gates):
+        findings.append(_finding("SEMANTIC_BRIDGE_ADMISSION_GATES_INVALID", "error"))
+    else:
+        for gate in policy.required_gates:
+            value = gates[gate]
+            if type(value) is not bool:
+                findings.append(_finding("SEMANTIC_BRIDGE_GATE_VALUE_INVALID", "error"))
+            elif value is False:
+                findings.append(_finding("SEMANTIC_BRIDGE_ADMISSION_GATE_FAILED", "error"))
+
+    if any(
+        field in bridge
+        for field in ("score", "semantic_score", "primitive_state", "asserts_primitive_state")
+    ):
+        findings.append(_finding("SEMANTIC_BRIDGE_STATE_OR_SCORE_PROHIBITED", "error"))
+    return tuple(findings)
 
 
 def load_semantic_mechanism_candidates(root: Path) -> Tuple[Mapping[str, object], ...]:
@@ -298,6 +523,35 @@ def validate_semantic_mechanism_candidate(
         for key in similarity_keys
     ):
         findings.append(_finding("LEGACY_REINTRODUCTION_WARNING", "warning"))
+
+    if review_status == "approved" and evidence_role == "PRIMARY_EVIDENCE":
+        root = (
+            Path(contract_root)
+            if isinstance(contract_root, (str, Path))
+            else _loaded_candidate_contract_root(candidate) or DEFAULT_CONTRACT_ROOT
+        )
+        bridge_required, required_method_status = (
+            _approved_primary_evidence_bridge_rules(root)
+        )
+        bridge = candidate.get("semantic_bridge")
+        if bridge_required and not isinstance(bridge, Mapping):
+            findings.append(
+                _finding("SEMANTIC_MECHANISM_BRIDGE_AUDIT_REQUIRED", "error")
+            )
+        elif isinstance(bridge, Mapping):
+            project_root = root.parents[1] if root.name == "semantic-mechanisms-v1" else root
+            policy = load_semantic_bridge_policy(project_root)
+            findings.extend(validate_semantic_bridge_candidate(bridge, policy))
+            findings.extend(
+                _validate_semantic_bridge_bindings(bridge, candidate, project_root)
+            )
+            if bridge.get("traditional_method_status") != required_method_status:
+                findings.append(
+                    _finding(
+                        "SEMANTIC_MECHANISM_BRIDGE_METHOD_NOT_REPRODUCIBLE",
+                        "error",
+                    )
+                )
     return tuple(findings)
 
 
@@ -395,6 +649,141 @@ def _candidate_contract_rules(
             contract, "prohibited_origins", MECHANISM_CONTRACT_FILE
         ),
     )
+
+
+def _approved_primary_evidence_bridge_rules(root: Path) -> Tuple[bool, str]:
+    contract = _load_mapping(Path(root), MECHANISM_CONTRACT_FILE)
+    requirements = contract.get("approved_primary_evidence_requirements")
+    if type(requirements) is not dict or set(requirements) != {
+        "semantic_bridge_required",
+        "required_traditional_method_status",
+    }:
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "approved PRIMARY_EVIDENCE requirements are malformed",
+            file=MECHANISM_CONTRACT_FILE,
+            field="approved_primary_evidence_requirements",
+        )
+    if requirements.get("semantic_bridge_required") is not True:
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "approved PRIMARY_EVIDENCE must require a semantic bridge",
+            file=MECHANISM_CONTRACT_FILE,
+            field="approved_primary_evidence_requirements.semantic_bridge_required",
+        )
+    required_method_status = requirements.get("required_traditional_method_status")
+    if required_method_status != "reproducible":
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            "approved PRIMARY_EVIDENCE must require a reproducible traditional method",
+            file=MECHANISM_CONTRACT_FILE,
+            field=(
+                "approved_primary_evidence_requirements."
+                "required_traditional_method_status"
+            ),
+        )
+    return True, required_method_status
+
+
+def _validate_semantic_bridge_bindings(
+    bridge: Mapping[str, object],
+    candidate: Mapping[str, object],
+    project_root: Path,
+) -> Tuple[SemanticMechanismFinding, ...]:
+    """Bind a Bridge to repository-owned claims, Primitive, system, and contexts."""
+
+    claims_path = (
+        Path(project_root)
+        / "candidates"
+        / "semantic-knowledge-v1"
+        / SEMANTIC_CLAIM_REGISTRY_FILE
+    )
+    ontology_path = (
+        Path(project_root)
+        / "candidates"
+        / "core-profile-v2"
+        / PRIMITIVE_ONTOLOGY_V2_FILE
+    )
+    try:
+        claims_payload = yaml.safe_load(claims_path.read_text(encoding="utf-8"))
+        ontology_payload = yaml.safe_load(ontology_path.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError):
+        return (_finding("SEMANTIC_BRIDGE_BINDING_REGISTRY_REQUIRED", "error"),)
+    claims = claims_payload.get("claims") if isinstance(claims_payload, dict) else None
+    primitives = (
+        ontology_payload.get("primitives")
+        if isinstance(ontology_payload, dict)
+        else None
+    )
+    if not isinstance(claims, list) or not isinstance(primitives, list):
+        return (_finding("SEMANTIC_BRIDGE_BINDING_REGISTRY_REQUIRED", "error"),)
+
+    claim_by_id = {
+        item.get("claim_id"): item
+        for item in claims
+        if isinstance(item, dict) and _is_non_empty_string(item.get("claim_id"))
+    }
+    primitive_by_id = {
+        item.get("primitive_id"): item
+        for item in primitives
+        if isinstance(item, dict) and _is_non_empty_string(item.get("primitive_id"))
+    }
+    findings = []
+    primitive_id = bridge.get("primitive_id")
+    primitive = (
+        primitive_by_id.get(primitive_id)
+        if isinstance(primitive_id, str)
+        else None
+    )
+    if primitive is None:
+        findings.append(_finding("SEMANTIC_BRIDGE_PRIMITIVE_UNRESOLVED", "error"))
+    else:
+        valid_contexts = primitive.get("valid_contexts", ())
+        bridge_contexts = bridge.get("contexts", ())
+        if not isinstance(bridge_contexts, (list, tuple)) or not all(
+            isinstance(context, str) for context in bridge_contexts
+        ):
+            bridge_contexts = ()
+        if not isinstance(valid_contexts, list) or not set(bridge_contexts).issubset(
+            set(valid_contexts)
+        ):
+            findings.append(_finding("SEMANTIC_BRIDGE_CONTEXT_UNGOVERNED", "error"))
+        target_questions = candidate.get("target_primitive_questions", ())
+        if primitive.get("semantic_question") not in target_questions:
+            findings.append(
+                _finding("SEMANTIC_BRIDGE_PRIMITIVE_QUESTION_MISMATCH", "error")
+            )
+
+    resolved_claims = []
+    claim_refs = bridge.get("source_claim_refs", ())
+    if not isinstance(claim_refs, (list, tuple)):
+        claim_refs = ()
+    for claim_ref in claim_refs:
+        claim = claim_by_id.get(claim_ref) if isinstance(claim_ref, str) else None
+        if claim is None:
+            findings.append(
+                _finding("SEMANTIC_BRIDGE_SOURCE_CLAIM_UNRESOLVED", "error")
+            )
+        else:
+            resolved_claims.append(claim)
+    for claim in resolved_claims:
+        if claim.get("target_primitive_id") != primitive_id:
+            findings.append(
+                _finding("SEMANTIC_BRIDGE_CLAIM_PRIMITIVE_MISMATCH", "error")
+            )
+        if claim.get("system") != candidate.get("source_system"):
+            findings.append(_finding("SEMANTIC_BRIDGE_CLAIM_SYSTEM_MISMATCH", "error"))
+        claim_contexts = claim.get("contexts")
+        bridge_contexts = bridge.get("contexts", ())
+        if not isinstance(bridge_contexts, (list, tuple)) or not all(
+            isinstance(context, str) for context in bridge_contexts
+        ):
+            bridge_contexts = ()
+        if not isinstance(claim_contexts, list) or not set(bridge_contexts).issubset(
+            set(claim_contexts)
+        ):
+            findings.append(_finding("SEMANTIC_BRIDGE_CLAIM_CONTEXT_MISMATCH", "error"))
+    return tuple(findings)
 
 
 def _has_non_empty_value(candidate: Mapping[str, object], field: str) -> bool:
@@ -503,6 +892,23 @@ def _require_string_list(
             field=field,
         )
     return tuple(value)
+
+
+def _require_exact_string_values(
+    payload: Mapping[str, object],
+    field: str,
+    expected: Collection[str],
+    filename: str,
+) -> Tuple[str, ...]:
+    values = _require_string_list(payload, field, filename)
+    if len(values) != len(expected) or set(values) != set(expected):
+        raise ConfigError(
+            "CONFIG_VALUE_ERROR",
+            f"{field} must contain exactly the governed values",
+            file=filename,
+            field=field,
+        )
+    return values
 
 
 def _validate_evidence_root(
