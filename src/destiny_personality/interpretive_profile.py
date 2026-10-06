@@ -9,6 +9,7 @@ from .interpretive_models import (
     InterpretiveConfidence,
     InterpretiveCoreProfile,
     InterpretiveSignal,
+    require_audited_interpretive_signals,
 )
 from .interpretive_rules import BUNDLE_VERSION, extract_interpretive_signals
 
@@ -26,8 +27,8 @@ def build_interpretive_core_profile(
 
     qualified = require_qualified_facts(qualified_facts)
     signals = extract_interpretive_signals(qualified)
-    return synthesize_interpretive_core_profile(
-        signals,
+    return _synthesize_interpretive_core_profile(
+        require_audited_interpretive_signals(signals),
         audit_refs=(
             f"deterministic-facts:{qualified.fact_fingerprint}",
             f"fact-qualification:{qualified.qualification_fingerprint}",
@@ -37,6 +38,21 @@ def build_interpretive_core_profile(
 
 
 def synthesize_interpretive_core_profile(
+    signals: Tuple[InterpretiveSignal, ...],
+    *,
+    requested_topics: Sequence[str] = (),
+) -> InterpretiveCoreProfile:
+    """Synthesize only signals sealed by the default audited extractor."""
+
+    audited_signals = require_audited_interpretive_signals(signals)
+    return _synthesize_interpretive_core_profile(
+        audited_signals,
+        requested_topics=requested_topics,
+        audit_refs=(f"interpretive-rules:{BUNDLE_VERSION}",),
+    )
+
+
+def _synthesize_interpretive_core_profile(
     signals: Tuple[InterpretiveSignal, ...],
     *,
     requested_topics: Sequence[str] = (),

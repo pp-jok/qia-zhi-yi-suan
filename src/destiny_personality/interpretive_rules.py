@@ -10,6 +10,7 @@ from .interpretive_models import (
     InterpretiveRuleBundle,
     InterpretiveSignal,
     InterpretiveValuePredicate,
+    _seal_audited_interpretive_signals,
 )
 from .deterministic_facts_codec import QualifiedFacts, require_qualified_facts
 from .calculation.models import DeterministicChartFacts, FactMode
@@ -212,13 +213,17 @@ def extract_interpretive_signals(
     """Extract audited traditional signals from qualification-bound facts only."""
 
     facts = require_qualified_facts(qualified_facts).facts
+    audited_bundle = bundle is None
     active_bundle = bundle if bundle is not None else load_interpretive_rule_bundle()
     signals = []
     for rule in active_bundle.rules:
         fact_refs = _matching_fact_paths(rule, facts)
         if fact_refs:
             signals.append(replace(rule, fact_refs=fact_refs))
-    return tuple(signals)
+    extracted = tuple(signals)
+    if audited_bundle:
+        return _seal_audited_interpretive_signals(extracted)
+    return extracted
 
 
 def _matching_fact_paths(

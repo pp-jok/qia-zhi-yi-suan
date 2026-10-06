@@ -1,8 +1,11 @@
 from typing import Optional
 
+import pytest
+
 from destiny_personality.interpretive_models import InterpretiveSignal
 from destiny_personality.interpretive_profile import (
     ALLOWED_CONFIDENCES,
+    _synthesize_interpretive_core_profile,
     build_interpretive_core_profile,
     synthesize_interpretive_core_profile,
 )
@@ -46,8 +49,36 @@ def test_builder_uses_only_signals_extracted_from_qualified_facts(qualified_fact
         )
     }
     assert profile.mode == "audited_interpretive"
+    assert profile.audit_refs
     assert conclusion_ids
     assert conclusion_ids == {signal.signal_id for signal in extracted}
+
+
+def test_public_synthesis_rejects_fabricated_signals():
+    fabricated = _signal(
+        "FABRICATED-SIGNAL",
+        system="fabricated-system",
+        topic="fabricated-topic",
+        direction="fabricated-direction",
+        rule_ref="fabricated-rule",
+    )
+
+    with pytest.raises(ValueError, match="AUDITED_INTERPRETIVE_SIGNALS_REQUIRED"):
+        synthesize_interpretive_core_profile((fabricated,))
+
+
+def test_public_synthesis_accepts_audited_extractor_output(qualified_facts):
+    extracted = extract_interpretive_signals(qualified_facts)
+
+    profile = synthesize_interpretive_core_profile(extracted)
+
+    assert profile.mode == "audited_interpretive"
+    assert profile.audit_refs
+    assert {
+        signal_id
+        for conclusion in profile.conclusions
+        for signal_id in conclusion.supporting_signal_ids
+    } == {signal.signal_id for signal in extracted}
 
 
 def test_profile_preserves_cross_system_agreement_and_tension():
@@ -84,7 +115,7 @@ def test_profile_preserves_cross_system_agreement_and_tension():
         ),
     )
 
-    profile = synthesize_interpretive_core_profile(signals)
+    profile = _synthesize_interpretive_core_profile(signals)
 
     agreement = next(
         item
@@ -135,7 +166,7 @@ def test_profile_applies_the_controlled_confidence_policy():
         ),
     )
 
-    profile = synthesize_interpretive_core_profile(
+    profile = _synthesize_interpretive_core_profile(
         signals,
         requested_topics=("learning", "work", "relationships", "stress"),
     )
@@ -158,7 +189,7 @@ def test_profile_applies_the_controlled_confidence_policy():
 
 
 def test_profile_uses_only_allowed_confidence_labels():
-    profile = synthesize_interpretive_core_profile(
+    profile = _synthesize_interpretive_core_profile(
         (
             _signal(
                 "BAZI-STABLE",

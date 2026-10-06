@@ -5,6 +5,7 @@ from typing import Literal, Optional, Tuple
 
 
 InterpretiveConfidence = Literal["high", "moderate", "exploratory", "insufficient"]
+_AUDITED_INTERPRETIVE_SIGNALS_SEAL = object()
 
 
 @dataclass(frozen=True)
@@ -31,6 +32,38 @@ class InterpretiveSignal:
     interpretation: str
     confidence: InterpretiveConfidence
     limitations: Tuple[str, ...]
+
+
+class AuditedInterpretiveSignals(tuple):
+    """Immutable signal tuple constructible only by the audited extractor."""
+
+    def __new__(
+        cls,
+        signals: Tuple[InterpretiveSignal, ...],
+        *,
+        _seal: object,
+    ) -> "AuditedInterpretiveSignals":
+        if _seal is not _AUDITED_INTERPRETIVE_SIGNALS_SEAL:
+            raise ValueError("AUDITED_INTERPRETIVE_SIGNALS_REQUIRED")
+        return tuple.__new__(cls, signals)
+
+
+def _seal_audited_interpretive_signals(
+    signals: Tuple[InterpretiveSignal, ...],
+) -> AuditedInterpretiveSignals:
+    return AuditedInterpretiveSignals(
+        signals, _seal=_AUDITED_INTERPRETIVE_SIGNALS_SEAL
+    )
+
+
+def require_audited_interpretive_signals(
+    value: object,
+) -> Tuple[InterpretiveSignal, ...]:
+    if not isinstance(value, AuditedInterpretiveSignals) or any(
+        not isinstance(signal, InterpretiveSignal) for signal in value
+    ):
+        raise ValueError("AUDITED_INTERPRETIVE_SIGNALS_REQUIRED")
+    return tuple(value)
 
 
 @dataclass(frozen=True)
