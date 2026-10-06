@@ -45,13 +45,13 @@ def _qualified_interpretive_facts(qualified_facts, tmp_path, case):
         ten_gods=(
             TenGodFact(
                 "day_master",
-                "resource",
+                "正印",
                 (PillarPosition.YEAR,),
                 TenGodSourceKind.VISIBLE_STEM,
             ),
             TenGodFact(
                 "day_master",
-                "wealth",
+                "正财",
                 (PillarPosition.MONTH,),
                 TenGodSourceKind.VISIBLE_STEM,
             ),
@@ -72,7 +72,7 @@ def _qualified_interpretive_facts(qualified_facts, tmp_path, case):
             ten_gods=(
                 TenGodFact(
                     "day_master",
-                    "wealth",
+                    "正财",
                     (PillarPosition.YEAR,),
                     TenGodSourceKind.VISIBLE_STEM,
                 ),
@@ -101,8 +101,8 @@ def _qualified_interpretive_facts(qualified_facts, tmp_path, case):
             ),
             aspects=(
                 AstrologyAspectFact(
-                    "Sun",
-                    "Moon",
+                    "Moon" if case.get("reversed_aspect", False) else "Sun",
+                    "Sun" if case.get("reversed_aspect", False) else "Moon",
                     "opposition" if case.get("matching_values", True) is False else "conjunction",
                     Decimal("0"),
                 ),
@@ -201,6 +201,13 @@ def non_matching_interpretive_facts(qualified_facts, tmp_path, extraction_cases)
     )
 
 
+@pytest.fixture
+def reversed_aspect_interpretive_facts(qualified_facts, tmp_path, extraction_cases):
+    return _qualified_interpretive_facts(
+        qualified_facts, tmp_path, extraction_cases["reversed_aspect"]
+    )
+
+
 def test_rule_bundle_is_versioned_and_contains_both_systems():
     bundle = load_interpretive_rule_bundle()
 
@@ -234,6 +241,20 @@ def test_extraction_requires_matching_value_predicates(non_matching_interpretive
     signals = extract_interpretive_signals(non_matching_interpretive_facts)
 
     assert signals == ()
+
+
+def test_extraction_matches_reversed_aspect_bodies(reversed_aspect_interpretive_facts):
+    signals = extract_interpretive_signals(reversed_aspect_interpretive_facts)
+
+    aspect_signal = next(
+        signal
+        for signal in signals
+        if signal.signal_id == "ASTROLOGY-ASPECT-DIGNITY-CONTEXT"
+    )
+    assert aspect_signal.fact_refs == (
+        "astrology.aspects[0].aspect_type",
+        "astrology.dignities[0].dignity",
+    )
 
 
 def test_missing_time_skips_house_and_angle_rules(
@@ -308,4 +329,17 @@ def test_rule_loader_rejects_unqualified_or_wrong_system_fact_references(
     )
 
     with pytest.raises(ValueError, match=error):
+        load_interpretive_rule_bundle(tmp_path)
+
+
+def test_rule_loader_rejects_unsupported_predicate_value(tmp_path: Path):
+    payload = yaml.safe_load(
+        (Path(__file__).parents[1] / "src" / "destiny_personality" / "interpretive_assets" / "v1" / "interpretive_rules_v1.yaml").read_text(encoding="utf-8")
+    )
+    payload["rules"][0]["value_predicates"][0]["values"] = ["resource"]
+    (tmp_path / "interpretive_rules_v1.yaml").write_text(
+        yaml.safe_dump(payload, allow_unicode=True), encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="INTERPRETIVE_RULE_INVALID_PREDICATE_VALUE"):
         load_interpretive_rule_bundle(tmp_path)

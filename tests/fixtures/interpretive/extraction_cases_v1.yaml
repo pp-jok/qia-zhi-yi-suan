@@ -16,3 +16,6 @@ cases:
   non_matching_values:
     time_available: true
     matching_values: false
+  reversed_aspect:
+    time_available: true
+    reversed_aspect: true

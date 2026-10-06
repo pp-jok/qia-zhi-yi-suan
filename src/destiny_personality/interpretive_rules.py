@@ -49,6 +49,32 @@ PREDICATE_SELECTOR_KEYS = {
     "astrology.aspect": {"body", "other_body"},
     "astrology.essential_dignity": {"body"},
 }
+PREDICATE_VALUE_DOMAINS = {
+    "bazi.ten_god.day_master_relation": frozenset(
+        {"比肩", "劫财", "食神", "伤官", "正财", "偏财", "正官", "七杀", "正印", "偏印"}
+    ),
+    "bazi.elemental_balance": frozenset({"year", "month", "day", "hour"}),
+    "bazi.branch_relation": frozenset(
+        {"combination", "clash", "harm", "punishment", "five_element_controls"}
+    ),
+    "bazi.hidden_stem": frozenset("甲乙丙丁戊己庚辛壬癸"),
+    "astrology.planet_sign": frozenset(
+        {
+            "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+            "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
+        }
+    ),
+    "astrology.house_placement": frozenset(str(house) for house in range(1, 13)),
+    "astrology.aspect": frozenset(
+        {"conjunction", "opposition", "square", "trine", "sextile"}
+    ),
+    "astrology.essential_dignity": frozenset(
+        {"domicile", "detriment", "exaltation", "fall"}
+    ),
+}
+ASTROLOGY_BODIES = frozenset(
+    {"Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"}
+)
 
 
 def interpretive_rule_asset_root() -> Path:
@@ -98,22 +124,25 @@ def _value_predicates(
             or set(item) - {"fact_ref", "values", "body", "other_body"}
         ):
             raise _invalid("INTERPRETIVE_RULE_INVALID_PREDICATE")
-        predicates.append(
-            InterpretiveValuePredicate(
-                fact_ref=fact_ref,
-                values=_strings(item["values"], "INTERPRETIVE_RULE_INVALID_PREDICATE"),
-                body=(
-                    _string(item["body"], "INTERPRETIVE_RULE_INVALID_PREDICATE")
-                    if "body" in item
-                    else None
-                ),
-                other_body=(
-                    _string(item["other_body"], "INTERPRETIVE_RULE_INVALID_PREDICATE")
-                    if "other_body" in item
-                    else None
-                ),
-            )
+        values = _strings(item["values"], "INTERPRETIVE_RULE_INVALID_PREDICATE")
+        body = (
+            _string(item["body"], "INTERPRETIVE_RULE_INVALID_PREDICATE")
+            if "body" in item
+            else None
         )
+        other_body = (
+            _string(item["other_body"], "INTERPRETIVE_RULE_INVALID_PREDICATE")
+            if "other_body" in item
+            else None
+        )
+        if (
+            not set(values).issubset(PREDICATE_VALUE_DOMAINS[fact_ref])
+            or (body is not None and body not in ASTROLOGY_BODIES)
+            or (other_body is not None and other_body not in ASTROLOGY_BODIES)
+            or (other_body is not None and body == other_body)
+        ):
+            raise _invalid("INTERPRETIVE_RULE_INVALID_PREDICATE_VALUE")
+        predicates.append(InterpretiveValuePredicate(fact_ref, values, body, other_body))
     if {predicate.fact_ref for predicate in predicates} != set(fact_refs):
         raise _invalid("INTERPRETIVE_RULE_INVALID_PREDICATE")
     if len({predicate.fact_ref for predicate in predicates}) != len(predicates):
@@ -286,10 +315,14 @@ def _aspect_paths(
         f"astrology.aspects[{index}].aspect_type"
         for index, fact in enumerate(facts.astrology.aspects)
         if (
-            fact.body_a == predicate.body
-            and fact.body_b == predicate.other_body
-            and fact.aspect_type in predicate.values
+            (
+                fact.body_a == predicate.body and fact.body_b == predicate.other_body
+            )
+            or (
+                fact.body_a == predicate.other_body and fact.body_b == predicate.body
+            )
         )
+        and fact.aspect_type in predicate.values
     )
 
 

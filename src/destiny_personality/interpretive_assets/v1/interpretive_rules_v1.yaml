@@ -11,7 +11,7 @@ rules:
       - bazi.elemental_balance
     value_predicates:
       - fact_ref: bazi.ten_god.day_master_relation
-        values: [resource]
+        values: [正印, 偏印]
       - fact_ref: bazi.elemental_balance
         values: [year, month, day]
     traditional_rule_ref: "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
