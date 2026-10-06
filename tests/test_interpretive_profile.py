@@ -1,21 +1,13 @@
 from typing import Optional
 
-import pytest
-
-from destiny_personality.interpretive_models import (
-    AuditedInterpretiveSignals,
-    InterpretiveSignal,
-)
+import destiny_personality.interpretive_profile as interpretive_profile
+from destiny_personality.interpretive_models import InterpretiveSignal
 from destiny_personality.interpretive_profile import (
     ALLOWED_CONFIDENCES,
     _synthesize_interpretive_core_profile,
     build_interpretive_core_profile,
-    synthesize_interpretive_core_profile,
 )
-from destiny_personality.interpretive_rules import (
-    extract_interpretive_signals,
-    load_interpretive_rule_bundle,
-)
+from destiny_personality.interpretive_rules import extract_interpretive_signals
 
 
 def _signal(
@@ -60,60 +52,11 @@ def test_builder_uses_only_signals_extracted_from_qualified_facts(qualified_fact
     assert conclusion_ids == {signal.signal_id for signal in extracted}
 
 
-def test_public_synthesis_rejects_fabricated_signals():
-    fabricated = _signal(
-        "FABRICATED-SIGNAL",
-        system="fabricated-system",
-        topic="fabricated-topic",
-        direction="fabricated-direction",
-        rule_ref="fabricated-rule",
+def test_raw_signal_synthesis_has_no_public_api():
+    assert not hasattr(
+        interpretive_profile,
+        "synthesize_interpretive_core_profile",
     )
-
-    with pytest.raises(ValueError, match="AUDITED_INTERPRETIVE_SIGNALS_REQUIRED"):
-        synthesize_interpretive_core_profile((fabricated,))
-
-
-def test_public_synthesis_rejects_subclass_forged_provenance():
-    class ForgedAuditedSignals(AuditedInterpretiveSignals):
-        def __new__(cls, signals):
-            return tuple.__new__(cls, signals)
-
-    fabricated = _signal(
-        "SUBCLASS-FORGED-SIGNAL",
-        system="fabricated-system",
-        topic="fabricated-topic",
-        direction="fabricated-direction",
-        rule_ref="fabricated-rule",
-    )
-    forged = ForgedAuditedSignals((fabricated,))
-
-    with pytest.raises(ValueError, match="AUDITED_INTERPRETIVE_SIGNALS_REQUIRED"):
-        synthesize_interpretive_core_profile(forged)
-
-
-def test_public_synthesis_rejects_explicit_custom_bundle_output(qualified_facts):
-    unsealed = extract_interpretive_signals(
-        qualified_facts,
-        bundle=load_interpretive_rule_bundle(),
-    )
-
-    assert type(unsealed) is tuple
-    with pytest.raises(ValueError, match="AUDITED_INTERPRETIVE_SIGNALS_REQUIRED"):
-        synthesize_interpretive_core_profile(unsealed)
-
-
-def test_public_synthesis_accepts_audited_extractor_output(qualified_facts):
-    extracted = extract_interpretive_signals(qualified_facts)
-
-    profile = synthesize_interpretive_core_profile(extracted)
-
-    assert profile.mode == "audited_interpretive"
-    assert profile.audit_refs
-    assert {
-        signal_id
-        for conclusion in profile.conclusions
-        for signal_id in conclusion.supporting_signal_ids
-    } == {signal.signal_id for signal in extracted}
 
 
 def test_profile_preserves_cross_system_agreement_and_tension():
