@@ -46,6 +46,14 @@ def _strings(value: Any, code: str) -> Tuple[str, ...]:
     return tuple(_string(item, code) for item in value)
 
 
+def _fact_refs(value: Any, system: str) -> Tuple[str, ...]:
+    references = _strings(value, "INTERPRETIVE_RULE_INVALID_PROVENANCE")
+    prefix = f"{system}."
+    if any(not reference.startswith(prefix) or reference == prefix for reference in references):
+        raise _invalid("INTERPRETIVE_RULE_INVALID_FACT_REF")
+    return references
+
+
 def _rule(value: Any) -> InterpretiveSignal:
     if not isinstance(value, dict) or set(value) != RULE_KEYS:
         raise _invalid("INTERPRETIVE_RULE_INVALID")
@@ -58,7 +66,7 @@ def _rule(value: Any) -> InterpretiveSignal:
     return InterpretiveSignal(
         signal_id=_string(value["signal_id"], "INTERPRETIVE_RULE_INVALID"),
         system=system,
-        fact_refs=_strings(value["fact_refs"], "INTERPRETIVE_RULE_INVALID_PROVENANCE"),
+        fact_refs=_fact_refs(value["fact_refs"], system),
         traditional_rule_ref=_string(
             value["traditional_rule_ref"], "INTERPRETIVE_RULE_INVALID_PROVENANCE"
         ),
