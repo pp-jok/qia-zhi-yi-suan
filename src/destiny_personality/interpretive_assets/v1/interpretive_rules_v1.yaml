@@ -1,0 +1,57 @@
+bundle_version: audited-interpretive-rules-v1
+limitations:
+  - These are traditional interpretive heuristics, not empirically validated diagnoses.
+  - A chart-derived signal does not establish personality, health, or life outcomes.
+rules:
+  - signal_id: BAZI-TEN-GOD-EXPRESSION
+    system: bazi
+    fact_refs:
+      - bazi.ten_god.day_master_relation
+      - bazi.elemental_balance
+    traditional_rule_ref: "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+    topic: expression and resource exchange
+    direction: Consider how the Ten-God relation is traditionally read alongside elemental balance.
+    interpretation: This traditional reading offers language for reflecting on expression, support, and constraint; it is not a diagnostic conclusion.
+    confidence: moderate
+    limitations:
+      - Requires the complete chart context and does not determine behavior.
+      - Traditional correspondence is not empirical personality assessment.
+  - signal_id: BAZI-RELATION-DYNAMICS
+    system: bazi
+    fact_refs:
+      - bazi.branch_relation
+      - bazi.hidden_stem
+    traditional_rule_ref: "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
+    topic: contextual dynamics
+    direction: Treat branch relations as contextual prompts rather than deterministic outcomes.
+    interpretation: Traditional branch-relation language may frame tensions or affinities for reflection, without claiming prediction or diagnosis.
+    confidence: exploratory
+    limitations:
+      - Relation facts must be interpreted with the full chart.
+      - No empirical causal or diagnostic status is claimed.
+  - signal_id: ASTROLOGY-PLANET-SIGN-EXPRESSION
+    system: astrology
+    fact_refs:
+      - astrology.planet_sign
+      - astrology.house_placement
+    traditional_rule_ref: "Modern Western astrology, planet-in-sign synthesis; Stephen Arroyo, Astrology, Psychology, and the Four Elements"
+    topic: style of expression
+    direction: Explore planet-sign symbolism together with house context.
+    interpretation: Planet-sign symbolism is a traditional interpretive lens for reflection, not a validated measurement of personality.
+    confidence: moderate
+    limitations:
+      - House system and birth-time uncertainty can change the context.
+      - This interpretation is not an empirical or clinical assessment.
+  - signal_id: ASTROLOGY-ASPECT-DIGNITY-CONTEXT
+    system: astrology
+    fact_refs:
+      - astrology.aspect
+      - astrology.essential_dignity
+    traditional_rule_ref: "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
+    topic: interacting tendencies
+    direction: Use aspects and dignity as a qualified context for traditional symbolic interpretation.
+    interpretation: Traditional aspect and dignity language can organize reflective questions about competing tendencies without diagnosing traits or outcomes.
+    confidence: exploratory
+    limitations:
+      - Aspect interpretation depends on selected orbs and the wider chart.
+      - No empirical predictive or diagnostic claim is made.
