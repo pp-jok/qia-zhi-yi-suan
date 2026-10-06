@@ -1,11 +1,14 @@
 """Load the self-contained audited interpretive-rule bundle."""
 
+from dataclasses import replace
 from pathlib import Path
-from typing import Any, Optional, Tuple
+from typing import Any, Callable, Optional, Tuple
 
 import yaml
 
 from .interpretive_models import InterpretiveRuleBundle, InterpretiveSignal
+from .deterministic_facts_codec import QualifiedFacts, require_qualified_facts
+from .calculation.models import DeterministicChartFacts, FactMode
 
 
 BUNDLE_VERSION = "audited-interpretive-rules-v1"
@@ -24,6 +27,9 @@ RULE_KEYS = {
     "confidence",
     "limitations",
 }
+
+
+FactPathResolver = Callable[[DeterministicChartFacts], Tuple[str, ...]]
 
 
 def interpretive_rule_asset_root() -> Path:
@@ -103,3 +109,109 @@ def load_interpretive_rule_bundle(
     if {rule.system for rule in rules} != SYSTEMS:
         raise _invalid("INTERPRETIVE_RULE_INVALID")
     return InterpretiveRuleBundle(BUNDLE_VERSION, rules, limitations)
+
+
+def extract_interpretive_signals(
+    qualified_facts: QualifiedFacts,
+    bundle: Optional[InterpretiveRuleBundle] = None,
+) -> Tuple[InterpretiveSignal, ...]:
+    """Extract audited traditional signals from qualification-bound facts only."""
+
+    facts = require_qualified_facts(qualified_facts).facts
+    active_bundle = bundle if bundle is not None else load_interpretive_rule_bundle()
+    signals = []
+    for rule in active_bundle.rules:
+        fact_refs = _matching_fact_paths(rule, facts)
+        if fact_refs:
+            signals.append(replace(rule, fact_refs=fact_refs))
+    return tuple(signals)
+
+
+def _matching_fact_paths(
+    rule: InterpretiveSignal, facts: DeterministicChartFacts
+) -> Optional[Tuple[str, ...]]:
+    fact_paths = []
+    for declared_ref in rule.fact_refs:
+        resolver = _FACT_PATH_RESOLVERS.get(declared_ref)
+        if resolver is None:
+            return None
+        matched_paths = resolver(facts)
+        if not matched_paths:
+            return None
+        fact_paths.extend(matched_paths)
+    return tuple(fact_paths)
+
+
+def _ten_god_paths(facts: DeterministicChartFacts) -> Tuple[str, ...]:
+    return tuple(
+        f"bazi.ten_gods[{index}].ten_god"
+        for index, _ in enumerate(facts.bazi.ten_gods)
+    )
+
+
+def _elemental_balance_paths(facts: DeterministicChartFacts) -> Tuple[str, ...]:
+    paths = [
+        "bazi.year_pillar",
+        "bazi.month_pillar",
+        "bazi.day_pillar",
+    ]
+    if facts.bazi.hour_pillar is not None:
+        paths.append("bazi.hour_pillar")
+    return tuple(paths)
+
+
+def _relation_paths(facts: DeterministicChartFacts) -> Tuple[str, ...]:
+    return tuple(
+        f"bazi.relations[{index}].relation_type"
+        for index, _ in enumerate(facts.bazi.relations)
+    )
+
+
+def _hidden_stem_paths(facts: DeterministicChartFacts) -> Tuple[str, ...]:
+    return tuple(
+        f"bazi.hidden_stems[{index}].stems"
+        for index, _ in enumerate(facts.bazi.hidden_stems)
+    )
+
+
+def _planet_sign_paths(facts: DeterministicChartFacts) -> Tuple[str, ...]:
+    return tuple(
+        f"astrology.placements[{index}].sign"
+        for index, _ in enumerate(facts.astrology.placements)
+    )
+
+
+def _house_placement_paths(facts: DeterministicChartFacts) -> Tuple[str, ...]:
+    if facts.normalized_time.fact_mode is FactMode.STABLE_ONLY:
+        return ()
+    return tuple(
+        f"astrology.placements[{index}].house"
+        for index, placement in enumerate(facts.astrology.placements)
+        if placement.house is not None
+    )
+
+
+def _aspect_paths(facts: DeterministicChartFacts) -> Tuple[str, ...]:
+    return tuple(
+        f"astrology.aspects[{index}].aspect_type"
+        for index, _ in enumerate(facts.astrology.aspects)
+    )
+
+
+def _dignity_paths(facts: DeterministicChartFacts) -> Tuple[str, ...]:
+    return tuple(
+        f"astrology.dignities[{index}].dignity"
+        for index, _ in enumerate(facts.astrology.dignities)
+    )
+
+
+_FACT_PATH_RESOLVERS: dict[str, FactPathResolver] = {
+    "bazi.ten_god.day_master_relation": _ten_god_paths,
+    "bazi.elemental_balance": _elemental_balance_paths,
+    "bazi.branch_relation": _relation_paths,
+    "bazi.hidden_stem": _hidden_stem_paths,
+    "astrology.planet_sign": _planet_sign_paths,
+    "astrology.house_placement": _house_placement_paths,
+    "astrology.aspect": _aspect_paths,
+    "astrology.essential_dignity": _dignity_paths,
+}
