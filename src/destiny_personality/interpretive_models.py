@@ -40,3 +40,26 @@ class InterpretiveRuleBundle:
     bundle_version: str
     rules: Tuple[InterpretiveSignal, ...]
     limitations: Tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class InterpretiveConclusion:
+    """A topic-bound conclusion that keeps its supporting and opposing signals."""
+
+    topic: str
+    direction: str
+    interpretation: str
+    supporting_signal_ids: Tuple[str, ...]
+    countervailing_signal_ids: Tuple[str, ...]
+    confidence: InterpretiveConfidence
+    limitations: Tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class InterpretiveCoreProfile:
+    """Controlled synthesis of matched audited-interpretive signals."""
+
+    mode: Literal["audited_interpretive"]
+    conclusions: Tuple[InterpretiveConclusion, ...]
+    limitations: Tuple[str, ...]
+    audit_refs: Tuple[str, ...]
