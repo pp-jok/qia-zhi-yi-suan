@@ -30,7 +30,7 @@ def test_mapping_candidate_requires_approved_mapping_eligible_mechanism() -> Non
         approved_mapping_eligible_ids=(),
     )
 
-    assert findings == ("APPROVED_MAPPING_ELIGIBLE_MECHANISM_REQUIRED",)
+    assert "APPROVED_MAPPING_ELIGIBLE_MECHANISM_REQUIRED" in findings
 
 
 def test_mapping_registry_loader_accepts_future_reviewed_registry(tmp_path: Path) -> None:
@@ -55,8 +55,9 @@ def test_mapping_proposals_are_loaded_and_validated_without_auto_approval(tmp_pa
     )
     assert load_mapping_proposal_registry(tmp_path) == ()
     assert "MAPPING_PROPOSAL_REVIEW_REQUIRED" in validate_mapping_proposal(
-        {"proposal_id": "P1", "semantic_mechanism_refs": ["SMC-1"], "primitive_id": "P001", "primitive_question": "q", "source_system": "bazi", "review_status": "proposed"},
+        {"proposal_id": "P1", "semantic_mechanism_refs": ["SMC-1"], "semantic_bridge_refs": ["BRIDGE-1"], "primitive_id": "P001", "primitive_question": "q", "source_system": "bazi", "review_status": "proposed"},
         {"SMC-1"},
+        {"BRIDGE-1": "P001"},
     )
 
 
@@ -74,8 +75,10 @@ def test_mapping_evaluation_rejects_template_collapse() -> None:
 def test_reviewed_proposal_becomes_unapproved_mapping_candidate() -> None:
     from destiny_personality.mapping_v2 import build_fresh_mapping_candidates
 
-    proposal = {"proposal_id": "P1", "source_system": "bazi", "canonical_fact_requirements": ["fact:1"], "semantic_mechanism_refs": ["SMC-1"], "primitive_id": "P001", "primitive_question": "q", "proposed_direction": {"state": "supported_high"}, "contexts": ["work"], "modifiers": ["m"], "contextualizers": ["work"], "counterevidence": ["c"], "exclusions": ["e"], "evidence_root_refs": ["ER-1"], "limitations": ["l"], "legacy_similarity": {"status": "none"}, "origin": "author", "review_status": "reviewed"}
-    candidate = build_fresh_mapping_candidates((proposal,), {"SMC-1"})[0]
+    proposal = {"proposal_id": "P1", "source_system": "bazi", "canonical_fact_requirements": ["fact:1"], "semantic_mechanism_refs": ["SMC-1"], "semantic_bridge_refs": ["BRIDGE-1"], "primitive_id": "P001", "primitive_question": "q", "proposed_direction": {"state": "supported_high"}, "contexts": ["work"], "modifiers": ["m"], "contextualizers": ["work"], "counterevidence": ["c"], "exclusions": ["e"], "evidence_root_refs": ["ER-1"], "limitations": ["l"], "legacy_similarity": {"status": "none"}, "origin": "author", "review_status": "reviewed"}
+    candidate = build_fresh_mapping_candidates(
+        (proposal,), {"SMC-1"}, {"BRIDGE-1": "P001"}
+    )[0]
     assert candidate["mapping_candidate_id"] == "P1"
     assert candidate["review_status"] == "candidate"
 
@@ -113,5 +116,26 @@ def test_mapping_evaluation_uses_disjoint_repository_design_and_holdout_datasets
 def test_proposal_allows_empty_qualifier_collections_when_required_fields_exist() -> None:
     from destiny_personality.mapping_v2 import validate_mapping_proposal
 
-    proposal = {"proposal_id": "P1", "source_system": "bazi", "canonical_fact_requirements": ["fact:1"], "semantic_mechanism_refs": ["SMC-1"], "primitive_id": "P001", "primitive_question": "q", "proposed_direction": {"state": "supported_high"}, "contexts": ["work"], "modifiers": [], "contextualizers": [], "counterevidence": [], "exclusions": [], "evidence_root_refs": ["ER-1"], "limitations": ["l"], "legacy_similarity": {"status": "none"}, "origin": "author", "review_status": "reviewed"}
-    assert validate_mapping_proposal(proposal, {"SMC-1"}) == ()
+    proposal = {"proposal_id": "P1", "source_system": "bazi", "canonical_fact_requirements": ["fact:1"], "semantic_mechanism_refs": ["SMC-1"], "semantic_bridge_refs": ["BRIDGE-1"], "primitive_id": "P001", "primitive_question": "q", "proposed_direction": {"state": "supported_high"}, "contexts": ["work"], "modifiers": [], "contextualizers": [], "counterevidence": [], "exclusions": [], "evidence_root_refs": ["ER-1"], "limitations": ["l"], "legacy_similarity": {"status": "none"}, "origin": "author", "review_status": "reviewed"}
+    assert validate_mapping_proposal(
+        proposal, {"SMC-1"}, {"BRIDGE-1": "P001"}
+    ) == ()
+
+
+def test_bridge_bindings_are_derived_from_mapping_eligible_mechanisms() -> None:
+    from destiny_personality.mapping_v2 import semantic_bridge_bindings_from_mechanisms
+
+    mechanisms = (
+        {
+            "candidate_id": "SMC-1",
+            "semantic_bridge": {
+                "bridge_id": "BRIDGE-1",
+                "primitive_id": "P001",
+            },
+        },
+        {"candidate_id": "SMC-2"},
+    )
+
+    assert semantic_bridge_bindings_from_mechanisms(mechanisms) == {
+        "BRIDGE-1": "P001"
+    }

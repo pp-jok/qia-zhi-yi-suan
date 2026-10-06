@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qia-zhi-yi-suan-candidate"
-version = "0.4.1"
+version = "0.4.2"
 description = "Auditable deep-research-closure Core Profile engine for the Qia Zhi Yi Suan agent skill"
 readme = "README.md"
 license = {file = "LICENSE"}

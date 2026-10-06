@@ -1,0 +1,32 @@
+schema_version: semantic-bridge-policy-v1
+policy_version: candidate-semantic-bridge-policy-v1
+activation_status: candidate_only
+bridge_classes:
+  DIRECT_CONSTRUCT_BRIDGE: admissible
+  BEHAVIORAL_MECHANISM_BRIDGE: admissible
+  CAPABILITY_OR_ROLE_BRIDGE: rejected
+  TEMPERAMENT_BRIDGE: rejected
+  OUTCOME_BRIDGE: rejected
+  ANALOGICAL_SYMBOLIC_BRIDGE: rejected
+required_admission_gates:
+  - source_behavior_explicitness
+  - subject_match
+  - process_match
+  - primitive_ownership
+  - direction_entailment
+  - context_match
+  - alternative_interpretation_resolution
+  - traditional_method_reproducibility
+  - counterevidence_definition
+  - scientific_boundary_declaration
+allowed_directions:
+  - supported_high
+  - supported_low
+allowed_subject_kinds:
+  - person
+  - native
+allowed_traditional_method_statuses:
+  - reproducible
+  - blocked
+context_rule: local_first
+scientific_boundary: traditional_system_semantic_translation

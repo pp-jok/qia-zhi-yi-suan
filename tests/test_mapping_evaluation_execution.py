@@ -92,8 +92,8 @@ def test_runner_executes_unknown_mixed_and_context_differentiated_cases(tmp_path
     _write_fixture(holdout / "holdout.yaml", "holdout", gods=("偏财",))
     mappings = (
         {"mapping_candidate_id": "U", "primitive_id": "P1", "canonical_fact_requirements": ["bazi.ten_god:比肩"], "proposed_direction": {"state": "unknown"}, "contexts": ["work"]},
-        {"mapping_candidate_id": "M1", "primitive_id": "P2", "canonical_fact_requirements": ["bazi.ten_god:食神"], "proposed_direction": {"state": "supported_high"}, "contexts": ["work"]},
-        {"mapping_candidate_id": "M2", "primitive_id": "P2", "canonical_fact_requirements": ["bazi.ten_god:食神"], "proposed_direction": {"state": "supported_low"}, "contexts": ["work"]},
+        {"mapping_candidate_id": "M1", "primitive_id": "P2", "canonical_fact_requirements": ["bazi.ten_god:食神"], "proposed_direction": {"state": "supported_high"}, "contexts": []},
+        {"mapping_candidate_id": "M2", "primitive_id": "P2", "canonical_fact_requirements": ["bazi.ten_god:食神"], "proposed_direction": {"state": "supported_low"}, "contexts": []},
         {"mapping_candidate_id": "C1", "primitive_id": "P3", "canonical_fact_requirements": ["bazi.ten_god:正官"], "proposed_direction": {"state": "supported_high"}, "contexts": ["work"]},
         {"mapping_candidate_id": "C2", "primitive_id": "P3", "canonical_fact_requirements": ["bazi.ten_god:正官"], "proposed_direction": {"state": "supported_low"}, "contexts": ["relationship"]},
     )
@@ -135,7 +135,7 @@ def test_artifact_binds_executed_dataset_and_has_deterministic_input_fingerprint
     _write_fixture(design / "design.yaml", "design", gods=("比肩",), expected_states={"P1": "supported_high"})
     _write_fixture(holdout / "holdout.yaml", "holdout", gods=("食神",))
     dataset = load_mapping_evaluation_datasets(root)["calibration"]
-    bundle = ({"mapping_candidate_id": "M", "primitive_id": "P1", "canonical_fact_requirements": ["bazi.ten_god:比肩"], "proposed_direction": {"state": "supported_high"}, "contexts": ["work"]},)
+    bundle = ({"mapping_candidate_id": "M", "primitive_id": "P1", "canonical_fact_requirements": ["bazi.ten_god:比肩"], "proposed_direction": {"state": "supported_high"}, "contexts": []},)
     run = execute_mapping_evaluation("calibration", bundle, dataset)
 
     first = build_mapping_evaluation_artifact("calibration", bundle, "bundle:test", "f" * 64, dataset.refs, "policy:test", dataset.fingerprint, run)

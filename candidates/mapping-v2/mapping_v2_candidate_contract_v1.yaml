@@ -6,6 +6,7 @@ required_fields:
   - source_system
   - canonical_fact_requirements
   - semantic_mechanism_refs
+  - semantic_bridge_refs
   - primitive_id
   - primitive_question
   - proposed_direction

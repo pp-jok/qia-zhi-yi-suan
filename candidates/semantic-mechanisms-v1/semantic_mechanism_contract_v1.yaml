@@ -31,6 +31,9 @@ prohibited_origins:
   - legacy_output
   - desired_personality
   - renderer_wording
+approved_primary_evidence_requirements:
+  semantic_bridge_required: true
+  required_traditional_method_status: reproducible
 limitations:
   - No semantic mechanism is admitted in Phase 1.
   - An approved mechanism is eligible only for future Mapping Candidate design.

@@ -256,6 +256,90 @@ def test_primitive_resolver_preserves_cross_context_variation_and_ignores_exclus
     assert states[0]["mapping_refs"] == ("M1", "M2")
 
 
+def test_local_context_evidence_does_not_become_global_primitive_state() -> None:
+    from destiny_personality.semantic_pipeline import resolve_primitive_states
+
+    states = resolve_primitive_states((
+        {"mapping_candidate_id": "M1", "primitive_id": "P001", "contexts": ["work"], "proposed_direction": {"state": "supported_high"}},
+    ), {})
+
+    assert states[0]["state"] == "context_differentiated"
+    assert states[0]["context_states"] == {"work": "supported_high"}
+
+
+def test_context_evidence_cannot_self_promote_with_a_boolean() -> None:
+    from destiny_personality.semantic_pipeline import resolve_primitive_states
+
+    states = resolve_primitive_states((
+        {"mapping_candidate_id": "M1", "primitive_id": "P001", "contexts": ["work"], "global_eligible": True, "proposed_direction": {"state": "supported_low"}},
+    ), {})
+
+    assert states[0]["state"] == "context_differentiated"
+    assert states[0]["context_states"] == {"work": "supported_low"}
+
+
+def test_context_scoped_unknown_remains_unknown() -> None:
+    from destiny_personality.semantic_pipeline import resolve_primitive_states
+
+    states = resolve_primitive_states((
+        {"mapping_candidate_id": "M1", "primitive_id": "P001", "contexts": ["work"], "proposed_direction": {"state": "unknown"}},
+    ), {})
+
+    assert states[0]["state"] == "unknown"
+    assert states[0]["context_states"] == {"work": "unknown"}
+
+
+def test_opposing_local_context_blocks_claimed_global_promotion() -> None:
+    from destiny_personality.semantic_pipeline import resolve_primitive_states
+
+    states = resolve_primitive_states((
+        {"mapping_candidate_id": "M1", "primitive_id": "P001", "contexts": ["work"], "global_eligible": True, "proposed_direction": {"state": "supported_high"}},
+        {"mapping_candidate_id": "M2", "primitive_id": "P001", "contexts": ["relationship"], "proposed_direction": {"state": "supported_low"}},
+    ), {})
+
+    assert states[0]["state"] == "context_differentiated"
+    assert states[0]["context_states"] == {
+        "relationship": "supported_low",
+        "work": "supported_high",
+    }
+
+
+def test_local_only_primitive_does_not_form_unscoped_signature() -> None:
+    from destiny_personality.semantic_pipeline import build_semantic_core_from_approved_mapping
+
+    core = build_semantic_core_from_approved_mapping(
+        "profile:test",
+        ({"mapping_candidate_id": "M1", "primitive_id": "P001", "contexts": ["work"], "proposed_direction": {"state": "supported_high"}},),
+        {"signature": {"rules": [{"signature_id": "S1", "required_primitive_ids": ["P001"]}]}},
+    )
+
+    assert core["primitive_states"][0]["state"] == "context_differentiated"
+    assert core["signatures"] == ()
+
+
+def test_semantic_bridge_references_are_preserved_in_state_and_provenance() -> None:
+    from destiny_personality.semantic_pipeline import build_semantic_core_from_approved_mapping
+
+    core = build_semantic_core_from_approved_mapping(
+        "profile:test",
+        ({
+            "mapping_candidate_id": "M1",
+            "primitive_id": "P001",
+            "proposed_direction": {"state": "supported_high"},
+            "semantic_bridge_refs": ["BRIDGE-1"],
+        },),
+        {},
+    )
+
+    assert core["primitive_states"][0]["bridge_refs"] == ("BRIDGE-1",)
+    assert "semantic_bridge:BRIDGE-1" in core["provenance"]["nodes"]
+    assert (
+        "mapping:M1",
+        "supported_by",
+        "semantic_bridge:BRIDGE-1",
+    ) in core["provenance"]["edges"]
+
+
 def test_primitive_qualifiers_do_not_create_or_reverse_direction() -> None:
     from destiny_personality.semantic_pipeline import resolve_primitive_states
 

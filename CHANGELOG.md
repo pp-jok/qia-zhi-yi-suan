@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.4.2 - 2026-10-06
+
+### Added
+
+- A versioned Semantic Bridge policy with ten mandatory admission gates.
+- P006 Bazi and Hellenistic bridge matrices with explicit alternative-meaning rejection.
+- Candidate-only v3 ontology discovery and the TP001 Task Continuity Process pilot.
+- Persisted Semantic Bridge provenance and local-first context resolution.
+
+### Release boundary
+
+The P006 pilot rejected all nearby phrases as capability, outcome, composite
+evaluation, or temperament. No PRIMARY_EVIDENCE or active Mapping was created;
+the formal runtime remains six `unknown` primitives. The v3 discovery asset is
+isolated and cannot replace or activate the v2 runtime ontology.
+
 ## 0.4.1 - 2026-10-05
 
 ### Added

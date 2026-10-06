@@ -8,11 +8,13 @@
 
 它不是排盘软件，也不把计算程序封装进 Skill。使用它的智能体会在运行时寻找并调用合格的外部计算能力；Skill 负责输入规范、方法校验、事实边界、推演许可、报告结构与最终审计。
 
-## 发布通道：v0.4.1 Deep Research Closure
+## 发布通道：v0.4.2 Semantic Bridge Governance
 
-本版本在正式的 `Facts → Core Destiny Profile → Report Plan → Report` 主链之上，完成 P001、P002、P003、P005、P006 的八字与希腊化占星独立深度研究。研究逐项检查构念直达性、传统方法、Canonical Fact、Evidence Root、PRIMARY_EVIDENCE 与 Mapping；P004 保持冻结。最接近的 P006 候选仍属于能力/结果描述或无法复算的全局判断，因此没有被强行激活。
+本版本在 v0.4.1 深度研究基线上增加了可机读的 Semantic Bridge 准入政策，把“来源原句”与“现代 Primitive 结论”之间的语义跨越变成十道可审计门。直接构念与行为机制可进入评审；能力/角色、气质、结果和符号类比不得代理人格结论。
 
-当前六个 Core Primitive 的有效 PRIMARY_EVIDENCE 与 Mapping 仍为零，正式报告会诚实地输出六个 `unknown`。v0.4.1 提升的是 `unknown` 的证据基础和可审计性，不是人格结论数量；v0.5.0 仍保留给至少一个经批准且正式非零的语义路径。
+P006 Pilot 对 `布置有方`、`处事有方`、`治事无规`、`systematic workers`、`able to direct business` 和 `prone to change their minds` 逐句复核。全部只能归入能力、综合评价、结果或气质，因此没有生成 PRIMARY_EVIDENCE 或 Mapping。项目同时开启隔离的 v3 `Task Continuity Process` 研究候选；它不替换 v2、不进入运行时。
+
+当前六个 Core Primitive 的有效 PRIMARY_EVIDENCE 与 Mapping 仍为零，正式报告会诚实地输出六个 `unknown`。v0.4.2 提升的是语义桥接、单向证据与候选本体的治理边界，不是人格结论数量；v0.5.0 仍保留给至少一个经批准且正式非零的语义路径。
 
 `unknown` 不等于 `low`。零语义结论也是一种可发布结果：报告仍包含事实包引用、事实/语义 assurance、限制、未决问题与审计链，但不会形成 Signature、Dynamic、Shadow/Mature、Theme 或 Archetype。
 
