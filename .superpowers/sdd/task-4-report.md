@@ -91,3 +91,75 @@ git diff --check
 A source scan of the two production modules and their test found no imports or
 references to raw deterministic facts, `QualifiedFacts`, chart facts, or
 strict/candidate/release paths.
+
+## Review remediation: evidence fidelity, Chinese rendering, and provenance
+
+This section supersedes the original sparse-profile behavior described above.
+Review found that round-robin fallback relabelled a sparse conclusion as
+unrelated product topics and copied packaged English rule prose into a nominally
+Chinese report. It also found missing audited-profile validation and a mutable
+audit-reference alias.
+
+Added the review regression tests before changing production code. The first
+focused RED run produced:
+
+```text
+python3 -m pytest tests/test_interpretive_report.py -q
+8 failed, 5 passed in 0.44s
+```
+
+The failures directly covered the four review findings: arbitrary topic
+fallback, English rule text exposure, four incomplete-provenance cases, and
+post-build mutation of a caller-owned audit-reference list. A second RED cycle
+for malformed provenance (`None` and a non-string reference) produced:
+
+```text
+2 failed, 13 passed in 0.36s
+```
+
+The final implementation removes both standard and concise round-robin
+fallbacks. Conclusions are grouped only into controlled topics they actually
+support. A standard report has 8-12 product sections only when distinct
+evidence supports that depth. Sparse profiles instead contain their supported
+sections plus a Chinese `证据覆盖说明` section; uncovered themes are not
+inferred, relabelled, or filled to reach a target count. The concise report
+uses the same evidence-preserving grouping.
+
+The four packaged rule signals now have controlled Chinese topic, body, and
+limitation mappings. Known English topic/direction/interpretation/limitation
+fields are not copied into user-visible output. Unknown English-only profile
+text receives a conservative Chinese no-expansion statement rather than a
+translation-like invented claim.
+
+The report boundary now requires exactly `audited_interpretive` mode and a
+nonempty, string-only audit-reference collection containing all three required
+prefixes: `interpretive-rules:`, `deterministic-facts:`, and
+`fact-qualification:`. Invalid and malformed profiles fail with the stable
+`AUDITED_INTERPRETIVE_PROFILE_REQUIRED` error. Audit references are converted
+to a tuple before validation and report construction, preventing later caller
+mutation from changing report metadata.
+
+Final focused verification:
+
+```text
+python3 -m pytest tests/test_interpretive_report.py -q
+15 passed in 0.26s
+```
+
+Final interpretive-path regression verification:
+
+```text
+python3 -m pytest tests/test_interpretive_report.py tests/test_interpretive_profile.py tests/test_interpretive_rules.py -q
+30 passed in 1.05s
+```
+
+Final full regression suite:
+
+```text
+python3 -m pytest -q
+820 passed in 49.49s
+```
+
+`compileall`, `git diff --check`, and a source scan again confirmed that no raw
+facts, `QualifiedFacts`, chart facts, or strict/candidate/release dependency was
+introduced.

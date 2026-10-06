@@ -7,6 +7,7 @@ from destiny_personality.interpretive_models import (
     InterpretiveConclusion,
     InterpretiveCoreProfile,
 )
+from destiny_personality.interpretive_profile import build_interpretive_core_profile
 from destiny_personality.interpretive_report import build_interpretive_report
 
 
@@ -80,7 +81,7 @@ def test_standard_report_contains_the_eight_named_topics(profile):
         "综合观察",
     )
     assert report.sections[6].signal_ids == ("SIG-07", "COUNTER-07")
-    assert report.sections[-1].title == "补充观察：decision rhythm"
+    assert report.sections[-1].title == "决策节奏"
 
 
 def test_concise_report_is_shorter_than_standard(profile):
@@ -138,8 +139,137 @@ def test_report_rejects_profile_without_traceable_evidence():
             ),
         ),
         limitations=("No supported conclusion.",),
-        audit_refs=("source:test",),
+        audit_refs=(
+            "deterministic-facts:fact-123",
+            "fact-qualification:qualification-456",
+            "interpretive-rules:audited-interpretive-rules-v1",
+        ),
     )
 
     with pytest.raises(ValueError, match="TRACEABLE_INTERPRETIVE_CONCLUSION_REQUIRED"):
         build_interpretive_report(profile, "concise")
+
+
+def test_sparse_profile_does_not_relabel_or_duplicate_a_conclusion():
+    interpretation = "仅有的证据结论。"
+    sparse_profile = InterpretiveCoreProfile(
+        mode="audited_interpretive",
+        conclusions=(
+            InterpretiveConclusion(
+                topic="expression and creation",
+                direction="expressive",
+                interpretation=interpretation,
+                supporting_signal_ids=("SIG-SPARSE",),
+                countervailing_signal_ids=(),
+                confidence="moderate",
+                limitations=("只覆盖表达主题。",),
+            ),
+        ),
+        limitations=("当前证据覆盖有限。",),
+        audit_refs=(
+            "deterministic-facts:fact-sparse",
+            "fact-qualification:qualification-sparse",
+            "interpretive-rules:audited-interpretive-rules-v1",
+        ),
+    )
+
+    report = build_interpretive_report(sparse_profile, "standard")
+
+    assert tuple(section.title for section in report.sections) == (
+        "表达与创造",
+        "证据覆盖说明",
+    )
+    assert sum(section.content.count(interpretation) for section in report.sections) == 1
+    assert "核心底色" not in {section.title for section in report.sections}
+    assert "关系与边界" not in {section.title for section in report.sections}
+
+
+def test_actual_bundle_profile_renders_controlled_chinese_only(qualified_facts):
+    profile = build_interpretive_core_profile(qualified_facts)
+
+    report = build_interpretive_report(profile, "standard")
+    visible_text = "".join(
+        section.title + section.content + section.limitation
+        for section in report.sections
+    )
+
+    assert report.sections
+    assert all(
+        any("\u4e00" <= char <= "\u9fff" for char in section.content)
+        for section in report.sections
+    )
+    assert not any("a" <= char.casefold() <= "z" for char in visible_text)
+    assert "Planet-sign symbolism" not in visible_text
+    assert "traditional interpretive lens" not in visible_text
+    assert "House system and birth-time uncertainty" not in visible_text
+    assert "style of expression" not in visible_text
+
+
+@pytest.mark.parametrize(
+    ("mode", "audit_refs"),
+    (
+        (
+            "not_audited",
+            (
+                "deterministic-facts:fact-123",
+                "fact-qualification:qualification-456",
+                "interpretive-rules:audited-interpretive-rules-v1",
+            ),
+        ),
+        (
+            "audited_interpretive",
+            (
+                "fact-qualification:qualification-456",
+                "interpretive-rules:audited-interpretive-rules-v1",
+            ),
+        ),
+        (
+            "audited_interpretive",
+            (
+                "deterministic-facts:fact-123",
+                "interpretive-rules:audited-interpretive-rules-v1",
+            ),
+        ),
+        (
+            "audited_interpretive",
+            (
+                "deterministic-facts:fact-123",
+                "fact-qualification:qualification-456",
+            ),
+        ),
+        ("audited_interpretive", None),
+        (
+            "audited_interpretive",
+            (
+                "deterministic-facts:fact-123",
+                "fact-qualification:qualification-456",
+                7,
+            ),
+        ),
+    ),
+)
+def test_report_rejects_non_audited_or_partial_profile(profile, mode, audit_refs):
+    invalid = InterpretiveCoreProfile(
+        mode=mode,
+        conclusions=profile.conclusions,
+        limitations=profile.limitations,
+        audit_refs=audit_refs,
+    )
+
+    with pytest.raises(ValueError, match="AUDITED_INTERPRETIVE_PROFILE_REQUIRED"):
+        build_interpretive_report(invalid, "standard")
+
+
+def test_report_snapshots_mutable_profile_audit_refs(profile):
+    audit_refs = list(profile.audit_refs)
+    mutable_profile = InterpretiveCoreProfile(
+        mode="audited_interpretive",
+        conclusions=profile.conclusions,
+        limitations=profile.limitations,
+        audit_refs=audit_refs,
+    )
+
+    report = build_interpretive_report(mutable_profile, "standard")
+    audit_refs.append("source:mutated-after-build")
+
+    assert report.audit_metadata.profile_audit_refs == profile.audit_refs
