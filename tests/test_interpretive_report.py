@@ -173,15 +173,33 @@ def test_sparse_profile_does_not_relabel_or_duplicate_a_conclusion():
         ),
     )
 
-    report = build_interpretive_report(sparse_profile, "standard")
+    standard = build_interpretive_report(sparse_profile, "standard")
+    concise = build_interpretive_report(sparse_profile, "concise")
 
-    assert tuple(section.title for section in report.sections) == (
+    assert 8 <= len(standard.sections) <= 12
+    assert len(concise.sections) < len(standard.sections)
+    assert tuple(section.title for section in standard.sections) == (
         "表达与创造",
-        "证据覆盖说明",
+        "证据范围",
+        "八字观察范围",
+        "占星观察范围",
+        "跨体系覆盖与张力",
+        "置信度校准",
+        "时间范围与局限",
+        "可追溯性与使用边界",
     )
-    assert sum(section.content.count(interpretation) for section in report.sections) == 1
-    assert "核心底色" not in {section.title for section in report.sections}
-    assert "关系与边界" not in {section.title for section in report.sections}
+    assert sum(
+        section.content.count(interpretation) for section in standard.sections
+    ) == 1
+    assert all(
+        section.signal_ids == ("SIG-SPARSE",) for section in standard.sections
+    )
+    assert all(
+        "不作人格特质判断" in section.content + section.limitation
+        for section in standard.sections[1:]
+    )
+    assert "核心底色" not in {section.title for section in standard.sections}
+    assert "关系与边界" not in {section.title for section in standard.sections}
 
 
 def test_actual_bundle_profile_renders_controlled_chinese_only(qualified_facts):

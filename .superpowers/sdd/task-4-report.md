@@ -163,3 +163,64 @@ python3 -m pytest -q
 `compileall`, `git diff --check`, and a source scan again confirmed that no raw
 facts, `QualifiedFacts`, chart facts, or strict/candidate/release dependency was
 introduced.
+
+## Final review remediation: sparse standard-report depth
+
+This section supersedes the preceding statement that a sparse standard report
+may contain fewer than eight sections. Final review required standard output to
+always contain 8-12 sections while preserving the prohibition on relabelling a
+sparse conclusion as unrelated personality topics.
+
+Updated the one-conclusion regression before production code. It now requires:
+
+- 8-12 standard sections and a strictly shorter concise report;
+- exactly one genuine personality-topic section carrying the conclusion;
+- all remaining standard sections to be explicitly labelled evidence or method
+  boundaries and to say they do not make personality-trait judgments;
+- the conclusion body to appear exactly once;
+- every section to carry only the actual known signal ID.
+
+The focused RED run showed the expected depth failure:
+
+```text
+python3 -m pytest tests/test_interpretive_report.py -q
+1 failed, 14 passed in 0.56s
+```
+
+Standard composition now retains all genuine evidence-backed topic sections.
+When fewer than eight such sections exist, it fills only the remaining slots
+with a stable sequence of non-personality audit sections:
+
+1. 证据范围
+2. 八字观察范围
+3. 占星观察范围
+4. 跨体系覆盖与张力
+5. 置信度校准
+6. 时间范围与局限
+7. 可追溯性与使用边界
+
+These sections describe only evidence availability, system coverage,
+counter-signal presence, confidence labels, time limitations, traceability,
+and use boundaries. They never repeat the conclusion body or introduce a new
+trait claim. Each retains the profile's actual signal IDs as its audit anchor.
+Rich profiles keep their existing evidence-backed 8-12-section behavior.
+
+The concise composition remains evidence-preserving and strictly shorter. For
+the single-conclusion regression it contains the genuine grouped conclusion
+and one coverage boundary section, compared with eight standard sections.
+
+Final verification:
+
+```text
+python3 -m pytest tests/test_interpretive_report.py -q
+15 passed in 0.28s
+
+python3 -m pytest tests/test_interpretive_report.py tests/test_interpretive_profile.py tests/test_interpretive_rules.py -q
+30 passed in 0.97s
+
+python3 -m pytest -q
+820 passed in 48.44s
+```
+
+`compileall`, `git diff --check`, and the forbidden-dependency source scan also
+passed. No raw facts, strict, candidate, or release import was introduced.

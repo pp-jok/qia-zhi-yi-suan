@@ -128,6 +128,16 @@ _CONCISE_TITLE_BY_STANDARD_TITLE = {
     "成长张力": "压力与成长",
 }
 
+_AUDIT_SECTION_TITLES = (
+    "证据范围",
+    "八字观察范围",
+    "占星观察范围",
+    "跨体系覆盖与张力",
+    "置信度校准",
+    "时间范围与局限",
+    "可追溯性与使用边界",
+)
+
 _CONFIDENCE_LABELS = {
     "high": "高",
     "moderate": "中等",
@@ -217,11 +227,11 @@ def _build_standard_sections(
         for index, title in enumerate(ordered_titles[:12], start=1)
     ]
     if len(sections) < 8:
-        sections.append(
-            _coverage_section(
-                section_id="standard-coverage",
-                covered_count=len(sections),
+        sections.extend(
+            _audit_scope_sections(
                 conclusions=conclusions,
+                evidence_topic_count=len(sections),
+                count=8 - len(sections),
             )
         )
     return tuple(sections)
@@ -328,10 +338,84 @@ def _coverage_section(
         content=(
             f"当前审计档案仅支持上述 {covered_count} 个主题；"
             "未覆盖的主题不作推断或补写。"
+            "本节仅记录证据边界，不作人格特质判断。"
         ),
         signal_ids=_signal_ids(conclusions),
-        limitation="证据覆盖有限；不将现有结论重标为其他主题。",
+        limitation=(
+            "证据覆盖有限；不将现有结论重标为其他主题；"
+            "不作人格特质判断。"
+        ),
     )
+
+
+def _audit_scope_sections(
+    *,
+    conclusions: Tuple[InterpretiveConclusion, ...],
+    evidence_topic_count: int,
+    count: int,
+) -> Tuple[InterpretiveReportSection, ...]:
+    signal_ids = _signal_ids(conclusions)
+    has_bazi = any(signal_id.startswith("BAZI-") for signal_id in signal_ids)
+    has_astrology = any(
+        signal_id.startswith("ASTROLOGY-") for signal_id in signal_ids
+    )
+    has_tension = any(
+        conclusion.countervailing_signal_ids for conclusion in conclusions
+    )
+    confidence_labels = _unique(
+        _CONFIDENCE_LABELS[conclusion.confidence]
+        for conclusion in conclusions
+    )
+    bodies = (
+        (
+            f"当前档案仅支持 {evidence_topic_count} 个证据主题；"
+            "其余主题不推断、不补写。"
+        ),
+        (
+            "已记录八字来源信号，但本节不扩展具体特质。"
+            if has_bazi
+            else "当前档案未提供可单独形成八字主题的受控信号。"
+        ),
+        (
+            "已记录占星来源信号，但本节不扩展具体特质。"
+            if has_astrology
+            else "当前档案未提供可单独形成占星主题的受控信号。"
+        ),
+        (
+            (
+                "当前同时有八字与占星信号可供覆盖对照；"
+                if has_bazi and has_astrology
+                else "当前不具备八字与占星的双体系覆盖；"
+            )
+            + (
+                "档案保留了反向信号。"
+                if has_tension
+                else "档案未记录反向信号。"
+            )
+        ),
+        f"当前证据主题的置信度标签为：{'、'.join(confidence_labels)}。",
+        (
+            "报告不从档案结论外推出生时间精度或未记录的"
+            "时间敏感主题。"
+        ),
+        (
+            "本节所有引用均回指现有信号标识；报告仅用于传统象意"
+            "反思，不替代诊断或重大决策。"
+        ),
+    )
+    common_boundary = "本节仅记录证据或方法边界，不作人格特质判断。"
+    return tuple(
+        InterpretiveReportSection(
+            section_id=f"standard-audit-{index:02d}",
+            title=title,
+            content=f"【{title}】{body}{common_boundary}",
+            signal_ids=signal_ids,
+            limitation=common_boundary,
+        )
+        for index, (title, body) in enumerate(
+            zip(_AUDIT_SECTION_TITLES, bodies), start=1
+        )
+    )[:count]
 
 
 def _render_bodies(
