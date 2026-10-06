@@ -1,10 +1,20 @@
 """Immutable public models for audited traditional interpretations."""
 
 from dataclasses import dataclass
-from typing import Literal, Tuple
+from typing import Literal, Optional, Tuple
 
 
 InterpretiveConfidence = Literal["high", "moderate", "exploratory", "insufficient"]
+
+
+@dataclass(frozen=True)
+class InterpretiveValuePredicate:
+    """A supported value-level condition for an audited interpretive rule."""
+
+    fact_ref: str
+    values: Tuple[str, ...]
+    body: Optional[str] = None
+    other_body: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -14,6 +24,7 @@ class InterpretiveSignal:
     signal_id: str
     system: str
     fact_refs: Tuple[str, ...]
+    value_predicates: Tuple[InterpretiveValuePredicate, ...]
     traditional_rule_ref: str
     topic: str
     direction: str

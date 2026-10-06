@@ -1,4 +1,5 @@
 bundle_version: audited-interpretive-rules-v1
+predicate_version: audited-interpretive-value-predicates-v1
 limitations:
   - These are traditional interpretive heuristics, not empirically validated diagnoses.
   - A chart-derived signal does not establish personality, health, or life outcomes.
@@ -8,6 +9,11 @@ rules:
     fact_refs:
       - bazi.ten_god.day_master_relation
       - bazi.elemental_balance
+    value_predicates:
+      - fact_ref: bazi.ten_god.day_master_relation
+        values: [resource]
+      - fact_ref: bazi.elemental_balance
+        values: [year, month, day]
     traditional_rule_ref: "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
     topic: expression and resource exchange
     direction: Consider how the Ten-God relation is traditionally read alongside elemental balance.
@@ -21,6 +27,11 @@ rules:
     fact_refs:
       - bazi.branch_relation
       - bazi.hidden_stem
+    value_predicates:
+      - fact_ref: bazi.branch_relation
+        values: [combination]
+      - fact_ref: bazi.hidden_stem
+        values: [癸]
     traditional_rule_ref: "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
     topic: contextual dynamics
     direction: Treat branch relations as contextual prompts rather than deterministic outcomes.
@@ -34,6 +45,13 @@ rules:
     fact_refs:
       - astrology.planet_sign
       - astrology.house_placement
+    value_predicates:
+      - fact_ref: astrology.planet_sign
+        body: Sun
+        values: [Aries]
+      - fact_ref: astrology.house_placement
+        body: Sun
+        values: ["1"]
     traditional_rule_ref: "Modern Western astrology, planet-in-sign synthesis; Stephen Arroyo, Astrology, Psychology, and the Four Elements"
     topic: style of expression
     direction: Explore planet-sign symbolism together with house context.
@@ -47,6 +65,14 @@ rules:
     fact_refs:
       - astrology.aspect
       - astrology.essential_dignity
+    value_predicates:
+      - fact_ref: astrology.aspect
+        body: Sun
+        other_body: Moon
+        values: [conjunction]
+      - fact_ref: astrology.essential_dignity
+        body: Sun
+        values: [domicile]
     traditional_rule_ref: "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
     topic: interacting tendencies
     direction: Use aspects and dignity as a qualified context for traditional symbolic interpretation.

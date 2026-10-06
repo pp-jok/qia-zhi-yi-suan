@@ -13,3 +13,6 @@ cases:
       - BAZI-TEN-GOD-EXPRESSION
       - BAZI-RELATION-DYNAMICS
       - ASTROLOGY-ASPECT-DIGNITY-CONTEXT
+  non_matching_values:
+    time_available: true
+    matching_values: false

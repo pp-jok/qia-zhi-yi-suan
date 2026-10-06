@@ -49,6 +49,12 @@ def _qualified_interpretive_facts(qualified_facts, tmp_path, case):
                 (PillarPosition.YEAR,),
                 TenGodSourceKind.VISIBLE_STEM,
             ),
+            TenGodFact(
+                "day_master",
+                "wealth",
+                (PillarPosition.MONTH,),
+                TenGodSourceKind.VISIBLE_STEM,
+            ),
         ),
         relations=(
             BaziRelationFact(
@@ -59,14 +65,54 @@ def _qualified_interpretive_facts(qualified_facts, tmp_path, case):
             ),
         ),
     )
+    if case.get("matching_values", True) is False:
+        bazi = replace(
+            bazi,
+            hidden_stems=(HiddenStemsFact(PillarPosition.YEAR, ("甲",)),),
+            ten_gods=(
+                TenGodFact(
+                    "day_master",
+                    "wealth",
+                    (PillarPosition.YEAR,),
+                    TenGodSourceKind.VISIBLE_STEM,
+                ),
+            ),
+            relations=(
+                BaziRelationFact(
+                    "clash",
+                    ("year.branch", "month.branch"),
+                    (PillarPosition.YEAR, PillarPosition.MONTH),
+                    "test-rule-v1",
+                ),
+            ),
+        )
     if case["time_available"]:
         normalized_time = facts.normalized_time
         astrology = replace(
             facts.astrology,
-            aspects=(
-                AstrologyAspectFact("Sun", "Moon", "conjunction", Decimal("0")),
+            placements=tuple(
+                replace(placement, sign="Taurus")
+                if (
+                    placement.body == "Sun"
+                    and case.get("matching_values", True) is False
+                )
+                else placement
+                for placement in facts.astrology.placements
             ),
-            dignities=(DignityFact("Sun", "domicile"),),
+            aspects=(
+                AstrologyAspectFact(
+                    "Sun",
+                    "Moon",
+                    "opposition" if case.get("matching_values", True) is False else "conjunction",
+                    Decimal("0"),
+                ),
+            ),
+            dignities=(
+                DignityFact(
+                    "Sun",
+                    "detriment" if case.get("matching_values", True) is False else "domicile",
+                ),
+            ),
         )
     else:
         normalized_time = replace(
@@ -148,6 +194,13 @@ def missing_time_interpretive_facts(qualified_facts, tmp_path, extraction_cases)
     )
 
 
+@pytest.fixture
+def non_matching_interpretive_facts(qualified_facts, tmp_path, extraction_cases):
+    return _qualified_interpretive_facts(
+        qualified_facts, tmp_path, extraction_cases["non_matching_values"]
+    )
+
+
 def test_rule_bundle_is_versioned_and_contains_both_systems():
     bundle = load_interpretive_rule_bundle()
 
@@ -170,6 +223,17 @@ def test_extraction_emits_traceable_bazi_and_astrology_signals(
         for signal in signals
         for reference in signal.fact_refs
     )
+    ten_god_signal = next(
+        signal for signal in signals if signal.signal_id == "BAZI-TEN-GOD-EXPRESSION"
+    )
+    assert "bazi.ten_gods[0].ten_god" in ten_god_signal.fact_refs
+    assert "bazi.ten_gods[1].ten_god" not in ten_god_signal.fact_refs
+
+
+def test_extraction_requires_matching_value_predicates(non_matching_interpretive_facts):
+    signals = extract_interpretive_signals(non_matching_interpretive_facts)
+
+    assert signals == ()
 
 
 def test_missing_time_skips_house_and_angle_rules(
@@ -194,11 +258,13 @@ def test_missing_time_skips_house_and_angle_rules(
 def test_rule_loader_rejects_unknown_confidence(tmp_path: Path):
     (tmp_path / "interpretive_rules_v1.yaml").write_text(
         "bundle_version: audited-interpretive-rules-v1\n"
+        "predicate_version: audited-interpretive-value-predicates-v1\n"
         "limitations: [Traditional, non-diagnostic rules.]\n"
         "rules:\n"
         "  - signal_id: TEST-001\n"
-        "    system: bazi\n"
-        "    fact_refs: [bazi.ten_god]\n"
+            "    system: bazi\n"
+            "    fact_refs: [bazi.ten_god]\n"
+            "    value_predicates: []\n"
         "    traditional_rule_ref: Test school\n"
         "    topic: Test topic\n"
         "    direction: Test direction\n"
@@ -225,11 +291,13 @@ def test_rule_loader_rejects_unqualified_or_wrong_system_fact_references(
 ):
     (tmp_path / "interpretive_rules_v1.yaml").write_text(
         "bundle_version: audited-interpretive-rules-v1\n"
+        "predicate_version: audited-interpretive-value-predicates-v1\n"
         "limitations: [Traditional, non-diagnostic rules.]\n"
         "rules:\n"
         "  - signal_id: TEST-FACT-REF\n"
-        "    system: bazi\n"
-        f"    fact_refs: {fact_refs}\n"
+            "    system: bazi\n"
+            f"    fact_refs: {fact_refs}\n"
+            "    value_predicates: []\n"
         "    traditional_rule_ref: Test school\n"
         "    topic: Test topic\n"
         "    direction: Test direction\n"

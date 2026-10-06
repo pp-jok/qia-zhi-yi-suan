@@ -34,3 +34,50 @@ qualified fact model (for example, `bazi.ten_gods[0].ten_god` and
 `astrology.aspects[0].aspect_type`).  A rule is emitted only if every declared
 fact category has available matching facts; there is no fallback that emits a
 rule from unrelated values.
+
+## Predicate review fix — RED
+
+The prior extractor checked only for non-empty fact categories.  Added a
+same-structure/different-values contrast case: the input still contained Ten
+God, relation, hidden-stem, placement, aspect, and dignity facts, but used
+`wealth`, `clash`, `甲`, Sun in Taurus, an opposition, and detriment.
+
+Before the predicate fix:
+
+```text
+python3 -m pytest tests/test_interpretive_rules.py -q
+2 failed, 6 passed
+```
+
+The failures proved both defects: all four rules emitted for non-matching
+values, and the Ten-God signal included `bazi.ten_gods[1].ten_god` even though
+that fact was `wealth`, not the rule's selected `resource` value.
+
+## Predicate review fix — GREEN
+
+The audited asset now declares `predicate_version:
+audited-interpretive-value-predicates-v1` and every rule has validated,
+explicit `value_predicates`.  The small supported vocabulary is fixed to the
+actual rule facts: selected Ten-God, relation and hidden-stem values; selected
+year/month/day pillars; named planet/sign and house; and named aspect/dignity.
+No generic expression evaluator was added.  Extraction returns only concrete
+paths whose facts satisfy all of a rule's predicates.
+
+Focused verification:
+
+```text
+python3 -m pytest tests/test_interpretive_rules.py -q
+8 passed in 1.05s
+```
+
+A bounded suite shard also passed after the model and asset contract change:
+
+```text
+python3 -m pytest -q <tests 1-10>
+100 passed in 13.71s
+```
+
+The full-suite runner repeatedly stopped emitting before completion at about
+20 seconds in this execution channel; the earlier pre-review full suite was
+fully green (`797 passed`), while the post-review focused tests and bounded
+suite shard above are green.
