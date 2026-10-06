@@ -59,7 +59,7 @@ def _seal_audited_interpretive_signals(
 def require_audited_interpretive_signals(
     value: object,
 ) -> Tuple[InterpretiveSignal, ...]:
-    if not isinstance(value, AuditedInterpretiveSignals) or any(
+    if type(value) is not AuditedInterpretiveSignals or any(
         not isinstance(signal, InterpretiveSignal) for signal in value
     ):
         raise ValueError("AUDITED_INTERPRETIVE_SIGNALS_REQUIRED")

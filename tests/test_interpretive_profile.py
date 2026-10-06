@@ -2,14 +2,20 @@ from typing import Optional
 
 import pytest
 
-from destiny_personality.interpretive_models import InterpretiveSignal
+from destiny_personality.interpretive_models import (
+    AuditedInterpretiveSignals,
+    InterpretiveSignal,
+)
 from destiny_personality.interpretive_profile import (
     ALLOWED_CONFIDENCES,
     _synthesize_interpretive_core_profile,
     build_interpretive_core_profile,
     synthesize_interpretive_core_profile,
 )
-from destiny_personality.interpretive_rules import extract_interpretive_signals
+from destiny_personality.interpretive_rules import (
+    extract_interpretive_signals,
+    load_interpretive_rule_bundle,
+)
 
 
 def _signal(
@@ -65,6 +71,35 @@ def test_public_synthesis_rejects_fabricated_signals():
 
     with pytest.raises(ValueError, match="AUDITED_INTERPRETIVE_SIGNALS_REQUIRED"):
         synthesize_interpretive_core_profile((fabricated,))
+
+
+def test_public_synthesis_rejects_subclass_forged_provenance():
+    class ForgedAuditedSignals(AuditedInterpretiveSignals):
+        def __new__(cls, signals):
+            return tuple.__new__(cls, signals)
+
+    fabricated = _signal(
+        "SUBCLASS-FORGED-SIGNAL",
+        system="fabricated-system",
+        topic="fabricated-topic",
+        direction="fabricated-direction",
+        rule_ref="fabricated-rule",
+    )
+    forged = ForgedAuditedSignals((fabricated,))
+
+    with pytest.raises(ValueError, match="AUDITED_INTERPRETIVE_SIGNALS_REQUIRED"):
+        synthesize_interpretive_core_profile(forged)
+
+
+def test_public_synthesis_rejects_explicit_custom_bundle_output(qualified_facts):
+    unsealed = extract_interpretive_signals(
+        qualified_facts,
+        bundle=load_interpretive_rule_bundle(),
+    )
+
+    assert type(unsealed) is tuple
+    with pytest.raises(ValueError, match="AUDITED_INTERPRETIVE_SIGNALS_REQUIRED"):
+        synthesize_interpretive_core_profile(unsealed)
 
 
 def test_public_synthesis_accepts_audited_extractor_output(qualified_facts):
