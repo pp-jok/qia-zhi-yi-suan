@@ -215,6 +215,19 @@ def test_rule_bundle_is_versioned_and_contains_both_systems():
     assert {rule.system for rule in bundle.rules} == {"bazi", "astrology"}
 
 
+def test_rule_bundle_defines_a_value_matched_cross_system_tension_pair():
+    rules = {
+        rule.signal_id: rule for rule in load_interpretive_rule_bundle().rules
+    }
+    bazi = rules["BAZI-TEN-GOD-EXPRESSION"]
+    astrology = rules["ASTROLOGY-PLANET-SIGN-EXPRESSION"]
+
+    assert bazi.topic == astrology.topic == "style of expression"
+    assert {bazi.direction, astrology.direction} == {"reflective", "outward"}
+    assert bazi.value_predicates
+    assert astrology.value_predicates
+
+
 def test_extraction_emits_traceable_bazi_and_astrology_signals(
     qualified_interpretive_facts, extraction_cases
 ):

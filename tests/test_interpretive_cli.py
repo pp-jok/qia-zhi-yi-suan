@@ -8,6 +8,7 @@ from destiny_personality.cli import main
 from destiny_personality.deterministic_facts_codec import (
     load_qualified_deterministic_facts,
 )
+from destiny_personality.interpretive_profile import build_interpretive_core_profile
 
 
 FIXTURE_DIRECTORY = Path(__file__).parent / "fixtures" / "interpretive"
@@ -40,7 +41,10 @@ def fixture_paths() -> FixturePaths:
 
 
 def _render(
-    scenario: str, tmp_path: Path, *, mode: str = "standard"
+    scenario: str,
+    tmp_path: Path,
+    *,
+    mode: str = "standard-interpretive-v1",
 ) -> dict:
     paths = _fixture_paths(scenario)
     output = tmp_path / f"{scenario}-{mode}.json"
@@ -87,7 +91,7 @@ def test_cli_builds_traceable_standard_report(
             "--qualification",
             str(fixture_paths.qualification),
             "--mode",
-            "standard",
+            "standard-interpretive-v1",
             "--output",
             str(output),
         ]
@@ -99,7 +103,7 @@ def test_cli_builds_traceable_standard_report(
         fixture_paths.facts, fixture_paths.qualification
     )
     assert payload["mode"] == "audited_interpretive"
-    assert payload["report_mode"] == "standard"
+    assert payload["report_mode"] == "standard-interpretive-v1"
     assert payload["schema_version"] == "interpretive-report-v1"
     assert 8 <= len(payload["sections"]) <= 12
     assert all(section["signal_ids"] for section in payload["sections"])
@@ -140,6 +144,38 @@ def test_tension_fixture_retains_both_systems_in_growth_tension(
     assert "ASTROLOGY-ASPECT-DIGNITY-CONTEXT" in growth_tension["signal_ids"]
 
 
+def test_tension_fixture_creates_countervailing_profile_conclusions() -> None:
+    paths = _fixture_paths("tension")
+    qualified = load_qualified_deterministic_facts(
+        paths.facts, paths.qualification
+    )
+
+    profile = build_interpretive_core_profile(qualified)
+
+    tensions = tuple(
+        conclusion
+        for conclusion in profile.conclusions
+        if conclusion.supporting_signal_ids
+        and conclusion.countervailing_signal_ids
+    )
+    assert tensions
+    assert {conclusion.direction for conclusion in tensions} == {
+        "reflective",
+        "outward",
+    }
+    assert all(
+        {
+            "BAZI-TEN-GOD-EXPRESSION",
+            "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+        }
+        == set(
+            conclusion.supporting_signal_ids
+            + conclusion.countervailing_signal_ids
+        )
+        for conclusion in tensions
+    )
+
+
 def test_missing_time_visibly_degrades_time_sensitive_output(
     tmp_path: Path,
 ) -> None:
@@ -172,9 +208,17 @@ def test_fixture_directory_contains_five_loadable_qualified_pairs() -> None:
 @pytest.mark.parametrize(
     ("scenario", "mode", "demo_name"),
     [
-        ("contrast_a", "standard", "contrast-a-standard.json"),
-        ("tension", "standard", "tension-standard.json"),
-        ("missing_time", "concise", "missing-time-concise.json"),
+        (
+            "contrast_a",
+            "standard-interpretive-v1",
+            "contrast-a-standard.json",
+        ),
+        ("tension", "standard-interpretive-v1", "tension-standard.json"),
+        (
+            "missing_time",
+            "standard-interpretive-v1",
+            "missing-time-standard.json",
+        ),
     ],
 )
 def test_checked_in_demos_are_cli_generated_parseable_and_traceable(
@@ -205,7 +249,7 @@ def test_cli_requires_independent_qualification(tmp_path: Path, capsys) -> None:
                 "--qualification",
                 str(tmp_path / "missing.json"),
                 "--mode",
-                "standard",
+                "standard-interpretive-v1",
                 "--output",
                 str(tmp_path / "report.json"),
             ]
@@ -215,3 +259,45 @@ def test_cli_requires_independent_qualification(tmp_path: Path, capsys) -> None:
     captured = capsys.readouterr()
     assert captured.out == ""
     assert "FACT_QUALIFICATION_REQUIRED" in captured.err
+
+
+@pytest.mark.parametrize(
+    ("mode", "expected_report_mode"),
+    [
+        ("standard-interpretive-v1", "standard-interpretive-v1"),
+        ("concise-interpretive-v1", "concise-interpretive-v1"),
+    ],
+)
+def test_cli_accepts_versioned_public_report_modes(
+    tmp_path: Path, mode: str, expected_report_mode: str
+) -> None:
+    payload = _render("tension", tmp_path, mode=mode)
+
+    assert payload["report_mode"] == expected_report_mode
+
+
+def test_cli_help_presents_only_versioned_report_modes(capsys) -> None:
+    with pytest.raises(SystemExit) as exit_info:
+        main(["build-interpretive-report", "--help"])
+
+    assert exit_info.value.code == 0
+    help_text = capsys.readouterr().out
+    assert (
+        "{standard-interpretive-v1,concise-interpretive-v1}" in help_text
+    )
+    assert "{standard,concise}" not in help_text
+
+
+@pytest.mark.parametrize(
+    ("alias", "canonical_mode"),
+    [
+        ("standard", "standard-interpretive-v1"),
+        ("concise", "concise-interpretive-v1"),
+    ],
+)
+def test_cli_normalizes_compatibility_mode_aliases(
+    tmp_path: Path, alias: str, canonical_mode: str
+) -> None:
+    payload = _render("tension", tmp_path, mode=alias)
+
+    assert payload["report_mode"] == canonical_mode

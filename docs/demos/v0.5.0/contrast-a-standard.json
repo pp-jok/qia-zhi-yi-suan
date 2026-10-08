@@ -17,7 +17,7 @@
   },
   "boundary_statement": "本报告是基于传统命理与占星象意的反思性文本，不是实证性人格测量、医疗或心理诊断，也不应代替重大生活决策。",
   "mode": "audited_interpretive",
-  "report_mode": "standard",
+  "report_mode": "standard-interpretive-v1",
   "schema_version": "interpretive-report-v1",
   "sections": [
     {

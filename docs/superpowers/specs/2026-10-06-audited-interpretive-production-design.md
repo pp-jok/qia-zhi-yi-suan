@@ -97,6 +97,12 @@ instead of erasing supported material.
 `DeterministicChartFacts`. It returns separate Bazi and astrology collections
 without comparing them.
 
+The V1 bundle includes an explicit, value-matched cross-system tension pair:
+the Bazi resource/expression rule and the astrology Sun-in-Aries first-house
+rule share the exact `style of expression` topic while retaining opposite
+`reflective` and `outward` directions. The profile synthesizer, not the report
+renderer, therefore preserves each matched signal as countervailing evidence.
+
 `interpretive_synthesis.py` compares same-topic signals only. It never raises
 confidence mechanically: agreement can validate an existing signal, different
 but compatible directions can complement it, and opposing directions produce a
@@ -134,6 +140,9 @@ build-interpretive-report FACTS.json --qualification QUALIFICATION.json \
 
 It loads `QualifiedFacts`, rejects raw facts, builds the interpretive profile,
 and persists JSON. Existing `build-release-report` remains strict.
+The two versioned mode names are the only choices shown in CLI help and are
+persisted in `report_mode`; the former `standard` and `concise` spellings are
+accepted only as compatibility aliases and normalize to the versioned names.
 
 Update the Skill routing so normal user-facing personality analysis defaults to
 `audited_interpretive`; `strict` remains opt-in for research/audit. If no

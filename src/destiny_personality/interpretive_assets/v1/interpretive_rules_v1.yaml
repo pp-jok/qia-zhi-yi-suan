@@ -15,8 +15,8 @@ rules:
       - fact_ref: bazi.elemental_balance
         values: [year, month, day]
     traditional_rule_ref: "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
-    topic: expression and resource exchange
-    direction: Consider how the Ten-God relation is traditionally read alongside elemental balance.
+    topic: style of expression
+    direction: reflective
     interpretation: This traditional reading offers language for reflecting on expression, support, and constraint; it is not a diagnostic conclusion.
     confidence: moderate
     limitations:
@@ -54,7 +54,7 @@ rules:
         values: ["1"]
     traditional_rule_ref: "Modern Western astrology, planet-in-sign synthesis; Stephen Arroyo, Astrology, Psychology, and the Four Elements"
     topic: style of expression
-    direction: Explore planet-sign symbolism together with house context.
+    direction: outward
     interpretation: Planet-sign symbolism is a traditional interpretive lens for reflection, not a validated measurement of personality.
     confidence: moderate
     limitations:

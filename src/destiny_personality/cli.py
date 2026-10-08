@@ -13,6 +13,20 @@ from .semantic_bundle import load_semantic_contract_bundle
 from .semantic_fingerprint import build_semantic_bundle_fingerprint
 
 
+_INTERPRETIVE_REPORT_MODES = {
+    "standard-interpretive-v1": "standard",
+    "concise-interpretive-v1": "concise",
+}
+_INTERPRETIVE_REPORT_MODE_ALIASES = {
+    "standard": "standard-interpretive-v1",
+    "concise": "concise-interpretive-v1",
+}
+
+
+def _canonical_interpretive_report_mode(value: str) -> str:
+    return _INTERPRETIVE_REPORT_MODE_ALIASES.get(value, value)
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="destiny-personality-reference-validate")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -79,7 +93,13 @@ def _build_parser() -> argparse.ArgumentParser:
     interpretive_report.add_argument("facts", type=Path)
     interpretive_report.add_argument("--qualification", type=Path, required=True)
     interpretive_report.add_argument(
-        "--mode", choices=("standard", "concise"), required=True
+        "--mode",
+        choices=tuple(_INTERPRETIVE_REPORT_MODES),
+        type=_canonical_interpretive_report_mode,
+        required=True,
+        help=(
+            "versioned report mode; standard/concise remain compatibility aliases"
+        ),
     )
     interpretive_report.add_argument("--output", type=Path, required=True)
     semantic_build = subparsers.add_parser("build-semantic-core")
@@ -370,9 +390,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
             qualified = load_qualified_facts(args.facts, args.qualification)
             profile = build_interpretive_core_profile(qualified)
-            report = build_interpretive_report(profile, args.mode)
+            renderer_mode = _INTERPRETIVE_REPORT_MODES[args.mode]
+            report = build_interpretive_report(profile, renderer_mode)
             payload = encode_interpretive_report(report)
-            payload["report_mode"] = payload["mode"]
+            payload["report_mode"] = args.mode
             payload["mode"] = profile.mode
             _write_interpretive_report(args.output, payload)
             summary = {

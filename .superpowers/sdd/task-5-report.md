@@ -114,3 +114,73 @@ Additional verification completed successfully:
 python3 -m compileall -q src/destiny_personality/cli.py tests/test_interpretive_cli.py
 git diff --check
 ```
+
+## Review remediation: versioned modes and real profile tension
+
+This section supersedes the earlier unversioned CLI mode and demo descriptions.
+
+Added RED tests before remediation. The versioned invocation and direct profile
+tension run failed in three places: argparse rejected both versioned mode names,
+and the tension fixture produced no conclusion with countervailing signal IDs.
+After the first implementation pass, the focused checks passed:
+
+```text
+python3 -m pytest \
+  tests/test_interpretive_rules.py::test_rule_bundle_defines_a_value_matched_cross_system_tension_pair \
+  tests/test_interpretive_cli.py::test_cli_accepts_versioned_public_report_modes \
+  tests/test_interpretive_cli.py::test_tension_fixture_creates_countervailing_profile_conclusions -q
+4 passed in 0.86s
+```
+
+The public CLI now presents exactly these official choices:
+
+```text
+standard-interpretive-v1
+concise-interpretive-v1
+```
+
+Output stores the canonical versioned value in `report_mode`. The old
+`standard` and `concise` spellings remain accepted through parse-time alias
+normalization, so they do not appear as public help choices or leak into output.
+A separate help test was observed failing before this normalization was added.
+
+The versioned V1 rule bundle now defines real cross-system tension under the
+same exact topic, `style of expression`:
+
+- `BAZI-TEN-GOD-EXPRESSION`, matched from the declared Ten-God and pillar
+  predicates, carries direction `reflective`;
+- `ASTROLOGY-PLANET-SIGN-EXPRESSION`, matched from Sun-in-Aries and first-house
+  predicates, carries direction `outward`.
+
+For the tension fixture, the public profile builder now creates both directional
+conclusions with nonempty `supporting_signal_ids` and
+`countervailing_signal_ids`. The test asserts directly on profile conclusions
+and requires the exact two actual matched signal IDs; report titles are not
+used as evidence of tension.
+
+All three demos were regenerated only through
+`--mode standard-interpretive-v1`:
+
+- `docs/demos/v0.5.0/contrast-a-standard.json`
+- `docs/demos/v0.5.0/tension-standard.json`
+- `docs/demos/v0.5.0/missing-time-standard.json`
+
+The former `missing-time-concise.json` artifact was removed. Missing-time
+degradation remains covered by the absence of the time-sensitive
+planet/house signal while time-independent signals remain available.
+
+Focused interpretive verification after remediation:
+
+```text
+python3 -m pytest \
+  tests/test_interpretive_cli.py tests/test_interpretive_rules.py \
+  tests/test_interpretive_profile.py tests/test_interpretive_report.py -q
+46 passed in 3.85s
+```
+
+Final full-suite verification after all review changes:
+
+```text
+python3 -m pytest -q
+836 passed in 99.97s
+```
