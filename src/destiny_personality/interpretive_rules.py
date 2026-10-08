@@ -103,6 +103,13 @@ ASTROLOGY_BODIES = frozenset(
     {"Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"}
 )
 READER_VALUE_LABELS = {
+    "bazi.branch_relation": {
+        "combination": "合",
+        "clash": "冲",
+        "harm": "害",
+        "punishment": "刑",
+        "five_element_controls": "五行相克",
+    },
     "astrology.sign_element": {
         "fire": "火象",
         "earth": "土象",
@@ -129,6 +136,7 @@ READER_VALUE_LABELS = {
     },
 }
 READER_FACT_LABELS = {
+    "bazi.branch_relation": "地支关系",
     "astrology.sign_element": "元素",
     "astrology.sign_modality": "模式",
     "astrology.house_placement": "宫位",

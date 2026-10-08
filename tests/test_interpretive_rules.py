@@ -25,6 +25,11 @@ from destiny_personality.interpretive_rules import (
     extract_interpretive_signals,
     load_interpretive_rule_bundle,
 )
+from destiny_personality.interpretive_profile import build_interpretive_core_profile
+from destiny_personality.interpretive_report import (
+    _render_interpretive_report,
+    build_interpretive_report,
+)
 
 
 FIXTURE_PATH = (
@@ -388,6 +393,90 @@ def test_extraction_makes_matched_astrology_values_reader_visible(
     assert "入庙" in known["ASTROLOGY-SUN-DIGNITY-CONTEXT"]
     assert "对冲" in changed["ASTROLOGY-ASPECT-DIGNITY-CONTEXT"]
     assert "失势" in changed["ASTROLOGY-SUN-DIGNITY-CONTEXT"]
+
+
+def test_qualified_facts_pipeline_keeps_changed_family_evidence_reader_visible(
+    qualified_facts,
+    tmp_path,
+    extraction_cases,
+):
+    """The public report must reflect qualified fixture mutations, not rule defaults."""
+
+    known_path = tmp_path / "known"
+    changed_path = tmp_path / "changed"
+    known_path.mkdir()
+    changed_path.mkdir()
+    known_facts = _qualified_interpretive_facts(
+        qualified_facts, known_path, extraction_cases["known_time"]
+    )
+    changed_facts = _qualified_interpretive_facts(
+        qualified_facts,
+        changed_path,
+        extraction_cases["non_matching_values"],
+    )
+
+    def public_pipeline(facts):
+        signals = extract_interpretive_signals(facts)
+        profile = build_interpretive_core_profile(facts)
+        report = build_interpretive_report(facts, "standard")
+
+        assert signals
+        assert profile.conclusions
+        assert report.sections
+        assert report == _render_interpretive_report(profile, "standard")
+        return signals, report
+
+    known_signals, known_report = public_pipeline(known_facts)
+    changed_signals, changed_report = public_pipeline(changed_facts)
+
+    def evidence(report, signal_id):
+        return "".join(
+            section.content
+            for section in report.sections
+            if signal_id in section.signal_ids
+        )
+
+    assert {
+        (item.signal_id, tuple(value.value for value in item.matched_values))
+        for item in known_signals
+        if item.signal_id in {
+            "BAZI-TEN-GOD-EXPRESSION",
+            "BAZI-RELATION-DYNAMICS",
+            "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+            "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+        }
+    } == {
+        ("BAZI-TEN-GOD-EXPRESSION", ("正印",)),
+        ("BAZI-RELATION-DYNAMICS", ("combination",)),
+        ("ASTROLOGY-PLANET-SIGN-EXPRESSION", ("fire", "cardinal")),
+        ("ASTROLOGY-ASPECT-DIGNITY-CONTEXT", ("conjunction",)),
+    }
+    assert {
+        (item.signal_id, tuple(value.value for value in item.matched_values))
+        for item in changed_signals
+        if item.signal_id in {
+            "BAZI-TEN-GOD-WEALTH",
+            "BAZI-RELATION-DYNAMICS",
+            "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+            "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+        }
+    } == {
+        ("BAZI-TEN-GOD-WEALTH", ("正财",)),
+        ("BAZI-RELATION-DYNAMICS", ("clash",)),
+        ("ASTROLOGY-PLANET-SIGN-EXPRESSION", ("earth", "fixed")),
+        ("ASTROLOGY-ASPECT-DIGNITY-CONTEXT", ("opposition",)),
+    }
+
+    assert "火象" in evidence(known_report, "ASTROLOGY-PLANET-SIGN-EXPRESSION")
+    assert "土象" in evidence(changed_report, "ASTROLOGY-PLANET-SIGN-EXPRESSION")
+    assert "合相" in evidence(known_report, "ASTROLOGY-ASPECT-DIGNITY-CONTEXT")
+    assert "对冲" in evidence(changed_report, "ASTROLOGY-ASPECT-DIGNITY-CONTEXT")
+    assert "正印" in evidence(known_report, "BAZI-TEN-GOD-EXPRESSION")
+    assert "正财" in evidence(changed_report, "BAZI-TEN-GOD-WEALTH")
+    assert "合" in evidence(known_report, "BAZI-RELATION-DYNAMICS")
+    assert "冲" in evidence(changed_report, "BAZI-RELATION-DYNAMICS")
+    assert "combination" not in evidence(known_report, "BAZI-RELATION-DYNAMICS")
+    assert "clash" not in evidence(changed_report, "BAZI-RELATION-DYNAMICS")
 
 
 def test_ten_god_repetition_requires_the_same_identity(

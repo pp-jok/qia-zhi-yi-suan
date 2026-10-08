@@ -213,6 +213,48 @@ Both completed successfully with no output.
   regressions are green, but the repository-wide suite remains red by the four
   explicitly listed transitional failures.
 
+## Final review repair
+
+The final reviewer found two medium gaps in the reader-visible evidence path.
+`bazi.branch_relation` now uses a closed Chinese display map for every allowed
+canonical value: `combination` -> `合`, `clash` -> `冲`, `harm` -> `害`,
+`punishment` -> `刑`, and `five_element_controls` -> `五行相克`. The public
+report evidence now presents these as `地支关系：<中文标签>` and never exposes
+the raw relation enum.
+
+Added `test_qualified_facts_pipeline_keeps_changed_family_evidence_reader_visible`,
+which exercises the real qualified route twice:
+
+```text
+QualifiedFacts -> extract_interpretive_signals -> build_interpretive_core_profile -> build_interpretive_report
+```
+
+It compares the existing known-time fixture against its qualified mutation and
+checks both extracted evidence and public report text for all four changed
+families: Sun sign quality (`火象/开创` -> `土象/固定`), aspect (`合相` ->
+`对冲`), Ten God (`正印` -> `正财`), and branch relation (`合` -> `冲`).
+
+### Final repair RED
+
+```text
+python3 -m pytest tests/test_interpretive_rules.py::test_qualified_facts_pipeline_keeps_changed_family_evidence_reader_visible -q
+```
+
+Before the display-map implementation, the test failed because the report
+contained `命中依据：combination` rather than the required reader label `合`.
+
+### Final repair GREEN
+
+```text
+python3 -m pytest tests/test_interpretive_rules.py tests/test_interpretive_report.py -q
+```
+
+Output:
+
+```text
+44 passed in 7.14s
+```
+
 ## Review-fix evidence
 
 The first review found three contract weaknesses: enumerated family values did
