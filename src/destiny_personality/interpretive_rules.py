@@ -102,6 +102,39 @@ TEN_GOD_SOURCE_KINDS = frozenset({"visible_stem", "hidden_stem", "unknown"})
 ASTROLOGY_BODIES = frozenset(
     {"Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"}
 )
+READER_VALUE_LABELS = {
+    "astrology.sign_element": {
+        "fire": "火象",
+        "earth": "土象",
+        "air": "风象",
+        "water": "水象",
+    },
+    "astrology.sign_modality": {
+        "cardinal": "开创",
+        "fixed": "固定",
+        "mutable": "变动",
+    },
+    "astrology.aspect": {
+        "conjunction": "合相",
+        "opposition": "对冲",
+        "square": "刑相",
+        "trine": "拱相",
+        "sextile": "六合相",
+    },
+    "astrology.essential_dignity": {
+        "domicile": "入庙",
+        "detriment": "失势",
+        "exaltation": "旺相",
+        "fall": "落陷",
+    },
+}
+READER_FACT_LABELS = {
+    "astrology.sign_element": "元素",
+    "astrology.sign_modality": "模式",
+    "astrology.house_placement": "宫位",
+    "astrology.aspect": "相位",
+    "astrology.essential_dignity": "尊贵",
+}
 
 
 def interpretive_rule_asset_root() -> Path:
@@ -217,7 +250,7 @@ def _value_predicates(
 
 
 def _rule(value: Any) -> InterpretiveSignal:
-    if not isinstance(value, dict) or set(value) != RULE_KEYS:
+    if not isinstance(value, dict) or not RULE_KEYS <= set(value):
         raise _invalid("INTERPRETIVE_RULE_INVALID")
     confidence = _string(value["confidence"], "INTERPRETIVE_RULE_INVALID_CONFIDENCE")
     if confidence not in CONFIDENCES:
@@ -229,6 +262,8 @@ def _rule(value: Any) -> InterpretiveSignal:
     predicates = _value_predicates(value["value_predicates"], fact_refs)
     if _requires_exact_demo_chart(predicates):
         raise _invalid("INTERPRETIVE_RULE_DEMO_SPECIFIC")
+    if set(value) != RULE_KEYS:
+        raise _invalid("INTERPRETIVE_RULE_INVALID")
     return InterpretiveSignal(
         signal_id=_string(value["signal_id"], "INTERPRETIVE_RULE_INVALID"),
         system=system,
@@ -356,6 +391,9 @@ def extract_interpretive_signals(
                     rule,
                     fact_refs=fact_refs,
                     matched_values=matched_values,
+                    interpretation=_reader_visible_interpretation(
+                        rule.interpretation, matched_values
+                    ),
                 )
             )
     return tuple(signals)
@@ -382,6 +420,31 @@ def _match(
     value: str,
 ) -> InterpretiveMatchedValue:
     return InterpretiveMatchedValue(predicate.fact_ref, fact_path, value)
+
+
+def _reader_visible_interpretation(
+    interpretation: str,
+    matched_values: Tuple[InterpretiveMatchedValue, ...],
+) -> str:
+    """Make every matched selector visible in the reader-facing rule text."""
+
+    visible_values = tuple(
+        dict.fromkeys(
+            _reader_visible_value(match) for match in matched_values
+        )
+    )
+    return f"{interpretation}（命中依据：{'；'.join(visible_values)}）"
+
+
+def _reader_visible_value(match: InterpretiveMatchedValue) -> str:
+    if match.fact_ref == "astrology.house_placement":
+        value = f"第{match.value}宫"
+    else:
+        value = READER_VALUE_LABELS.get(match.fact_ref, {}).get(
+            match.value, match.value
+        )
+    label = READER_FACT_LABELS.get(match.fact_ref)
+    return f"{label}：{value}" if label else value
 
 
 def _ten_god_paths(

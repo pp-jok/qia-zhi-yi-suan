@@ -2,9 +2,11 @@
 
 ## Status
 
-DONE_WITH_CONCERNS
+DONE
 
 Implementation commit: `849f489bf1450d2c0f55bf8d2ae34af21001c768`
+
+Review-fix commit: `f747162fa4f2b99d8cca1397c2d8cd22c2577902`
 
 ## Changed files
 
@@ -210,3 +212,132 @@ Both completed successfully with no output.
 - Until those later tasks land, the focused Task 1 tests and frozen-pipeline
   regressions are green, but the repository-wide suite remains red by the four
   explicitly listed transitional failures.
+
+## Review-fix evidence
+
+The first review found three contract weaknesses: enumerated family values did
+not survive extraction, the Sun selector was equivalent to Aries, and the
+anti-demo rule trusted an asset-authored boolean. Focused behavior tests were
+added before the fixes.
+
+### Review RED
+
+Command:
+
+```text
+python3 -m pytest tests/test_interpretive_rules.py -q
+```
+
+Output before review fixes:
+
+```text
+..F...FF........FF..... [100%]
+5 failed, 18 passed in 11.20s
+```
+
+The failures proved that:
+
+- the asset still authored `requires_exact_demo_chart`;
+- the Sun family did not match Taurus;
+- extracted signals did not expose exact matched selector values;
+- loader validation accepted a `fire + cardinal` single-sign configuration;
+- loader validation accepted a Ten-God plus elemental-balance demo join.
+
+### Review implementation
+
+- Added `InterpretiveMatchedValue` and preserved exact qualified
+  `fact_ref`/`fact_path`/`value` matches on every extracted signal. A shared
+  Sun family now records `fire/cardinal` for Aries and `earth/fixed` for
+  Taurus, while paired Ten-God families retain the actual matched identity.
+- Expanded the Sun family to all four elements and all three modalities and
+  changed its Chinese narrative to reference the actual matched qualities
+  instead of hard-coding fire/cardinal behavior.
+- Removed `requires_exact_demo_chart` from the asset schema. The loader now
+  derives demo specificity from predicate structure and rejects single-sign
+  selectors and cross-family exact-chart joins.
+
+### Review GREEN
+
+Required focused command:
+
+```text
+python3 -m pytest tests/test_interpretive_rules.py -q
+```
+
+Output:
+
+```text
+....................... [100%]
+23 passed in 8.15s
+```
+
+Frozen-pipeline regression command remained green:
+
+```text
+125 passed in 14.32s
+```
+
+The broader interpretive regression produced `58 passed, 4 failed`; these are
+the same previously documented v0.5 missing-time assertion and three stale
+demo snapshots, with no new failure class introduced by the review fix.
+
+## Follow-up repair evidence
+
+The follow-up review found that the v2 loader kept matched values in internal
+signal metadata but did not use them in reader-visible rule text. This left
+full-domain sign, house, aspect, and dignity rules with identical prose even
+when their actual matches differed. It also needed to prove that a discarded
+asset boolean could not change the result of structural anti-demo validation.
+
+### Repair RED
+
+Focused command:
+
+```text
+python3 -m pytest \
+  tests/test_interpretive_rules.py::test_extraction_makes_matched_astrology_values_reader_visible \
+  tests/test_interpretive_rules.py::test_asset_boolean_cannot_hide_a_structural_demo_condition -q
+```
+
+Output before the repair:
+
+```text
+FF [100%]
+2 failed in 0.98s
+```
+
+The first failure showed that a matching Sun in Aries still produced generic
+text without `火象` or `开创`. The second showed that a `false`
+`requires_exact_demo_chart` asset field caused the generic invalid-rule path
+before the `fire + cardinal` single-sign condition was structurally rejected.
+
+### Repair implementation
+
+- Extraction now appends a reader-facing `命中依据` clause to the rule
+  interpretation. It uses the exact qualified matched values and translates
+  sign elements, modalities, houses, major aspects, and dignities into the
+  reader-visible labels used by the report (for example `火象`/`开创`,
+  `第1宫`, `合相`, and `入庙`).
+- Rule loading now parses required fields and evaluates structural demo
+  specificity before rejecting surplus keys. Therefore an obsolete asset
+  boolean cannot mask a single-chart or single-sign selector condition; a
+  non-demo surplus key remains invalid after that check.
+
+### Repair GREEN
+
+Required focused command:
+
+```text
+python3 -m pytest tests/test_interpretive_rules.py -q
+```
+
+Output:
+
+```text
+......................... [100%]
+25 passed in 5.83s
+```
+
+`git diff --check` completed with no output. The repair changes only the Task
+1 rule loader, its focused tests, and this evidence report; no strict,
+candidate, or primitive code was changed.

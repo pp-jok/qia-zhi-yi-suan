@@ -362,6 +362,34 @@ def test_reusable_rules_preserve_exact_matched_values_for_narrative_selection(
     }
 
 
+def test_extraction_makes_matched_astrology_values_reader_visible(
+    qualified_interpretive_facts,
+    non_matching_interpretive_facts,
+):
+    def interpretations(qualified):
+        return {
+            signal.signal_id: signal.interpretation
+            for signal in extract_interpretive_signals(qualified)
+        }
+
+    known = interpretations(qualified_interpretive_facts)
+    changed = interpretations(non_matching_interpretive_facts)
+
+    assert "火象" in known["ASTROLOGY-PLANET-SIGN-EXPRESSION"]
+    assert "开创" in known["ASTROLOGY-PLANET-SIGN-EXPRESSION"]
+    assert "土象" in changed["ASTROLOGY-PLANET-SIGN-EXPRESSION"]
+    assert "固定" in changed["ASTROLOGY-PLANET-SIGN-EXPRESSION"]
+    assert (
+        known["ASTROLOGY-PLANET-SIGN-EXPRESSION"]
+        != changed["ASTROLOGY-PLANET-SIGN-EXPRESSION"]
+    )
+    assert "第1宫" in known["ASTROLOGY-SUN-HOUSE-CONTEXT"]
+    assert "合相" in known["ASTROLOGY-ASPECT-DIGNITY-CONTEXT"]
+    assert "入庙" in known["ASTROLOGY-SUN-DIGNITY-CONTEXT"]
+    assert "对冲" in changed["ASTROLOGY-ASPECT-DIGNITY-CONTEXT"]
+    assert "失势" in changed["ASTROLOGY-SUN-DIGNITY-CONTEXT"]
+
+
 def test_ten_god_repetition_requires_the_same_identity(
     qualified_interpretive_facts,
 ):
@@ -461,6 +489,24 @@ def test_rule_loader_structurally_rejects_single_sign_configuration(tmp_path: Pa
     )
     rule["value_predicates"][0]["values"] = ["fire"]
     rule["value_predicates"][1]["values"] = ["cardinal"]
+    (tmp_path / "interpretive_rules_v1.yaml").write_text(
+        yaml.safe_dump(payload, allow_unicode=True), encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="INTERPRETIVE_RULE_DEMO_SPECIFIC"):
+        load_interpretive_rule_bundle(tmp_path)
+
+
+def test_asset_boolean_cannot_hide_a_structural_demo_condition(tmp_path: Path):
+    payload = yaml.safe_load(RULE_PATH.read_text(encoding="utf-8"))
+    rule = next(
+        item
+        for item in payload["rules"]
+        if item["signal_id"] == "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+    )
+    rule["value_predicates"][0]["values"] = ["fire"]
+    rule["value_predicates"][1]["values"] = ["cardinal"]
+    rule["requires_exact_demo_chart"] = False
     (tmp_path / "interpretive_rules_v1.yaml").write_text(
         yaml.safe_dump(payload, allow_unicode=True), encoding="utf-8"
     )
