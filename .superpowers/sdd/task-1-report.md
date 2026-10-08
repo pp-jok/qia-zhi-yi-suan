@@ -341,3 +341,48 @@ Output:
 `git diff --check` completed with no output. The repair changes only the Task
 1 rule loader, its focused tests, and this evidence report; no strict,
 candidate, or primitive code was changed.
+
+## Report-integration repair evidence
+
+The report renderer was still prioritizing `_SIGNAL_RENDERINGS` canned bodies
+over the Chinese `InterpretiveConclusion.interpretation` produced by the rule
+pipeline. That discarded the exact `命中依据` values appended during extraction,
+so reader sections did not distinguish the actual Sun quality, aspect type, or
+Ten-God match.
+
+### Report-integration RED
+
+```text
+python3 -m pytest tests/test_interpretive_report.py::test_rule_family_evidence_values_survive_public_report_rendering -q
+```
+
+Output before the production change:
+
+```text
+1 failed in 0.22s
+```
+
+The rendered text contained only generic canned wording and omitted `火象`.
+
+### Report-integration implementation
+
+- The report now uses a Chinese conclusion interpretation first, retaining the
+  qualified value evidence supplied by the rule pipeline.
+- Canned rendering remains a fallback for legacy conclusions without Chinese
+  controlled text.
+- The report-level regression compares rendered outputs for `火象/开创/正印/合相`
+  and `土象/固定/正财/对冲`, proving those matched differences remain public.
+
+### Report-integration GREEN
+
+```text
+python3 -m pytest tests/test_interpretive_report.py -q
+python3 -m pytest tests/test_interpretive_rules.py tests/test_interpretive_report.py -q
+```
+
+Output:
+
+```text
+18 passed in 0.49s
+43 passed in 6.35s
+```

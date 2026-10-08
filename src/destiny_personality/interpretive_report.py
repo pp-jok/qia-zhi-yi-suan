@@ -455,6 +455,9 @@ def _render_bodies(
 ) -> str:
     bodies = []
     for conclusion in conclusions:
+        if _has_chinese(conclusion.interpretation):
+            bodies.append(conclusion.interpretation)
+            continue
         controlled = _unique(
             rendering.body
             for signal_id in _signal_ids((conclusion,))
@@ -463,8 +466,6 @@ def _render_bodies(
         )
         if controlled:
             bodies.extend(controlled)
-        elif _has_chinese(conclusion.interpretation):
-            bodies.append(conclusion.interpretation)
         else:
             bodies.append(
                 "现有审计信号仅支持将该主题作为反思线索；"

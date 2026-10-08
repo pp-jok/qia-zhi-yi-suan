@@ -245,6 +245,74 @@ def test_actual_bundle_profile_renders_controlled_chinese_only(qualified_facts):
     assert "style of expression" not in visible_text
 
 
+def test_rule_family_evidence_values_survive_public_report_rendering():
+    def report_text(
+        sun_quality: str, aspect_type: str, ten_god: str
+    ) -> str:
+        conclusions = (
+            InterpretiveConclusion(
+                topic="style of expression",
+                direction="outward",
+                interpretation=(
+                    "太阳所在星座的元素与模式，提供核心意志如何定义和表达"
+                    f"自我的象征语言。（命中依据：元素：{sun_quality}；"
+                    f"模式：{'开创' if sun_quality == '火象' else '固定'}；"
+                    f"十神：{ten_god}）"
+                ),
+                supporting_signal_ids=(
+                    "BAZI-TEN-GOD-EXPRESSION",
+                    "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+                ),
+                countervailing_signal_ids=(),
+                confidence="moderate",
+                limitations=("仅作为传统象意的反思线索。",),
+                signal_provenance=_provenance(
+                    "BAZI-TEN-GOD-EXPRESSION",
+                    "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+                ),
+            ),
+            InterpretiveConclusion(
+                topic="interacting tendencies",
+                direction="integrative",
+                interpretation=(
+                    "日月主要相位用于观察自我意志与情绪需求如何互动。"
+                    f"（命中依据：相位：{aspect_type}）"
+                ),
+                supporting_signal_ids=("ASTROLOGY-ASPECT-DIGNITY-CONTEXT",),
+                countervailing_signal_ids=(),
+                confidence="exploratory",
+                limitations=("仅作为传统象意的反思线索。",),
+                signal_provenance=_provenance(
+                    "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+                ),
+            ),
+        )
+        profile = InterpretiveCoreProfile(
+            mode="audited_interpretive",
+            conclusions=conclusions,
+            limitations=("不是实证性人格诊断。",),
+            audit_refs=(
+                "deterministic-facts:report-values",
+                "fact-qualification:report-values",
+                "interpretive-rules:audited-interpretive-rules-v2",
+            ),
+        )
+        return "".join(
+            section.content
+            for section in _render_interpretive_report(profile, "standard").sections
+        )
+
+    known = report_text("火象", "合相", "正印")
+    changed = report_text("土象", "对冲", "正财")
+
+    for value in ("火象", "开创", "合相", "正印"):
+        assert value in known
+        assert value not in changed
+    for value in ("土象", "固定", "对冲", "正财"):
+        assert value in changed
+        assert value not in known
+
+
 @pytest.mark.parametrize(
     ("mode", "audit_refs"),
     (
