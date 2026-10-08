@@ -43,6 +43,17 @@ class InterpretiveRuleBundle:
 
 
 @dataclass(frozen=True)
+class InterpretiveSignalProvenance:
+    """Concrete qualified-fact and rule provenance for one matched signal."""
+
+    signal_id: str
+    system: str
+    fact_refs: Tuple[str, ...]
+    traditional_rule_ref: str
+    limitations: Tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class InterpretiveConclusion:
     """A topic-bound conclusion that keeps its supporting and opposing signals."""
 
@@ -53,6 +64,7 @@ class InterpretiveConclusion:
     countervailing_signal_ids: Tuple[str, ...]
     confidence: InterpretiveConfidence
     limitations: Tuple[str, ...]
+    signal_provenance: Tuple[InterpretiveSignalProvenance, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -63,3 +75,7 @@ class InterpretiveCoreProfile:
     conclusions: Tuple[InterpretiveConclusion, ...]
     limitations: Tuple[str, ...]
     audit_refs: Tuple[str, ...]
+    fact_mode: str = "time_sensitive"
+    birth_time_status: str = "available"
+    time_sensitivity_reasons: Tuple[str, ...] = ()
+    omitted_time_sensitive_claims: Tuple[str, ...] = ()

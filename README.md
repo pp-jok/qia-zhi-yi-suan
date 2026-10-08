@@ -93,7 +93,7 @@ destiny-personality-reference-validate build-interpretive-report FACTS.json \
 
 ## 审计式解释报告
 
-`standard-interpretive-v1` 是默认模式，依实际证据生成 8–12 个用户可读章节。`concise-interpretive-v1` 是同一份 profile 的短版视图。CLI 仍接受 `standard` 和 `concise` 作为兼容别名，但持久化的 `report_mode` 始终使用带版本的正式名称。
+`standard-interpretive-v1` 是默认模式，依实际证据生成 8–12 个用户可读章节。`concise-interpretive-v1` 是同一受控结论集的短版视图。公开报告入口只接受指纹绑定的 `QualifiedFacts`；调用方自行构造的 profile 或原始事实不能进入审计报告路径。CLI 仍接受 `standard` 和 `concise` 作为兼容别名，但持久化的 `report_mode` 始终使用带版本的正式名称。
 
 置信标签不是科学准确率，而是对当前规则与证据范围的受控表达：
 
@@ -102,7 +102,7 @@ destiny-personality-reference-validate build-interpretive-report FACTS.json \
 - `exploratory`：存在反向证据或探索性信号，只作为反思线索。
 - `insufficient`：请求的主题没有匹配规则，不形成人格结论。
 
-追溯链为“报告结论 → 信号 ID → 合格命盘事实/传统规则”，并在审计元数据中保存事实指纹、资格指纹与规则包版本。内部 ID 不进入用户正文。
+追溯链为“报告结论/章节 → 信号 ID → 具体合格事实路径/传统规则”。每个章节的结构化 `signal_provenance` 保留信号所属体系、事实路径、规则引用与局限；报告审计元数据另保存事实指纹、资格指纹、规则包版本、`fact_mode` 与出生时间状态。内部 ID 不进入用户正文。
 
 出生时间缺失时，运行时进入 `stable_only`：保留与时间无关的信号，省略时柱、上升点、MC、宫位、角度及其依赖结论，并在报告中增加限制说明。不得根据其他落点推测缺失的宫位或角度。
 

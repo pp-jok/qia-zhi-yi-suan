@@ -113,6 +113,25 @@ def test_cli_builds_traceable_standard_report(
     assert payload["audit_metadata"]["qualification_refs"] == [
         f"fact-qualification:{qualified.qualification_fingerprint}"
     ]
+    provenance_by_id = {
+        provenance["signal_id"]: provenance
+        for section in payload["sections"]
+        for provenance in section["signal_provenance"]
+    }
+    assert provenance_by_id
+    assert set(provenance_by_id) == _signal_ids(payload)
+    assert all(item["fact_refs"] for item in provenance_by_id.values())
+    assert all(
+        item["traditional_rule_ref"] for item in provenance_by_id.values()
+    )
+    assert all(
+        item["system"] in {"bazi", "astrology"}
+        for item in provenance_by_id.values()
+    )
+    for section in payload["sections"]:
+        assert [
+            item["signal_id"] for item in section["signal_provenance"]
+        ] == section["signal_ids"]
 
 
 def test_distinct_charts_do_not_collapse_to_identical_reports(
@@ -190,6 +209,30 @@ def test_missing_time_visibly_degrades_time_sensitive_output(
     assert _reader_visible_signature(missing_time) != _reader_visible_signature(
         complete
     )
+
+
+@pytest.mark.parametrize(
+    "mode", ("standard-interpretive-v1", "concise-interpretive-v1")
+)
+def test_missing_time_reports_metadata_and_visible_omission_notice(
+    tmp_path: Path, mode: str
+) -> None:
+    payload = _render("missing_time", tmp_path, mode=mode)
+
+    assert payload["audit_metadata"]["fact_mode"] == "stable_only"
+    assert payload["audit_metadata"]["birth_time_status"] == (
+        "unavailable_or_uncertain"
+    )
+    assert payload["audit_metadata"]["omitted_time_sensitive_claims"] == [
+        "astrology.houses",
+        "astrology.angles",
+    ]
+    visible_text = "".join(
+        section["title"] + section["content"] + section["limitation"]
+        for section in payload["sections"]
+    )
+    assert "出生时间不可用或存疑" in visible_text
+    assert "宫位与四轴主张已省略" in visible_text
 
 
 def test_fixture_directory_contains_five_loadable_qualified_pairs() -> None:

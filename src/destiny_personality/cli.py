@@ -385,21 +385,19 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 load_qualified_deterministic_facts as load_qualified_facts,
             )
             from .interpretive_codec import encode_interpretive_report
-            from .interpretive_profile import build_interpretive_core_profile
             from .interpretive_report import build_interpretive_report
 
             qualified = load_qualified_facts(args.facts, args.qualification)
-            profile = build_interpretive_core_profile(qualified)
             renderer_mode = _INTERPRETIVE_REPORT_MODES[args.mode]
-            report = build_interpretive_report(profile, renderer_mode)
+            report = build_interpretive_report(qualified, renderer_mode)
             payload = encode_interpretive_report(report)
             payload["report_mode"] = args.mode
-            payload["mode"] = profile.mode
+            payload["mode"] = "audited_interpretive"
             _write_interpretive_report(args.output, payload)
             summary = {
                 "status": "ok",
                 "output": str(args.output),
-                "mode": profile.mode,
+                "mode": "audited_interpretive",
                 "report_mode": args.mode,
             }
         elif args.command == "build-semantic-core":

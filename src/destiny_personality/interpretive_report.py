@@ -1,9 +1,14 @@
-"""Deterministic Chinese reports rendered from an interpretive profile only."""
+"""Deterministic Chinese reports built only from qualified chart facts."""
 
 from dataclasses import dataclass
 from typing import Iterable, Literal, Optional, Sequence, Tuple
 
-from .interpretive_models import InterpretiveConclusion, InterpretiveCoreProfile
+from .deterministic_facts_codec import QualifiedFacts, require_qualified_facts
+from .interpretive_models import (
+    InterpretiveConclusion,
+    InterpretiveCoreProfile,
+    InterpretiveSignalProvenance,
+)
 
 
 InterpretiveReportMode = Literal["standard", "concise"]
@@ -18,6 +23,7 @@ class InterpretiveReportSection:
     content: str
     signal_ids: Tuple[str, ...]
     limitation: str
+    signal_provenance: Tuple[InterpretiveSignalProvenance, ...]
 
 
 @dataclass(frozen=True)
@@ -28,6 +34,10 @@ class InterpretiveReportAuditMetadata:
     fact_refs: Tuple[str, ...]
     qualification_refs: Tuple[str, ...]
     profile_audit_refs: Tuple[str, ...]
+    fact_mode: str
+    birth_time_status: str
+    time_sensitivity_reasons: Tuple[str, ...]
+    omitted_time_sensitive_claims: Tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -152,10 +162,24 @@ _BOUNDARY_STATEMENT = (
 
 
 def build_interpretive_report(
+    qualified_facts: QualifiedFacts,
+    mode: InterpretiveReportMode,
+) -> InterpretiveReport:
+    """Build the public product report through the qualified-facts boundary."""
+
+    qualified = require_qualified_facts(qualified_facts)
+    from .interpretive_profile import build_interpretive_core_profile
+
+    return _render_interpretive_report(
+        build_interpretive_core_profile(qualified), mode
+    )
+
+
+def _render_interpretive_report(
     profile: InterpretiveCoreProfile,
     mode: InterpretiveReportMode,
 ) -> InterpretiveReport:
-    """Render a stable product report without reopening chart facts."""
+    """Render an internally synthesized profile after provenance validation."""
 
     if not isinstance(profile, InterpretiveCoreProfile):
         raise TypeError("INTERPRETIVE_CORE_PROFILE_REQUIRED")
@@ -172,7 +196,7 @@ def build_interpretive_report(
         or any(not isinstance(ref, str) or not ref for ref in audit_refs)
     ):
         raise ValueError("AUDITED_INTERPRETIVE_PROFILE_REQUIRED")
-    audit_metadata = _audit_metadata(audit_refs)
+    audit_metadata = _audit_metadata(profile, audit_refs)
     if (
         not audit_metadata.rule_bundle_refs
         or not audit_metadata.fact_refs
@@ -187,6 +211,8 @@ def build_interpretive_report(
     )
     if not conclusions:
         raise ValueError("TRACEABLE_INTERPRETIVE_CONCLUSION_REQUIRED")
+    if any(not _conclusion_provenance_is_complete(item) for item in conclusions):
+        raise ValueError("TRACEABLE_INTERPRETIVE_PROVENANCE_REQUIRED")
 
     if mode == "standard":
         sections = _build_standard_sections(
@@ -198,6 +224,9 @@ def build_interpretive_report(
             conclusions, tuple(profile.limitations)
         )
         title = "审计型传统命理解读·精简版"
+
+    if profile.birth_time_status == "unavailable_or_uncertain":
+        sections = _include_missing_time_notice(sections, conclusions, mode)
 
     return InterpretiveReport(
         schema_version="interpretive-report-v1",
@@ -323,6 +352,7 @@ def _section(
         ),
         signal_ids=_signal_ids(conclusions),
         limitation="；".join(limitation_values),
+        signal_provenance=_signal_provenance(conclusions),
     )
 
 
@@ -345,6 +375,7 @@ def _coverage_section(
             "证据覆盖有限；不将现有结论重标为其他主题；"
             "不作人格特质判断。"
         ),
+        signal_provenance=_signal_provenance(conclusions),
     )
 
 
@@ -411,6 +442,7 @@ def _audit_scope_sections(
             content=f"【{title}】{body}{common_boundary}",
             signal_ids=signal_ids,
             limitation=common_boundary,
+            signal_provenance=_signal_provenance(conclusions),
         )
         for index, (title, body) in enumerate(
             zip(_AUDIT_SECTION_TITLES, bodies), start=1
@@ -488,7 +520,61 @@ def _signal_ids(
     )
 
 
+def _signal_provenance(
+    conclusions: Sequence[InterpretiveConclusion],
+) -> Tuple[InterpretiveSignalProvenance, ...]:
+    by_id = {}
+    for conclusion in conclusions:
+        for provenance in conclusion.signal_provenance:
+            by_id.setdefault(provenance.signal_id, provenance)
+    return tuple(
+        by_id[signal_id]
+        for signal_id in _signal_ids(conclusions)
+        if signal_id in by_id
+    )
+
+
+def _conclusion_provenance_is_complete(
+    conclusion: InterpretiveConclusion,
+) -> bool:
+    expected_ids = _signal_ids((conclusion,))
+    provenance = conclusion.signal_provenance
+    return (
+        tuple(item.signal_id for item in provenance) == expected_ids
+        and all(
+            item.system in {"bazi", "astrology"}
+            and item.fact_refs
+            and all(isinstance(ref, str) and ref for ref in item.fact_refs)
+            and item.traditional_rule_ref
+            for item in provenance
+        )
+    )
+
+
+def _include_missing_time_notice(
+    sections: Tuple[InterpretiveReportSection, ...],
+    conclusions: Tuple[InterpretiveConclusion, ...],
+    mode: InterpretiveReportMode,
+) -> Tuple[InterpretiveReportSection, ...]:
+    notice = InterpretiveReportSection(
+        section_id=f"{mode}-time-scope",
+        title="出生时间与解读范围",
+        content=(
+            "【出生时间与解读范围】出生时间不可用或存疑；"
+            "宫位与四轴主张已省略，本报告仅使用不依赖精确"
+            "出生时间的受控信号。"
+        ),
+        signal_ids=_signal_ids(conclusions),
+        limitation="不推断宫位、上升点、天顶点或其他时间敏感结论。",
+        signal_provenance=_signal_provenance(conclusions),
+    )
+    if mode == "standard" and len(sections) >= 12:
+        return sections[:11] + (notice,)
+    return sections + (notice,)
+
+
 def _audit_metadata(
+    profile: InterpretiveCoreProfile,
     audit_refs: Tuple[str, ...],
 ) -> InterpretiveReportAuditMetadata:
     return InterpretiveReportAuditMetadata(
@@ -502,6 +588,12 @@ def _audit_metadata(
             ref for ref in audit_refs if ref.startswith("fact-qualification:")
         ),
         profile_audit_refs=audit_refs,
+        fact_mode=profile.fact_mode,
+        birth_time_status=profile.birth_time_status,
+        time_sensitivity_reasons=tuple(profile.time_sensitivity_reasons),
+        omitted_time_sensitive_claims=tuple(
+            profile.omitted_time_sensitive_claims
+        ),
     )
 
 

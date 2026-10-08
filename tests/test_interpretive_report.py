@@ -6,9 +6,26 @@ from destiny_personality.interpretive_codec import encode_interpretive_report
 from destiny_personality.interpretive_models import (
     InterpretiveConclusion,
     InterpretiveCoreProfile,
+    InterpretiveSignalProvenance,
 )
 from destiny_personality.interpretive_profile import build_interpretive_core_profile
-from destiny_personality.interpretive_report import build_interpretive_report
+from destiny_personality.interpretive_report import (
+    _render_interpretive_report,
+    build_interpretive_report,
+)
+
+
+def _provenance(*signal_ids: str) -> tuple[InterpretiveSignalProvenance, ...]:
+    return tuple(
+        InterpretiveSignalProvenance(
+            signal_id=signal_id,
+            system="bazi",
+            fact_refs=(f"bazi.test[{index}].value",),
+            traditional_rule_ref=f"tradition:{signal_id}",
+            limitations=("仅作为传统象意的反思线索。",),
+        )
+        for index, signal_id in enumerate(signal_ids)
+    )
 
 
 @pytest.fixture
@@ -35,6 +52,10 @@ def profile() -> InterpretiveCoreProfile:
             else (),
             confidence="exploratory" if topic == "growth tension" else "moderate",
             limitations=("仅作为传统象意的反思线索。",),
+            signal_provenance=_provenance(
+                f"SIG-{index:02d}",
+                *((f"COUNTER-{index:02d}",) if topic == "growth tension" else ()),
+            ),
         )
         for index, (topic, direction, interpretation) in enumerate(topics, start=1)
     )
@@ -52,7 +73,7 @@ def profile() -> InterpretiveCoreProfile:
 
 
 def test_standard_report_has_user_readable_depth_and_audit_refs(profile):
-    report = build_interpretive_report(profile, mode="standard")
+    report = _render_interpretive_report(profile, mode="standard")
 
     assert 8 <= len(report.sections) <= 12
     assert all(section.signal_ids for section in report.sections)
@@ -68,7 +89,7 @@ def test_standard_report_has_user_readable_depth_and_audit_refs(profile):
 
 
 def test_standard_report_contains_the_eight_named_topics(profile):
-    report = build_interpretive_report(profile, mode="standard")
+    report = _render_interpretive_report(profile, mode="standard")
 
     assert tuple(section.title for section in report.sections[:8]) == (
         "核心底色",
@@ -85,8 +106,8 @@ def test_standard_report_contains_the_eight_named_topics(profile):
 
 
 def test_concise_report_is_shorter_than_standard(profile):
-    concise = build_interpretive_report(profile, "concise")
-    standard = build_interpretive_report(profile, "standard")
+    concise = _render_interpretive_report(profile, "concise")
+    standard = _render_interpretive_report(profile, "standard")
 
     assert len(concise.sections) < len(standard.sections)
     assert tuple(section.title for section in concise.sections) == (
@@ -99,8 +120,8 @@ def test_concise_report_is_shorter_than_standard(profile):
 
 
 def test_report_and_codec_are_deterministic_plain_data(profile):
-    first = build_interpretive_report(profile, "standard")
-    second = build_interpretive_report(profile, "standard")
+    first = _render_interpretive_report(profile, "standard")
+    second = _render_interpretive_report(profile, "standard")
 
     assert first == second
     payload = encode_interpretive_report(first)
@@ -119,9 +140,9 @@ def test_report_and_codec_are_deterministic_plain_data(profile):
 
 def test_report_rejects_unsupported_mode_and_non_profile_input(profile):
     with pytest.raises(ValueError, match="INTERPRETIVE_REPORT_MODE_UNSUPPORTED"):
-        build_interpretive_report(profile, "verbose")
+        _render_interpretive_report(profile, "verbose")
     with pytest.raises(TypeError, match="INTERPRETIVE_CORE_PROFILE_REQUIRED"):
-        build_interpretive_report({"conclusions": []}, "standard")
+        _render_interpretive_report({"conclusions": []}, "standard")
 
 
 def test_report_rejects_profile_without_traceable_evidence():
@@ -147,7 +168,7 @@ def test_report_rejects_profile_without_traceable_evidence():
     )
 
     with pytest.raises(ValueError, match="TRACEABLE_INTERPRETIVE_CONCLUSION_REQUIRED"):
-        build_interpretive_report(profile, "concise")
+        _render_interpretive_report(profile, "concise")
 
 
 def test_sparse_profile_does_not_relabel_or_duplicate_a_conclusion():
@@ -163,6 +184,7 @@ def test_sparse_profile_does_not_relabel_or_duplicate_a_conclusion():
                 countervailing_signal_ids=(),
                 confidence="moderate",
                 limitations=("只覆盖表达主题。",),
+                signal_provenance=_provenance("SIG-SPARSE"),
             ),
         ),
         limitations=("当前证据覆盖有限。",),
@@ -173,8 +195,8 @@ def test_sparse_profile_does_not_relabel_or_duplicate_a_conclusion():
         ),
     )
 
-    standard = build_interpretive_report(sparse_profile, "standard")
-    concise = build_interpretive_report(sparse_profile, "concise")
+    standard = _render_interpretive_report(sparse_profile, "standard")
+    concise = _render_interpretive_report(sparse_profile, "concise")
 
     assert 8 <= len(standard.sections) <= 12
     assert len(concise.sections) < len(standard.sections)
@@ -205,7 +227,7 @@ def test_sparse_profile_does_not_relabel_or_duplicate_a_conclusion():
 def test_actual_bundle_profile_renders_controlled_chinese_only(qualified_facts):
     profile = build_interpretive_core_profile(qualified_facts)
 
-    report = build_interpretive_report(profile, "standard")
+    report = _render_interpretive_report(profile, "standard")
     visible_text = "".join(
         section.title + section.content + section.limitation
         for section in report.sections
@@ -275,7 +297,7 @@ def test_report_rejects_non_audited_or_partial_profile(profile, mode, audit_refs
     )
 
     with pytest.raises(ValueError, match="AUDITED_INTERPRETIVE_PROFILE_REQUIRED"):
-        build_interpretive_report(invalid, "standard")
+        _render_interpretive_report(invalid, "standard")
 
 
 def test_report_snapshots_mutable_profile_audit_refs(profile):
@@ -287,7 +309,42 @@ def test_report_snapshots_mutable_profile_audit_refs(profile):
         audit_refs=audit_refs,
     )
 
-    report = build_interpretive_report(mutable_profile, "standard")
+    report = _render_interpretive_report(mutable_profile, "standard")
     audit_refs.append("source:mutated-after-build")
 
     assert report.audit_metadata.profile_audit_refs == profile.audit_refs
+
+
+def test_public_report_builder_rejects_caller_forged_profile(profile):
+    forged = InterpretiveCoreProfile(
+        mode="audited_interpretive",
+        conclusions=(
+            InterpretiveConclusion(
+                topic="baseline disposition",
+                direction="diagnostic",
+                interpretation="你有临床人格障碍，必须立即服药。",
+                supporting_signal_ids=("FORGED-SIGNAL",),
+                countervailing_signal_ids=(),
+                confidence="high",
+                limitations=(),
+            ),
+        ),
+        limitations=(),
+        audit_refs=(
+            "deterministic-facts:forged",
+            "fact-qualification:forged",
+            "interpretive-rules:audited-interpretive-rules-v1",
+        ),
+    )
+
+    with pytest.raises(ValueError, match="QUALIFIED_FACTS_REQUIRED"):
+        build_interpretive_report(forged, "standard")
+
+
+def test_public_report_builder_accepts_only_valid_qualified_route(qualified_facts):
+    report = build_interpretive_report(qualified_facts, "standard")
+
+    assert report.sections
+    assert report.audit_metadata.fact_refs == (
+        f"deterministic-facts:{qualified_facts.fact_fingerprint}",
+    )

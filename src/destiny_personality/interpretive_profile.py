@@ -9,6 +9,7 @@ from .interpretive_models import (
     InterpretiveConfidence,
     InterpretiveCoreProfile,
     InterpretiveSignal,
+    InterpretiveSignalProvenance,
 )
 from .interpretive_rules import BUNDLE_VERSION, extract_interpretive_signals
 
@@ -33,6 +34,10 @@ def build_interpretive_core_profile(
             f"fact-qualification:{qualified.qualification_fingerprint}",
             f"interpretive-rules:{BUNDLE_VERSION}",
         ),
+        fact_mode=qualified.facts.normalized_time.fact_mode.value,
+        time_sensitivity_reasons=tuple(
+            qualified.facts.normalized_time.sensitivity_reasons
+        ),
     )
 
 
@@ -41,6 +46,8 @@ def _synthesize_interpretive_core_profile(
     *,
     requested_topics: Sequence[str] = (),
     audit_refs: Tuple[str, ...] = (),
+    fact_mode: str = "time_sensitive",
+    time_sensitivity_reasons: Tuple[str, ...] = (),
 ) -> InterpretiveCoreProfile:
     """Group exact topics and directions without converting evidence to scores."""
 
@@ -93,8 +100,14 @@ def _synthesize_interpretive_core_profile(
                         for signal in supporting + countervailing
                         for limitation in signal.limitations
                     ),
+                    signal_provenance=tuple(
+                        _signal_provenance(signal)
+                        for signal in supporting + countervailing
+                    ),
                 )
             )
+
+    birth_time_unavailable = fact_mode == "stable_only"
 
     return InterpretiveCoreProfile(
         mode="audited_interpretive",
@@ -104,6 +117,30 @@ def _synthesize_interpretive_core_profile(
             "Evidence is grouped by exact topic and direction without numeric scoring.",
         ),
         audit_refs=audit_refs,
+        fact_mode=fact_mode,
+        birth_time_status=(
+            "unavailable_or_uncertain"
+            if birth_time_unavailable
+            else "available"
+        ),
+        time_sensitivity_reasons=time_sensitivity_reasons,
+        omitted_time_sensitive_claims=(
+            ("astrology.houses", "astrology.angles")
+            if birth_time_unavailable
+            else ()
+        ),
+    )
+
+
+def _signal_provenance(
+    signal: InterpretiveSignal,
+) -> InterpretiveSignalProvenance:
+    return InterpretiveSignalProvenance(
+        signal_id=signal.signal_id,
+        system=signal.system,
+        fact_refs=signal.fact_refs,
+        traditional_rule_ref=signal.traditional_rule_ref,
+        limitations=signal.limitations,
     )
 
 

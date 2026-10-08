@@ -50,6 +50,21 @@ def test_builder_uses_only_signals_extracted_from_qualified_facts(qualified_fact
     assert profile.audit_refs
     assert conclusion_ids
     assert conclusion_ids == {signal.signal_id for signal in extracted}
+    extracted_by_id = {signal.signal_id: signal for signal in extracted}
+    for conclusion in profile.conclusions:
+        expected_ids = (
+            conclusion.supporting_signal_ids
+            + conclusion.countervailing_signal_ids
+        )
+        assert tuple(
+            item.signal_id for item in conclusion.signal_provenance
+        ) == expected_ids
+        for provenance in conclusion.signal_provenance:
+            signal = extracted_by_id[provenance.signal_id]
+            assert provenance.fact_refs == signal.fact_refs
+            assert provenance.traditional_rule_ref == signal.traditional_rule_ref
+            assert provenance.system == signal.system
+            assert provenance.limitations == signal.limitations
 
 
 def test_raw_signal_synthesis_has_no_public_api():

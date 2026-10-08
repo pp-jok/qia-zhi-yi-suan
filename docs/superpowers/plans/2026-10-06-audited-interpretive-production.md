@@ -194,9 +194,9 @@ git commit -m "feat: synthesize audited interpretive profiles"
 - Create: `src/destiny_personality/interpretive_codec.py`
 - Test: `tests/test_interpretive_report.py`
 
-**Interfaces:**
-- Consumes `InterpretiveCoreProfile`.
-- Produces `build_interpretive_report(profile, mode) -> InterpretiveReport`, where mode is `standard` or `concise`.
+**Interfaces (final trusted-boundary revision):**
+- Publicly consumes only `QualifiedFacts`; profile rendering remains private.
+- Produces `build_interpretive_report(qualified_facts, mode) -> InterpretiveReport`, where mode is `standard` or `concise`.
 - Produces `encode_interpretive_report(report) -> dict`.
 
 - [ ] **Step 1: Write failing rendering tests**

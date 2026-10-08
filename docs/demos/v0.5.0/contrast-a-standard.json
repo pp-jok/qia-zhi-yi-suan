@@ -1,8 +1,11 @@
 {
   "audit_metadata": {
+    "birth_time_status": "available",
+    "fact_mode": "time_sensitive",
     "fact_refs": [
       "deterministic-facts:525dc5186fd6b64bd1ddd4eddcf730928146afe9c7783e9ecc1aa18b2f45a28a"
     ],
+    "omitted_time_sensitive_claims": [],
     "profile_audit_refs": [
       "deterministic-facts:525dc5186fd6b64bd1ddd4eddcf730928146afe9c7783e9ecc1aa18b2f45a28a",
       "fact-qualification:f48d65a1c3315669d57523727615d66cbf11173362ed36016e1f6306ee91ce60",
@@ -13,7 +16,8 @@
     ],
     "rule_bundle_refs": [
       "interpretive-rules:audited-interpretive-rules-v1"
-    ]
+    ],
+    "time_sensitivity_reasons": []
   },
   "boundary_statement": "本报告是基于传统命理与占星象意的反思性文本，不是实证性人格测量、医疗或心理诊断，也不应代替重大生活决策。",
   "mode": "audited_interpretive",
@@ -27,6 +31,23 @@
       "signal_ids": [
         "BAZI-TEN-GOD-EXPRESSION"
       ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
+      ],
       "title": "表达与创造"
     },
     {
@@ -35,6 +56,23 @@
       "section_id": "standard-audit-01",
       "signal_ids": [
         "BAZI-TEN-GOD-EXPRESSION"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
       ],
       "title": "证据范围"
     },
@@ -45,6 +83,23 @@
       "signal_ids": [
         "BAZI-TEN-GOD-EXPRESSION"
       ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
+      ],
       "title": "八字观察范围"
     },
     {
@@ -53,6 +108,23 @@
       "section_id": "standard-audit-03",
       "signal_ids": [
         "BAZI-TEN-GOD-EXPRESSION"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
       ],
       "title": "占星观察范围"
     },
@@ -63,6 +135,23 @@
       "signal_ids": [
         "BAZI-TEN-GOD-EXPRESSION"
       ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
+      ],
       "title": "跨体系覆盖与张力"
     },
     {
@@ -71,6 +160,23 @@
       "section_id": "standard-audit-05",
       "signal_ids": [
         "BAZI-TEN-GOD-EXPRESSION"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
       ],
       "title": "置信度校准"
     },
@@ -81,6 +187,23 @@
       "signal_ids": [
         "BAZI-TEN-GOD-EXPRESSION"
       ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
+      ],
       "title": "时间范围与局限"
     },
     {
@@ -89,6 +212,23 @@
       "section_id": "standard-audit-07",
       "signal_ids": [
         "BAZI-TEN-GOD-EXPRESSION"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
       ],
       "title": "可追溯性与使用边界"
     }

@@ -32,10 +32,14 @@ QualifiedFacts
   -> JSON report with a compact user view and audit appendix
 ```
 
-Every conclusion in the profile refers to one or more signal identifiers.
-Renderers consume the profile only; they never inspect raw chart facts or the
-rule bundle. Strict core artifacts remain separate types and are never accepted
-as interpretive input.
+Every conclusion in the profile refers to one or more signal identifiers and
+retains the matched signal's concrete fact paths, traditional-rule reference,
+system, and limitations. The public product report builder accepts only
+fingerprint-bound `QualifiedFacts`, revalidates that boundary, then runs the
+profile builder and a private renderer in one trusted flow. Caller-constructed
+profiles and raw facts are never accepted by the public report entry point.
+Strict core artifacts remain separate types and are never accepted as
+interpretive input.
 
 ## Rule bundle
 
@@ -128,6 +132,13 @@ rule, fact, and signal IDs occur only in the audit appendix.
 
 `concise-interpretive-v1` is a smaller view over the same profile. Long-form is
 out of scope for this release and the legacy 56-chapter route remains frozen.
+Every structured report section carries `signal_provenance` that resolves each
+listed signal ID to concrete matched fact paths and its traditional rule. The
+report audit metadata preserves `fact_mode`, birth-time status, sensitivity
+reasons, and omitted time-sensitive claim categories. When birth time is
+unavailable or uncertain, both report modes include a mandatory visible notice
+that house and angle claims were omitted; filler-section limits cannot remove
+that notice.
 
 ## CLI and Skill
 

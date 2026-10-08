@@ -1,8 +1,11 @@
 {
   "audit_metadata": {
+    "birth_time_status": "available",
+    "fact_mode": "time_sensitive",
     "fact_refs": [
       "deterministic-facts:e7f362c5874818cdc6f964dc89434481c74ebfe9b4c1fcf4555d403162c6b1bb"
     ],
+    "omitted_time_sensitive_claims": [],
     "profile_audit_refs": [
       "deterministic-facts:e7f362c5874818cdc6f964dc89434481c74ebfe9b4c1fcf4555d403162c6b1bb",
       "fact-qualification:d3672a43bae5d7f4bc762d31292da286ea847dcfd30003ff9bf5a842187f93fd",
@@ -13,7 +16,8 @@
     ],
     "rule_bundle_refs": [
       "interpretive-rules:audited-interpretive-rules-v1"
-    ]
+    ],
+    "time_sensitivity_reasons": []
   },
   "boundary_statement": "本报告是基于传统命理与占星象意的反思性文本，不是实证性人格测量、医疗或心理诊断，也不应代替重大生活决策。",
   "mode": "audited_interpretive",
@@ -28,6 +32,36 @@
         "ASTROLOGY-PLANET-SIGN-EXPRESSION",
         "BAZI-TEN-GOD-EXPRESSION"
       ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "astrology.placements[0].sign",
+            "astrology.placements[0].house"
+          ],
+          "limitations": [
+            "House system and birth-time uncertainty can change the context.",
+            "This interpretation is not an empirical or clinical assessment."
+          ],
+          "signal_id": "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+          "system": "astrology",
+          "traditional_rule_ref": "Modern Western astrology, planet-in-sign synthesis; Stephen Arroyo, Astrology, Psychology, and the Four Elements"
+        },
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
+      ],
       "title": "表达与创造"
     },
     {
@@ -37,6 +71,21 @@
       "signal_ids": [
         "BAZI-RELATION-DYNAMICS"
       ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.relations[0].relation_type",
+            "bazi.hidden_stems[0].stems"
+          ],
+          "limitations": [
+            "Relation facts must be interpreted with the full chart.",
+            "No empirical causal or diagnostic status is claimed."
+          ],
+          "signal_id": "BAZI-RELATION-DYNAMICS",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
+        }
+      ],
       "title": "关系与边界"
     },
     {
@@ -45,6 +94,21 @@
       "section_id": "standard-03",
       "signal_ids": [
         "ASTROLOGY-ASPECT-DIGNITY-CONTEXT"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "astrology.aspects[0].aspect_type",
+            "astrology.dignities[0].dignity"
+          ],
+          "limitations": [
+            "Aspect interpretation depends on selected orbs and the wider chart.",
+            "No empirical predictive or diagnostic claim is made."
+          ],
+          "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+          "system": "astrology",
+          "traditional_rule_ref": "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
+        }
       ],
       "title": "成长张力"
     },
@@ -58,6 +122,62 @@
         "ASTROLOGY-PLANET-SIGN-EXPRESSION",
         "BAZI-TEN-GOD-EXPRESSION"
       ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.relations[0].relation_type",
+            "bazi.hidden_stems[0].stems"
+          ],
+          "limitations": [
+            "Relation facts must be interpreted with the full chart.",
+            "No empirical causal or diagnostic status is claimed."
+          ],
+          "signal_id": "BAZI-RELATION-DYNAMICS",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
+        },
+        {
+          "fact_refs": [
+            "astrology.aspects[0].aspect_type",
+            "astrology.dignities[0].dignity"
+          ],
+          "limitations": [
+            "Aspect interpretation depends on selected orbs and the wider chart.",
+            "No empirical predictive or diagnostic claim is made."
+          ],
+          "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+          "system": "astrology",
+          "traditional_rule_ref": "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
+        },
+        {
+          "fact_refs": [
+            "astrology.placements[0].sign",
+            "astrology.placements[0].house"
+          ],
+          "limitations": [
+            "House system and birth-time uncertainty can change the context.",
+            "This interpretation is not an empirical or clinical assessment."
+          ],
+          "signal_id": "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+          "system": "astrology",
+          "traditional_rule_ref": "Modern Western astrology, planet-in-sign synthesis; Stephen Arroyo, Astrology, Psychology, and the Four Elements"
+        },
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
+      ],
       "title": "证据范围"
     },
     {
@@ -69,6 +189,62 @@
         "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
         "ASTROLOGY-PLANET-SIGN-EXPRESSION",
         "BAZI-TEN-GOD-EXPRESSION"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.relations[0].relation_type",
+            "bazi.hidden_stems[0].stems"
+          ],
+          "limitations": [
+            "Relation facts must be interpreted with the full chart.",
+            "No empirical causal or diagnostic status is claimed."
+          ],
+          "signal_id": "BAZI-RELATION-DYNAMICS",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
+        },
+        {
+          "fact_refs": [
+            "astrology.aspects[0].aspect_type",
+            "astrology.dignities[0].dignity"
+          ],
+          "limitations": [
+            "Aspect interpretation depends on selected orbs and the wider chart.",
+            "No empirical predictive or diagnostic claim is made."
+          ],
+          "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+          "system": "astrology",
+          "traditional_rule_ref": "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
+        },
+        {
+          "fact_refs": [
+            "astrology.placements[0].sign",
+            "astrology.placements[0].house"
+          ],
+          "limitations": [
+            "House system and birth-time uncertainty can change the context.",
+            "This interpretation is not an empirical or clinical assessment."
+          ],
+          "signal_id": "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+          "system": "astrology",
+          "traditional_rule_ref": "Modern Western astrology, planet-in-sign synthesis; Stephen Arroyo, Astrology, Psychology, and the Four Elements"
+        },
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
       ],
       "title": "八字观察范围"
     },
@@ -82,6 +258,62 @@
         "ASTROLOGY-PLANET-SIGN-EXPRESSION",
         "BAZI-TEN-GOD-EXPRESSION"
       ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.relations[0].relation_type",
+            "bazi.hidden_stems[0].stems"
+          ],
+          "limitations": [
+            "Relation facts must be interpreted with the full chart.",
+            "No empirical causal or diagnostic status is claimed."
+          ],
+          "signal_id": "BAZI-RELATION-DYNAMICS",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
+        },
+        {
+          "fact_refs": [
+            "astrology.aspects[0].aspect_type",
+            "astrology.dignities[0].dignity"
+          ],
+          "limitations": [
+            "Aspect interpretation depends on selected orbs and the wider chart.",
+            "No empirical predictive or diagnostic claim is made."
+          ],
+          "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+          "system": "astrology",
+          "traditional_rule_ref": "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
+        },
+        {
+          "fact_refs": [
+            "astrology.placements[0].sign",
+            "astrology.placements[0].house"
+          ],
+          "limitations": [
+            "House system and birth-time uncertainty can change the context.",
+            "This interpretation is not an empirical or clinical assessment."
+          ],
+          "signal_id": "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+          "system": "astrology",
+          "traditional_rule_ref": "Modern Western astrology, planet-in-sign synthesis; Stephen Arroyo, Astrology, Psychology, and the Four Elements"
+        },
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
+      ],
       "title": "占星观察范围"
     },
     {
@@ -94,6 +326,62 @@
         "ASTROLOGY-PLANET-SIGN-EXPRESSION",
         "BAZI-TEN-GOD-EXPRESSION"
       ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.relations[0].relation_type",
+            "bazi.hidden_stems[0].stems"
+          ],
+          "limitations": [
+            "Relation facts must be interpreted with the full chart.",
+            "No empirical causal or diagnostic status is claimed."
+          ],
+          "signal_id": "BAZI-RELATION-DYNAMICS",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
+        },
+        {
+          "fact_refs": [
+            "astrology.aspects[0].aspect_type",
+            "astrology.dignities[0].dignity"
+          ],
+          "limitations": [
+            "Aspect interpretation depends on selected orbs and the wider chart.",
+            "No empirical predictive or diagnostic claim is made."
+          ],
+          "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+          "system": "astrology",
+          "traditional_rule_ref": "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
+        },
+        {
+          "fact_refs": [
+            "astrology.placements[0].sign",
+            "astrology.placements[0].house"
+          ],
+          "limitations": [
+            "House system and birth-time uncertainty can change the context.",
+            "This interpretation is not an empirical or clinical assessment."
+          ],
+          "signal_id": "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+          "system": "astrology",
+          "traditional_rule_ref": "Modern Western astrology, planet-in-sign synthesis; Stephen Arroyo, Astrology, Psychology, and the Four Elements"
+        },
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
+      ],
       "title": "跨体系覆盖与张力"
     },
     {
@@ -105,6 +393,62 @@
         "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
         "ASTROLOGY-PLANET-SIGN-EXPRESSION",
         "BAZI-TEN-GOD-EXPRESSION"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.relations[0].relation_type",
+            "bazi.hidden_stems[0].stems"
+          ],
+          "limitations": [
+            "Relation facts must be interpreted with the full chart.",
+            "No empirical causal or diagnostic status is claimed."
+          ],
+          "signal_id": "BAZI-RELATION-DYNAMICS",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
+        },
+        {
+          "fact_refs": [
+            "astrology.aspects[0].aspect_type",
+            "astrology.dignities[0].dignity"
+          ],
+          "limitations": [
+            "Aspect interpretation depends on selected orbs and the wider chart.",
+            "No empirical predictive or diagnostic claim is made."
+          ],
+          "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+          "system": "astrology",
+          "traditional_rule_ref": "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
+        },
+        {
+          "fact_refs": [
+            "astrology.placements[0].sign",
+            "astrology.placements[0].house"
+          ],
+          "limitations": [
+            "House system and birth-time uncertainty can change the context.",
+            "This interpretation is not an empirical or clinical assessment."
+          ],
+          "signal_id": "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+          "system": "astrology",
+          "traditional_rule_ref": "Modern Western astrology, planet-in-sign synthesis; Stephen Arroyo, Astrology, Psychology, and the Four Elements"
+        },
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.year_pillar",
+            "bazi.month_pillar",
+            "bazi.day_pillar"
+          ],
+          "limitations": [
+            "Requires the complete chart context and does not determine behavior.",
+            "Traditional correspondence is not empirical personality assessment."
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        }
       ],
       "title": "置信度校准"
     }
