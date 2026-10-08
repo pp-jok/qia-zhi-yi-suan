@@ -22,6 +22,15 @@ class InterpretiveValuePredicate:
 
 
 @dataclass(frozen=True)
+class InterpretiveMatchedValue:
+    """One exact qualified value that caused a family predicate to match."""
+
+    fact_ref: str
+    fact_path: str
+    value: str
+
+
+@dataclass(frozen=True)
 class InterpretiveSignal:
     """A traceable traditional interpretation grounded in chart facts."""
 
@@ -41,6 +50,7 @@ class InterpretiveSignal:
     contexts: Tuple[str, ...] = ()
     modifiers: Tuple[str, ...] = ()
     requires_exact_demo_chart: bool = False
+    matched_values: Tuple[InterpretiveMatchedValue, ...] = ()
 
 
 @dataclass(frozen=True)

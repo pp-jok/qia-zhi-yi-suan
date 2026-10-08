@@ -7,6 +7,7 @@ from typing import Any, Callable, Optional, Tuple
 import yaml
 
 from .interpretive_models import (
+    InterpretiveMatchedValue,
     InterpretiveRuleBundle,
     InterpretiveSignal,
     InterpretiveValuePredicate,
@@ -37,12 +38,12 @@ RULE_KEYS = {
     "modifiers",
     "confidence",
     "limitations",
-    "requires_exact_demo_chart",
 }
 
 
-FactPathResolver = Callable[
-    [DeterministicChartFacts, InterpretiveValuePredicate], Tuple[str, ...]
+PredicateResolver = Callable[
+    [DeterministicChartFacts, InterpretiveValuePredicate],
+    Tuple[InterpretiveMatchedValue, ...],
 ]
 PREDICATE_SELECTOR_KEYS = {
     "bazi.ten_god.day_master_relation": {
@@ -224,17 +225,15 @@ def _rule(value: Any) -> InterpretiveSignal:
     system = _string(value["system"], "INTERPRETIVE_RULE_INVALID")
     if system not in SYSTEMS:
         raise _invalid("INTERPRETIVE_RULE_INVALID")
-    requires_exact_demo_chart = value["requires_exact_demo_chart"]
-    if not isinstance(requires_exact_demo_chart, bool):
-        raise _invalid("INTERPRETIVE_RULE_INVALID")
-    if requires_exact_demo_chart:
-        raise _invalid("INTERPRETIVE_RULE_DEMO_SPECIFIC")
     fact_refs = _fact_refs(value["fact_refs"], system)
+    predicates = _value_predicates(value["value_predicates"], fact_refs)
+    if _requires_exact_demo_chart(predicates):
+        raise _invalid("INTERPRETIVE_RULE_DEMO_SPECIFIC")
     return InterpretiveSignal(
         signal_id=_string(value["signal_id"], "INTERPRETIVE_RULE_INVALID"),
         system=system,
         fact_refs=fact_refs,
-        value_predicates=_value_predicates(value["value_predicates"], fact_refs),
+        value_predicates=predicates,
         traditional_rule_ref=_string(
             value["traditional_rule_ref"], "INTERPRETIVE_RULE_INVALID_PROVENANCE"
         ),
@@ -250,7 +249,41 @@ def _rule(value: Any) -> InterpretiveSignal:
         ),
         contexts=_strings(value["contexts"], "INTERPRETIVE_RULE_INVALID"),
         modifiers=_string_list(value["modifiers"], "INTERPRETIVE_RULE_INVALID"),
-        requires_exact_demo_chart=requires_exact_demo_chart,
+        requires_exact_demo_chart=False,
+    )
+
+
+def _requires_exact_demo_chart(
+    predicates: Tuple[InterpretiveValuePredicate, ...],
+) -> bool:
+    """Reject exact-chart conjunctions from structure, not asset assertions."""
+
+    fact_refs = {predicate.fact_ref for predicate in predicates}
+    if len(fact_refs) > 1 and fact_refs != {
+        "astrology.sign_element",
+        "astrology.sign_modality",
+    }:
+        return True
+    if any(
+        predicate.fact_ref == "astrology.planet_sign"
+        and len(predicate.values) == 1
+        for predicate in predicates
+    ):
+        return True
+    elements = {
+        predicate.body: predicate
+        for predicate in predicates
+        if predicate.fact_ref == "astrology.sign_element"
+    }
+    modalities = {
+        predicate.body: predicate
+        for predicate in predicates
+        if predicate.fact_ref == "astrology.sign_modality"
+    }
+    return any(
+        len(element.values) == len(modalities[body].values) == 1
+        for body, element in elements.items()
+        if body in modalities
     )
 
 
@@ -313,32 +346,53 @@ def extract_interpretive_signals(
     active_bundle = bundle if bundle is not None else load_interpretive_rule_bundle()
     signals = []
     for rule in active_bundle.rules:
-        fact_refs = _matching_fact_paths(rule, facts)
-        if fact_refs:
-            signals.append(replace(rule, fact_refs=fact_refs))
+        matched_values = _matching_values(rule, facts)
+        if matched_values:
+            fact_refs = tuple(
+                dict.fromkeys(match.fact_path for match in matched_values)
+            )
+            signals.append(
+                replace(
+                    rule,
+                    fact_refs=fact_refs,
+                    matched_values=matched_values,
+                )
+            )
     return tuple(signals)
 
 
-def _matching_fact_paths(
+def _matching_values(
     rule: InterpretiveSignal, facts: DeterministicChartFacts
-) -> Optional[Tuple[str, ...]]:
-    fact_paths = []
+) -> Optional[Tuple[InterpretiveMatchedValue, ...]]:
+    matches = []
     for predicate in rule.value_predicates:
-        resolver = _FACT_PATH_RESOLVERS.get(predicate.fact_ref)
+        resolver = _PREDICATE_RESOLVERS.get(predicate.fact_ref)
         if resolver is None:
             return None
-        matched_paths = resolver(facts, predicate)
-        if not matched_paths:
+        predicate_matches = resolver(facts, predicate)
+        if not predicate_matches:
             return None
-        fact_paths.extend(matched_paths)
-    return tuple(dict.fromkeys(fact_paths))
+        matches.extend(predicate_matches)
+    return tuple(dict.fromkeys(matches))
+
+
+def _match(
+    predicate: InterpretiveValuePredicate,
+    fact_path: str,
+    value: str,
+) -> InterpretiveMatchedValue:
+    return InterpretiveMatchedValue(predicate.fact_ref, fact_path, value)
 
 
 def _ten_god_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
-) -> Tuple[str, ...]:
+) -> Tuple[InterpretiveMatchedValue, ...]:
     matches = tuple(
-        (f"bazi.ten_gods[{index}].ten_god", fact.ten_god)
+        _match(
+            predicate,
+            f"bazi.ten_gods[{index}].ten_god",
+            fact.ten_god,
+        )
         for index, fact in enumerate(facts.bazi.ten_gods)
         if (
             fact.ten_god in predicate.values
@@ -357,15 +411,15 @@ def _ten_god_paths(
     repeated_values = {
         value
         for value in predicate.values
-        if sum(matched_value == value for _, matched_value in matches)
+        if sum(match.value == value for match in matches)
         >= predicate.minimum_occurrences
     }
-    return tuple(path for path, value in matches if value in repeated_values)
+    return tuple(match for match in matches if match.value in repeated_values)
 
 
 def _elemental_balance_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
-) -> Tuple[str, ...]:
+) -> Tuple[InterpretiveMatchedValue, ...]:
     pillars = {
         "year": ("bazi.year_pillar", facts.bazi.year_pillar),
         "month": ("bazi.month_pillar", facts.bazi.month_pillar),
@@ -373,7 +427,7 @@ def _elemental_balance_paths(
         "hour": ("bazi.hour_pillar", facts.bazi.hour_pillar),
     }
     return tuple(
-        pillars[position][0]
+        _match(predicate, pillars[position][0], position)
         for position in predicate.values
         if position in pillars and pillars[position][1] is not None
     )
@@ -381,9 +435,13 @@ def _elemental_balance_paths(
 
 def _relation_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
-) -> Tuple[str, ...]:
+) -> Tuple[InterpretiveMatchedValue, ...]:
     matches = tuple(
-        f"bazi.relations[{index}].relation_type"
+        _match(
+            predicate,
+            f"bazi.relations[{index}].relation_type",
+            fact.relation_type,
+        )
         for index, fact in enumerate(facts.bazi.relations)
         if (
             fact.relation_type in predicate.values
@@ -404,11 +462,12 @@ def _relation_paths(
 
 def _hidden_stem_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
-) -> Tuple[str, ...]:
+) -> Tuple[InterpretiveMatchedValue, ...]:
     matches = tuple(
-        f"bazi.hidden_stems[{index}].stems"
+        _match(predicate, f"bazi.hidden_stems[{index}].stems", stem)
         for index, fact in enumerate(facts.bazi.hidden_stems)
-        if set(fact.stems).intersection(predicate.values)
+        for stem in fact.stems
+        if stem in predicate.values
         and (not predicate.positions or fact.pillar.value in predicate.positions)
     )
     return matches if len(matches) >= predicate.minimum_occurrences else ()
@@ -416,9 +475,9 @@ def _hidden_stem_paths(
 
 def _planet_sign_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
-) -> Tuple[str, ...]:
+) -> Tuple[InterpretiveMatchedValue, ...]:
     return tuple(
-        f"astrology.placements[{index}].sign"
+        _match(predicate, f"astrology.placements[{index}].sign", fact.sign)
         for index, fact in enumerate(facts.astrology.placements)
         if fact.body == predicate.body and fact.sign in predicate.values
     )
@@ -441,9 +500,13 @@ def _sign_quality_paths(
     facts: DeterministicChartFacts,
     predicate: InterpretiveValuePredicate,
     qualities: dict[str, str],
-) -> Tuple[str, ...]:
+) -> Tuple[InterpretiveMatchedValue, ...]:
     return tuple(
-        f"astrology.placements[{index}].sign"
+        _match(
+            predicate,
+            f"astrology.placements[{index}].sign",
+            qualities[fact.sign],
+        )
         for index, fact in enumerate(facts.astrology.placements)
         if fact.body == predicate.body and qualities.get(fact.sign) in predicate.values
     )
@@ -451,23 +514,27 @@ def _sign_quality_paths(
 
 def _sign_element_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
-) -> Tuple[str, ...]:
+) -> Tuple[InterpretiveMatchedValue, ...]:
     return _sign_quality_paths(facts, predicate, _SIGN_ELEMENTS)
 
 
 def _sign_modality_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
-) -> Tuple[str, ...]:
+) -> Tuple[InterpretiveMatchedValue, ...]:
     return _sign_quality_paths(facts, predicate, _SIGN_MODALITIES)
 
 
 def _house_placement_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
-) -> Tuple[str, ...]:
+) -> Tuple[InterpretiveMatchedValue, ...]:
     if facts.normalized_time.fact_mode is FactMode.STABLE_ONLY:
         return ()
     return tuple(
-        f"astrology.placements[{index}].house"
+        _match(
+            predicate,
+            f"astrology.placements[{index}].house",
+            str(placement.house),
+        )
         for index, placement in enumerate(facts.astrology.placements)
         if (
             placement.body == predicate.body
@@ -479,9 +546,13 @@ def _house_placement_paths(
 
 def _aspect_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
-) -> Tuple[str, ...]:
+) -> Tuple[InterpretiveMatchedValue, ...]:
     matches = tuple(
-        f"astrology.aspects[{index}].aspect_type"
+        _match(
+            predicate,
+            f"astrology.aspects[{index}].aspect_type",
+            fact.aspect_type,
+        )
         for index, fact in enumerate(facts.astrology.aspects)
         if (
             (
@@ -498,15 +569,19 @@ def _aspect_paths(
 
 def _dignity_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
-) -> Tuple[str, ...]:
+) -> Tuple[InterpretiveMatchedValue, ...]:
     return tuple(
-        f"astrology.dignities[{index}].dignity"
+        _match(
+            predicate,
+            f"astrology.dignities[{index}].dignity",
+            fact.dignity,
+        )
         for index, fact in enumerate(facts.astrology.dignities)
         if fact.body == predicate.body and fact.dignity in predicate.values
     )
 
 
-_FACT_PATH_RESOLVERS: dict[str, FactPathResolver] = {
+_PREDICATE_RESOLVERS: dict[str, PredicateResolver] = {
     "bazi.ten_god.day_master_relation": _ten_god_paths,
     "bazi.elemental_balance": _elemental_balance_paths,
     "bazi.branch_relation": _relation_paths,

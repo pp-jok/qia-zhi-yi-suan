@@ -24,7 +24,6 @@ rules:
     modifiers: [需结合所在柱位与显藏来源]
     confidence: moderate
     limitations: [需与全局其他十神与关系合看。]
-    requires_exact_demo_chart: false
 
   - signal_id: BAZI-TEN-GOD-PEER
     family: bazi.ten_god.identity
@@ -46,7 +45,6 @@ rules:
     modifiers: [比肩与劫财的具体差异需单独辨识]
     confidence: moderate
     limitations: [不能由此推定一个人自私或好竞争。]
-    requires_exact_demo_chart: false
 
   - signal_id: BAZI-TEN-GOD-OUTPUT
     family: bazi.ten_god.identity
@@ -68,7 +66,6 @@ rules:
     modifiers: [需区分温和输出与批判性输出]
     confidence: moderate
     limitations: [不等同于才华水平或职业成就。]
-    requires_exact_demo_chart: false
 
   - signal_id: BAZI-TEN-GOD-WEALTH
     family: bazi.ten_god.identity
@@ -90,7 +87,6 @@ rules:
     modifiers: [需结合正偏与位置]
     confidence: moderate
     limitations: [不代表实际财富或理财能力。]
-    requires_exact_demo_chart: false
 
   - signal_id: BAZI-TEN-GOD-AUTHORITY
     family: bazi.ten_god.identity
@@ -112,7 +108,6 @@ rules:
     modifiers: [需区分稳定规范与急迫压力]
     confidence: moderate
     limitations: [不能由此推定职位、权力或事件吉凶。]
-    requires_exact_demo_chart: false
 
   - signal_id: BAZI-TEN-GOD-REPETITION
     family: bazi.ten_god.repetition
@@ -134,7 +129,6 @@ rules:
     modifiers: [重复数量仅是关注标记]
     confidence: exploratory
     limitations: [需辨别每个实例的柱位和来源，不做强弱判定。]
-    requires_exact_demo_chart: false
 
   - signal_id: BAZI-RELATION-DYNAMICS
     family: bazi.branch_relation
@@ -156,26 +150,24 @@ rules:
     modifiers: [必须保留关系类型与参与柱位]
     confidence: exploratory
     limitations: [关系事实必须结合全局，不构成事件预测。]
-    requires_exact_demo_chart: false
 
   - signal_id: ASTROLOGY-PLANET-SIGN-EXPRESSION
     family: astrology.planet_sign_quality
     system: astrology
     fact_refs: [astrology.sign_element, astrology.sign_modality]
     value_predicates:
-      - {fact_ref: astrology.sign_element, body: Sun, values: [fire]}
-      - {fact_ref: astrology.sign_modality, body: Sun, values: [cardinal]}
+      - {fact_ref: astrology.sign_element, body: Sun, values: [fire, earth, air, water]}
+      - {fact_ref: astrology.sign_modality, body: Sun, values: [cardinal, fixed, mutable]}
     traditional_rule_ref: "现代西方占星学行星星座综合法；Stephen Arroyo"
     topic: style of expression
     direction: outward
-    interpretation: 太阳的火元素与开创模式强调直接、启动与自我定义。
-    mechanism: 核心意志借由外向推进和主动开始来建立存在感。
-    likely_expression: 在需要表态或开始行动时，可能更愿意先迈出一步。
+    interpretation: 太阳所在星座的元素与模式，提供核心意志如何定义和表达自我的象征语言。
+    mechanism: 核心意志借由实际命中的元素取向选择表达材料，并按命中模式调整推进节奏。
+    likely_expression: 在需要表态或承担核心角色时，可能按实际命中的元素与模式展现不同的强调方式。
     contexts: [自我表达, 启动任务]
     modifiers: [需结合宫位、相位与尊贵]
     confidence: moderate
     limitations: [行星星座象征不是人格测量。]
-    requires_exact_demo_chart: false
 
   - signal_id: ASTROLOGY-MOON-SIGN-QUALITY
     family: astrology.planet_sign_quality
@@ -194,7 +186,6 @@ rules:
     modifiers: [需结合相位与宫位]
     confidence: moderate
     limitations: [不用于诊断情绪或依恋问题。]
-    requires_exact_demo_chart: false
 
   - signal_id: ASTROLOGY-MERCURY-SIGN-QUALITY
     family: astrology.planet_sign_quality
@@ -213,7 +204,6 @@ rules:
     modifiers: [需结合水星相位]
     confidence: moderate
     limitations: [不代表智力高低或沟通能力评分。]
-    requires_exact_demo_chart: false
 
   - signal_id: ASTROLOGY-VENUS-SIGN-QUALITY
     family: astrology.planet_sign_quality
@@ -232,7 +222,6 @@ rules:
     modifiers: [需结合金星相位与尊贵]
     confidence: moderate
     limitations: [不用于预测关系结果。]
-    requires_exact_demo_chart: false
 
   - signal_id: ASTROLOGY-MARS-SIGN-QUALITY
     family: astrology.planet_sign_quality
@@ -251,7 +240,6 @@ rules:
     modifiers: [需结合火星相位]
     confidence: moderate
     limitations: [不代表攻击性或执行能力评分。]
-    requires_exact_demo_chart: false
 
   - signal_id: ASTROLOGY-JUPITER-SIGN-QUALITY
     family: astrology.planet_sign_quality
@@ -270,7 +258,6 @@ rules:
     modifiers: [需结合木星相位]
     confidence: moderate
     limitations: [不构成运气或成功预测。]
-    requires_exact_demo_chart: false
 
   - signal_id: ASTROLOGY-SATURN-SIGN-QUALITY
     family: astrology.planet_sign_quality
@@ -289,7 +276,6 @@ rules:
     modifiers: [需结合土星相位与尊贵]
     confidence: moderate
     limitations: [不用于诊断压抑、焦虑或生活困难。]
-    requires_exact_demo_chart: false
 
   - signal_id: ASTROLOGY-SUN-HOUSE-CONTEXT
     family: astrology.house_context
@@ -307,7 +293,6 @@ rules:
     modifiers: [依赖出生时间与宫制]
     confidence: exploratory
     limitations: [出生时间不可用时必须完全省略。]
-    requires_exact_demo_chart: false
 
   - signal_id: ASTROLOGY-ASPECT-DIGNITY-CONTEXT
     family: astrology.major_aspect
@@ -329,7 +314,6 @@ rules:
     modifiers: [需保留容许度与全盘其他相位]
     confidence: exploratory
     limitations: [相位解读依赖容许度和全盘，不是事件预测。]
-    requires_exact_demo_chart: false
 
   - signal_id: ASTROLOGY-SUN-DIGNITY-CONTEXT
     family: astrology.dignity
@@ -347,4 +331,3 @@ rules:
     modifiers: [尊贵仅作表达条件]
     confidence: exploratory
     limitations: [不将尊贵转换为道德、能力或命运评分。]
-    requires_exact_demo_chart: false

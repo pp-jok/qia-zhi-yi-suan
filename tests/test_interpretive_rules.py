@@ -244,6 +244,9 @@ def test_v060_rule_families_cover_all_ten_gods_and_core_planets():
 
 
 def test_no_rule_requires_a_demo_specific_full_configuration():
+    raw_rules = yaml.safe_load(RULE_PATH.read_text(encoding="utf-8"))["rules"]
+
+    assert all("requires_exact_demo_chart" not in rule for rule in raw_rules)
     assert all(
         not rule.requires_exact_demo_chart
         for rule in load_interpretive_rule_bundle().rules
@@ -324,7 +327,39 @@ def test_extraction_requires_matching_value_predicates(non_matching_interpretive
 
     signal_ids = {signal.signal_id for signal in signals}
     assert "BAZI-TEN-GOD-EXPRESSION" not in signal_ids
-    assert "ASTROLOGY-PLANET-SIGN-EXPRESSION" not in signal_ids
+    assert "ASTROLOGY-PLANET-SIGN-EXPRESSION" in signal_ids
+
+
+def test_reusable_rules_preserve_exact_matched_values_for_narrative_selection(
+    qualified_interpretive_facts,
+    non_matching_interpretive_facts,
+):
+    def matched(signal_id, qualified):
+        signal = next(
+            item
+            for item in extract_interpretive_signals(qualified)
+            if item.signal_id == signal_id
+        )
+        return {
+            (item.fact_ref, item.value)
+            for item in signal.matched_values
+        }
+
+    assert matched(
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION", qualified_interpretive_facts
+    ) == {
+        ("astrology.sign_element", "fire"),
+        ("astrology.sign_modality", "cardinal"),
+    }
+    assert matched(
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION", non_matching_interpretive_facts
+    ) == {
+        ("astrology.sign_element", "earth"),
+        ("astrology.sign_modality", "fixed"),
+    }
+    assert matched("BAZI-TEN-GOD-EXPRESSION", qualified_interpretive_facts) == {
+        ("bazi.ten_god.day_master_relation", "正印")
+    }
 
 
 def test_ten_god_repetition_requires_the_same_identity(
@@ -414,6 +449,38 @@ def test_rule_loader_rejects_unsupported_predicate_value(tmp_path: Path):
     )
 
     with pytest.raises(ValueError, match="INTERPRETIVE_RULE_INVALID_PREDICATE_VALUE"):
+        load_interpretive_rule_bundle(tmp_path)
+
+
+def test_rule_loader_structurally_rejects_single_sign_configuration(tmp_path: Path):
+    payload = yaml.safe_load(RULE_PATH.read_text(encoding="utf-8"))
+    rule = next(
+        item
+        for item in payload["rules"]
+        if item["signal_id"] == "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+    )
+    rule["value_predicates"][0]["values"] = ["fire"]
+    rule["value_predicates"][1]["values"] = ["cardinal"]
+    (tmp_path / "interpretive_rules_v1.yaml").write_text(
+        yaml.safe_dump(payload, allow_unicode=True), encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="INTERPRETIVE_RULE_DEMO_SPECIFIC"):
+        load_interpretive_rule_bundle(tmp_path)
+
+
+def test_rule_loader_structurally_rejects_cross_family_demo_join(tmp_path: Path):
+    payload = yaml.safe_load(RULE_PATH.read_text(encoding="utf-8"))
+    rule = payload["rules"][0]
+    rule["fact_refs"].append("bazi.elemental_balance")
+    rule["value_predicates"].append(
+        {"fact_ref": "bazi.elemental_balance", "values": ["year", "month"]}
+    )
+    (tmp_path / "interpretive_rules_v1.yaml").write_text(
+        yaml.safe_dump(payload, allow_unicode=True), encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="INTERPRETIVE_RULE_DEMO_SPECIFIC"):
         load_interpretive_rule_bundle(tmp_path)
 
 
