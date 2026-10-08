@@ -1,83 +1,350 @@
-bundle_version: audited-interpretive-rules-v1
-predicate_version: audited-interpretive-value-predicates-v1
+bundle_version: audited-interpretive-rules-v2
+predicate_version: audited-interpretive-value-predicates-v2
 limitations:
-  - These are traditional interpretive heuristics, not empirically validated diagnoses.
-  - A chart-derived signal does not establish personality, health, or life outcomes.
+  - 这些内容是传统象征解读，不是经验科学的人格诊断。
+  - 任何单一信号都不能独立确定人格、健康或人生结果。
 rules:
   - signal_id: BAZI-TEN-GOD-EXPRESSION
+    family: bazi.ten_god.identity
     system: bazi
-    fact_refs:
-      - bazi.ten_god.day_master_relation
-      - bazi.elemental_balance
+    fact_refs: [bazi.ten_god.day_master_relation]
     value_predicates:
       - fact_ref: bazi.ten_god.day_master_relation
         values: [正印, 偏印]
-      - fact_ref: bazi.elemental_balance
-        values: [year, month, day]
-    traditional_rule_ref: "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+        positions: [year, month, day, hour]
+        source_kinds: [visible_stem, hidden_stem, unknown]
+        minimum_occurrences: 1
+    traditional_rule_ref: "子平法十神法；《渊海子平》"
     topic: style of expression
     direction: reflective
-    interpretation: This traditional reading offers language for reflecting on expression, support, and constraint; it is not a diagnostic conclusion.
+    interpretation: 印星信号将注意力引向理解、吸收与内在整理。
+    mechanism: 通过接收信息、建立解释框架后再表达，因而形成偏反思的表达节奏。
+    likely_expression: 在学习或沟通中，可能先听、先理解，再给出经过组织的回应。
+    contexts: [学习, 沟通]
+    modifiers: [需结合所在柱位与显藏来源]
     confidence: moderate
-    limitations:
-      - Requires the complete chart context and does not determine behavior.
-      - Traditional correspondence is not empirical personality assessment.
-  - signal_id: BAZI-RELATION-DYNAMICS
+    limitations: [需与全局其他十神与关系合看。]
+    requires_exact_demo_chart: false
+
+  - signal_id: BAZI-TEN-GOD-PEER
+    family: bazi.ten_god.identity
     system: bazi
-    fact_refs:
-      - bazi.branch_relation
-      - bazi.hidden_stem
+    fact_refs: [bazi.ten_god.day_master_relation]
+    value_predicates:
+      - fact_ref: bazi.ten_god.day_master_relation
+        values: [比肩, 劫财]
+        positions: [year, month, day, hour]
+        source_kinds: [visible_stem, hidden_stem, unknown]
+        minimum_occurrences: 1
+    traditional_rule_ref: "子平法十神法；《渊海子平》"
+    topic: agency
+    direction: self-directed
+    interpretation: 比劫信号强调自我立场、同辈互动与资源边界。
+    mechanism: 通过相同或相近力量的并置，使自主与竞合成为显著议题。
+    likely_expression: 在协作中可能更在意对等、自主权与责任分配。
+    contexts: [协作, 资源分配]
+    modifiers: [比肩与劫财的具体差异需单独辨识]
+    confidence: moderate
+    limitations: [不能由此推定一个人自私或好竞争。]
+    requires_exact_demo_chart: false
+
+  - signal_id: BAZI-TEN-GOD-OUTPUT
+    family: bazi.ten_god.identity
+    system: bazi
+    fact_refs: [bazi.ten_god.day_master_relation]
+    value_predicates:
+      - fact_ref: bazi.ten_god.day_master_relation
+        values: [食神, 伤官]
+        positions: [year, month, day, hour]
+        source_kinds: [visible_stem, hidden_stem, unknown]
+        minimum_occurrences: 1
+    traditional_rule_ref: "子平法十神法；《渊海子平》"
+    topic: creative output
+    direction: expressive
+    interpretation: 食伤信号将重点放在输出、表达与对既有规则的个人化处理。
+    mechanism: 内在资源向外转化，使创作、说明或改造成为主要通道。
+    likely_expression: 可能通过作品、语言或方法改进来表达自己的理解。
+    contexts: [创作, 公开表达]
+    modifiers: [需区分温和输出与批判性输出]
+    confidence: moderate
+    limitations: [不等同于才华水平或职业成就。]
+    requires_exact_demo_chart: false
+
+  - signal_id: BAZI-TEN-GOD-WEALTH
+    family: bazi.ten_god.identity
+    system: bazi
+    fact_refs: [bazi.ten_god.day_master_relation]
+    value_predicates:
+      - fact_ref: bazi.ten_god.day_master_relation
+        values: [正财, 偏财]
+        positions: [year, month, day, hour]
+        source_kinds: [visible_stem, hidden_stem, unknown]
+        minimum_occurrences: 1
+    traditional_rule_ref: "子平法十神法；《渊海子平》"
+    topic: resource handling
+    direction: practical
+    interpretation: 财星信号聚焦可调度的资源、实际成果与投入回报。
+    mechanism: 通过对外部资源的识别与安排，将意图落到可交付的层面。
+    likely_expression: 在工作或生活安排中，可能关注时间、成本和结果是否可控。
+    contexts: [工作, 日常管理]
+    modifiers: [需结合正偏与位置]
+    confidence: moderate
+    limitations: [不代表实际财富或理财能力。]
+    requires_exact_demo_chart: false
+
+  - signal_id: BAZI-TEN-GOD-AUTHORITY
+    family: bazi.ten_god.identity
+    system: bazi
+    fact_refs: [bazi.ten_god.day_master_relation]
+    value_predicates:
+      - fact_ref: bazi.ten_god.day_master_relation
+        values: [正官, 七杀]
+        positions: [year, month, day, hour]
+        source_kinds: [visible_stem, hidden_stem, unknown]
+        minimum_occurrences: 1
+    traditional_rule_ref: "子平法十神法；《渊海子平》"
+    topic: structure and pressure
+    direction: structured
+    interpretation: 官杀信号指向规范、约束、责任与压力的处理方式。
+    mechanism: 外部要求被内化为行动边界，促使个体在规则与挑战中调整。
+    likely_expression: 面对任务时可能更先确认责任、标准和风险边界。
+    contexts: [责任, 压力情境]
+    modifiers: [需区分稳定规范与急迫压力]
+    confidence: moderate
+    limitations: [不能由此推定职位、权力或事件吉凶。]
+    requires_exact_demo_chart: false
+
+  - signal_id: BAZI-TEN-GOD-REPETITION
+    family: bazi.ten_god.repetition
+    system: bazi
+    fact_refs: [bazi.ten_god.day_master_relation]
+    value_predicates:
+      - fact_ref: bazi.ten_god.day_master_relation
+        values: [比肩, 劫财, 食神, 伤官, 正财, 偏财, 正官, 七杀, 正印, 偏印]
+        positions: [year, month, day, hour]
+        source_kinds: [visible_stem, hidden_stem, unknown]
+        minimum_occurrences: 2
+    traditional_rule_ref: "子平法十神复见观察法；《三命通会》"
+    topic: recurring emphasis
+    direction: reinforced
+    interpretation: 同类十神信号多次出现时，相关议题可能在不同情境中反复被触发。
+    mechanism: 重复来源提高了某类关系在全局中的可见度，但不等于线性增强。
+    likely_expression: 相同主题可能在学习、工作或关系中以不同形式重现。
+    contexts: [跨情境观察]
+    modifiers: [重复数量仅是关注标记]
+    confidence: exploratory
+    limitations: [需辨别每个实例的柱位和来源，不做强弱判定。]
+    requires_exact_demo_chart: false
+
+  - signal_id: BAZI-RELATION-DYNAMICS
+    family: bazi.branch_relation
+    system: bazi
+    fact_refs: [bazi.branch_relation]
     value_predicates:
       - fact_ref: bazi.branch_relation
-        values: [combination]
-      - fact_ref: bazi.hidden_stem
-        values: [癸]
-    traditional_rule_ref: "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
+        values: [combination, clash, harm, punishment, five_element_controls]
+        positions: [year, month, day, hour]
+        participants: [year.branch, month.branch, day.branch, hour.branch]
+        minimum_occurrences: 1
+    traditional_rule_ref: "子平法地支关系法；《三命通会》"
     topic: contextual dynamics
-    direction: Treat branch relations as contextual prompts rather than deterministic outcomes.
-    interpretation: Traditional branch-relation language may frame tensions or affinities for reflection, without claiming prediction or diagnosis.
+    direction: relational
+    interpretation: 地支关系信号用来标记不同生活领域之间的联动、拉扯或制约。
+    mechanism: 关系类型连接了具体参与柱位，提供情境间如何互相影响的观察线索。
+    likely_expression: 在多重角色同时被激活时，可能感到协同或冲突需要被协调。
+    contexts: [家庭, 工作, 关系]
+    modifiers: [必须保留关系类型与参与柱位]
     confidence: exploratory
-    limitations:
-      - Relation facts must be interpreted with the full chart.
-      - No empirical causal or diagnostic status is claimed.
+    limitations: [关系事实必须结合全局，不构成事件预测。]
+    requires_exact_demo_chart: false
+
   - signal_id: ASTROLOGY-PLANET-SIGN-EXPRESSION
+    family: astrology.planet_sign_quality
     system: astrology
-    fact_refs:
-      - astrology.planet_sign
-      - astrology.house_placement
+    fact_refs: [astrology.sign_element, astrology.sign_modality]
     value_predicates:
-      - fact_ref: astrology.planet_sign
-        body: Sun
-        values: [Aries]
-      - fact_ref: astrology.house_placement
-        body: Sun
-        values: ["1"]
-    traditional_rule_ref: "Modern Western astrology, planet-in-sign synthesis; Stephen Arroyo, Astrology, Psychology, and the Four Elements"
+      - {fact_ref: astrology.sign_element, body: Sun, values: [fire]}
+      - {fact_ref: astrology.sign_modality, body: Sun, values: [cardinal]}
+    traditional_rule_ref: "现代西方占星学行星星座综合法；Stephen Arroyo"
     topic: style of expression
     direction: outward
-    interpretation: Planet-sign symbolism is a traditional interpretive lens for reflection, not a validated measurement of personality.
+    interpretation: 太阳的火元素与开创模式强调直接、启动与自我定义。
+    mechanism: 核心意志借由外向推进和主动开始来建立存在感。
+    likely_expression: 在需要表态或开始行动时，可能更愿意先迈出一步。
+    contexts: [自我表达, 启动任务]
+    modifiers: [需结合宫位、相位与尊贵]
     confidence: moderate
-    limitations:
-      - House system and birth-time uncertainty can change the context.
-      - This interpretation is not an empirical or clinical assessment.
-  - signal_id: ASTROLOGY-ASPECT-DIGNITY-CONTEXT
+    limitations: [行星星座象征不是人格测量。]
+    requires_exact_demo_chart: false
+
+  - signal_id: ASTROLOGY-MOON-SIGN-QUALITY
+    family: astrology.planet_sign_quality
     system: astrology
-    fact_refs:
-      - astrology.aspect
-      - astrology.essential_dignity
+    fact_refs: [astrology.sign_element, astrology.sign_modality]
+    value_predicates:
+      - {fact_ref: astrology.sign_element, body: Moon, values: [fire, earth, air, water]}
+      - {fact_ref: astrology.sign_modality, body: Moon, values: [cardinal, fixed, mutable]}
+    traditional_rule_ref: "现代西方占星学月亮星座综合法；Stephen Arroyo"
+    topic: emotional processing
+    direction: receptive
+    interpretation: 月亮所在星座的元素与模式，提供情绪接收和安全感调节的象征语言。
+    mechanism: 情绪需求通过对应元素的补给方式和模式节奏被识别。
+    likely_expression: 在压力或亲密关系中，可能展现特定的恢复节奏和回应习惯。
+    contexts: [情绪调节, 亲密关系]
+    modifiers: [需结合相位与宫位]
+    confidence: moderate
+    limitations: [不用于诊断情绪或依恋问题。]
+    requires_exact_demo_chart: false
+
+  - signal_id: ASTROLOGY-MERCURY-SIGN-QUALITY
+    family: astrology.planet_sign_quality
+    system: astrology
+    fact_refs: [astrology.sign_element, astrology.sign_modality]
+    value_predicates:
+      - {fact_ref: astrology.sign_element, body: Mercury, values: [fire, earth, air, water]}
+      - {fact_ref: astrology.sign_modality, body: Mercury, values: [cardinal, fixed, mutable]}
+    traditional_rule_ref: "现代西方占星学水星星座综合法；Stephen Arroyo"
+    topic: thinking and communication
+    direction: cognitive
+    interpretation: 水星的元素与模式描述信息如何被注意、组织与交换。
+    mechanism: 思维通道按星座元素选择材料，并按模式确定推进节奏。
+    likely_expression: 在学习和讨论中，可能对信息类型与表达速度有明显偏好。
+    contexts: [学习, 沟通]
+    modifiers: [需结合水星相位]
+    confidence: moderate
+    limitations: [不代表智力高低或沟通能力评分。]
+    requires_exact_demo_chart: false
+
+  - signal_id: ASTROLOGY-VENUS-SIGN-QUALITY
+    family: astrology.planet_sign_quality
+    system: astrology
+    fact_refs: [astrology.sign_element, astrology.sign_modality]
+    value_predicates:
+      - {fact_ref: astrology.sign_element, body: Venus, values: [fire, earth, air, water]}
+      - {fact_ref: astrology.sign_modality, body: Venus, values: [cardinal, fixed, mutable]}
+    traditional_rule_ref: "现代西方占星学金星星座综合法；Stephen Arroyo"
+    topic: relating and values
+    direction: affiliative
+    interpretation: 金星的元素与模式描述好感、价值选择与互惠方式。
+    mechanism: 关系中的吸引和协调借由对应元素表达，并按模式维持。
+    likely_expression: 在选择合作方式或美感对象时，可能显示稳定的偏好线索。
+    contexts: [关系, 价值选择]
+    modifiers: [需结合金星相位与尊贵]
+    confidence: moderate
+    limitations: [不用于预测关系结果。]
+    requires_exact_demo_chart: false
+
+  - signal_id: ASTROLOGY-MARS-SIGN-QUALITY
+    family: astrology.planet_sign_quality
+    system: astrology
+    fact_refs: [astrology.sign_element, astrology.sign_modality]
+    value_predicates:
+      - {fact_ref: astrology.sign_element, body: Mars, values: [fire, earth, air, water]}
+      - {fact_ref: astrology.sign_modality, body: Mars, values: [cardinal, fixed, mutable]}
+    traditional_rule_ref: "现代西方占星学火星星座综合法；Stephen Arroyo"
+    topic: action style
+    direction: mobilizing
+    interpretation: 火星的元素与模式描述行动如何启动、持续与面对阻力。
+    mechanism: 驱动力选择与元素相应的路径，并按模式分配行动节奏。
+    likely_expression: 面对竞争或紧急任务时，可能展现特定的发力与持续方式。
+    contexts: [行动, 冲突处理]
+    modifiers: [需结合火星相位]
+    confidence: moderate
+    limitations: [不代表攻击性或执行能力评分。]
+    requires_exact_demo_chart: false
+
+  - signal_id: ASTROLOGY-JUPITER-SIGN-QUALITY
+    family: astrology.planet_sign_quality
+    system: astrology
+    fact_refs: [astrology.sign_element, astrology.sign_modality]
+    value_predicates:
+      - {fact_ref: astrology.sign_element, body: Jupiter, values: [fire, earth, air, water]}
+      - {fact_ref: astrology.sign_modality, body: Jupiter, values: [cardinal, fixed, mutable]}
+    traditional_rule_ref: "现代西方占星学木星星座综合法；Stephen Arroyo"
+    topic: growth orientation
+    direction: expansive
+    interpretation: 木星的元素与模式描述意义感、学习拓展与机会识别的象征路径。
+    mechanism: 成长动机通过相应元素寻找空间，并按模式设定扩展节奏。
+    likely_expression: 在学习或选择发展方向时，可能更容易被某类视野和机会吸引。
+    contexts: [学习, 发展选择]
+    modifiers: [需结合木星相位]
+    confidence: moderate
+    limitations: [不构成运气或成功预测。]
+    requires_exact_demo_chart: false
+
+  - signal_id: ASTROLOGY-SATURN-SIGN-QUALITY
+    family: astrology.planet_sign_quality
+    system: astrology
+    fact_refs: [astrology.sign_element, astrology.sign_modality]
+    value_predicates:
+      - {fact_ref: astrology.sign_element, body: Saturn, values: [fire, earth, air, water]}
+      - {fact_ref: astrology.sign_modality, body: Saturn, values: [cardinal, fixed, mutable]}
+    traditional_rule_ref: "现代西方占星学土星星座综合法；Stephen Arroyo"
+    topic: boundaries and mastery
+    direction: consolidating
+    interpretation: 土星的元素与模式描述边界、责任与长期掌握的象征途径。
+    mechanism: 对限制的感知通过元素被具体化，并按模式逐步建立结构。
+    likely_expression: 面对需要长期投入的事情时，可能以特定节奏建立规则与熟练度。
+    contexts: [长期任务, 边界建立]
+    modifiers: [需结合土星相位与尊贵]
+    confidence: moderate
+    limitations: [不用于诊断压抑、焦虑或生活困难。]
+    requires_exact_demo_chart: false
+
+  - signal_id: ASTROLOGY-SUN-HOUSE-CONTEXT
+    family: astrology.house_context
+    system: astrology
+    fact_refs: [astrology.house_placement]
+    value_predicates:
+      - {fact_ref: astrology.house_placement, body: Sun, values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]}
+    traditional_rule_ref: "西方占星学宫位论；William Lilly, Christian Astrology"
+    topic: life arena
+    direction: contextual
+    interpretation: 太阳宫位将核心表达限定在一个可核查的生活领域中。
+    mechanism: 宫位不改变行星功能，而是指定该功能更容易被观察的情境。
+    likely_expression: 在对应生活领域里，自我定义与被看见的需求可能更明显。
+    contexts: [宫位所指生活领域]
+    modifiers: [依赖出生时间与宫制]
+    confidence: exploratory
+    limitations: [出生时间不可用时必须完全省略。]
+    requires_exact_demo_chart: false
+
+  - signal_id: ASTROLOGY-ASPECT-DIGNITY-CONTEXT
+    family: astrology.major_aspect
+    system: astrology
+    fact_refs: [astrology.aspect]
     value_predicates:
       - fact_ref: astrology.aspect
         body: Sun
         other_body: Moon
-        values: [conjunction]
-      - fact_ref: astrology.essential_dignity
-        body: Sun
-        values: [domicile]
-    traditional_rule_ref: "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
+        values: [conjunction, opposition, square, trine, sextile]
+        minimum_occurrences: 1
+    traditional_rule_ref: "西方占星学主要相位论；William Lilly, Christian Astrology"
     topic: interacting tendencies
-    direction: Use aspects and dignity as a qualified context for traditional symbolic interpretation.
-    interpretation: Traditional aspect and dignity language can organize reflective questions about competing tendencies without diagnosing traits or outcomes.
+    direction: integrative
+    interpretation: 日月主要相位用于观察自我意志与情绪需求如何互动。
+    mechanism: 相位类型描述两种功能之间的交流方式，但不单独规定结果。
+    likely_expression: 在作出个人决定时，意志与安全感可能以协同或拉扯的方式同时出现。
+    contexts: [决策, 情绪与意志]
+    modifiers: [需保留容许度与全盘其他相位]
     confidence: exploratory
-    limitations:
-      - Aspect interpretation depends on selected orbs and the wider chart.
-      - No empirical predictive or diagnostic claim is made.
+    limitations: [相位解读依赖容许度和全盘，不是事件预测。]
+    requires_exact_demo_chart: false
+
+  - signal_id: ASTROLOGY-SUN-DIGNITY-CONTEXT
+    family: astrology.dignity
+    system: astrology
+    fact_refs: [astrology.essential_dignity]
+    value_predicates:
+      - {fact_ref: astrology.essential_dignity, body: Sun, values: [domicile, detriment, exaltation, fall]}
+    traditional_rule_ref: "西方占星学先天尊贵论；William Lilly, Christian Astrology"
+    topic: expression conditions
+    direction: qualified
+    interpretation: 太阳的先天尊贵状态用于限定核心功能表达时的条件。
+    mechanism: 尊贵是表达修饰因素，不改写行星位置事实，也不直接转换为人格好坏。
+    likely_expression: 在展现自信或承担核心角色时，可能感到较顺手或需要更多调整。
+    contexts: [自我表达, 核心角色]
+    modifiers: [尊贵仅作表达条件]
+    confidence: exploratory
+    limitations: [不将尊贵转换为道德、能力或命运评分。]
+    requires_exact_demo_chart: false

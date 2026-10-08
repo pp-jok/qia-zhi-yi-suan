@@ -1,7 +1,7 @@
 """Immutable public models for audited traditional interpretations."""
 
 from dataclasses import dataclass
-from typing import Literal, Optional, Tuple
+from typing import FrozenSet, Literal, Optional, Tuple
 
 
 InterpretiveConfidence = Literal["high", "moderate", "exploratory", "insufficient"]
@@ -15,6 +15,10 @@ class InterpretiveValuePredicate:
     values: Tuple[str, ...]
     body: Optional[str] = None
     other_body: Optional[str] = None
+    positions: Tuple[str, ...] = ()
+    source_kinds: Tuple[str, ...] = ()
+    participants: Tuple[str, ...] = ()
+    minimum_occurrences: int = 1
 
 
 @dataclass(frozen=True)
@@ -31,6 +35,12 @@ class InterpretiveSignal:
     interpretation: str
     confidence: InterpretiveConfidence
     limitations: Tuple[str, ...]
+    family: str = "legacy"
+    mechanism: str = ""
+    likely_expression: str = ""
+    contexts: Tuple[str, ...] = ()
+    modifiers: Tuple[str, ...] = ()
+    requires_exact_demo_chart: bool = False
 
 
 @dataclass(frozen=True)
@@ -40,6 +50,8 @@ class InterpretiveRuleBundle:
     bundle_version: str
     rules: Tuple[InterpretiveSignal, ...]
     limitations: Tuple[str, ...]
+    covered_ten_gods: FrozenSet[str] = frozenset()
+    covered_planets: FrozenSet[str] = frozenset()
 
 
 @dataclass(frozen=True)

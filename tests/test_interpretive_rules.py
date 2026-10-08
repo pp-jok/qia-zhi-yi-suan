@@ -30,6 +30,27 @@ from destiny_personality.interpretive_rules import (
 FIXTURE_PATH = (
     Path(__file__).parent / "fixtures" / "interpretive" / "extraction_cases_v1.yaml"
 )
+RULE_PATH = (
+    Path(__file__).parents[1]
+    / "src"
+    / "destiny_personality"
+    / "interpretive_assets"
+    / "v1"
+    / "interpretive_rules_v1.yaml"
+)
+TEN_GODS = {
+    "比肩",
+    "劫财",
+    "食神",
+    "伤官",
+    "正财",
+    "偏财",
+    "正官",
+    "七杀",
+    "正印",
+    "偏印",
+}
+CORE_PLANETS = {"Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn"}
 
 
 @pytest.fixture(scope="module")
@@ -211,8 +232,56 @@ def reversed_aspect_interpretive_facts(qualified_facts, tmp_path, extraction_cas
 def test_rule_bundle_is_versioned_and_contains_both_systems():
     bundle = load_interpretive_rule_bundle()
 
-    assert bundle.bundle_version == "audited-interpretive-rules-v1"
+    assert bundle.bundle_version == "audited-interpretive-rules-v2"
     assert {rule.system for rule in bundle.rules} == {"bazi", "astrology"}
+
+
+def test_v060_rule_families_cover_all_ten_gods_and_core_planets():
+    bundle = load_interpretive_rule_bundle()
+
+    assert TEN_GODS <= bundle.covered_ten_gods
+    assert CORE_PLANETS <= bundle.covered_planets
+
+
+def test_no_rule_requires_a_demo_specific_full_configuration():
+    assert all(
+        not rule.requires_exact_demo_chart
+        for rule in load_interpretive_rule_bundle().rules
+    )
+
+
+def test_v060_rule_families_expose_bounded_selectors_and_chinese_narrative_fields():
+    bundle = load_interpretive_rule_bundle()
+    predicate_families = {
+        predicate.fact_ref
+        for rule in bundle.rules
+        for predicate in rule.value_predicates
+    }
+
+    assert {
+        "bazi.ten_god.day_master_relation",
+        "bazi.branch_relation",
+        "astrology.sign_element",
+        "astrology.sign_modality",
+        "astrology.house_placement",
+        "astrology.aspect",
+        "astrology.essential_dignity",
+    } <= predicate_families
+    assert all(rule.family for rule in bundle.rules)
+    assert all(rule.mechanism and rule.likely_expression for rule in bundle.rules)
+    assert all(rule.contexts for rule in bundle.rules)
+    assert any(
+        predicate.participants
+        for rule in bundle.rules
+        for predicate in rule.value_predicates
+        if predicate.fact_ref == "bazi.branch_relation"
+    )
+    assert all(
+        any("\u4e00" <= character <= "\u9fff" for character in rule.interpretation)
+        and any("\u4e00" <= character <= "\u9fff" for character in rule.mechanism)
+        and any("\u4e00" <= character <= "\u9fff" for character in rule.likely_expression)
+        for rule in bundle.rules
+    )
 
 
 def test_rule_bundle_defines_a_value_matched_cross_system_tension_pair():
@@ -234,9 +303,9 @@ def test_extraction_emits_traceable_bazi_and_astrology_signals(
     signals = extract_interpretive_signals(qualified_interpretive_facts)
 
     assert {signal.system for signal in signals} == {"bazi", "astrology"}
-    assert {signal.signal_id for signal in signals} == set(
+    assert set(
         extraction_cases["known_time"]["expected_signal_ids"]
-    )
+    ) <= {signal.signal_id for signal in signals}
     assert all(signal.fact_refs and signal.traditional_rule_ref for signal in signals)
     assert all(
         reference.startswith(("bazi.", "astrology."))
@@ -253,7 +322,20 @@ def test_extraction_emits_traceable_bazi_and_astrology_signals(
 def test_extraction_requires_matching_value_predicates(non_matching_interpretive_facts):
     signals = extract_interpretive_signals(non_matching_interpretive_facts)
 
-    assert signals == ()
+    signal_ids = {signal.signal_id for signal in signals}
+    assert "BAZI-TEN-GOD-EXPRESSION" not in signal_ids
+    assert "ASTROLOGY-PLANET-SIGN-EXPRESSION" not in signal_ids
+
+
+def test_ten_god_repetition_requires_the_same_identity(
+    qualified_interpretive_facts,
+):
+    signal_ids = {
+        signal.signal_id
+        for signal in extract_interpretive_signals(qualified_interpretive_facts)
+    }
+
+    assert "BAZI-TEN-GOD-REPETITION" not in signal_ids
 
 
 def test_extraction_matches_reversed_aspect_bodies(reversed_aspect_interpretive_facts):
@@ -264,10 +346,13 @@ def test_extraction_matches_reversed_aspect_bodies(reversed_aspect_interpretive_
         for signal in signals
         if signal.signal_id == "ASTROLOGY-ASPECT-DIGNITY-CONTEXT"
     )
-    assert aspect_signal.fact_refs == (
-        "astrology.aspects[0].aspect_type",
-        "astrology.dignities[0].dignity",
+    assert aspect_signal.fact_refs == ("astrology.aspects[0].aspect_type",)
+    dignity_signal = next(
+        signal
+        for signal in signals
+        if signal.signal_id == "ASTROLOGY-SUN-DIGNITY-CONTEXT"
     )
+    assert dignity_signal.fact_refs == ("astrology.dignities[0].dignity",)
 
 
 def test_missing_time_skips_house_and_angle_rules(
@@ -275,9 +360,9 @@ def test_missing_time_skips_house_and_angle_rules(
 ):
     signals = extract_interpretive_signals(missing_time_interpretive_facts)
 
-    assert {signal.signal_id for signal in signals} == set(
+    assert set(
         extraction_cases["missing_time"]["expected_signal_ids"]
-    )
+    ) <= {signal.signal_id for signal in signals}
     assert all("house" not in signal.signal_id.lower() for signal in signals)
     assert all("angle" not in signal.signal_id.lower() for signal in signals)
     assert all(
@@ -290,22 +375,10 @@ def test_missing_time_skips_house_and_angle_rules(
 
 
 def test_rule_loader_rejects_unknown_confidence(tmp_path: Path):
+    payload = yaml.safe_load(RULE_PATH.read_text(encoding="utf-8"))
+    payload["rules"][0]["confidence"] = "certain"
     (tmp_path / "interpretive_rules_v1.yaml").write_text(
-        "bundle_version: audited-interpretive-rules-v1\n"
-        "predicate_version: audited-interpretive-value-predicates-v1\n"
-        "limitations: [Traditional, non-diagnostic rules.]\n"
-        "rules:\n"
-        "  - signal_id: TEST-001\n"
-            "    system: bazi\n"
-            "    fact_refs: [bazi.ten_god]\n"
-            "    value_predicates: []\n"
-        "    traditional_rule_ref: Test school\n"
-        "    topic: Test topic\n"
-        "    direction: Test direction\n"
-        "    interpretation: Traditional, non-diagnostic interpretation.\n"
-        "    confidence: certain\n"
-        "    limitations: [Not an empirical diagnostic.]\n",
-        encoding="utf-8",
+        yaml.safe_dump(payload, allow_unicode=True), encoding="utf-8"
     )
 
     with pytest.raises(ValueError, match="INTERPRETIVE_RULE_INVALID_CONFIDENCE"):
@@ -323,22 +396,10 @@ def test_rule_loader_rejects_unknown_confidence(tmp_path: Path):
 def test_rule_loader_rejects_unqualified_or_wrong_system_fact_references(
     tmp_path: Path, fact_refs: str, error: str
 ):
+    payload = yaml.safe_load(RULE_PATH.read_text(encoding="utf-8"))
+    payload["rules"][0]["fact_refs"] = yaml.safe_load(fact_refs)
     (tmp_path / "interpretive_rules_v1.yaml").write_text(
-        "bundle_version: audited-interpretive-rules-v1\n"
-        "predicate_version: audited-interpretive-value-predicates-v1\n"
-        "limitations: [Traditional, non-diagnostic rules.]\n"
-        "rules:\n"
-        "  - signal_id: TEST-FACT-REF\n"
-            "    system: bazi\n"
-            f"    fact_refs: {fact_refs}\n"
-            "    value_predicates: []\n"
-        "    traditional_rule_ref: Test school\n"
-        "    topic: Test topic\n"
-        "    direction: Test direction\n"
-        "    interpretation: Traditional, non-diagnostic interpretation.\n"
-        "    confidence: moderate\n"
-        "    limitations: [Not an empirical diagnostic.]\n",
-        encoding="utf-8",
+        yaml.safe_dump(payload, allow_unicode=True), encoding="utf-8"
     )
 
     with pytest.raises(ValueError, match=error):
@@ -346,13 +407,34 @@ def test_rule_loader_rejects_unqualified_or_wrong_system_fact_references(
 
 
 def test_rule_loader_rejects_unsupported_predicate_value(tmp_path: Path):
-    payload = yaml.safe_load(
-        (Path(__file__).parents[1] / "src" / "destiny_personality" / "interpretive_assets" / "v1" / "interpretive_rules_v1.yaml").read_text(encoding="utf-8")
-    )
+    payload = yaml.safe_load(RULE_PATH.read_text(encoding="utf-8"))
     payload["rules"][0]["value_predicates"][0]["values"] = ["resource"]
     (tmp_path / "interpretive_rules_v1.yaml").write_text(
         yaml.safe_dump(payload, allow_unicode=True), encoding="utf-8"
     )
 
     with pytest.raises(ValueError, match="INTERPRETIVE_RULE_INVALID_PREDICATE_VALUE"):
+        load_interpretive_rule_bundle(tmp_path)
+
+
+@pytest.mark.parametrize(
+    ("selector", "value", "error"),
+    [
+        ("positions", ["season"], "INTERPRETIVE_RULE_INVALID_PREDICATE_VALUE"),
+        ("source_kinds", ["computed"], "INTERPRETIVE_RULE_INVALID_PREDICATE_VALUE"),
+        ("participants", ["season.branch"], "INTERPRETIVE_RULE_INVALID_PREDICATE"),
+        ("minimum_occurrences", 0, "INTERPRETIVE_RULE_INVALID_PREDICATE_VALUE"),
+        ("unknown_selector", ["value"], "INTERPRETIVE_RULE_INVALID_PREDICATE"),
+    ],
+)
+def test_rule_loader_rejects_unbounded_selector_values(
+    tmp_path: Path, selector: str, value, error: str
+):
+    payload = yaml.safe_load(RULE_PATH.read_text(encoding="utf-8"))
+    payload["rules"][0]["value_predicates"][0][selector] = value
+    (tmp_path / "interpretive_rules_v1.yaml").write_text(
+        yaml.safe_dump(payload, allow_unicode=True), encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match=error):
         load_interpretive_rule_bundle(tmp_path)

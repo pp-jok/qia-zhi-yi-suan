@@ -15,14 +15,15 @@ from .deterministic_facts_codec import QualifiedFacts, require_qualified_facts
 from .calculation.models import DeterministicChartFacts, FactMode
 
 
-BUNDLE_VERSION = "audited-interpretive-rules-v1"
-PREDICATE_VERSION = "audited-interpretive-value-predicates-v1"
+BUNDLE_VERSION = "audited-interpretive-rules-v2"
+PREDICATE_VERSION = "audited-interpretive-value-predicates-v2"
 RULE_FILE = "interpretive_rules_v1.yaml"
 CONFIDENCES = {"high", "moderate", "exploratory", "insufficient"}
 SYSTEMS = {"bazi", "astrology"}
 ROOT_KEYS = {"bundle_version", "predicate_version", "limitations", "rules"}
 RULE_KEYS = {
     "signal_id",
+    "family",
     "system",
     "fact_refs",
     "value_predicates",
@@ -30,21 +31,39 @@ RULE_KEYS = {
     "topic",
     "direction",
     "interpretation",
+    "mechanism",
+    "likely_expression",
+    "contexts",
+    "modifiers",
     "confidence",
     "limitations",
+    "requires_exact_demo_chart",
 }
 
 
 FactPathResolver = Callable[
     [DeterministicChartFacts, InterpretiveValuePredicate], Tuple[str, ...]
 ]
-PREDICATE_KEYS = {"fact_ref", "values", "body", "other_body"}
 PREDICATE_SELECTOR_KEYS = {
-    "bazi.ten_god.day_master_relation": set(),
+    "bazi.ten_god.day_master_relation": {
+        "positions",
+        "source_kinds",
+        "minimum_occurrences",
+    },
     "bazi.elemental_balance": set(),
-    "bazi.branch_relation": set(),
-    "bazi.hidden_stem": set(),
+    "bazi.branch_relation": {"positions", "participants", "minimum_occurrences"},
+    "bazi.hidden_stem": {"positions", "minimum_occurrences"},
     "astrology.planet_sign": {"body"},
+    "astrology.sign_element": {"body"},
+    "astrology.sign_modality": {"body"},
+    "astrology.house_placement": {"body"},
+    "astrology.aspect": {"body", "other_body", "minimum_occurrences"},
+    "astrology.essential_dignity": {"body"},
+}
+REQUIRED_PREDICATE_SELECTOR_KEYS = {
+    "astrology.planet_sign": {"body"},
+    "astrology.sign_element": {"body"},
+    "astrology.sign_modality": {"body"},
     "astrology.house_placement": {"body"},
     "astrology.aspect": {"body", "other_body"},
     "astrology.essential_dignity": {"body"},
@@ -64,6 +83,8 @@ PREDICATE_VALUE_DOMAINS = {
             "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
         }
     ),
+    "astrology.sign_element": frozenset({"fire", "earth", "air", "water"}),
+    "astrology.sign_modality": frozenset({"cardinal", "fixed", "mutable"}),
     "astrology.house_placement": frozenset(str(house) for house in range(1, 13)),
     "astrology.aspect": frozenset(
         {"conjunction", "opposition", "square", "trine", "sextile"}
@@ -72,6 +93,11 @@ PREDICATE_VALUE_DOMAINS = {
         {"domicile", "detriment", "exaltation", "fall"}
     ),
 }
+PILLAR_POSITIONS = frozenset({"year", "month", "day", "hour"})
+BRANCH_PARTICIPANTS = frozenset(
+    f"{position}.branch" for position in PILLAR_POSITIONS
+)
+TEN_GOD_SOURCE_KINDS = frozenset({"visible_stem", "hidden_stem", "unknown"})
 ASTROLOGY_BODIES = frozenset(
     {"Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"}
 )
@@ -97,6 +123,23 @@ def _strings(value: Any, code: str) -> Tuple[str, ...]:
     return tuple(_string(item, code) for item in value)
 
 
+def _string_list(value: Any, code: str) -> Tuple[str, ...]:
+    if not isinstance(value, list):
+        raise _invalid(code)
+    return tuple(_string(item, code) for item in value)
+
+
+def _selector_values(
+    item: dict[str, Any], key: str, domain: frozenset[str]
+) -> Tuple[str, ...]:
+    if key not in item:
+        return ()
+    values = _strings(item[key], "INTERPRETIVE_RULE_INVALID_PREDICATE")
+    if not set(values).issubset(domain):
+        raise _invalid("INTERPRETIVE_RULE_INVALID_PREDICATE_VALUE")
+    return values
+
+
 def _fact_refs(value: Any, system: str) -> Tuple[str, ...]:
     references = _strings(value, "INTERPRETIVE_RULE_INVALID_PROVENANCE")
     prefix = f"{system}."
@@ -115,13 +158,13 @@ def _value_predicates(
         if not isinstance(item, dict) or not {"fact_ref", "values"} <= set(item):
             raise _invalid("INTERPRETIVE_RULE_INVALID_PREDICATE")
         fact_ref = _string(item["fact_ref"], "INTERPRETIVE_RULE_INVALID_PREDICATE")
-        expected_selectors = PREDICATE_SELECTOR_KEYS.get(fact_ref)
+        allowed_selectors = PREDICATE_SELECTOR_KEYS.get(fact_ref)
+        required_selectors = REQUIRED_PREDICATE_SELECTOR_KEYS.get(fact_ref, set())
         selector_keys = set(item) - {"fact_ref", "values"}
         if (
             fact_ref not in fact_refs
-            or expected_selectors is None
-            or selector_keys != expected_selectors
-            or set(item) - {"fact_ref", "values", "body", "other_body"}
+            or allowed_selectors is None
+            or not required_selectors <= selector_keys <= allowed_selectors
         ):
             raise _invalid("INTERPRETIVE_RULE_INVALID_PREDICATE")
         values = _strings(item["values"], "INTERPRETIVE_RULE_INVALID_PREDICATE")
@@ -135,14 +178,36 @@ def _value_predicates(
             if "other_body" in item
             else None
         )
+        positions = _selector_values(item, "positions", PILLAR_POSITIONS)
+        source_kinds = _selector_values(
+            item, "source_kinds", TEN_GOD_SOURCE_KINDS
+        )
+        participants = _selector_values(
+            item, "participants", BRANCH_PARTICIPANTS
+        )
+        minimum_occurrences = item.get("minimum_occurrences", 1)
         if (
             not set(values).issubset(PREDICATE_VALUE_DOMAINS[fact_ref])
             or (body is not None and body not in ASTROLOGY_BODIES)
             or (other_body is not None and other_body not in ASTROLOGY_BODIES)
             or (other_body is not None and body == other_body)
+            or isinstance(minimum_occurrences, bool)
+            or not isinstance(minimum_occurrences, int)
+            or not 1 <= minimum_occurrences <= 10
         ):
             raise _invalid("INTERPRETIVE_RULE_INVALID_PREDICATE_VALUE")
-        predicates.append(InterpretiveValuePredicate(fact_ref, values, body, other_body))
+        predicates.append(
+            InterpretiveValuePredicate(
+                fact_ref=fact_ref,
+                values=values,
+                body=body,
+                other_body=other_body,
+                positions=positions,
+                source_kinds=source_kinds,
+                participants=participants,
+                minimum_occurrences=minimum_occurrences,
+            )
+        )
     if {predicate.fact_ref for predicate in predicates} != set(fact_refs):
         raise _invalid("INTERPRETIVE_RULE_INVALID_PREDICATE")
     if len({predicate.fact_ref for predicate in predicates}) != len(predicates):
@@ -159,6 +224,11 @@ def _rule(value: Any) -> InterpretiveSignal:
     system = _string(value["system"], "INTERPRETIVE_RULE_INVALID")
     if system not in SYSTEMS:
         raise _invalid("INTERPRETIVE_RULE_INVALID")
+    requires_exact_demo_chart = value["requires_exact_demo_chart"]
+    if not isinstance(requires_exact_demo_chart, bool):
+        raise _invalid("INTERPRETIVE_RULE_INVALID")
+    if requires_exact_demo_chart:
+        raise _invalid("INTERPRETIVE_RULE_DEMO_SPECIFIC")
     fact_refs = _fact_refs(value["fact_refs"], system)
     return InterpretiveSignal(
         signal_id=_string(value["signal_id"], "INTERPRETIVE_RULE_INVALID"),
@@ -173,6 +243,14 @@ def _rule(value: Any) -> InterpretiveSignal:
         interpretation=_string(value["interpretation"], "INTERPRETIVE_RULE_INVALID"),
         confidence=confidence,
         limitations=_strings(value["limitations"], "INTERPRETIVE_RULE_INVALID"),
+        family=_string(value["family"], "INTERPRETIVE_RULE_INVALID"),
+        mechanism=_string(value["mechanism"], "INTERPRETIVE_RULE_INVALID"),
+        likely_expression=_string(
+            value["likely_expression"], "INTERPRETIVE_RULE_INVALID"
+        ),
+        contexts=_strings(value["contexts"], "INTERPRETIVE_RULE_INVALID"),
+        modifiers=_string_list(value["modifiers"], "INTERPRETIVE_RULE_INVALID"),
+        requires_exact_demo_chart=requires_exact_demo_chart,
     )
 
 
@@ -202,7 +280,27 @@ def load_interpretive_rule_bundle(
         raise _invalid("INTERPRETIVE_RULE_INVALID")
     if {rule.system for rule in rules} != SYSTEMS:
         raise _invalid("INTERPRETIVE_RULE_INVALID")
-    return InterpretiveRuleBundle(BUNDLE_VERSION, rules, limitations)
+    covered_ten_gods = frozenset(
+        value
+        for rule in rules
+        for predicate in rule.value_predicates
+        if predicate.fact_ref == "bazi.ten_god.day_master_relation"
+        for value in predicate.values
+    )
+    covered_planets = frozenset(
+        body
+        for rule in rules
+        for predicate in rule.value_predicates
+        for body in (predicate.body, predicate.other_body)
+        if predicate.fact_ref.startswith("astrology.") and body is not None
+    )
+    return InterpretiveRuleBundle(
+        BUNDLE_VERSION,
+        rules,
+        limitations,
+        covered_ten_gods,
+        covered_planets,
+    )
 
 
 def extract_interpretive_signals(
@@ -233,17 +331,36 @@ def _matching_fact_paths(
         if not matched_paths:
             return None
         fact_paths.extend(matched_paths)
-    return tuple(fact_paths)
+    return tuple(dict.fromkeys(fact_paths))
 
 
 def _ten_god_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
 ) -> Tuple[str, ...]:
-    return tuple(
-        f"bazi.ten_gods[{index}].ten_god"
+    matches = tuple(
+        (f"bazi.ten_gods[{index}].ten_god", fact.ten_god)
         for index, fact in enumerate(facts.bazi.ten_gods)
-        if fact.ten_god in predicate.values
+        if (
+            fact.ten_god in predicate.values
+            and (
+                not predicate.positions
+                or set(predicate.positions).intersection(
+                    position.value for position in fact.source_pillars
+                )
+            )
+            and (
+                not predicate.source_kinds
+                or fact.source_kind.value in predicate.source_kinds
+            )
+        )
     )
+    repeated_values = {
+        value
+        for value in predicate.values
+        if sum(matched_value == value for _, matched_value in matches)
+        >= predicate.minimum_occurrences
+    }
+    return tuple(path for path, value in matches if value in repeated_values)
 
 
 def _elemental_balance_paths(
@@ -265,21 +382,36 @@ def _elemental_balance_paths(
 def _relation_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
 ) -> Tuple[str, ...]:
-    return tuple(
+    matches = tuple(
         f"bazi.relations[{index}].relation_type"
         for index, fact in enumerate(facts.bazi.relations)
-        if fact.relation_type in predicate.values
+        if (
+            fact.relation_type in predicate.values
+            and (
+                not predicate.positions
+                or set(predicate.positions).intersection(
+                    position.value for position in fact.source_pillars
+                )
+            )
+            and (
+                not predicate.participants
+                or set(predicate.participants).intersection(fact.participant_refs)
+            )
+        )
     )
+    return matches if len(matches) >= predicate.minimum_occurrences else ()
 
 
 def _hidden_stem_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
 ) -> Tuple[str, ...]:
-    return tuple(
+    matches = tuple(
         f"bazi.hidden_stems[{index}].stems"
         for index, fact in enumerate(facts.bazi.hidden_stems)
         if set(fact.stems).intersection(predicate.values)
+        and (not predicate.positions or fact.pillar.value in predicate.positions)
     )
+    return matches if len(matches) >= predicate.minimum_occurrences else ()
 
 
 def _planet_sign_paths(
@@ -290,6 +422,43 @@ def _planet_sign_paths(
         for index, fact in enumerate(facts.astrology.placements)
         if fact.body == predicate.body and fact.sign in predicate.values
     )
+
+
+_SIGN_ELEMENTS = {
+    "Aries": "fire", "Leo": "fire", "Sagittarius": "fire",
+    "Taurus": "earth", "Virgo": "earth", "Capricorn": "earth",
+    "Gemini": "air", "Libra": "air", "Aquarius": "air",
+    "Cancer": "water", "Scorpio": "water", "Pisces": "water",
+}
+_SIGN_MODALITIES = {
+    "Aries": "cardinal", "Cancer": "cardinal", "Libra": "cardinal", "Capricorn": "cardinal",
+    "Taurus": "fixed", "Leo": "fixed", "Scorpio": "fixed", "Aquarius": "fixed",
+    "Gemini": "mutable", "Virgo": "mutable", "Sagittarius": "mutable", "Pisces": "mutable",
+}
+
+
+def _sign_quality_paths(
+    facts: DeterministicChartFacts,
+    predicate: InterpretiveValuePredicate,
+    qualities: dict[str, str],
+) -> Tuple[str, ...]:
+    return tuple(
+        f"astrology.placements[{index}].sign"
+        for index, fact in enumerate(facts.astrology.placements)
+        if fact.body == predicate.body and qualities.get(fact.sign) in predicate.values
+    )
+
+
+def _sign_element_paths(
+    facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
+) -> Tuple[str, ...]:
+    return _sign_quality_paths(facts, predicate, _SIGN_ELEMENTS)
+
+
+def _sign_modality_paths(
+    facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
+) -> Tuple[str, ...]:
+    return _sign_quality_paths(facts, predicate, _SIGN_MODALITIES)
 
 
 def _house_placement_paths(
@@ -311,7 +480,7 @@ def _house_placement_paths(
 def _aspect_paths(
     facts: DeterministicChartFacts, predicate: InterpretiveValuePredicate
 ) -> Tuple[str, ...]:
-    return tuple(
+    matches = tuple(
         f"astrology.aspects[{index}].aspect_type"
         for index, fact in enumerate(facts.astrology.aspects)
         if (
@@ -324,6 +493,7 @@ def _aspect_paths(
         )
         and fact.aspect_type in predicate.values
     )
+    return matches if len(matches) >= predicate.minimum_occurrences else ()
 
 
 def _dignity_paths(
@@ -342,6 +512,8 @@ _FACT_PATH_RESOLVERS: dict[str, FactPathResolver] = {
     "bazi.branch_relation": _relation_paths,
     "bazi.hidden_stem": _hidden_stem_paths,
     "astrology.planet_sign": _planet_sign_paths,
+    "astrology.sign_element": _sign_element_paths,
+    "astrology.sign_modality": _sign_modality_paths,
     "astrology.house_placement": _house_placement_paths,
     "astrology.aspect": _aspect_paths,
     "astrology.essential_dignity": _dignity_paths,
