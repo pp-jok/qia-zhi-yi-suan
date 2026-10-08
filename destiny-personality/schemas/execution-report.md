@@ -31,6 +31,13 @@ Produce one report for `portrait`, `facts_only`, and `audit`.
   or `not_applicable` when that route did not run.
 - `interpretive_report_ref`: validated `interpretive-report-v1` reference, or
   `not_applicable` when that route did not render.
+- `audit_target_ref`: immutable reference to the supplied object or evidence
+  bundle for `audit`/`research`; otherwise `not_applicable`.
+- `strict_stage_result_refs`: ordered strict-gate result records for
+  `audit`/`research`. Each record contains `stage`, `status` (`passed` or
+  `failed`), and non-empty `evidence_refs`; use an empty list on other routes.
+- `audit_result_ref`: immutable reference to the persisted strict
+  audit/research result; otherwise `not_applicable`.
 - `core_profile_ref`: validated `core-destiny-profile-v1` reference or
   `not_applicable` when the Core Profile route did not run.
 - `semantic_model_assurance`: `project_semantic_verified`,
@@ -60,7 +67,19 @@ Exclude raw sensitive payloads and credentials from the report. Refer to accepte
 | --- | --- | --- | --- |
 | `audited_interpretive` | `audited_interpretive` | `standard-interpretive-v1` or `concise-interpretive-v1` | `interpretive_profile_ref`, `interpretive_report_ref`, `interpretive_rule_bundle_refs` |
 | `controlled_inference` | `legacy` | `legacy` (including the literal `portrait` compatibility alias) | `analysis_basis`, `configuration_limitations`, `inference_disclosure` |
-| `strict` | `formal_core` or `not_applicable` | `facts_only`, `audit`, `research`, or explicit project-rule certification | strict gate references appropriate to the supplied or requested artifact; interpretive result fields remain `not_applicable` or empty |
+| `strict` | `formal_core` or `not_applicable` | `facts_only`, `audit`, `research`, or explicit project-rule certification | for audit/research: `audit_target_ref`, `strict_stage_result_refs`, `audit_result_ref`, and `issues`; interpretive result fields remain `not_applicable` or empty |
+
+## Strict audit/research result contract
+
+Evaluate only stages claimed by the supplied target, in the existing strict
+gate order. Record exactly one stage-result entry per evaluated claimed gate;
+stop at the first failure and never add entries for an unclaimed or later gate.
+An audit/research execution never grants reasoning or Narrative permission.
+
+| Outcome | status | current_stage | Required references | Permission flags |
+| --- | --- | --- | --- | --- |
+| `all_claimed_stages_pass` | `completed` | highest claimed strict gate that passed; `SCOPE_CHECKED` if no strict branch gate was claimed | `audit_target_ref`, `audit_result_ref`, ordered `strict_stage_result_refs` for every claimed gate | both `false` |
+| `first_claimed_stage_fails` | `stopped` | first failed claimed strict gate | `audit_target_ref`, `audit_result_ref`, ordered `strict_stage_result_refs` through the failed gate, and `issues` | both `false` |
 
 ## Cross-field rules
 
@@ -72,8 +91,10 @@ Exclude raw sensitive payloads and credentials from the report. Refer to accepte
   `interpretive_rule_bundle_refs`.
 - In `controlled_inference`, use `partial` only when the fact basis is valid but at least one required analytical section is `insufficient_basis`.
 - For `facts_only`, complete at `FACTS_VALIDATED`, keep both permission flags `false`, and omit personality IR and Narrative.
-- For `audit` or `research`, use `strict` and validate only the supplied
-  object's claimed stages; never calculate, repair, or advance it.
+- For `audit` or `research`, use `strict`, set `portrait_route` and all
+  interpretive/Core result fields to `not_applicable` (or their documented
+  empty value), and apply the strict audit/research result contract exactly;
+  never calculate, repair, or advance the supplied target.
 - For an audited portrait, add the audited profile only after
   `INTERPRETIVE_PROFILE_VALIDATED`; for legacy or strict portraits, retain the
   existing `REASONING_ALLOWED` and `NARRATIVE_ALLOWED` requirements.

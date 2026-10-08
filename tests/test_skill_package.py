@@ -775,6 +775,7 @@ def test_skill_routes_normal_personality_reports_and_preserves_strict_modes() ->
 
 def test_routing_contract_is_consistent_across_skill_companions() -> None:
     skill = read_skill_file("SKILL.md")
+    birth_input = read_skill_file("schemas/birth-input.md")
     preflight = read_skill_file("checklists/preflight.md")
     execution_report = read_skill_file("schemas/execution-report.md")
     gates = read_skill_file("checklists/stage-gates.md")
@@ -808,6 +809,14 @@ def test_routing_contract_is_consistent_across_skill_companions() -> None:
         row["Request class"].strip("`"): row["execution_profile"].strip("`")
         for row in preflight_rows
     }
+    birth_input_rows = markdown_table(
+        birth_input,
+        ("Request class", "execution_mode", "requested_mode", "execution_profile"),
+    )
+    birth_input_routes = {
+        row["Request class"].strip("`"): row["execution_profile"].strip("`")
+        for row in birth_input_rows
+    }
 
     report_rows = markdown_table(
         execution_report,
@@ -824,6 +833,18 @@ def test_routing_contract_is_consistent_across_skill_companions() -> None:
 
     assert skill_routes == expected_routes
     assert preflight_routes == expected_routes
+    assert birth_input_routes == expected_routes
+    conflicting_defaults = {
+        birth_input: (
+            "`requested_mode`: `portrait` unless",
+            "Default to `portrait`",
+        ),
+        preflight: ("Default `portrait` to `controlled_inference`",),
+        skill: ("The default controlled portrait branch continues",),
+        gates: ("- `portrait` with `controlled_inference`",),
+    }
+    for document, phrases in conflicting_defaults.items():
+        assert all(phrase not in document for phrase in phrases)
     assert set(report_routes) == {
         "audited_interpretive",
         "controlled_inference",
@@ -881,6 +902,43 @@ def test_routing_contract_is_consistent_across_skill_companions() -> None:
         "REASONING_ALLOWED",
         "NARRATIVE_ALLOWED",
     )
+
+    strict_audit_headers = (
+        "Outcome",
+        "status",
+        "current_stage",
+        "Required references",
+        "Permission flags",
+    )
+    stage_audit_rows = markdown_table(gates, strict_audit_headers)
+    report_audit_rows = markdown_table(execution_report, strict_audit_headers)
+    assert stage_audit_rows == report_audit_rows
+    audit_contract = {
+        row["Outcome"].strip("`"): row for row in stage_audit_rows
+    }
+    assert set(audit_contract) == {
+        "all_claimed_stages_pass",
+        "first_claimed_stage_fails",
+    }
+    assert audit_contract["all_claimed_stages_pass"]["status"] == "`completed`"
+    assert "highest claimed strict gate" in audit_contract[
+        "all_claimed_stages_pass"
+    ]["current_stage"]
+    assert audit_contract["first_claimed_stage_fails"]["status"] == "`stopped`"
+    assert audit_contract["first_claimed_stage_fails"]["current_stage"] == (
+        "first failed claimed strict gate"
+    )
+    for row in stage_audit_rows:
+        required_refs = set(re.findall(r"`([^`]+)`", row["Required references"]))
+        assert {"audit_target_ref", "audit_result_ref", "strict_stage_result_refs"} <= required_refs
+        assert row["Permission flags"] == "both `false`"
+
+    strict_report_result = report_routes["strict"]["Required result fields"]
+    assert {
+        "audit_target_ref",
+        "audit_result_ref",
+        "strict_stage_result_refs",
+    } <= set(re.findall(r"`([^`]+)`", strict_report_result))
 
 
 def test_controlled_inference_contract_preserves_fact_boundary() -> None:

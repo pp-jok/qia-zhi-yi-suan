@@ -71,6 +71,18 @@ The five advanced calculation assets remain absent and mandatory for the strict 
 - Explicit legacy `portrait` with `controlled_inference`: finish at `REPORT_VALIDATED`.
 - `portrait` with `strict`: continue through `NARRATIVE_ALLOWED` only when every strict gate passes.
 
+### Strict audit/research execution contract
+
+Evaluate only stages claimed by the supplied target, in the existing strict
+gate order. Record exactly one stage-result entry per evaluated claimed gate;
+stop at the first failure and never add entries for an unclaimed or later gate.
+An audit/research execution never grants reasoning or Narrative permission.
+
+| Outcome | status | current_stage | Required references | Permission flags |
+| --- | --- | --- | --- | --- |
+| `all_claimed_stages_pass` | `completed` | highest claimed strict gate that passed; `SCOPE_CHECKED` if no strict branch gate was claimed | `audit_target_ref`, `audit_result_ref`, ordered `strict_stage_result_refs` for every claimed gate | both `false` |
+| `first_claimed_stage_fails` | `stopped` | first failed claimed strict gate | `audit_target_ref`, `audit_result_ref`, ordered `strict_stage_result_refs` through the failed gate, and `issues` | both `false` |
+
 On fatal failure, record the failed gate and do not evaluate later gates. In
 the audited branch, omit unsupported topics rather than fabricating them and
 require all traceability and limitation checks before completion. In the

@@ -107,7 +107,8 @@ INPUT_RECEIVED
 → CALCULATION_BASELINE_CHECKED
 ```
 
-The default controlled portrait branch continues:
+The explicit legacy compatibility branch uses `controlled_inference` and
+continues as follows; it is never the default for a normal portrait request:
 
 ```text
 → CAPABILITIES_DISCOVERED
