@@ -684,18 +684,22 @@ def test_methodology_index_routes_every_calculation_contract_without_values() ->
     assert "CALCULATION_CONFIG_CHECKED" in text
 
 
-def test_skill_routes_controlled_portrait_and_preserves_strict_modes() -> None:
+def test_skill_routes_normal_personality_reports_and_preserves_strict_modes() -> None:
     skill = read_skill_file("SKILL.md")
     preflight = read_skill_file("checklists/preflight.md")
     gates = read_skill_file("checklists/stage-gates.md")
     capability = read_skill_file("checklists/capability-preflight.md")
 
-    for profile in ("controlled_inference", "strict"):
+    for profile in ("audited_interpretive", "controlled_inference", "strict"):
         assert f"`{profile}`" in skill
+    for profile in ("controlled_inference", "strict"):
         assert f"`{profile}`" in preflight
-    assert "`portrait` defaults to `controlled_inference`" in skill
+    assert (
+        "Normal user-facing personality analysis defaults to "
+        "`audited_interpretive`" in skill
+    )
+    assert "Explicit audit or research requests use `strict`" in skill
     assert "`facts_only` requires `strict`" in skill
-    assert "strict audit claims require `strict`" in skill
 
     for stage in (
         "CALCULATION_BASELINE_CHECKED",
