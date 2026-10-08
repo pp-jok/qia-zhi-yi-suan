@@ -1,0 +1,88 @@
+{
+  "astrology": {
+    "ascendant": "5",
+    "aspects": [],
+    "dignities": [],
+    "house_cusps": [],
+    "mc": "95",
+    "methodology_version": "western-tropical-v1.0",
+    "placements": [
+      {
+        "body": "Sun",
+        "degree_in_sign": "10",
+        "house": 1,
+        "longitude": "10",
+        "sign": "Aries"
+      },
+      {
+        "body": "Moon",
+        "degree_in_sign": "10",
+        "house": 1,
+        "longitude": "10",
+        "sign": "Aries"
+      }
+    ]
+  },
+  "bazi": {
+    "day_pillar": {
+      "earthly_branch": "午",
+      "heavenly_stem": "庚"
+    },
+    "hidden_stems": [
+      {
+        "pillar": "year",
+        "stems": [
+          "甲"
+        ]
+      }
+    ],
+    "hour_pillar": {
+      "earthly_branch": "午",
+      "heavenly_stem": "庚"
+    },
+    "methodology_version": "bazi-core-v1.0",
+    "month_pillar": {
+      "earthly_branch": "午",
+      "heavenly_stem": "庚"
+    },
+    "relations": [],
+    "ten_gods": [
+      {
+        "source_kind": "visible_stem",
+        "source_pillars": [
+          "year"
+        ],
+        "subject_ref": "day_master",
+        "ten_god": "正财"
+      }
+    ],
+    "year_pillar": {
+      "earthly_branch": "午",
+      "heavenly_stem": "庚"
+    }
+  },
+  "fact_mode": "time_sensitive",
+  "methodology_versions": {
+    "astrology": "western-tropical-v1.0",
+    "bazi": "bazi-core-v1.0"
+  },
+  "normalized_time": {
+    "birth_date": "1990-01-02",
+    "dst_was_applied": false,
+    "fact_mode": "time_sensitive",
+    "historical_civil_time": "1990-01-02T03:04:05",
+    "local_standard_time": "1990-01-02T03:04:05",
+    "sensitivity_reasons": [],
+    "time_basis": "true_solar_time",
+    "timezone_name": "Asia/Shanghai",
+    "true_solar_time": "1990-01-02T03:10:00",
+    "utc_time": "1990-01-01T19:04:05+00:00"
+  },
+  "provenance_refs": [
+    "fixture:contrast_b"
+  ],
+  "schema_version": "deterministic-facts-v1",
+  "validation_summary": {
+    "structure": "passed"
+  }
+}

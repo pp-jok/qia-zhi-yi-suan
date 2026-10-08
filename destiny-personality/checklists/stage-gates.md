@@ -6,9 +6,39 @@ Advance only after every condition for the selected execution profile passes.
 
 1. `INPUT_RECEIVED`: required mode input is present.
 2. `SCOPE_CHECKED`: preflight scope, profile, and authorization rules pass.
-3. `CALCULATION_BASELINE_CHECKED`: the four frozen baseline YAML files, birth/time rules, capability contracts, deterministic-fact contract, controlled-inference contract, and report contracts are present and internally consistent.
+3. `CALCULATION_BASELINE_CHECKED`: the four frozen baseline YAML files,
+   birth/time rules, capability contracts, deterministic-fact contract, and
+   the contracts required by the selected report branch are present and
+   internally consistent.
+
+## Audited interpretive branch
+
+4. `FACT_BASIS_VALIDATED`: a separate `fact-qualification-v1` record passes,
+   fingerprint-binds the accepted `deterministic-facts-v1` packet, matches its
+   methodology versions and provenance, and derives assurance other than
+   `none`; `stable_only` exclusions already apply.
+5. `INTERPRETIVE_RULES_VALIDATED`: the packaged, versioned traditional-rule
+   bundle passes its exact schema, predicate-domain, unique-ID, provenance,
+   confidence, and limitation checks. Candidate assets, Mapping registries,
+   and strict Core Profile assets cannot satisfy this gate.
+6. `INTERPRETIVE_SIGNALS_VALIDATED`: every emitted signal matches all declared
+   value predicates and retains non-empty qualified-fact and traditional-rule
+   references plus limitations. With unknown birth time, omit hour-pillar,
+   house, Ascendant, MC, and angle-dependent signals and record a visible
+   reduced-time-scope limitation.
+7. `INTERPRETIVE_PROFILE_VALIDATED`: every conclusion retains supporting
+   signal IDs, every tension retains countervailing IDs, and confidence follows
+   the audited policy. An unmatched topic is `insufficient` and cannot be
+   converted into a personality claim.
+8. `REPORT_VALIDATED`: the renderer persists `standard-interpretive-v1` or
+   `concise-interpretive-v1`; every reader-facing conclusion retains signal
+   provenance, and audit metadata retains fact, qualification, rule-bundle,
+   and profile references plus the traditional/non-diagnostic boundary.
 
 ## Controlled portrait branch
+
+This branch is legacy compatibility only. Enter it only for an explicit
+legacy/56-chapter request; it is never the normal portrait default.
 
 4. `CAPABILITIES_DISCOVERED`: at least one capability descriptor exists for every required calculation category, without silent installation or connection.
 5. `METHODOLOGY_VERIFIED`: every applicable compatibility-evidence item for the selected capability is `exact`.
@@ -36,11 +66,29 @@ The five advanced calculation assets remain absent and mandatory for the strict 
 ## Mode terminals
 
 - `facts_only`: use `strict`, finish after `FACTS_VALIDATED`, and keep both permission flags false.
-- `audit`: verify only the supplied evidence and the profile it claims; never calculate, repair, invoke, or advance it.
-- `portrait` with `controlled_inference`: finish at `REPORT_VALIDATED`.
+- `audit` or `research`: use `strict`; verify only the supplied evidence and the profile it claims, and never calculate, repair, invoke, or advance it.
+- Normal `portrait` with `audited_interpretive`: finish at `REPORT_VALIDATED` only after all five audited-interpretive gates pass.
+- Explicit legacy `portrait` with `controlled_inference`: finish at `REPORT_VALIDATED`.
 - `portrait` with `strict`: continue through `NARRATIVE_ALLOWED` only when every strict gate passes.
 
-On fatal failure, record the failed gate and do not evaluate later gates. In the controlled branch, `partial` is allowed only for valid fact basis plus an `insufficient_basis` report section. In the strict branch, `partial` retains its existing `coverage_warning` meaning.
+### Strict audit/research execution contract
+
+Evaluate only stages claimed by the supplied target, in the existing strict
+gate order. Record exactly one stage-result entry per evaluated claimed gate;
+stop at the first failure and never add entries for an unclaimed or later gate.
+An audit/research execution never grants reasoning or Narrative permission.
+
+| Outcome | status | current_stage | Required references | Permission flags |
+| --- | --- | --- | --- | --- |
+| `all_claimed_stages_pass` | `completed` | highest claimed strict gate that passed; `SCOPE_CHECKED` if no strict branch gate was claimed | `audit_target_ref`, `audit_result_ref`, ordered `strict_stage_result_refs` for every claimed gate | both `false` |
+| `first_claimed_stage_fails` | `stopped` | first failed claimed strict gate | `audit_target_ref`, `audit_result_ref`, ordered `strict_stage_result_refs` through the failed gate, and `issues` | both `false` |
+
+On fatal failure, record the failed gate and do not evaluate later gates. In
+the audited branch, omit unsupported topics rather than fabricating them and
+require all traceability and limitation checks before completion. In the
+controlled branch, `partial` is allowed only for valid fact basis plus an
+`insufficient_basis` report section. In the strict branch, `partial` retains
+its existing `coverage_warning` meaning.
 
 For the Primitive foundation portion of `SEMANTIC_CONFIG_CHECKED`, require the
 real `primitive_ontology_v1.yaml` first, then

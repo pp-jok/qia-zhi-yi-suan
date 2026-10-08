@@ -13,6 +13,20 @@ from .semantic_bundle import load_semantic_contract_bundle
 from .semantic_fingerprint import build_semantic_bundle_fingerprint
 
 
+_INTERPRETIVE_REPORT_MODES = {
+    "standard-interpretive-v1": "standard",
+    "concise-interpretive-v1": "concise",
+}
+_INTERPRETIVE_REPORT_MODE_ALIASES = {
+    "standard": "standard-interpretive-v1",
+    "concise": "concise-interpretive-v1",
+}
+
+
+def _canonical_interpretive_report_mode(value: str) -> str:
+    return _INTERPRETIVE_REPORT_MODE_ALIASES.get(value, value)
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="destiny-personality-reference-validate")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -72,6 +86,22 @@ def _build_parser() -> argparse.ArgumentParser:
         required=True,
     )
     release_report.add_argument("--output", type=Path, required=True)
+    interpretive_report = subparsers.add_parser(
+        "build-interpretive-report",
+        help="build an audited traditional-interpretation report from qualified facts",
+    )
+    interpretive_report.add_argument("facts", type=Path)
+    interpretive_report.add_argument("--qualification", type=Path, required=True)
+    interpretive_report.add_argument(
+        "--mode",
+        choices=tuple(_INTERPRETIVE_REPORT_MODES),
+        type=_canonical_interpretive_report_mode,
+        required=True,
+        help=(
+            "versioned report mode; standard/concise remain compatibility aliases"
+        ),
+    )
+    interpretive_report.add_argument("--output", type=Path, required=True)
     semantic_build = subparsers.add_parser("build-semantic-core")
     semantic_build.add_argument("project_root", type=Path)
     semantic_build.add_argument("profile_ref")
@@ -147,6 +177,20 @@ def _write_release_report(output_path: Path, report: object) -> None:
         )
     except OSError as error:
         raise ValueError("RELEASE_REPORT_WRITE_FAILED") from error
+
+
+def _write_interpretive_report(output_path: Path, payload: dict) -> None:
+    """Persist the public interpretive payload with controlled CLI errors."""
+
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True)
+            + "\n",
+            encoding="utf-8",
+        )
+    except OSError as error:
+        raise ValueError("INTERPRETIVE_REPORT_WRITE_FAILED") from error
 
 
 def _runtime_config_summary(config) -> dict:
@@ -335,6 +379,26 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 "profile_id": profile.core_profile_id,
                 "mode": args.mode,
                 "coverage": profile.semantic_model_assurance,
+            }
+        elif args.command == "build-interpretive-report":
+            from .deterministic_facts_codec import (
+                load_qualified_deterministic_facts as load_qualified_facts,
+            )
+            from .interpretive_codec import encode_interpretive_report
+            from .interpretive_report import build_interpretive_report
+
+            qualified = load_qualified_facts(args.facts, args.qualification)
+            renderer_mode = _INTERPRETIVE_REPORT_MODES[args.mode]
+            report = build_interpretive_report(qualified, renderer_mode)
+            payload = encode_interpretive_report(report)
+            payload["report_mode"] = args.mode
+            payload["mode"] = "audited_interpretive"
+            _write_interpretive_report(args.output, payload)
+            summary = {
+                "status": "ok",
+                "output": str(args.output),
+                "mode": "audited_interpretive",
+                "report_mode": args.mode,
             }
         elif args.command == "build-semantic-core":
             from .mapping_v2 import compile_mapping_v2_from_repository

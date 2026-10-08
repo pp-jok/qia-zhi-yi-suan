@@ -15,11 +15,11 @@ Do not read unrelated local projects or undeclared business files without explic
 
 - Use `legacy` only when the user explicitly requests the compatible 56-chapter portrait.
 - Use `core_concise` for a short primitive-only Core Portrait; use `core_standard` for the expanded preview. Use `core` for the structured summary without prose rendering.
-- Use `portrait` as the compatibility alias for `legacy`.
+- Use `portrait` only as the compatibility alias when the caller explicitly selects the legacy contract; an ordinary personality-analysis request is not an implicit legacy request.
 - Use `facts_only` when the user requests deterministic chart facts or validation without personality reasoning.
 - Use `audit` when the user supplies facts or a report to review. Do not advance, repair, or complete the supplied execution.
 
-Select an execution profile after the mode. `portrait` defaults to `controlled_inference`, where externally calculated facts may support constrained agent interpretation. `facts_only` requires `strict`, and strict audit claims require `strict`. Use `strict` for a portrait only when the user explicitly requires project-rule-deterministic certification. Record the profile in the Execution Report; never silently upgrade one profile into the other.
+Select an execution profile after the mode. Normal user-facing personality analysis defaults to `audited_interpretive`; it consumes only independently qualified deterministic facts and the packaged versioned traditional-rule bundle. Explicit audit or research requests use `strict`, and `facts_only` requires `strict`. Enter `controlled_inference` only for an explicit legacy/56-chapter request. Use `strict` for a personality report when the user explicitly requires project-rule-deterministic certification. Record the profile in the Execution Report; never silently switch, upgrade, or use one profile to satisfy another.
 
 ## Select the runtime route
 
@@ -29,6 +29,8 @@ requested output and the accepted input artifact:
 
 | Observable condition | Route | Terminal output |
 | --- | --- | --- |
+| Qualified deterministic facts and a normal user-facing personality-analysis request | **audited interpretive** | `standard-interpretive-v1` by default, or `concise-interpretive-v1` when explicitly requested |
+| The user explicitly requests audit, research, or project-rule-deterministic certification | **strict** | audit only the supplied artifact, or stop at the first unmet strict gate |
 | Qualified deterministic facts and a request for the current Core result | **formal limited-coverage** | `concise-portrait-v1`, `standard-portrait-v1`, or `dynamic-long-form-v1` |
 | The user explicitly asks to inspect experimental Primitive behavior | **Candidate Preview** | `core`, `core_concise`, or `core_standard`, clearly marked candidate-only |
 | The user explicitly asks for the compatible 56-chapter book | **controlled-inference legacy** | frozen `legacy-long-form-v2` handoff and its controlled-inference workflow |
@@ -51,6 +53,50 @@ user to restate it. Ask one focused question only for a genuinely ambiguous or
 missing required value. Preserve a supplied sex label, never infer it, and do
 not mistake input normalization for permission to calculate chart facts.
 
+### Audited interpretive production route
+
+Use `audited_interpretive` only after a separate `fact-qualification-v1`
+record validates and fingerprint-binds the `deterministic-facts-v1` packet.
+If no qualified fact packet or calculation provider is available, stop; never
+calculate, repair, or invent chart facts from general model knowledge.
+
+The default report mode is `standard-interpretive-v1`, which renders an
+evidence-dependent 8–12-section report. Use `concise-interpretive-v1` only when
+the user asks for a shorter view over the same profile. The legacy CLI aliases
+`standard` and `concise` may be accepted as input, but persisted output must use
+the versioned mode name. Long-form output is not part of this route.
+
+Every conclusion must retain non-empty signal IDs. The audit metadata must let
+each signal resolve to qualified-fact references, a versioned traditional-rule
+reference, the fact and qualification fingerprints, limitations, and the rule
+bundle reference. Keep those internal IDs in the audit metadata rather than
+the reader-facing prose.
+
+Interpret confidence labels exactly as follows:
+
+- `high`: independently supported by more than one system or rule without
+  countervailing evidence;
+- `moderate`: supported by one stable system/rule and therefore scoped, not
+  universal;
+- `exploratory`: affected by countervailing evidence or an exploratory source
+  signal, so present it as a reflection prompt;
+- `insufficient`: no matched rule supports the requested topic; omit the
+  personality conclusion rather than filling it.
+
+When birth time is missing, keep `stable_only`: omit the hour pillar,
+Ascendant, MC, houses, angles, and every hour/house/angle-dependent claim. Keep
+time-independent signals and add a visible limitation describing the reduced
+scope. Never infer a missing angle or house from surrounding placements.
+
+This route applies versioned traditional Bazi and astrology interpretations;
+it is not an empirical personality or psychological diagnosis, does not create
+PRIMARY_EVIDENCE or formal Mapping records, and cannot activate or modify a
+strict Primitive state.
+
+```text
+destiny-personality-reference-validate build-interpretive-report FACTS.json --qualification FACT_QUALIFICATION.json --mode standard-interpretive-v1 --output REPORT.json
+```
+
 ## Advance through gates
 
 Use the [stage gate checklist](checklists/stage-gates.md). Every execution begins:
@@ -61,7 +107,8 @@ INPUT_RECEIVED
 → CALCULATION_BASELINE_CHECKED
 ```
 
-The default controlled portrait branch continues:
+The explicit legacy compatibility branch uses `controlled_inference` and
+continues as follows; it is never the default for a normal portrait request:
 
 ```text
 → CAPABILITIES_DISCOVERED

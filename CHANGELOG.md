@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.5.0 - 2026-10-08
+
+### Added
+
+- The `audited_interpretive` production route for normal user-facing
+  personality analysis from independently qualified deterministic facts.
+- A packaged, versioned Bazi and astrology interpretation-rule bundle with
+  fact, rule, signal, qualification, and report traceability.
+- `standard-interpretive-v1` and `concise-interpretive-v1` report modes,
+  confidence-sensitive wording, visible counterevidence, and generated demos.
+- Product gates for materially different charts, cross-system tension,
+  missing-time degradation, deterministic rendering, and installed-wheel
+  asset loading.
+
+### Changed
+
+- Normal personality-report requests now route to `audited_interpretive`;
+  explicit audit, research, and project-rule certification requests route to
+  `strict`.
+- Missing birth time keeps time-independent evidence but omits hour-pillar,
+  house, angle, Ascendant, and MC-dependent interpretations and records the
+  limitation.
+- Package metadata is version `0.5.0`, and wheels include
+  `interpretive_assets/v1/interpretive_rules_v1.yaml`.
+
+### Release boundary
+
+Audited interpretation applies versioned traditional Bazi and astrology
+heuristics; it is not an empirical psychological diagnosis. It does not create
+PRIMARY_EVIDENCE, activate Mapping records or Primitive states, promote
+candidate assets, or calculate missing chart facts. The existing strict Core
+Profile and release renderer remain unchanged and continue to stop at unmet
+strict gates.
+
 ## 0.4.2 - 2026-10-06
 
 ### Added

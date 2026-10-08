@@ -1,0 +1,32 @@
+{
+  "calculation_envelope_refs": [
+    "fixture-envelope:contrast_b"
+  ],
+  "comparison": {
+    "required": false,
+    "status": "not_required"
+  },
+  "derived_fact_assurance": "capability_reported",
+  "fact_contract_version": "deterministic-facts-v1",
+  "fact_fingerprint": "362c79289fcfe17f8bbc3899684329833246c12ed18a8a6481509e5bd44b1a00",
+  "methodology_versions": {
+    "astrology": "western-tropical-v1.0",
+    "bazi": "bazi-core-v1.0"
+  },
+  "provenance_refs": [
+    "fixture-provenance:contrast_b"
+  ],
+  "qualification_status": "passed",
+  "schema_version": "fact-qualification-v1",
+  "validation_refs": [
+    "fixture-validation:contrast_b"
+  ],
+  "validation_summary": {
+    "calculation_config": "not_available",
+    "internal_consistency": "passed",
+    "methodology": "passed",
+    "provenance": "passed",
+    "structure": "passed",
+    "time_scope": "passed"
+  }
+}

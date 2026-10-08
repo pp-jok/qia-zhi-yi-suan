@@ -1,0 +1,21 @@
+schema_version: interpretive-extraction-cases-v1
+cases:
+  known_time:
+    time_available: true
+    expected_signal_ids:
+      - BAZI-TEN-GOD-EXPRESSION
+      - BAZI-RELATION-DYNAMICS
+      - ASTROLOGY-PLANET-SIGN-EXPRESSION
+      - ASTROLOGY-ASPECT-DIGNITY-CONTEXT
+  missing_time:
+    time_available: false
+    expected_signal_ids:
+      - BAZI-TEN-GOD-EXPRESSION
+      - BAZI-RELATION-DYNAMICS
+      - ASTROLOGY-ASPECT-DIGNITY-CONTEXT
+  non_matching_values:
+    time_available: true
+    matching_values: false
+  reversed_aspect:
+    time_available: true
+    reversed_aspect: true

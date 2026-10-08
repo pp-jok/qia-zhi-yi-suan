@@ -12,6 +12,51 @@ def read_skill_file(relative_path: str) -> str:
     return (SKILL_ROOT / relative_path).read_text(encoding="utf-8")
 
 
+def markdown_table(text: str, headers: tuple[str, ...]) -> tuple[dict[str, str], ...]:
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        cells = tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
+        if cells != headers:
+            continue
+        rows = []
+        for row_line in lines[index + 2 :]:
+            if not row_line.strip().startswith("|"):
+                break
+            values = tuple(
+                cell.strip() for cell in row_line.strip().strip("|").split("|")
+            )
+            assert len(values) == len(headers)
+            rows.append(dict(zip(headers, values)))
+        return tuple(rows)
+    raise AssertionError(f"missing markdown table with headers: {headers}")
+
+
+def markdown_section(text: str, heading: str) -> str:
+    _, separator, remainder = text.partition(heading)
+    assert separator, f"missing markdown section: {heading}"
+    return remainder.partition("\n## ")[0]
+
+
+def normalized_profile(value: str) -> str:
+    normalized = value.replace("`", "").replace("*", "").casefold()
+    if "audited interpretive" in normalized:
+        return "audited_interpretive"
+    if "controlled-inference legacy" in normalized:
+        return "controlled_inference"
+    return normalized.strip()
+
+
+def numbered_gate_contracts(section: str) -> dict[str, str]:
+    matches = re.finditer(
+        r"^\d+\. `([A-Z_]+)`: (.*?)(?=^\d+\. `|\Z)",
+        section,
+        flags=re.MULTILINE | re.DOTALL,
+    )
+    return {
+        match.group(1): " ".join(match.group(2).split()) for match in matches
+    }
+
+
 def test_skill_scaffold_and_ui_metadata_exist() -> None:
     required = (
         "SKILL.md",
@@ -684,18 +729,22 @@ def test_methodology_index_routes_every_calculation_contract_without_values() ->
     assert "CALCULATION_CONFIG_CHECKED" in text
 
 
-def test_skill_routes_controlled_portrait_and_preserves_strict_modes() -> None:
+def test_skill_routes_normal_personality_reports_and_preserves_strict_modes() -> None:
     skill = read_skill_file("SKILL.md")
     preflight = read_skill_file("checklists/preflight.md")
     gates = read_skill_file("checklists/stage-gates.md")
     capability = read_skill_file("checklists/capability-preflight.md")
 
-    for profile in ("controlled_inference", "strict"):
+    for profile in ("audited_interpretive", "controlled_inference", "strict"):
         assert f"`{profile}`" in skill
+    for profile in ("controlled_inference", "strict"):
         assert f"`{profile}`" in preflight
-    assert "`portrait` defaults to `controlled_inference`" in skill
+    assert (
+        "Normal user-facing personality analysis defaults to "
+        "`audited_interpretive`" in skill
+    )
+    assert "Explicit audit or research requests use `strict`" in skill
     assert "`facts_only` requires `strict`" in skill
-    assert "strict audit claims require `strict`" in skill
 
     for stage in (
         "CALCULATION_BASELINE_CHECKED",
@@ -722,6 +771,174 @@ def test_skill_routes_controlled_portrait_and_preserves_strict_modes() -> None:
         "NARRATIVE_ALLOWED",
     ):
         assert f"`{legacy_stage}`" in gates
+
+
+def test_routing_contract_is_consistent_across_skill_companions() -> None:
+    skill = read_skill_file("SKILL.md")
+    birth_input = read_skill_file("schemas/birth-input.md")
+    preflight = read_skill_file("checklists/preflight.md")
+    execution_report = read_skill_file("schemas/execution-report.md")
+    gates = read_skill_file("checklists/stage-gates.md")
+
+    expected_routes = {
+        "normal_personality": "audited_interpretive",
+        "explicit_audit_or_research": "strict",
+        "explicit_legacy": "controlled_inference",
+    }
+
+    skill_rows = markdown_table(
+        skill, ("Observable condition", "Route", "Terminal output")
+    )
+    skill_routes = {}
+    for row in skill_rows:
+        condition = row["Observable condition"].casefold()
+        if "normal user-facing" in condition:
+            skill_routes["normal_personality"] = normalized_profile(row["Route"])
+        elif "audit, research" in condition:
+            skill_routes["explicit_audit_or_research"] = normalized_profile(
+                row["Route"]
+            )
+        elif "compatible 56-chapter" in condition:
+            skill_routes["explicit_legacy"] = normalized_profile(row["Route"])
+
+    preflight_rows = markdown_table(
+        preflight,
+        ("Request class", "execution_mode", "requested_mode", "execution_profile"),
+    )
+    preflight_routes = {
+        row["Request class"].strip("`"): row["execution_profile"].strip("`")
+        for row in preflight_rows
+    }
+    birth_input_rows = markdown_table(
+        birth_input,
+        ("Request class", "execution_mode", "requested_mode", "execution_profile"),
+    )
+    birth_input_routes = {
+        row["Request class"].strip("`"): row["execution_profile"].strip("`")
+        for row in birth_input_rows
+    }
+
+    report_rows = markdown_table(
+        execution_report,
+        (
+            "execution_profile",
+            "portrait_route",
+            "requested_mode",
+            "Required result fields",
+        ),
+    )
+    report_routes = {
+        row["execution_profile"].strip("`"): row for row in report_rows
+    }
+
+    assert skill_routes == expected_routes
+    assert preflight_routes == expected_routes
+    assert birth_input_routes == expected_routes
+    conflicting_defaults = {
+        birth_input: (
+            "`requested_mode`: `portrait` unless",
+            "Default to `portrait`",
+        ),
+        preflight: ("Default `portrait` to `controlled_inference`",),
+        skill: ("The default controlled portrait branch continues",),
+        gates: ("- `portrait` with `controlled_inference`",),
+    }
+    for document, phrases in conflicting_defaults.items():
+        assert all(phrase not in document for phrase in phrases)
+    assert set(report_routes) == {
+        "audited_interpretive",
+        "controlled_inference",
+        "strict",
+    }
+    audited_result = report_routes["audited_interpretive"]
+    assert audited_result["portrait_route"].strip("`") == "audited_interpretive"
+    assert {
+        "interpretive_profile_ref",
+        "interpretive_report_ref",
+        "interpretive_rule_bundle_refs",
+    } <= set(re.findall(r"`([^`]+)`", audited_result["Required result fields"]))
+
+    audited_contracts = numbered_gate_contracts(
+        markdown_section(gates, "## Audited interpretive branch")
+    )
+    audited_gate_names = tuple(audited_contracts)
+    assert audited_gate_names == (
+        "FACT_BASIS_VALIDATED",
+        "INTERPRETIVE_RULES_VALIDATED",
+        "INTERPRETIVE_SIGNALS_VALIDATED",
+        "INTERPRETIVE_PROFILE_VALIDATED",
+        "REPORT_VALIDATED",
+    )
+    assert {
+        "fact-qualification-v1",
+        "fingerprint-binds",
+        "deterministic-facts-v1",
+    } <= set(re.findall(r"`?([\w-]+)`?", audited_contracts["FACT_BASIS_VALIDATED"]))
+    assert "packaged, versioned traditional-rule bundle" in audited_contracts[
+        "INTERPRETIVE_RULES_VALIDATED"
+    ]
+    assert all(
+        phrase in audited_contracts["INTERPRETIVE_SIGNALS_VALIDATED"]
+        for phrase in ("unknown birth time", "angle-dependent", "limitation")
+    )
+    assert all(
+        phrase in audited_contracts["REPORT_VALIDATED"]
+        for phrase in ("signal provenance", "audit metadata", "qualification")
+    )
+
+    strict_gate_names = tuple(
+        numbered_gate_contracts(
+            markdown_section(gates, "## Strict branch")
+        )
+    )
+    assert strict_gate_names == (
+        "CALCULATION_CONFIG_CHECKED",
+        "CAPABILITIES_DISCOVERED",
+        "METHODOLOGY_VERIFIED",
+        "FACTS_CALCULATED",
+        "FACTS_NORMALIZED",
+        "FACTS_VALIDATED",
+        "SEMANTIC_CONFIG_CHECKED",
+        "REASONING_ALLOWED",
+        "NARRATIVE_ALLOWED",
+    )
+
+    strict_audit_headers = (
+        "Outcome",
+        "status",
+        "current_stage",
+        "Required references",
+        "Permission flags",
+    )
+    stage_audit_rows = markdown_table(gates, strict_audit_headers)
+    report_audit_rows = markdown_table(execution_report, strict_audit_headers)
+    assert stage_audit_rows == report_audit_rows
+    audit_contract = {
+        row["Outcome"].strip("`"): row for row in stage_audit_rows
+    }
+    assert set(audit_contract) == {
+        "all_claimed_stages_pass",
+        "first_claimed_stage_fails",
+    }
+    assert audit_contract["all_claimed_stages_pass"]["status"] == "`completed`"
+    assert "highest claimed strict gate" in audit_contract[
+        "all_claimed_stages_pass"
+    ]["current_stage"]
+    assert audit_contract["first_claimed_stage_fails"]["status"] == "`stopped`"
+    assert audit_contract["first_claimed_stage_fails"]["current_stage"] == (
+        "first failed claimed strict gate"
+    )
+    for row in stage_audit_rows:
+        required_refs = set(re.findall(r"`([^`]+)`", row["Required references"]))
+        assert {"audit_target_ref", "audit_result_ref", "strict_stage_result_refs"} <= required_refs
+        assert row["Permission flags"] == "both `false`"
+
+    strict_report_result = report_routes["strict"]["Required result fields"]
+    assert {
+        "audit_target_ref",
+        "audit_result_ref",
+        "strict_stage_result_refs",
+    } <= set(re.findall(r"`([^`]+)`", strict_report_result))
 
 
 def test_controlled_inference_contract_preserves_fact_boundary() -> None:
