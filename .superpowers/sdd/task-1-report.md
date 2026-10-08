@@ -428,3 +428,20 @@ Output:
 18 passed in 0.49s
 43 passed in 6.35s
 ```
+
+### Anti-demo duplicate-value regression
+
+The structural anti-demo guard previously used raw predicate tuple length, so
+duplicate values could make one semantic element/modality condition appear to
+have two values. The regression first failed because
+`["fire", "fire"]` and `["cardinal", "cardinal"]` loaded without an error.
+Asset validation now rejects duplicate predicate values before structural guard
+evaluation.
+
+```text
+python3 -m pytest tests/test_interpretive_rules.py::test_rule_loader_rejects_duplicate_predicate_values_that_bypass_demo_guard -q
+1 passed in 0.31s
+
+python3 -m pytest tests/test_interpretive_rules.py tests/test_interpretive_report.py -q
+45 passed in 7.40s
+```

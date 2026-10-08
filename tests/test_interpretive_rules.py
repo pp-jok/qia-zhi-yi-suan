@@ -586,6 +586,25 @@ def test_rule_loader_structurally_rejects_single_sign_configuration(tmp_path: Pa
         load_interpretive_rule_bundle(tmp_path)
 
 
+def test_rule_loader_rejects_duplicate_predicate_values_that_bypass_demo_guard(
+    tmp_path: Path,
+):
+    payload = yaml.safe_load(RULE_PATH.read_text(encoding="utf-8"))
+    rule = next(
+        item
+        for item in payload["rules"]
+        if item["signal_id"] == "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+    )
+    rule["value_predicates"][0]["values"] = ["fire", "fire"]
+    rule["value_predicates"][1]["values"] = ["cardinal", "cardinal"]
+    (tmp_path / "interpretive_rules_v1.yaml").write_text(
+        yaml.safe_dump(payload, allow_unicode=True), encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="INTERPRETIVE_RULE_INVALID_PREDICATE_VALUE"):
+        load_interpretive_rule_bundle(tmp_path)
+
+
 def test_asset_boolean_cannot_hide_a_structural_demo_condition(tmp_path: Path):
     payload = yaml.safe_load(RULE_PATH.read_text(encoding="utf-8"))
     rule = next(

@@ -230,6 +230,7 @@ def _value_predicates(
         minimum_occurrences = item.get("minimum_occurrences", 1)
         if (
             not set(values).issubset(PREDICATE_VALUE_DOMAINS[fact_ref])
+            or len(set(values)) != len(values)
             or (body is not None and body not in ASTROLOGY_BODIES)
             or (other_body is not None and other_body not in ASTROLOGY_BODIES)
             or (other_body is not None and body == other_body)
