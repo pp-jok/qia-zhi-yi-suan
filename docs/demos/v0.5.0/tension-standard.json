@@ -1,0 +1,113 @@
+{
+  "audit_metadata": {
+    "fact_refs": [
+      "deterministic-facts:e7f362c5874818cdc6f964dc89434481c74ebfe9b4c1fcf4555d403162c6b1bb"
+    ],
+    "profile_audit_refs": [
+      "deterministic-facts:e7f362c5874818cdc6f964dc89434481c74ebfe9b4c1fcf4555d403162c6b1bb",
+      "fact-qualification:d3672a43bae5d7f4bc762d31292da286ea847dcfd30003ff9bf5a842187f93fd",
+      "interpretive-rules:audited-interpretive-rules-v1"
+    ],
+    "qualification_refs": [
+      "fact-qualification:d3672a43bae5d7f4bc762d31292da286ea847dcfd30003ff9bf5a842187f93fd"
+    ],
+    "rule_bundle_refs": [
+      "interpretive-rules:audited-interpretive-rules-v1"
+    ]
+  },
+  "boundary_statement": "本报告是基于传统命理与占星象意的反思性文本，不是实证性人格测量、医疗或心理诊断，也不应代替重大生活决策。",
+  "mode": "audited_interpretive",
+  "report_mode": "standard",
+  "schema_version": "interpretive-report-v1",
+  "sections": [
+    {
+      "content": "【表达与创造】传统十神关系可用于观察表达、支持与约束之间的互动方式。行星、星座与宫位的组合可作为观察表达方式的象征性线索。本节置信度：中等。",
+      "limitation": "需结合完整命局理解，不用于判定实际行为。；宫制与出生时间不确定性可能改变解读语境。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-01",
+      "signal_ids": [
+        "BAZI-TEN-GOD-EXPRESSION",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "title": "表达与创造"
+    },
+    {
+      "content": "【关系与边界】地支关系可作为观察情境中亲和、拉扯与边界的象征性线索。本节置信度：探索性。",
+      "limitation": "局部关系必须放回整体命局，不构成因果预测。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-02",
+      "signal_ids": [
+        "BAZI-RELATION-DYNAMICS"
+      ],
+      "title": "关系与边界"
+    },
+    {
+      "content": "【成长张力】相位与尊贵状态可用于整理不同倾向之间的象征性张力。本节置信度：探索性。",
+      "limitation": "解读受容许度与整体星盘影响，不用于诊断或预测。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-03",
+      "signal_ids": [
+        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT"
+      ],
+      "title": "成长张力"
+    },
+    {
+      "content": "【证据范围】当前档案仅支持 3 个证据主题；其余主题不推断、不补写。本节仅记录证据或方法边界，不作人格特质判断。",
+      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
+      "section_id": "standard-audit-01",
+      "signal_ids": [
+        "BAZI-RELATION-DYNAMICS",
+        "BAZI-TEN-GOD-EXPRESSION",
+        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "title": "证据范围"
+    },
+    {
+      "content": "【八字观察范围】已记录八字来源信号，但本节不扩展具体特质。本节仅记录证据或方法边界，不作人格特质判断。",
+      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
+      "section_id": "standard-audit-02",
+      "signal_ids": [
+        "BAZI-RELATION-DYNAMICS",
+        "BAZI-TEN-GOD-EXPRESSION",
+        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "title": "八字观察范围"
+    },
+    {
+      "content": "【占星观察范围】已记录占星来源信号，但本节不扩展具体特质。本节仅记录证据或方法边界，不作人格特质判断。",
+      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
+      "section_id": "standard-audit-03",
+      "signal_ids": [
+        "BAZI-RELATION-DYNAMICS",
+        "BAZI-TEN-GOD-EXPRESSION",
+        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "title": "占星观察范围"
+    },
+    {
+      "content": "【跨体系覆盖与张力】当前同时有八字与占星信号可供覆盖对照；档案未记录反向信号。本节仅记录证据或方法边界，不作人格特质判断。",
+      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
+      "section_id": "standard-audit-04",
+      "signal_ids": [
+        "BAZI-RELATION-DYNAMICS",
+        "BAZI-TEN-GOD-EXPRESSION",
+        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "title": "跨体系覆盖与张力"
+    },
+    {
+      "content": "【置信度校准】当前证据主题的置信度标签为：探索性、中等。本节仅记录证据或方法边界，不作人格特质判断。",
+      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
+      "section_id": "standard-audit-05",
+      "signal_ids": [
+        "BAZI-RELATION-DYNAMICS",
+        "BAZI-TEN-GOD-EXPRESSION",
+        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "title": "置信度校准"
+    }
+  ],
+  "title": "审计型传统命理解读·标准版"
+}
