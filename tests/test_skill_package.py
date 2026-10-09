@@ -6,6 +6,10 @@ import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SKILL_ROOT = PROJECT_ROOT / "destiny-personality"
+NORMAL_BIRTH_INPUT_DEFAULT_PROMPT = (
+    "Use $destiny-personality to analyze my personality from my birth information; "
+    "use an available calculation/qualification provider or return CAPABILITY_GAP."
+)
 
 
 def read_skill_file(relative_path: str) -> str:
@@ -78,6 +82,16 @@ def test_skill_scaffold_and_ui_metadata_exist() -> None:
     metadata = yaml.safe_load(read_skill_file("agents/openai.yaml"))
     assert set(metadata) == {"interface"}
     assert "$destiny-personality" in metadata["interface"]["default_prompt"]
+
+
+def test_ui_default_prompt_matches_normal_birth_input_route() -> None:
+    skill_text = read_skill_file("SKILL.md")
+    metadata = yaml.safe_load(read_skill_file("agents/openai.yaml"))
+
+    assert "Normal users supply birth information only" in skill_text
+    assert "Discover an available calculation/qualification provider" in skill_text
+    assert "return `CAPABILITY_GAP`" in skill_text
+    assert metadata["interface"]["default_prompt"] == NORMAL_BIRTH_INPUT_DEFAULT_PROMPT
 
 
 def test_skill_contains_no_executable_or_fixed_tool_dependency() -> None:

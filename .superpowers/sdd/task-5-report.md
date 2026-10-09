@@ -139,3 +139,39 @@ Self-review findings:
   `.github/workflows/tests.yml`. Remote merged-branch CI was not run locally,
   so publication remains explicitly conditional on that green run.
 - `git diff --check` completed with no output.
+
+## Review repair: UI default prompt consistency
+
+The review found that `agents/openai.yaml` still promoted a Core Portrait or
+legacy choice, although the normal v0.6 route accepts birth information only,
+discovers a calculation/qualification provider, and returns `CAPABILITY_GAP`
+when no suitable provider is available.
+
+### RED
+
+Added `test_ui_default_prompt_matches_normal_birth_input_route` before changing
+the UI metadata, then ran:
+
+```text
+python3 -m pytest tests/test_skill_package.py::test_ui_default_prompt_matches_normal_birth_input_route -q
+1 failed
+```
+
+The assertion showed the stale Core/legacy prompt differed from the required
+birth-input, provider-or-`CAPABILITY_GAP` prompt.
+
+### GREEN
+
+Regenerated `agents/openai.yaml` with the skill metadata generator while
+retaining its existing display name and short description. The default prompt
+now explicitly requests birth information and states the provider fallback.
+
+```text
+python3 -m pytest tests/test_interpretive_product_flow.py tests/test_skill_package.py -q
+41 passed in 0.40s
+
+python3 /Users/lht/.codex/skills/.system/skill-creator/scripts/quick_validate.py destiny-personality
+Skill is valid!
+```
+
+`git diff --check` completed with no output.
