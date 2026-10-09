@@ -8,7 +8,7 @@
   },
   "derived_fact_assurance": "capability_reported",
   "fact_contract_version": "deterministic-facts-v1",
-  "fact_fingerprint": "fb6652168bfc10c2936925cd8942d24ec2de8eddc10bcc8bf97c8570262f3201",
+  "fact_fingerprint": "13a60b4880d87743c420ae90f36cb559f2c4ea1da31cb7d524ac157cccb55efa",
   "methodology_versions": {
     "astrology": "western-tropical-v1.0",
     "bazi": "bazi-core-v1.0"

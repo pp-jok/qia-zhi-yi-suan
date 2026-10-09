@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -73,6 +74,21 @@ def core_reader_text(payload: dict) -> str:
     )
 
 
+def reader_semantic_signature(payload: dict) -> tuple[tuple[str, str, str, str, str], ...]:
+    """Keep the reader-visible semantic frame while ignoring fact interpolation."""
+    signatures = []
+    for section in payload["sections"]:
+        normalized = re.sub(r"（命中依据：.*?）", "（命中依据：已省略）", section["content"])
+        fields = re.match(
+            r"结论：(.*?)。形成机制：(.*?)。常见表现：(.*?)。情境变化：(.*?)。",
+            normalized,
+            flags=re.DOTALL,
+        )
+        assert fields, f"section does not expose the reader semantic frame: {section['title']}"
+        signatures.append((section["title"], *fields.groups()))
+    return tuple(signatures)
+
+
 def all_reader_visible_text(payload: dict) -> str:
     section_text = "\n".join(
         f'{section["title"]}\n{section["content"]}\n{section["limitation"]}'
@@ -120,6 +136,13 @@ def test_normal_chart_has_real_contributions_from_both_systems(
 def test_reports_are_reader_semantically_distinct(product_fixtures) -> None:
     texts = [core_reader_text(item) for item in product_fixtures.values()]
     assert len(set(texts)) == len(product_fixtures)
+
+
+def test_reports_have_distinct_reader_semantic_signatures(product_fixtures) -> None:
+    signatures = [
+        reader_semantic_signature(item) for item in product_fixtures.values()
+    ]
+    assert len(set(signatures)) == len(product_fixtures)
 
 
 def test_product_matrix_contains_the_five_required_reader_semantics() -> None:

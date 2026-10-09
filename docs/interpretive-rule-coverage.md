@@ -41,7 +41,7 @@ treated as negative evidence.
 | cross-system-agreement | 10 | 1 | 10 | Food-god output and solar outward expression converge in the reader's expression section. |
 | cross-system-tension | 11 | 3 | 10 | Reflective seal evidence and outward solar evidence form an explicit two-pole tension. |
 | missing-time | 10 | 3 | 9 | Stable-only report omits the Sun-house signal and displays the omission boundary. |
-| practical-builder | 12 | 3 | 10 | Wealth/authority evidence is paired with earth-sign practical pacing. |
+| practical-builder | 12 | 4 | 10 | Wealth/authority, peer agency and earth-sign practical pacing make a delivery-focused but self-directed profile. |
 | relational-connector | 11 | 2 | 10 | Peer and branch-relation evidence foreground collaboration and reciprocity. |
 | expressive-creator | 10 | 2 | 10 | Food/hurting-officer output and fire-sign expression foreground making and showing. |
 | structured-steward | 11 | 2 | 10 | Officer/killing and relation evidence foreground responsibility and structure. |

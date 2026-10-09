@@ -130,6 +130,14 @@
           "year"
         ],
         "source_kind": "visible_stem"
+      },
+      {
+        "subject_ref": "day_master",
+        "ten_god": "比肩",
+        "source_pillars": [
+          "day"
+        ],
+        "source_kind": "visible_stem"
       }
     ],
     "year_pillar": {

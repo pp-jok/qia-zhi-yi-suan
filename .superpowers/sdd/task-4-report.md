@@ -124,3 +124,32 @@ and asserts parsed JSON equality with the checked-in artifact.
   is not mislabeled as formal synthesis validation.
 - **Scope:** `git diff` review found no production-source modifications and no
   edits to Task 1–3 deliverables.
+
+## Review remediation: normalized reader semantics
+
+Review found that `practical-builder` and `boundary-mentor` differed only in
+the dynamic values interpolated after `命中依据`; their topic, conclusion,
+mechanism, likely-expression and context frame was otherwise identical. Added
+the regression test before changing any fixture. The focused RED result was:
+
+```text
+1 failed, 32 passed in 5.70s
+```
+
+The failing assertion found only 11 unique normalized semantic signatures for
+12 reports. No production code or demos were changed. The
+`practical-builder` qualified fact pair now adds one `比肩` fact and its
+recomputed fact fingerprint, producing the reader-visible `自主与协作` section.
+That changes the fixture's substantive reader semantics rather than merely its
+evidence interpolation.
+
+Focused GREEN verification:
+
+```text
+python3 -m pytest tests/test_interpretive_product_quality.py -q
+33 passed in 5.45s
+```
+
+The differentiation review now documents the original collapse, the specific
+fixture correction, and the normalized-signature method. The coverage matrix
+now records four Bazi signals for `practical-builder`.
