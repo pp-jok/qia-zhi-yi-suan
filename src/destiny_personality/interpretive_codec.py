@@ -1,10 +1,11 @@
 """Plain-data codec for audited interpretive reports."""
 
-from typing import Dict
+from typing import Dict, Optional
 
 from .interpretive_models import (
     InterpretiveSignalProvenance,
     InterpretiveSystemProfile,
+    InterpretiveSystemTopic,
     NarrativeSynthesisPacket,
 )
 from .interpretive_report import InterpretiveReport
@@ -83,6 +84,10 @@ def encode_narrative_synthesis_packet(
                 "signal_provenance": _encode_provenance(
                     item.signal_provenance
                 ),
+                "bazi_source": _encode_system_topic(item.bazi_source),
+                "astrology_source": _encode_system_topic(
+                    item.astrology_source
+                ),
             }
             for item in packet.alignments
         ],
@@ -92,6 +97,9 @@ def encode_narrative_synthesis_packet(
                 "left_pole": item.left_pole,
                 "right_pole": item.right_pole,
                 "contexts": list(item.contexts),
+                "left_contexts": list(item.left_contexts),
+                "right_contexts": list(item.right_contexts),
+                "why_coexist": item.why_coexist,
                 "integration": item.integration,
                 "bazi_signal_ids": list(item.bazi_signal_ids),
                 "astrology_signal_ids": list(item.astrology_signal_ids),
@@ -114,23 +122,29 @@ def _encode_system_profile(
         "system": profile.system,
         "signal_ids": list(profile.signal_ids),
         "topics": [
-            {
-                "topic": topic.topic,
-                "directions": list(topic.directions),
-                "signal_ids": list(topic.signal_ids),
-                "interpretations": list(topic.interpretations),
-                "mechanisms": list(topic.mechanisms),
-                "likely_expressions": list(topic.likely_expressions),
-                "contexts": list(topic.contexts),
-                "limitations": list(topic.limitations),
-                "signal_provenance": _encode_provenance(
-                    topic.signal_provenance
-                ),
-            }
+            _encode_system_topic(topic)
             for topic in profile.topics
         ],
         "limitations": list(profile.limitations),
         "audit_refs": list(profile.audit_refs),
+    }
+
+
+def _encode_system_topic(
+    topic: Optional[InterpretiveSystemTopic],
+) -> Optional[Dict[str, object]]:
+    if topic is None:
+        return None
+    return {
+        "topic": topic.topic,
+        "directions": list(topic.directions),
+        "signal_ids": list(topic.signal_ids),
+        "interpretations": list(topic.interpretations),
+        "mechanisms": list(topic.mechanisms),
+        "likely_expressions": list(topic.likely_expressions),
+        "contexts": list(topic.contexts),
+        "limitations": list(topic.limitations),
+        "signal_provenance": _encode_provenance(topic.signal_provenance),
     }
 
 

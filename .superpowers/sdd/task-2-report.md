@@ -102,3 +102,68 @@ python3 scripts/verify_package.py
 
 package verification passed
 ```
+
+## Review repair: serialized source content and evidence-backed tensions
+
+### RED
+
+Added focused assertions to `tests/test_interpretive_synthesis.py` before the
+repair. They require every serialized alignment to retain the corresponding
+per-system topic object (or `null` when that system has no topic), including
+its interpretations, mechanisms, likely expressions, and contexts. They also
+require a tension to preserve pole-specific contexts, cite the qualified fact
+paths that explain coexistence, and base its practical integration on the
+source likely expressions instead of the previous generic wording.
+
+```text
+python3 -m pytest \
+  tests/test_interpretive_system_profiles.py \
+  tests/test_interpretive_synthesis.py -q
+
+...FFF..                                                                 [100%]
+KeyError: 'bazi_source'
+KeyError: 'bazi_source'
+AttributeError: 'InterpretiveTension' object has no attribute 'why_coexist'
+3 failed, 5 passed in 2.00s
+```
+
+The failures demonstrate the review finding directly: alignments serialized
+only topic/direction-level synthesis and signal IDs, while tensions had only a
+merged context tuple and a generic integration template.
+
+### GREEN
+
+- Each `InterpretiveSynthesisRelationship` now keeps its exact Bazi and
+  astrology `InterpretiveSystemTopic` inputs. The deterministic codec emits
+  them as `bazi_source` and `astrology_source`; a one-sided relationship emits
+  `null` for the absent source.
+- Every retained source includes the matched topic's interpretations,
+  mechanisms, likely expressions, contexts, limitations, and provenance. The
+  relation builder receives these objects from the profiles built from the same
+  qualified matched signals; it does not create a new semantic summary.
+- `InterpretiveTension` now carries `left_contexts`, `right_contexts`, and
+  `why_coexist`. The coexistence explanation names the actual signal IDs,
+  concrete qualified fact paths, directions, and pole-specific contexts.
+- Tension integration now tells the reader where to observe each pole and
+  reproduces each side's source likely expression. It no longer uses the
+  generic "do not treat one side as the negation of the other" template.
+
+```text
+python3 -m pytest \
+  tests/test_interpretive_system_profiles.py \
+  tests/test_interpretive_synthesis.py -q
+
+........                                                                 [100%]
+8 passed in 1.54s
+```
+
+Final focused re-verification after recording this evidence:
+
+```text
+python3 -m pytest tests/test_interpretive_system_profiles.py tests/test_interpretive_synthesis.py -q
+........                                                                 [100%]
+8 passed in 1.36s
+
+python3 -m compileall -q src/destiny_personality/interpretive_models.py src/destiny_personality/interpretive_synthesis.py src/destiny_personality/interpretive_codec.py
+git diff --check
+```

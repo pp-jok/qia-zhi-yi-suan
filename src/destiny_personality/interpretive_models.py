@@ -137,6 +137,8 @@ class InterpretiveSynthesisRelationship:
     confidence: InterpretiveConfidence
     limitations: Tuple[str, ...]
     signal_provenance: Tuple[InterpretiveSignalProvenance, ...]
+    bazi_source: Optional[InterpretiveSystemTopic]
+    astrology_source: Optional[InterpretiveSystemTopic]
 
 
 @dataclass(frozen=True)
@@ -147,6 +149,9 @@ class InterpretiveTension:
     left_pole: str
     right_pole: str
     contexts: Tuple[str, ...]
+    left_contexts: Tuple[str, ...]
+    right_contexts: Tuple[str, ...]
+    why_coexist: str
     integration: str
     bazi_signal_ids: Tuple[str, ...]
     astrology_signal_ids: Tuple[str, ...]
