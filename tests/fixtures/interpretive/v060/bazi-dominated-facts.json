@@ -1,0 +1,142 @@
+{
+  "astrology": {
+    "ascendant": "5",
+    "aspects": [],
+    "dignities": [],
+    "house_cusps": [],
+    "mc": "95",
+    "methodology_version": "western-tropical-v1.0",
+    "placements": [
+      {
+        "body": "Sun",
+        "longitude": "10",
+        "sign": "Taurus",
+        "degree_in_sign": "10",
+        "house": 10
+      }
+    ]
+  },
+  "bazi": {
+    "day_pillar": {
+      "earthly_branch": "午",
+      "heavenly_stem": "庚"
+    },
+    "hidden_stems": [
+      {
+        "pillar": "year",
+        "stems": [
+          "癸"
+        ]
+      }
+    ],
+    "hour_pillar": {
+      "earthly_branch": "酉",
+      "heavenly_stem": "辛"
+    },
+    "methodology_version": "bazi-core-v1.0",
+    "month_pillar": {
+      "earthly_branch": "辰",
+      "heavenly_stem": "戊"
+    },
+    "relations": [
+      {
+        "relation_type": "combination",
+        "participant_refs": [
+          "year.branch",
+          "month.branch"
+        ],
+        "source_pillars": [
+          "year",
+          "month"
+        ],
+        "rule_version": "v060-fixture-v1"
+      }
+    ],
+    "ten_gods": [
+      {
+        "subject_ref": "day_master",
+        "ten_god": "正印",
+        "source_pillars": [
+          "year"
+        ],
+        "source_kind": "visible_stem"
+      },
+      {
+        "subject_ref": "day_master",
+        "ten_god": "偏印",
+        "source_pillars": [
+          "month"
+        ],
+        "source_kind": "hidden_stem"
+      },
+      {
+        "subject_ref": "day_master",
+        "ten_god": "正印",
+        "source_pillars": [
+          "hour"
+        ],
+        "source_kind": "hidden_stem"
+      },
+      {
+        "subject_ref": "day_master",
+        "ten_god": "比肩",
+        "source_pillars": [
+          "day"
+        ],
+        "source_kind": "visible_stem"
+      },
+      {
+        "subject_ref": "day_master",
+        "ten_god": "食神",
+        "source_pillars": [
+          "hour"
+        ],
+        "source_kind": "visible_stem"
+      },
+      {
+        "subject_ref": "day_master",
+        "ten_god": "正财",
+        "source_pillars": [
+          "month"
+        ],
+        "source_kind": "visible_stem"
+      },
+      {
+        "subject_ref": "day_master",
+        "ten_god": "正官",
+        "source_pillars": [
+          "year"
+        ],
+        "source_kind": "hidden_stem"
+      }
+    ],
+    "year_pillar": {
+      "earthly_branch": "子",
+      "heavenly_stem": "甲"
+    }
+  },
+  "fact_mode": "time_sensitive",
+  "methodology_versions": {
+    "astrology": "western-tropical-v1.0",
+    "bazi": "bazi-core-v1.0"
+  },
+  "normalized_time": {
+    "birth_date": "1990-01-01",
+    "dst_was_applied": false,
+    "fact_mode": "time_sensitive",
+    "historical_civil_time": "1990-01-01T08:30:00",
+    "local_standard_time": "1990-01-01T08:30:00",
+    "sensitivity_reasons": [],
+    "time_basis": "true_solar_time",
+    "timezone_name": "Asia/Shanghai",
+    "true_solar_time": "1990-01-01T08:36:00",
+    "utc_time": "1990-01-01T00:30:00+00:00"
+  },
+  "provenance_refs": [
+    "fixture:v060:bazi-dominated"
+  ],
+  "schema_version": "deterministic-facts-v1",
+  "validation_summary": {
+    "structure": "passed"
+  }
+}

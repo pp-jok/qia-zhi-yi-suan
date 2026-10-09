@@ -1,0 +1,156 @@
+{
+  "astrology": {
+    "ascendant": "107",
+    "aspects": [
+      {
+        "body_a": "Sun",
+        "body_b": "Moon",
+        "aspect_type": "conjunction",
+        "orb": "2"
+      }
+    ],
+    "dignities": [
+      {
+        "body": "Sun",
+        "dignity": "fall"
+      }
+    ],
+    "house_cusps": [],
+    "mc": "197",
+    "methodology_version": "western-tropical-v1.0",
+    "placements": [
+      {
+        "body": "Sun",
+        "longitude": "10",
+        "sign": "Libra",
+        "degree_in_sign": "10",
+        "house": 7
+      },
+      {
+        "body": "Moon",
+        "longitude": "53",
+        "sign": "Cancer",
+        "degree_in_sign": "17",
+        "house": 4
+      },
+      {
+        "body": "Mercury",
+        "longitude": "96",
+        "sign": "Gemini",
+        "degree_in_sign": "24",
+        "house": 3
+      },
+      {
+        "body": "Venus",
+        "longitude": "139",
+        "sign": "Libra",
+        "degree_in_sign": "1",
+        "house": 7
+      },
+      {
+        "body": "Mars",
+        "longitude": "182",
+        "sign": "Cancer",
+        "degree_in_sign": "8",
+        "house": 4
+      },
+      {
+        "body": "Jupiter",
+        "longitude": "225",
+        "sign": "Aquarius",
+        "degree_in_sign": "15",
+        "house": 11
+      },
+      {
+        "body": "Saturn",
+        "longitude": "268",
+        "sign": "Libra",
+        "degree_in_sign": "22",
+        "house": 7
+      }
+    ]
+  },
+  "bazi": {
+    "day_pillar": {
+      "earthly_branch": "午",
+      "heavenly_stem": "庚"
+    },
+    "hidden_stems": [
+      {
+        "pillar": "year",
+        "stems": [
+          "癸"
+        ]
+      }
+    ],
+    "hour_pillar": {
+      "earthly_branch": "酉",
+      "heavenly_stem": "辛"
+    },
+    "methodology_version": "bazi-core-v1.0",
+    "month_pillar": {
+      "earthly_branch": "辰",
+      "heavenly_stem": "戊"
+    },
+    "relations": [
+      {
+        "relation_type": "combination",
+        "participant_refs": [
+          "year.branch",
+          "month.branch"
+        ],
+        "source_pillars": [
+          "year",
+          "month"
+        ],
+        "rule_version": "v060-fixture-v1"
+      }
+    ],
+    "ten_gods": [
+      {
+        "subject_ref": "day_master",
+        "ten_god": "比肩",
+        "source_pillars": [
+          "year"
+        ],
+        "source_kind": "visible_stem"
+      },
+      {
+        "subject_ref": "day_master",
+        "ten_god": "劫财",
+        "source_pillars": [
+          "month"
+        ],
+        "source_kind": "hidden_stem"
+      }
+    ],
+    "year_pillar": {
+      "earthly_branch": "子",
+      "heavenly_stem": "甲"
+    }
+  },
+  "fact_mode": "time_sensitive",
+  "methodology_versions": {
+    "astrology": "western-tropical-v1.0",
+    "bazi": "bazi-core-v1.0"
+  },
+  "normalized_time": {
+    "birth_date": "1996-07-07",
+    "dst_was_applied": false,
+    "fact_mode": "time_sensitive",
+    "historical_civil_time": "1996-07-07T08:30:00",
+    "local_standard_time": "1996-07-07T08:30:00",
+    "sensitivity_reasons": [],
+    "time_basis": "true_solar_time",
+    "timezone_name": "Asia/Shanghai",
+    "true_solar_time": "1996-07-07T08:36:00",
+    "utc_time": "1996-07-07T00:30:00+00:00"
+  },
+  "provenance_refs": [
+    "fixture:v060:relational-connector"
+  ],
+  "schema_version": "deterministic-facts-v1",
+  "validation_summary": {
+    "structure": "passed"
+  }
+}

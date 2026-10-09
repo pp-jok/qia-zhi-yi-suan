@@ -1,0 +1,307 @@
+{
+  "audit_metadata": {
+    "birth_time_status": "available",
+    "fact_mode": "time_sensitive",
+    "fact_refs": [
+      "deterministic-facts:8189583c9077499920bdc2111b22b984ca7cc70a85ea17b71201cf6d8d77184d"
+    ],
+    "omitted_time_sensitive_claims": [],
+    "profile_audit_refs": [
+      "deterministic-facts:8189583c9077499920bdc2111b22b984ca7cc70a85ea17b71201cf6d8d77184d",
+      "fact-qualification:38520a86616b130ee8c0208fff4b86f8406b708849267516b97b7abdba359b41",
+      "interpretive-rules:audited-interpretive-rules-v2"
+    ],
+    "qualification_refs": [
+      "fact-qualification:38520a86616b130ee8c0208fff4b86f8406b708849267516b97b7abdba359b41"
+    ],
+    "rule_bundle_refs": [
+      "interpretive-rules:audited-interpretive-rules-v2"
+    ],
+    "time_sensitivity_reasons": []
+  },
+  "boundary_statement": "本报告是基于传统命理与占星象意的反思性文本，不是实证性人格测量、医疗或心理诊断，也不应代替重大生活决策。",
+  "mode": "audited_interpretive",
+  "report_mode": "standard-interpretive-v1",
+  "schema_version": "interpretive-report-v1",
+  "sections": [
+    {
+      "content": "结论：水星的元素与模式描述信息如何被注意、组织与交换。（命中依据：元素：土象；模式：开创）。形成机制：思维通道按星座元素选择材料，并按模式确定推进节奏。常见表现：在学习和讨论中，可能对信息类型与表达速度有明显偏好。情境变化：可优先在学习、沟通中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：中等。",
+      "kind": "analysis",
+      "limitation": "不代表智力高低或沟通能力评分。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-01",
+      "signal_ids": [
+        "ASTROLOGY-MERCURY-SIGN-QUALITY"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "astrology.placements[2].sign"
+          ],
+          "limitations": [
+            "不代表智力高低或沟通能力评分。"
+          ],
+          "signal_id": "ASTROLOGY-MERCURY-SIGN-QUALITY",
+          "system": "astrology",
+          "traditional_rule_ref": "现代西方占星学水星星座综合法；Stephen Arroyo"
+        }
+      ],
+      "title": "思考与学习"
+    },
+    {
+      "content": "结论：太阳所在星座的元素与模式，提供核心意志如何定义和表达自我的象征语言。（命中依据：元素：火象；模式：开创）。形成机制：核心意志借由实际命中的元素取向选择表达材料，并按命中模式调整推进节奏。常见表现：在需要表态或承担核心角色时，可能按实际命中的元素与模式展现不同的强调方式。情境变化：在学习、沟通中具体观察八字侧的表现：在学习或沟通中，可能先听、先理解，再给出经过组织的回应。；在自我表达、启动任务中具体观察占星侧的表现：在需要表态或承担核心角色时，可能按实际命中的元素与模式展现不同的强调方式。这一结论的把握度：探索性。\n结论：印星信号将注意力引向理解、吸收与内在整理。（命中依据：正印；偏印）。形成机制：通过接收信息、建立解释框架后再表达，因而形成偏反思的表达节奏。常见表现：在学习或沟通中，可能先听、先理解，再给出经过组织的回应。情境变化：在学习、沟通中具体观察八字侧的表现：在学习或沟通中，可能先听、先理解，再给出经过组织的回应。；在自我表达、启动任务中具体观察占星侧的表现：在需要表态或承担核心角色时，可能按实际命中的元素与模式展现不同的强调方式。这一结论的把握度：探索性。",
+      "kind": "analysis",
+      "limitation": "宫制与出生时间不确定性可能改变解读语境。；需结合完整命局理解，不用于判定实际行为。；行星星座象征不是人格测量。；需与全局其他十神与关系合看。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-02",
+      "signal_ids": [
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+        "BAZI-TEN-GOD-EXPRESSION"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "astrology.placements[0].sign"
+          ],
+          "limitations": [
+            "行星星座象征不是人格测量。"
+          ],
+          "signal_id": "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+          "system": "astrology",
+          "traditional_rule_ref": "现代西方占星学行星星座综合法；Stephen Arroyo"
+        },
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god",
+            "bazi.ten_gods[1].ten_god"
+          ],
+          "limitations": [
+            "需与全局其他十神与关系合看。"
+          ],
+          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
+          "system": "bazi",
+          "traditional_rule_ref": "子平法十神法；《渊海子平》"
+        }
+      ],
+      "title": "表达与创造"
+    },
+    {
+      "content": "结论：地支关系信号用来标记不同生活领域之间的联动、拉扯或制约。（命中依据：地支关系：冲）。形成机制：关系类型连接了具体参与柱位，提供情境间如何互相影响的观察线索。常见表现：在多重角色同时被激活时，可能感到协同或冲突需要被协调。情境变化：可优先在家庭、工作、关系中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：探索性。\n结论：金星的元素与模式描述好感、价值选择与互惠方式。（命中依据：元素：土象；模式：固定）。形成机制：关系中的吸引和协调借由对应元素表达，并按模式维持。常见表现：在选择合作方式或美感对象时，可能显示稳定的偏好线索。情境变化：可优先在关系、价值选择中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：中等。",
+      "kind": "analysis",
+      "limitation": "局部关系必须放回整体命局，不构成因果预测。；关系事实必须结合全局，不构成事件预测。；不用于预测关系结果。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-03",
+      "signal_ids": [
+        "BAZI-RELATION-DYNAMICS",
+        "ASTROLOGY-VENUS-SIGN-QUALITY"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.relations[0].relation_type"
+          ],
+          "limitations": [
+            "关系事实必须结合全局，不构成事件预测。"
+          ],
+          "signal_id": "BAZI-RELATION-DYNAMICS",
+          "system": "bazi",
+          "traditional_rule_ref": "子平法地支关系法；《三命通会》"
+        },
+        {
+          "fact_refs": [
+            "astrology.placements[3].sign"
+          ],
+          "limitations": [
+            "不用于预测关系结果。"
+          ],
+          "signal_id": "ASTROLOGY-VENUS-SIGN-QUALITY",
+          "system": "astrology",
+          "traditional_rule_ref": "现代西方占星学金星星座综合法；Stephen Arroyo"
+        }
+      ],
+      "title": "关系与边界"
+    },
+    {
+      "content": "结论：火星的元素与模式描述行动如何启动、持续与面对阻力。（命中依据：元素：水象；模式：固定）。形成机制：驱动力选择与元素相应的路径，并按模式分配行动节奏。常见表现：面对竞争或紧急任务时，可能展现特定的发力与持续方式。情境变化：可优先在行动、冲突处理中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：中等。",
+      "kind": "analysis",
+      "limitation": "不代表攻击性或执行能力评分。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-04",
+      "signal_ids": [
+        "ASTROLOGY-MARS-SIGN-QUALITY"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "astrology.placements[4].sign"
+          ],
+          "limitations": [
+            "不代表攻击性或执行能力评分。"
+          ],
+          "signal_id": "ASTROLOGY-MARS-SIGN-QUALITY",
+          "system": "astrology",
+          "traditional_rule_ref": "现代西方占星学火星星座综合法；Stephen Arroyo"
+        }
+      ],
+      "title": "工作与驱动"
+    },
+    {
+      "content": "结论：日月主要相位用于观察自我意志与情绪需求如何互动。（命中依据：相位：对冲）。形成机制：相位类型描述两种功能之间的交流方式，但不单独规定结果。常见表现：在作出个人决定时，意志与安全感可能以协同或拉扯的方式同时出现。情境变化：可优先在决策、情绪与意志中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：探索性。",
+      "kind": "analysis",
+      "limitation": "解读受容许度与整体星盘影响，不用于诊断或预测。；相位解读依赖容许度和全盘，不是事件预测。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-05",
+      "signal_ids": [
+        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "astrology.aspects[0].aspect_type"
+          ],
+          "limitations": [
+            "相位解读依赖容许度和全盘，不是事件预测。"
+          ],
+          "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+          "system": "astrology",
+          "traditional_rule_ref": "西方占星学主要相位论；William Lilly, Christian Astrology"
+        }
+      ],
+      "title": "成长张力"
+    },
+    {
+      "content": "结论：土星的元素与模式描述边界、责任与长期掌握的象征途径。（命中依据：元素：风象；模式：固定）。形成机制：对限制的感知通过元素被具体化，并按模式逐步建立结构。常见表现：面对需要长期投入的事情时，可能以特定节奏建立规则与熟练度。情境变化：可优先在长期任务、边界建立中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：中等。",
+      "kind": "analysis",
+      "limitation": "不用于诊断压抑、焦虑或生活困难。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-06",
+      "signal_ids": [
+        "ASTROLOGY-SATURN-SIGN-QUALITY"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "astrology.placements[6].sign"
+          ],
+          "limitations": [
+            "不用于诊断压抑、焦虑或生活困难。"
+          ],
+          "signal_id": "ASTROLOGY-SATURN-SIGN-QUALITY",
+          "system": "astrology",
+          "traditional_rule_ref": "现代西方占星学土星星座综合法；Stephen Arroyo"
+        }
+      ],
+      "title": "边界与长期建设"
+    },
+    {
+      "content": "结论：月亮所在星座的元素与模式，提供情绪接收和安全感调节的象征语言。（命中依据：元素：水象；模式：开创）。形成机制：情绪需求通过对应元素的补给方式和模式节奏被识别。常见表现：在压力或亲密关系中，可能展现特定的恢复节奏和回应习惯。情境变化：可优先在情绪调节、亲密关系中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：中等。",
+      "kind": "analysis",
+      "limitation": "不用于诊断情绪或依恋问题。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-07",
+      "signal_ids": [
+        "ASTROLOGY-MOON-SIGN-QUALITY"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "astrology.placements[1].sign"
+          ],
+          "limitations": [
+            "不用于诊断情绪或依恋问题。"
+          ],
+          "signal_id": "ASTROLOGY-MOON-SIGN-QUALITY",
+          "system": "astrology",
+          "traditional_rule_ref": "现代西方占星学月亮星座综合法；Stephen Arroyo"
+        }
+      ],
+      "title": "情绪与安全感"
+    },
+    {
+      "content": "结论：太阳的先天尊贵状态用于限定核心功能表达时的条件。（命中依据：尊贵：落陷）。形成机制：尊贵是表达修饰因素，不改写行星位置事实，也不直接转换为人格好坏。常见表现：在展现自信或承担核心角色时，可能感到较顺手或需要更多调整。情境变化：可优先在自我表达、核心角色中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：探索性。",
+      "kind": "analysis",
+      "limitation": "不将尊贵转换为道德、能力或命运评分。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-08",
+      "signal_ids": [
+        "ASTROLOGY-SUN-DIGNITY-CONTEXT"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "astrology.dignities[0].dignity"
+          ],
+          "limitations": [
+            "不将尊贵转换为道德、能力或命运评分。"
+          ],
+          "signal_id": "ASTROLOGY-SUN-DIGNITY-CONTEXT",
+          "system": "astrology",
+          "traditional_rule_ref": "西方占星学先天尊贵论；William Lilly, Christian Astrology"
+        }
+      ],
+      "title": "表达条件"
+    },
+    {
+      "content": "结论：木星的元素与模式描述意义感、学习拓展与机会识别的象征路径。（命中依据：元素：水象；模式：变动）。形成机制：成长动机通过相应元素寻找空间，并按模式设定扩展节奏。常见表现：在学习或选择发展方向时，可能更容易被某类视野和机会吸引。情境变化：可优先在学习、发展选择中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：中等。",
+      "kind": "analysis",
+      "limitation": "不构成运气或成功预测。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-09",
+      "signal_ids": [
+        "ASTROLOGY-JUPITER-SIGN-QUALITY"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "astrology.placements[5].sign"
+          ],
+          "limitations": [
+            "不构成运气或成功预测。"
+          ],
+          "signal_id": "ASTROLOGY-JUPITER-SIGN-QUALITY",
+          "system": "astrology",
+          "traditional_rule_ref": "现代西方占星学木星星座综合法；Stephen Arroyo"
+        }
+      ],
+      "title": "成长取向"
+    },
+    {
+      "content": "结论：太阳宫位将核心表达限定在一个可核查的生活领域中。（命中依据：宫位：第1宫）。形成机制：宫位不改变行星功能，而是指定该功能更容易被观察的情境。常见表现：在对应生活领域里，自我定义与被看见的需求可能更明显。情境变化：可优先在宫位所指生活领域中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：探索性。",
+      "kind": "analysis",
+      "limitation": "出生时间不可用时必须完全省略。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-10",
+      "signal_ids": [
+        "ASTROLOGY-SUN-HOUSE-CONTEXT"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "astrology.placements[0].house"
+          ],
+          "limitations": [
+            "出生时间不可用时必须完全省略。"
+          ],
+          "signal_id": "ASTROLOGY-SUN-HOUSE-CONTEXT",
+          "system": "astrology",
+          "traditional_rule_ref": "西方占星学宫位论；William Lilly, Christian Astrology"
+        }
+      ],
+      "title": "生活重心"
+    },
+    {
+      "content": "结论：官杀信号指向规范、约束、责任与压力的处理方式。（命中依据：正官）。形成机制：外部要求被内化为行动边界，促使个体在规则与挑战中调整。常见表现：面对任务时可能更先确认责任、标准和风险边界。情境变化：可优先在责任、压力情境中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：中等。",
+      "kind": "analysis",
+      "limitation": "不能由此推定职位、权力或事件吉凶。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-11",
+      "signal_ids": [
+        "BAZI-TEN-GOD-AUTHORITY"
+      ],
+      "signal_provenance": [
+        {
+          "fact_refs": [
+            "bazi.ten_gods[2].ten_god"
+          ],
+          "limitations": [
+            "不能由此推定职位、权力或事件吉凶。"
+          ],
+          "signal_id": "BAZI-TEN-GOD-AUTHORITY",
+          "system": "bazi",
+          "traditional_rule_ref": "子平法十神法；《渊海子平》"
+        }
+      ],
+      "title": "责任与压力"
+    }
+  ],
+  "title": "审计型传统命理解读·标准版"
+}
