@@ -23,6 +23,7 @@ def encode_interpretive_report(report: InterpretiveReport) -> Dict[str, object]:
         "sections": [
             {
                 "section_id": section.section_id,
+                "kind": section.kind,
                 "title": section.title,
                 "content": section.content,
                 "signal_ids": list(section.signal_ids),

@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import pytest
 
@@ -198,28 +199,17 @@ def test_sparse_profile_does_not_relabel_or_duplicate_a_conclusion():
     standard = _render_interpretive_report(sparse_profile, "standard")
     concise = _render_interpretive_report(sparse_profile, "concise")
 
-    assert 8 <= len(standard.sections) <= 12
-    assert len(concise.sections) < len(standard.sections)
     assert tuple(section.title for section in standard.sections) == (
         "表达与创造",
-        "证据范围",
-        "八字观察范围",
-        "占星观察范围",
-        "跨体系覆盖与张力",
-        "置信度校准",
-        "时间范围与局限",
-        "可追溯性与使用边界",
     )
+    assert tuple(section.title for section in concise.sections) == (
+        "思考与表达",
+    )
+    assert all(section.kind == "analysis" for section in standard.sections)
     assert sum(
         section.content.count(interpretation) for section in standard.sections
     ) == 1
-    assert all(
-        section.signal_ids == ("SIG-SPARSE",) for section in standard.sections
-    )
-    assert all(
-        "不作人格特质判断" in section.content + section.limitation
-        for section in standard.sections[1:]
-    )
+    assert standard.sections[0].signal_ids == ("SIG-SPARSE",)
     assert "核心底色" not in {section.title for section in standard.sections}
     assert "关系与边界" not in {section.title for section in standard.sections}
 
@@ -416,3 +406,87 @@ def test_public_report_builder_accepts_only_valid_qualified_route(qualified_fact
     assert report.audit_metadata.fact_refs == (
         f"deterministic-facts:{qualified_facts.fact_fingerprint}",
     )
+
+
+def _fixture_facts(scenario: str):
+    from destiny_personality.deterministic_facts_codec import (
+        load_qualified_deterministic_facts,
+    )
+
+    fixture_directory = Path(__file__).parent / "fixtures" / "interpretive"
+    return load_qualified_deterministic_facts(
+        fixture_directory / f"{scenario}-facts.json",
+        fixture_directory / f"{scenario}-qualification.json",
+    )
+
+
+@pytest.fixture
+def sparse_facts():
+    return _fixture_facts("contrast_a")
+
+
+@pytest.fixture
+def rich_facts():
+    return _fixture_facts("tension")
+
+
+def test_sparse_report_stays_short_without_audit_sections(sparse_facts):
+    report = build_interpretive_report(sparse_facts, "standard")
+
+    assert 3 <= len(report.sections) <= 4
+    assert all(section.kind == "analysis" for section in report.sections)
+
+
+def test_rich_report_has_multiple_deep_reader_topics(rich_facts):
+    assert len(build_interpretive_report(rich_facts, "standard").sections) >= 6
+
+
+def test_reader_sections_are_conclusion_first_and_evidence_backed(rich_facts):
+    report = build_interpretive_report(rich_facts, "standard")
+
+    for section in report.sections:
+        assert section.content.startswith("结论：")
+        claim_count = section.content.count("结论：")
+        assert section.content.count("形成机制：") == claim_count
+        assert section.content.count("常见表现：") == claim_count
+        assert section.content.count("情境变化：") == claim_count
+        assert section.content.count("把握度：") == claim_count
+
+
+def test_reader_body_does_not_invent_maturity_or_imbalance(rich_facts):
+    visible_text = "".join(
+        section.content for section in build_interpretive_report(
+            rich_facts, "standard"
+        ).sections
+    )
+
+    assert "成熟表现" not in visible_text
+    assert "失衡表现" not in visible_text
+
+
+def test_each_claim_uses_only_its_supporting_mechanism(rich_facts):
+    report = build_interpretive_report(rich_facts, "standard")
+    expression = next(
+        section for section in report.sections if section.title == "表达与创造"
+    )
+    outward_claim, reflective_claim = expression.content.splitlines()
+    outward_mechanism = outward_claim.split("形成机制：", 1)[1].split(
+        "常见表现：", 1
+    )[0]
+    reflective_mechanism = reflective_claim.split("形成机制：", 1)[1].split(
+        "常见表现：", 1
+    )[0]
+
+    assert "核心意志借由" in outward_mechanism
+    assert "通过接收信息" not in outward_mechanism
+    assert "通过接收信息" in reflective_mechanism
+    assert "核心意志借由" not in reflective_mechanism
+
+
+def test_reader_body_keeps_audit_terms_out_of_narrative(rich_facts):
+    report = build_interpretive_report(rich_facts, "standard")
+    visible_text = "".join(section.content for section in report.sections)
+
+    assert not any("a" <= char.casefold() <= "z" for char in visible_text)
+    assert "BAZI-TEN-GOD-EXPRESSION" not in visible_text
+    assert "astrology.placements" not in visible_text

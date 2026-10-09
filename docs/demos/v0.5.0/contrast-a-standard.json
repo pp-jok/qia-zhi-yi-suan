@@ -9,13 +9,13 @@
     "profile_audit_refs": [
       "deterministic-facts:525dc5186fd6b64bd1ddd4eddcf730928146afe9c7783e9ecc1aa18b2f45a28a",
       "fact-qualification:f48d65a1c3315669d57523727615d66cbf11173362ed36016e1f6306ee91ce60",
-      "interpretive-rules:audited-interpretive-rules-v1"
+      "interpretive-rules:audited-interpretive-rules-v2"
     ],
     "qualification_refs": [
       "fact-qualification:f48d65a1c3315669d57523727615d66cbf11173362ed36016e1f6306ee91ce60"
     ],
     "rule_bundle_refs": [
-      "interpretive-rules:audited-interpretive-rules-v1"
+      "interpretive-rules:audited-interpretive-rules-v2"
     ],
     "time_sensitivity_reasons": []
   },
@@ -25,212 +25,85 @@
   "schema_version": "interpretive-report-v1",
   "sections": [
     {
-      "content": "【表达与创造】传统十神关系可用于观察表达、支持与约束之间的互动方式。本节置信度：中等。",
-      "limitation": "需结合完整命局理解，不用于判定实际行为。；传统象意仅作为反思线索，不是实证性诊断。",
+      "content": "结论：太阳所在星座的元素与模式，提供核心意志如何定义和表达自我的象征语言。（命中依据：元素：土象；模式：固定）。形成机制：核心意志借由实际命中的元素取向选择表达材料，并按命中模式调整推进节奏。常见表现：在需要表态或承担核心角色时，可能按实际命中的元素与模式展现不同的强调方式。情境变化：在学习、沟通中具体观察八字侧的表现：在学习或沟通中，可能先听、先理解，再给出经过组织的回应。；在自我表达、启动任务中具体观察占星侧的表现：在需要表态或承担核心角色时，可能按实际命中的元素与模式展现不同的强调方式。这一结论的把握度：探索性。\n结论：印星信号将注意力引向理解、吸收与内在整理。（命中依据：正印）。形成机制：通过接收信息、建立解释框架后再表达，因而形成偏反思的表达节奏。常见表现：在学习或沟通中，可能先听、先理解，再给出经过组织的回应。情境变化：在学习、沟通中具体观察八字侧的表现：在学习或沟通中，可能先听、先理解，再给出经过组织的回应。；在自我表达、启动任务中具体观察占星侧的表现：在需要表态或承担核心角色时，可能按实际命中的元素与模式展现不同的强调方式。这一结论的把握度：探索性。",
+      "kind": "analysis",
+      "limitation": "宫制与出生时间不确定性可能改变解读语境。；需结合完整命局理解，不用于判定实际行为。；行星星座象征不是人格测量。；需与全局其他十神与关系合看。；传统象意仅作为反思线索，不是实证性诊断。",
       "section_id": "standard-01",
       "signal_ids": [
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION",
         "BAZI-TEN-GOD-EXPRESSION"
       ],
       "signal_provenance": [
         {
           "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
+            "astrology.placements[0].sign"
           ],
           "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
+            "行星星座象征不是人格测量。"
+          ],
+          "signal_id": "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+          "system": "astrology",
+          "traditional_rule_ref": "现代西方占星学行星星座综合法；Stephen Arroyo"
+        },
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god"
+          ],
+          "limitations": [
+            "需与全局其他十神与关系合看。"
           ],
           "signal_id": "BAZI-TEN-GOD-EXPRESSION",
           "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+          "traditional_rule_ref": "子平法十神法；《渊海子平》"
         }
       ],
       "title": "表达与创造"
     },
     {
-      "content": "【证据范围】当前档案仅支持 1 个证据主题；其余主题不推断、不补写。本节仅记录证据或方法边界，不作人格特质判断。",
-      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
-      "section_id": "standard-audit-01",
+      "content": "结论：月亮所在星座的元素与模式，提供情绪接收和安全感调节的象征语言。（命中依据：元素：火象；模式：开创）。形成机制：情绪需求通过对应元素的补给方式和模式节奏被识别。常见表现：在压力或亲密关系中，可能展现特定的恢复节奏和回应习惯。情境变化：可优先在情绪调节、亲密关系中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：中等。",
+      "kind": "analysis",
+      "limitation": "不用于诊断情绪或依恋问题。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-02",
       "signal_ids": [
-        "BAZI-TEN-GOD-EXPRESSION"
+        "ASTROLOGY-MOON-SIGN-QUALITY"
       ],
       "signal_provenance": [
         {
           "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
+            "astrology.placements[1].sign"
           ],
           "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
+            "不用于诊断情绪或依恋问题。"
           ],
-          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+          "signal_id": "ASTROLOGY-MOON-SIGN-QUALITY",
+          "system": "astrology",
+          "traditional_rule_ref": "现代西方占星学月亮星座综合法；Stephen Arroyo"
         }
       ],
-      "title": "证据范围"
+      "title": "情绪与安全感"
     },
     {
-      "content": "【八字观察范围】已记录八字来源信号，但本节不扩展具体特质。本节仅记录证据或方法边界，不作人格特质判断。",
-      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
-      "section_id": "standard-audit-02",
+      "content": "结论：太阳宫位将核心表达限定在一个可核查的生活领域中。（命中依据：宫位：第1宫）。形成机制：宫位不改变行星功能，而是指定该功能更容易被观察的情境。常见表现：在对应生活领域里，自我定义与被看见的需求可能更明显。情境变化：可优先在宫位所指生活领域中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：探索性。",
+      "kind": "analysis",
+      "limitation": "出生时间不可用时必须完全省略。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-03",
       "signal_ids": [
-        "BAZI-TEN-GOD-EXPRESSION"
+        "ASTROLOGY-SUN-HOUSE-CONTEXT"
       ],
       "signal_provenance": [
         {
           "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
+            "astrology.placements[0].house"
           ],
           "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
+            "出生时间不可用时必须完全省略。"
           ],
-          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+          "signal_id": "ASTROLOGY-SUN-HOUSE-CONTEXT",
+          "system": "astrology",
+          "traditional_rule_ref": "西方占星学宫位论；William Lilly, Christian Astrology"
         }
       ],
-      "title": "八字观察范围"
-    },
-    {
-      "content": "【占星观察范围】当前档案未提供可单独形成占星主题的受控信号。本节仅记录证据或方法边界，不作人格特质判断。",
-      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
-      "section_id": "standard-audit-03",
-      "signal_ids": [
-        "BAZI-TEN-GOD-EXPRESSION"
-      ],
-      "signal_provenance": [
-        {
-          "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
-          ],
-          "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
-          ],
-          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
-        }
-      ],
-      "title": "占星观察范围"
-    },
-    {
-      "content": "【跨体系覆盖与张力】当前不具备八字与占星的双体系覆盖；档案未记录反向信号。本节仅记录证据或方法边界，不作人格特质判断。",
-      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
-      "section_id": "standard-audit-04",
-      "signal_ids": [
-        "BAZI-TEN-GOD-EXPRESSION"
-      ],
-      "signal_provenance": [
-        {
-          "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
-          ],
-          "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
-          ],
-          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
-        }
-      ],
-      "title": "跨体系覆盖与张力"
-    },
-    {
-      "content": "【置信度校准】当前证据主题的置信度标签为：中等。本节仅记录证据或方法边界，不作人格特质判断。",
-      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
-      "section_id": "standard-audit-05",
-      "signal_ids": [
-        "BAZI-TEN-GOD-EXPRESSION"
-      ],
-      "signal_provenance": [
-        {
-          "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
-          ],
-          "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
-          ],
-          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
-        }
-      ],
-      "title": "置信度校准"
-    },
-    {
-      "content": "【时间范围与局限】报告不从档案结论外推出生时间精度或未记录的时间敏感主题。本节仅记录证据或方法边界，不作人格特质判断。",
-      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
-      "section_id": "standard-audit-06",
-      "signal_ids": [
-        "BAZI-TEN-GOD-EXPRESSION"
-      ],
-      "signal_provenance": [
-        {
-          "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
-          ],
-          "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
-          ],
-          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
-        }
-      ],
-      "title": "时间范围与局限"
-    },
-    {
-      "content": "【可追溯性与使用边界】本节所有引用均回指现有信号标识；报告仅用于传统象意反思，不替代诊断或重大决策。本节仅记录证据或方法边界，不作人格特质判断。",
-      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
-      "section_id": "standard-audit-07",
-      "signal_ids": [
-        "BAZI-TEN-GOD-EXPRESSION"
-      ],
-      "signal_provenance": [
-        {
-          "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
-          ],
-          "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
-          ],
-          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
-        }
-      ],
-      "title": "可追溯性与使用边界"
+      "title": "生活重心"
     }
   ],
   "title": "审计型传统命理解读·标准版"

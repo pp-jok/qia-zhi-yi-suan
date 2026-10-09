@@ -105,7 +105,8 @@ def test_cli_builds_traceable_standard_report(
     assert payload["mode"] == "audited_interpretive"
     assert payload["report_mode"] == "standard-interpretive-v1"
     assert payload["schema_version"] == "interpretive-report-v1"
-    assert 8 <= len(payload["sections"]) <= 12
+    assert 6 <= len(payload["sections"]) <= 12
+    assert all(section["kind"] == "analysis" for section in payload["sections"])
     assert all(section["signal_ids"] for section in payload["sections"])
     assert payload["audit_metadata"]["fact_refs"] == [
         f"deterministic-facts:{qualified.fact_fingerprint}"
@@ -201,10 +202,10 @@ def test_missing_time_visibly_degrades_time_sensitive_output(
     complete = _render("tension", tmp_path)
     missing_time = _render("missing_time", tmp_path)
 
-    assert "ASTROLOGY-PLANET-SIGN-EXPRESSION" in _signal_ids(complete)
-    assert "ASTROLOGY-PLANET-SIGN-EXPRESSION" not in _signal_ids(missing_time)
+    assert "ASTROLOGY-SUN-HOUSE-CONTEXT" in _signal_ids(complete)
+    assert "ASTROLOGY-SUN-HOUSE-CONTEXT" not in _signal_ids(missing_time)
     assert _signal_ids(missing_time) == _signal_ids(complete) - {
-        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+        "ASTROLOGY-SUN-HOUSE-CONTEXT"
     }
     assert _reader_visible_signature(missing_time) != _reader_visible_signature(
         complete

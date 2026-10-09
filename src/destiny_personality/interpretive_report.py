@@ -1,6 +1,6 @@
 """Deterministic Chinese reports built only from qualified chart facts."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Iterable, Literal, Optional, Sequence, Tuple
 
 from .deterministic_facts_codec import QualifiedFacts, require_qualified_facts
@@ -8,6 +8,7 @@ from .interpretive_models import (
     InterpretiveConclusion,
     InterpretiveCoreProfile,
     InterpretiveSignalProvenance,
+    NarrativeSynthesisPacket,
 )
 
 
@@ -24,6 +25,7 @@ class InterpretiveReportSection:
     signal_ids: Tuple[str, ...]
     limitation: str
     signal_provenance: Tuple[InterpretiveSignalProvenance, ...]
+    kind: Literal["analysis"] = "analysis"
 
 
 @dataclass(frozen=True)
@@ -76,12 +78,25 @@ _TOPIC_TITLES = {
     "expression and creation": "表达与创造",
     "expression and resource exchange": "表达与创造",
     "style of expression": "表达与创造",
+    "creative output": "表达与创造",
+    "thinking and communication": "思考与学习",
     "relationships and boundaries": "关系与边界",
     "contextual dynamics": "关系与边界",
+    "relating and values": "关系与边界",
     "work and drive": "工作与驱动",
+    "action style": "工作与驱动",
     "stress and energy": "压力与能量",
     "growth tension": "成长张力",
     "interacting tendencies": "成长张力",
+    "growth orientation": "成长取向",
+    "emotional processing": "情绪与安全感",
+    "expression conditions": "表达条件",
+    "life arena": "生活重心",
+    "agency": "自主与协作",
+    "resource handling": "资源与落实",
+    "structure and pressure": "责任与压力",
+    "recurring emphasis": "反复主题",
+    "boundaries and mastery": "边界与长期建设",
     "synthesis": "综合观察",
     "decision rhythm": "决策节奏",
     "核心底色": "核心底色",
@@ -137,16 +152,6 @@ _CONCISE_TITLE_BY_STANDARD_TITLE = {
     "压力与能量": "压力与成长",
     "成长张力": "压力与成长",
 }
-
-_AUDIT_SECTION_TITLES = (
-    "证据范围",
-    "八字观察范围",
-    "占星观察范围",
-    "跨体系覆盖与张力",
-    "置信度校准",
-    "时间范围与局限",
-    "可追溯性与使用边界",
-)
 
 _CONFIDENCE_LABELS = {
     "high": "高",
@@ -216,17 +221,21 @@ def _render_interpretive_report(
 
     if mode == "standard":
         sections = _build_standard_sections(
-            conclusions, tuple(profile.limitations)
+            conclusions,
+            tuple(profile.limitations),
+            profile.synthesis_packet,
         )
         title = "审计型传统命理解读·标准版"
     else:
         sections = _build_concise_sections(
-            conclusions, tuple(profile.limitations)
+            conclusions,
+            tuple(profile.limitations),
+            profile.synthesis_packet,
         )
         title = "审计型传统命理解读·精简版"
 
     if profile.birth_time_status == "unavailable_or_uncertain":
-        sections = _include_missing_time_notice(sections, conclusions, mode)
+        sections = _include_missing_time_notice(sections)
 
     return InterpretiveReport(
         schema_version="interpretive-report-v1",
@@ -241,6 +250,7 @@ def _render_interpretive_report(
 def _build_standard_sections(
     conclusions: Tuple[InterpretiveConclusion, ...],
     profile_limitations: Tuple[str, ...],
+    synthesis_packet: Optional[NarrativeSynthesisPacket] = None,
 ) -> Tuple[InterpretiveReportSection, ...]:
     grouped = _group_standard_conclusions(conclusions)
     ordered_titles = tuple(
@@ -252,23 +262,17 @@ def _build_standard_sections(
             title=title,
             conclusions=tuple(grouped[title]),
             profile_limitations=profile_limitations,
+            synthesis_packet=synthesis_packet,
         )
         for index, title in enumerate(ordered_titles[:12], start=1)
     ]
-    if len(sections) < 8:
-        sections.extend(
-            _audit_scope_sections(
-                conclusions=conclusions,
-                evidence_topic_count=len(sections),
-                count=8 - len(sections),
-            )
-        )
     return tuple(sections)
 
 
 def _build_concise_sections(
     conclusions: Tuple[InterpretiveConclusion, ...],
     profile_limitations: Tuple[str, ...],
+    synthesis_packet: Optional[NarrativeSynthesisPacket] = None,
 ) -> Tuple[InterpretiveReportSection, ...]:
     standard_groups = _group_standard_conclusions(conclusions)
     grouped = {}
@@ -283,18 +287,11 @@ def _build_concise_sections(
             title=title,
             conclusions=tuple(grouped[title]),
             profile_limitations=profile_limitations,
+            synthesis_packet=synthesis_packet,
         )
         for index, title in enumerate(_CONCISE_TOPIC_ORDER, start=1)
         if title in grouped
     ]
-    if len(sections) < 4:
-        sections.append(
-            _coverage_section(
-                section_id="concise-coverage",
-                covered_count=len(sections),
-                conclusions=conclusions,
-            )
-        )
     return tuple(sections)
 
 
@@ -334,10 +331,10 @@ def _section(
     title: str,
     conclusions: Tuple[InterpretiveConclusion, ...],
     profile_limitations: Tuple[str, ...],
+    synthesis_packet: Optional[NarrativeSynthesisPacket],
 ) -> InterpretiveReportSection:
-    statements = _render_bodies(conclusions)
-    confidence_labels = _unique(
-        _CONFIDENCE_LABELS[conclusion.confidence]
+    statements = "\n".join(
+        _render_claim(conclusion, synthesis_packet)
         for conclusion in conclusions
     )
     limitation_values = _controlled_limitations(
@@ -345,133 +342,134 @@ def _section(
     )
     return InterpretiveReportSection(
         section_id=section_id,
+        kind="analysis",
         title=title,
-        content=(
-            f"【{title}】{statements}"
-            f"本节置信度：{'、'.join(confidence_labels)}。"
-        ),
+        content=statements,
         signal_ids=_signal_ids(conclusions),
         limitation="；".join(limitation_values),
         signal_provenance=_signal_provenance(conclusions),
     )
 
 
-def _coverage_section(
-    *,
-    section_id: str,
-    covered_count: int,
-    conclusions: Tuple[InterpretiveConclusion, ...],
-) -> InterpretiveReportSection:
-    return InterpretiveReportSection(
-        section_id=section_id,
-        title="证据覆盖说明",
-        content=(
-            f"当前审计档案仅支持上述 {covered_count} 个主题；"
-            "未覆盖的主题不作推断或补写。"
-            "本节仅记录证据边界，不作人格特质判断。"
-        ),
-        signal_ids=_signal_ids(conclusions),
-        limitation=(
-            "证据覆盖有限；不将现有结论重标为其他主题；"
-            "不作人格特质判断。"
-        ),
-        signal_provenance=_signal_provenance(conclusions),
-    )
-
-
-def _audit_scope_sections(
-    *,
-    conclusions: Tuple[InterpretiveConclusion, ...],
-    evidence_topic_count: int,
-    count: int,
-) -> Tuple[InterpretiveReportSection, ...]:
-    signal_ids = _signal_ids(conclusions)
-    has_bazi = any(signal_id.startswith("BAZI-") for signal_id in signal_ids)
-    has_astrology = any(
-        signal_id.startswith("ASTROLOGY-") for signal_id in signal_ids
-    )
-    has_tension = any(
-        conclusion.countervailing_signal_ids for conclusion in conclusions
-    )
-    confidence_labels = _unique(
-        _CONFIDENCE_LABELS[conclusion.confidence]
-        for conclusion in conclusions
-    )
-    bodies = (
-        (
-            f"当前档案仅支持 {evidence_topic_count} 个证据主题；"
-            "其余主题不推断、不补写。"
-        ),
-        (
-            "已记录八字来源信号，但本节不扩展具体特质。"
-            if has_bazi
-            else "当前档案未提供可单独形成八字主题的受控信号。"
-        ),
-        (
-            "已记录占星来源信号，但本节不扩展具体特质。"
-            if has_astrology
-            else "当前档案未提供可单独形成占星主题的受控信号。"
-        ),
-        (
-            (
-                "当前同时有八字与占星信号可供覆盖对照；"
-                if has_bazi and has_astrology
-                else "当前不具备八字与占星的双体系覆盖；"
-            )
-            + (
-                "档案保留了反向信号。"
-                if has_tension
-                else "档案未记录反向信号。"
-            )
-        ),
-        f"当前证据主题的置信度标签为：{'、'.join(confidence_labels)}。",
-        (
-            "报告不从档案结论外推出生时间精度或未记录的"
-            "时间敏感主题。"
-        ),
-        (
-            "本节所有引用均回指现有信号标识；报告仅用于传统象意"
-            "反思，不替代诊断或重大决策。"
-        ),
-    )
-    common_boundary = "本节仅记录证据或方法边界，不作人格特质判断。"
-    return tuple(
-        InterpretiveReportSection(
-            section_id=f"standard-audit-{index:02d}",
-            title=title,
-            content=f"【{title}】{body}{common_boundary}",
-            signal_ids=signal_ids,
-            limitation=common_boundary,
-            signal_provenance=_signal_provenance(conclusions),
-        )
-        for index, (title, body) in enumerate(
-            zip(_AUDIT_SECTION_TITLES, bodies), start=1
-        )
-    )[:count]
-
-
-def _render_bodies(
-    conclusions: Tuple[InterpretiveConclusion, ...],
+def _render_claim(
+    conclusion: InterpretiveConclusion,
+    synthesis_packet: Optional[NarrativeSynthesisPacket],
 ) -> str:
-    bodies = []
-    for conclusion in conclusions:
-        if _has_chinese(conclusion.interpretation):
-            bodies.append(conclusion.interpretation)
-            continue
-        controlled = _unique(
-            rendering.body
-            for signal_id in _signal_ids((conclusion,))
-            for rendering in (_SIGNAL_RENDERINGS.get(signal_id),)
-            if rendering is not None
+    conclusion_text = _conclusion_text(conclusion)
+    mechanisms, expressions, contexts = _narrative_evidence(
+        conclusion, synthesis_packet
+    )
+    if mechanisms:
+        mechanism_text = "。".join(
+            _trim_sentence(value) for value in mechanisms
         )
-        if controlled:
-            bodies.extend(controlled)
-        else:
-            bodies.append(
-                "现有审计信号仅支持将该主题作为反思线索；"
-                "当前未提供可直接呈现的受控中文规则文本。"
-            )
-    return "".join(_unique(bodies))
+    else:
+        mechanism_text = "该结论仅由本主题已命中的受控传统象意信号支持"
+    if expressions:
+        expression_text = "；".join(
+            _trim_sentence(value) for value in expressions
+        )
+    else:
+        expression_text = "实际表现仍需由读者结合自身经验核对"
+    context_text = _context_variation(
+        conclusion, contexts, synthesis_packet
+    )
+    confidence = _CONFIDENCE_LABELS[conclusion.confidence]
+    return (
+        f"结论：{_trim_sentence(conclusion_text)}。"
+        f"形成机制：{mechanism_text}。"
+        f"常见表现：{expression_text}。"
+        f"情境变化：{_trim_sentence(context_text)}。"
+        f"这一结论的把握度：{confidence}。"
+    )
+
+
+def _trim_sentence(value: str) -> str:
+    return value.rstrip("。； ")
+
+
+def _conclusion_text(conclusion: InterpretiveConclusion) -> str:
+    if _has_chinese(conclusion.interpretation):
+        return conclusion.interpretation
+    controlled = _unique(
+        rendering.body
+        for signal_id in _signal_ids((conclusion,))
+        for rendering in (_SIGNAL_RENDERINGS.get(signal_id),)
+        if rendering is not None
+    )
+    if controlled:
+        return "".join(controlled)
+    return (
+        "现有受控信号仅支持将该主题作为反思线索，"
+        "不补写未命中的具体特质。"
+    )
+
+
+def _narrative_evidence(
+    conclusion: InterpretiveConclusion,
+    synthesis_packet: Optional[NarrativeSynthesisPacket],
+) -> tuple[Tuple[str, ...], Tuple[str, ...], Tuple[str, ...]]:
+    if synthesis_packet is None:
+        return (), (), ()
+    signal_ids = set(conclusion.supporting_signal_ids)
+    topics = (
+        synthesis_packet.bazi_profile.topics
+        + synthesis_packet.astrology_profile.topics
+    )
+    matched_topics = tuple(
+        topic
+        for topic in topics
+        if topic.topic == conclusion.topic
+        and signal_ids.intersection(topic.signal_ids)
+    )
+    return (
+        _unique(
+            value
+            for topic in matched_topics
+            for value in topic.mechanisms
+            if _has_chinese(value)
+        ),
+        _unique(
+            value
+            for topic in matched_topics
+            for value in topic.likely_expressions
+            if _has_chinese(value)
+        ),
+        _unique(
+            value
+            for topic in matched_topics
+            for value in topic.contexts
+            if _has_chinese(value)
+        ),
+    )
+
+
+def _context_variation(
+    conclusion: InterpretiveConclusion,
+    contexts: Tuple[str, ...],
+    synthesis_packet: Optional[NarrativeSynthesisPacket],
+) -> str:
+    if synthesis_packet is not None:
+        signal_ids = set(_signal_ids((conclusion,)))
+        tension = next(
+            (
+                item
+                for item in synthesis_packet.tensions
+                if item.topic == conclusion.topic
+                and signal_ids.intersection(
+                    item.bazi_signal_ids + item.astrology_signal_ids
+                )
+            ),
+            None,
+        )
+        if tension is not None:
+            return tension.integration
+    if contexts:
+        return (
+            f"可优先在{'、'.join(contexts)}中观察，"
+            "不同场景下的具体程度仍需结合对应信号理解"
+        )
+    return "当前档案未进一步区分具体情境，因而不作额外推断"
 
 
 def _controlled_limitations(
@@ -554,24 +552,23 @@ def _conclusion_provenance_is_complete(
 
 def _include_missing_time_notice(
     sections: Tuple[InterpretiveReportSection, ...],
-    conclusions: Tuple[InterpretiveConclusion, ...],
-    mode: InterpretiveReportMode,
 ) -> Tuple[InterpretiveReportSection, ...]:
-    notice = InterpretiveReportSection(
-        section_id=f"{mode}-time-scope",
-        title="出生时间与解读范围",
-        content=(
-            "【出生时间与解读范围】出生时间不可用或存疑；"
-            "宫位与四轴主张已省略，本报告仅使用不依赖精确"
-            "出生时间的受控信号。"
-        ),
-        signal_ids=_signal_ids(conclusions),
-        limitation="不推断宫位、上升点、天顶点或其他时间敏感结论。",
-        signal_provenance=_signal_provenance(conclusions),
+    if not sections:
+        return sections
+    first = sections[0]
+    notice = (
+        "出生时间不可用或存疑；宫位与四轴主张已省略，"
+        "本报告仅使用不依赖精确出生时间的受控信号。"
     )
-    if mode == "standard" and len(sections) >= 12:
-        return sections[:11] + (notice,)
-    return sections + (notice,)
+    limitation = "不推断宫位、上升点、天顶点或其他时间敏感结论。"
+    return (
+        replace(
+            first,
+            content=f"{first.content}{notice}",
+            limitation=f"{first.limitation}；{limitation}",
+        ),
+        *sections[1:],
+    )
 
 
 def _audit_metadata(
