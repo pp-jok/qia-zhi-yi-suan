@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qia-zhi-yi-suan-candidate"
-version = "0.5.0"
+version = "0.6.0"
 description = "Audited interpretive personality reports for the Qia Zhi Yi Suan agent skill"
 readme = "README.md"
 license = {file = "LICENSE"}

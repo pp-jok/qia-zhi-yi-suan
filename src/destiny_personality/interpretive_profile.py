@@ -1,17 +1,19 @@
 """Controlled synthesis for the audited interpretive product path."""
 
 from collections import defaultdict
-from typing import DefaultDict, Iterable, Sequence, Tuple
+from typing import DefaultDict, Iterable, Optional, Sequence, Tuple
 
 from .deterministic_facts_codec import QualifiedFacts, require_qualified_facts
 from .interpretive_models import (
     InterpretiveConclusion,
     InterpretiveConfidence,
     InterpretiveCoreProfile,
+    NarrativeSynthesisPacket,
     InterpretiveSignal,
     InterpretiveSignalProvenance,
 )
 from .interpretive_rules import BUNDLE_VERSION, extract_interpretive_signals
+from .interpretive_synthesis import _build_narrative_synthesis_packet
 
 
 ALLOWED_CONFIDENCES = frozenset(
@@ -27,16 +29,20 @@ def build_interpretive_core_profile(
 
     qualified = require_qualified_facts(qualified_facts)
     signals = extract_interpretive_signals(qualified)
+    audit_refs = (
+        f"deterministic-facts:{qualified.fact_fingerprint}",
+        f"fact-qualification:{qualified.qualification_fingerprint}",
+        f"interpretive-rules:{BUNDLE_VERSION}",
+    )
     return _synthesize_interpretive_core_profile(
         signals,
-        audit_refs=(
-            f"deterministic-facts:{qualified.fact_fingerprint}",
-            f"fact-qualification:{qualified.qualification_fingerprint}",
-            f"interpretive-rules:{BUNDLE_VERSION}",
-        ),
+        audit_refs=audit_refs,
         fact_mode=qualified.facts.normalized_time.fact_mode.value,
         time_sensitivity_reasons=tuple(
             qualified.facts.normalized_time.sensitivity_reasons
+        ),
+        synthesis_packet=_build_narrative_synthesis_packet(
+            signals, audit_refs=audit_refs
         ),
     )
 
@@ -48,6 +54,7 @@ def _synthesize_interpretive_core_profile(
     audit_refs: Tuple[str, ...] = (),
     fact_mode: str = "time_sensitive",
     time_sensitivity_reasons: Tuple[str, ...] = (),
+    synthesis_packet: Optional[NarrativeSynthesisPacket] = None,
 ) -> InterpretiveCoreProfile:
     """Group exact topics and directions without converting evidence to scores."""
 
@@ -129,6 +136,7 @@ def _synthesize_interpretive_core_profile(
             if birth_time_unavailable
             else ()
         ),
+        synthesis_packet=synthesis_packet,
     )
 
 
@@ -141,6 +149,9 @@ def _signal_provenance(
         fact_refs=signal.fact_refs,
         traditional_rule_ref=signal.traditional_rule_ref,
         limitations=signal.limitations,
+        mechanism=signal.mechanism,
+        likely_expression=signal.likely_expression,
+        contexts=signal.contexts,
     )
 
 

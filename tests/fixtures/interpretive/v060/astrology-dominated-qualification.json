@@ -1,0 +1,32 @@
+{
+  "calculation_envelope_refs": [
+    "fixture-envelope:v060:astrology-dominated"
+  ],
+  "comparison": {
+    "required": false,
+    "status": "not_required"
+  },
+  "derived_fact_assurance": "capability_reported",
+  "fact_contract_version": "deterministic-facts-v1",
+  "fact_fingerprint": "1b9551385b63cf58650d40e56686845eaa1e330a2f8fe2bd964bc7158810e049",
+  "methodology_versions": {
+    "astrology": "western-tropical-v1.0",
+    "bazi": "bazi-core-v1.0"
+  },
+  "provenance_refs": [
+    "fixture-provenance:v060:astrology-dominated"
+  ],
+  "qualification_status": "passed",
+  "schema_version": "fact-qualification-v1",
+  "validation_refs": [
+    "fixture-validation:v060:astrology-dominated"
+  ],
+  "validation_summary": {
+    "calculation_config": "not_available",
+    "internal_consistency": "passed",
+    "methodology": "passed",
+    "provenance": "passed",
+    "structure": "passed",
+    "time_scope": "passed"
+  }
+}

@@ -8,13 +8,15 @@
 
 它不是排盘软件，也不把计算程序封装进 Skill。使用它的智能体会在运行时寻找并调用合格的外部计算能力；Skill 负责输入规范、方法校验、事实边界、推演许可、报告结构与最终审计。
 
-## 发布通道：v0.5.0 Audited Interpretive Production
+## 发布通道：v0.6.0 Internal Test Product
 
-v0.5.0 引入第一条默认面向用户的人格分析路径：`audited_interpretive`。它只接受由独立 `fact-qualification-v1` 与指纹绑定的 `deterministic-facts-v1`，再通过版本化的八字/占星传统解释规则产生可追溯信号和用户可读报告。
+v0.6.0 将 `audited_interpretive` 完整化为可内测的用户产品流程。普通用户只需提供出生信息；Skill 会发现并调用可用的计算/资格校验供应方。若没有合格供应方，流程会显式返回 `CAPABILITY_GAP`，不要求用户补交 facts JSON，也不让模型自由排盘。
+
+供应方产生的 `deterministic-facts-v1` 与 `fact-qualification-v1` 是内部运行时接口。通过指纹绑定后，版本化的八字/占星传统解释规则才能产生可追溯信号和用户可读报告。
 
 新路径不计算命盘，不从原始出生信息自行补齐事实，也不创建 PRIMARY_EVIDENCE、Mapping 或 Primitive 状态。结论必须回指信号 ID；信号又必须回指通过资格校验的事实和传统规则。
 
-`strict` 路径保持原样，只在用户明确要求审计、研究或项目内规则确定性认证时使用。它仍然要求完整的查表、词表、边界规则、Primitive、Mapping 与叙事资产；任一严格门未通过时必须停止。原有正式 Core 有限覆盖、Candidate Preview 和显式的 56 章兼容长书也保持隔离。
+v0.5.0 的所有严格路径保持原样。`strict` 只在用户明确要求审计、研究或项目内规则确定性认证时使用，仍然在任一未满足的严格门停止。正式 Core 有限覆盖、Candidate Preview 和显式 56 章兼容长书继续互相隔离。
 
 ## 它能做什么
 
@@ -47,6 +49,8 @@ v0.5.0 引入第一条默认面向用户的人格分析路径：`audited_interpr
 ```
 
 默认画像使用 `audited_interpretive`：允许版本化传统规则解释经过资格校验的事实，但不允许运行时计算或补齐命盘事实、伪造规则或抬高保障等级。
+
+如果运行环境没有合格的计算/资格校验供应方，流程在能力发现阶段返回 `CAPABILITY_GAP` 并停止。不用通用模型知识计算、修补或猜测命盘事实。
 
 `strict` 是更严苛的确定性路径。只有完整的项目内查表、词表、边界规则、Primitive、Mapping 与叙事资产全部通过时，它才会开放；当前 Skill 会在缺失处如实停止。
 
@@ -82,7 +86,7 @@ pip install ./qia-zhi-yi-suan
 使用 $destiny-personality，审计这份已有的事实包和执行报告。
 ```
 
-已有合格事实包时，可直接生成默认审计式解释报告：
+以下 CLI 是供应方/运行时的内部集成接口，不是普通用户输入：
 
 ```bash
 destiny-personality-reference-validate build-interpretive-report FACTS.json \
@@ -93,7 +97,9 @@ destiny-personality-reference-validate build-interpretive-report FACTS.json \
 
 ## 审计式解释报告
 
-`standard-interpretive-v1` 是默认模式，依实际证据生成 8–12 个用户可读章节。`concise-interpretive-v1` 是同一受控结论集的短版视图。公开报告入口只接受指纹绑定的 `QualifiedFacts`；调用方自行构造的 profile 或原始事实不能进入审计报告路径。CLI 仍接受 `standard` 和 `concise` 作为兼容别名，但持久化的 `report_mode` 始终使用带版本的正式名称。
+发布契约：normal complete qualified charts: 7–12 meaningful sections; sparse evidence or missing birth time may produce fewer sections and must visibly state its scope。
+
+`standard-interpretive-v1` 是默认模式，符合条件的普通完整命盘生成 7–12 个有意义的用户可读章节；证据稀疏或出生时间缺失时可以更短，但必须明确展示其适用范围与限制。当受支持主题超过 12 个时，第 12 节合并展示其余结论，并保留每条信号的 provenance 与局限，不静默截断。`concise-interpretive-v1` 是同一受控结论集的短版视图。公开报告入口只接受指纹绑定的 `QualifiedFacts`；调用方自行构造的 profile 或原始事实不能进入审计报告路径。CLI 仍接受 `standard` 和 `concise` 作为兼容别名，但持久化的 `report_mode` 始终使用带版本的正式名称。
 
 置信标签不是科学准确率，而是对当前规则与证据范围的受控表达：
 

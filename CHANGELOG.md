@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.6.0 - 2026-10-09
+
+### Added
+
+- A birth-input-first product workflow: normal users provide birth information,
+  and the Skill invokes an available calculation/qualification provider.
+- Explicit `CAPABILITY_GAP` termination when the required provider is absent;
+  facts JSON remains an internal interface and free-form chart calculation is
+  forbidden.
+- Reusable v3 interpretive rule families with bounded element/modality
+  narratives, synthesis-aware profiles, deeper
+  reader reports, 12 qualification-bound product fixtures, and reproducible
+  v0.6.0 demos.
+- A machine-readable product-readiness summary and v0.6.0 release notes.
+
+### Changed
+
+- Package metadata is version `0.6.0`.
+- The normal `audited_interpretive` route now starts from user birth input and
+  makes provider discovery and qualification explicit.
+- Standard reports consolidate supported overflow topics into section 12
+  without discarding conclusions or provenance, and the official agreement
+  fixture now carries an exact-topic, same-direction cross-system validation.
+
+### Compatibility and boundary
+
+All v0.5.0 strict, formal limited-coverage, Candidate Preview, and explicit
+legacy routes remain available and isolated. This internal test product still
+does not bundle a chart calculator, infer missing facts, or treat traditional
+interpretation as empirical diagnosis.
+
 ## 0.5.0 - 2026-10-08
 
 ### Added

@@ -6,6 +6,10 @@ import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SKILL_ROOT = PROJECT_ROOT / "destiny-personality"
+NORMAL_BIRTH_INPUT_DEFAULT_PROMPT = (
+    "Use $destiny-personality to analyze my personality from my birth information; "
+    "use an available calculation/qualification provider or return CAPABILITY_GAP."
+)
 
 
 def read_skill_file(relative_path: str) -> str:
@@ -78,6 +82,16 @@ def test_skill_scaffold_and_ui_metadata_exist() -> None:
     metadata = yaml.safe_load(read_skill_file("agents/openai.yaml"))
     assert set(metadata) == {"interface"}
     assert "$destiny-personality" in metadata["interface"]["default_prompt"]
+
+
+def test_ui_default_prompt_matches_normal_birth_input_route() -> None:
+    skill_text = read_skill_file("SKILL.md")
+    metadata = yaml.safe_load(read_skill_file("agents/openai.yaml"))
+
+    assert "Normal users supply birth information only" in skill_text
+    assert "Discover an available calculation/qualification provider" in skill_text
+    assert "return `CAPABILITY_GAP`" in skill_text
+    assert metadata["interface"]["default_prompt"] == NORMAL_BIRTH_INPUT_DEFAULT_PROMPT
 
 
 def test_skill_contains_no_executable_or_fixed_tool_dependency() -> None:
@@ -230,6 +244,24 @@ def test_skill_router_encodes_modes_gates_and_hard_stops() -> None:
         assert value in text
     assert "Do not install or connect" in text
     assert "Do not calculate, infer, or repair" in text
+
+
+def test_v060_published_section_count_contract_is_consistent() -> None:
+    documents = (
+        PROJECT_ROOT / "destiny-personality/SKILL.md",
+        PROJECT_ROOT / "README.md",
+        PROJECT_ROOT / "docs/v0.6.0-product-readiness.md",
+        PROJECT_ROOT / "docs/release/v0.6.0-release-notes.md",
+    )
+    normal_complete_contract = "normal complete qualified charts: 7–12 meaningful sections"
+    sparse_or_missing_time_exception = (
+        "sparse evidence or missing birth time may produce fewer sections and must visibly state its scope"
+    )
+
+    for document in documents:
+        text = document.read_text(encoding="utf-8")
+        assert normal_complete_contract in text, document
+        assert sparse_or_missing_time_exception in text, document
 
 
 def test_skill_routes_formal_candidate_legacy_and_failure_paths() -> None:
@@ -1126,6 +1158,27 @@ def test_failure_policy_distinguishes_controlled_limitations_from_fatal_gaps() -
     assert "safe omission" in runtime
     assert "strict profile" in runtime
     assert "controlled profile" in runtime
+
+
+def test_v060_release_metadata_and_user_docs_are_present() -> None:
+    pyproject = (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    changelog = (PROJECT_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    release_notes = (
+        PROJECT_ROOT / "docs" / "release" / "v0.6.0-release-notes.md"
+    ).read_text(encoding="utf-8")
+
+    assert 'version = "0.6.0"' in pyproject
+    assert "v0.6.0 Internal Test Product" in readme
+    assert "## 0.6.0 - 2026-10-09" in changelog
+    for phrase in (
+        "internal test product",
+        "CAPABILITY_GAP",
+        "standard-interpretive-v1",
+        "strict",
+        "wheel",
+    ):
+        assert phrase.casefold() in release_notes.casefold()
 
 
 def test_business_test_checklist_defines_cross_agent_quality_gate() -> None:

@@ -12,13 +12,13 @@
     "profile_audit_refs": [
       "deterministic-facts:a6b34b8f655f07e8bde4e8b87bc5a7e3d3154a871e6be422ec698bd07f3c6944",
       "fact-qualification:cc1ffc16eb0f2b9b36eb427ca5498ead5031f73fadbfbbc029de71e2f2ca3cba",
-      "interpretive-rules:audited-interpretive-rules-v1"
+      "interpretive-rules:audited-interpretive-rules-v3"
     ],
     "qualification_refs": [
       "fact-qualification:cc1ffc16eb0f2b9b36eb427ca5498ead5031f73fadbfbbc029de71e2f2ca3cba"
     ],
     "rule_bundle_refs": [
-      "interpretive-rules:audited-interpretive-rules-v1"
+      "interpretive-rules:audited-interpretive-rules-v3"
     ],
     "time_sensitivity_reasons": [
       "birth_time_unknown"
@@ -30,34 +30,44 @@
   "schema_version": "interpretive-report-v1",
   "sections": [
     {
-      "content": "【表达与创造】传统十神关系可用于观察表达、支持与约束之间的互动方式。本节置信度：中等。",
-      "limitation": "需结合完整命局理解，不用于判定实际行为。；传统象意仅作为反思线索，不是实证性诊断。",
+      "content": "结论：太阳所在星座的元素与模式，提供核心意志如何定义和表达自我的象征语言。火象取向会以直接投入、激发行动来承载该行星功能。开创模式更重视发起、设定方向与启动新阶段。（命中依据：元素：火象；模式：开创）。形成机制：核心意志借由实际命中的元素取向选择表达材料，并按命中模式调整推进节奏。火象通过热度、意愿与即时反馈推动该功能向外展开。开创模式通过率先做出反应来建立推进节奏。常见表现：在需要表态或承担核心角色时，可能按实际命中的元素与模式展现不同的强调方式。命中火象时，可观察是否倾向先表明意愿，再在行动中校正。命中开创模式时，可观察是否在开局阶段更容易承担发起作用。情境变化：在学习、沟通中具体观察八字侧的表现：在学习或沟通中，可能先听、先理解，再给出经过组织的回应。；在自我表达、启动任务、需要迅速投入的情境、新任务与转换阶段中具体观察占星侧的表现：在需要表态或承担核心角色时，可能按实际命中的元素与模式展现不同的强调方式。命中火象时，可观察是否倾向先表明意愿，再在行动中校正。命中开创模式时，可观察是否在开局阶段更容易承担发起作用。这一结论的把握度：探索性。\n结论：印星信号将注意力引向理解、吸收与内在整理。（命中依据：正印）。形成机制：通过接收信息、建立解释框架后再表达，因而形成偏反思的表达节奏。常见表现：在学习或沟通中，可能先听、先理解，再给出经过组织的回应。情境变化：在学习、沟通中具体观察八字侧的表现：在学习或沟通中，可能先听、先理解，再给出经过组织的回应。；在自我表达、启动任务、需要迅速投入的情境、新任务与转换阶段中具体观察占星侧的表现：在需要表态或承担核心角色时，可能按实际命中的元素与模式展现不同的强调方式。命中火象时，可观察是否倾向先表明意愿，再在行动中校正。命中开创模式时，可观察是否在开局阶段更容易承担发起作用。这一结论的把握度：探索性。出生时间不可用或存疑；宫位与四轴主张已省略，本报告仅使用不依赖精确出生时间的受控信号。",
+      "kind": "analysis",
+      "limitation": "宫制与出生时间不确定性可能改变解读语境。；需结合完整命局理解，不用于判定实际行为。；行星星座象征不是人格测量。；需与全局其他十神与关系合看。；传统象意仅作为反思线索，不是实证性诊断。；不推断宫位、上升点、天顶点或其他时间敏感结论。",
       "section_id": "standard-01",
       "signal_ids": [
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION",
         "BAZI-TEN-GOD-EXPRESSION"
       ],
       "signal_provenance": [
         {
           "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
+            "astrology.placements[0].sign"
           ],
           "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
+            "行星星座象征不是人格测量。"
+          ],
+          "signal_id": "ASTROLOGY-PLANET-SIGN-EXPRESSION",
+          "system": "astrology",
+          "traditional_rule_ref": "现代西方占星学行星星座综合法；Stephen Arroyo"
+        },
+        {
+          "fact_refs": [
+            "bazi.ten_gods[0].ten_god"
+          ],
+          "limitations": [
+            "需与全局其他十神与关系合看。"
           ],
           "signal_id": "BAZI-TEN-GOD-EXPRESSION",
           "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+          "traditional_rule_ref": "子平法十神法；《渊海子平》"
         }
       ],
       "title": "表达与创造"
     },
     {
-      "content": "【关系与边界】地支关系可作为观察情境中亲和、拉扯与边界的象征性线索。本节置信度：探索性。",
-      "limitation": "局部关系必须放回整体命局，不构成因果预测。；传统象意仅作为反思线索，不是实证性诊断。",
+      "content": "结论：地支关系信号用来标记不同生活领域之间的联动、拉扯或制约。（命中依据：地支关系：合）。形成机制：关系类型连接了具体参与柱位，提供情境间如何互相影响的观察线索。常见表现：在多重角色同时被激活时，可能感到协同或冲突需要被协调。情境变化：可优先在家庭、工作、关系中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：探索性。",
+      "kind": "analysis",
+      "limitation": "局部关系必须放回整体命局，不构成因果预测。；关系事实必须结合全局，不构成事件预测。；传统象意仅作为反思线索，不是实证性诊断。",
       "section_id": "standard-02",
       "signal_ids": [
         "BAZI-RELATION-DYNAMICS"
@@ -65,23 +75,22 @@
       "signal_provenance": [
         {
           "fact_refs": [
-            "bazi.relations[0].relation_type",
-            "bazi.hidden_stems[0].stems"
+            "bazi.relations[0].relation_type"
           ],
           "limitations": [
-            "Relation facts must be interpreted with the full chart.",
-            "No empirical causal or diagnostic status is claimed."
+            "关系事实必须结合全局，不构成事件预测。"
           ],
           "signal_id": "BAZI-RELATION-DYNAMICS",
           "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
+          "traditional_rule_ref": "子平法地支关系法；《三命通会》"
         }
       ],
       "title": "关系与边界"
     },
     {
-      "content": "【成长张力】相位与尊贵状态可用于整理不同倾向之间的象征性张力。本节置信度：探索性。",
-      "limitation": "解读受容许度与整体星盘影响，不用于诊断或预测。；传统象意仅作为反思线索，不是实证性诊断。",
+      "content": "结论：日月主要相位用于观察自我意志与情绪需求如何互动。（命中依据：相位：合相）。形成机制：相位类型描述两种功能之间的交流方式，但不单独规定结果。常见表现：在作出个人决定时，意志与安全感可能以协同或拉扯的方式同时出现。情境变化：可优先在决策、情绪与意志中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：探索性。",
+      "kind": "analysis",
+      "limitation": "解读受容许度与整体星盘影响，不用于诊断或预测。；相位解读依赖容许度和全盘，不是事件预测。；传统象意仅作为反思线索，不是实证性诊断。",
       "section_id": "standard-03",
       "signal_ids": [
         "ASTROLOGY-ASPECT-DIGNITY-CONTEXT"
@@ -89,343 +98,63 @@
       "signal_provenance": [
         {
           "fact_refs": [
-            "astrology.aspects[0].aspect_type",
-            "astrology.dignities[0].dignity"
+            "astrology.aspects[0].aspect_type"
           ],
           "limitations": [
-            "Aspect interpretation depends on selected orbs and the wider chart.",
-            "No empirical predictive or diagnostic claim is made."
+            "相位解读依赖容许度和全盘，不是事件预测。"
           ],
           "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
           "system": "astrology",
-          "traditional_rule_ref": "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
+          "traditional_rule_ref": "西方占星学主要相位论；William Lilly, Christian Astrology"
         }
       ],
       "title": "成长张力"
     },
     {
-      "content": "【证据范围】当前档案仅支持 3 个证据主题；其余主题不推断、不补写。本节仅记录证据或方法边界，不作人格特质判断。",
-      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
-      "section_id": "standard-audit-01",
+      "content": "结论：月亮所在星座的元素与模式，提供情绪接收和安全感调节的象征语言。火象取向会以直接投入、激发行动来承载该行星功能。开创模式更重视发起、设定方向与启动新阶段。（命中依据：元素：火象；模式：开创）。形成机制：情绪需求通过对应元素的补给方式和模式节奏被识别。火象通过热度、意愿与即时反馈推动该功能向外展开。开创模式通过率先做出反应来建立推进节奏。常见表现：在压力或亲密关系中，可能展现特定的恢复节奏和回应习惯。命中火象时，可观察是否倾向先表明意愿，再在行动中校正。命中开创模式时，可观察是否在开局阶段更容易承担发起作用。情境变化：可优先在情绪调节、亲密关系、需要迅速投入的情境、新任务与转换阶段中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：中等。",
+      "kind": "analysis",
+      "limitation": "不用于诊断情绪或依恋问题。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-04",
       "signal_ids": [
-        "BAZI-RELATION-DYNAMICS",
-        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
-        "BAZI-TEN-GOD-EXPRESSION"
+        "ASTROLOGY-MOON-SIGN-QUALITY"
       ],
       "signal_provenance": [
         {
           "fact_refs": [
-            "bazi.relations[0].relation_type",
-            "bazi.hidden_stems[0].stems"
+            "astrology.placements[1].sign"
           ],
           "limitations": [
-            "Relation facts must be interpreted with the full chart.",
-            "No empirical causal or diagnostic status is claimed."
+            "不用于诊断情绪或依恋问题。"
           ],
-          "signal_id": "BAZI-RELATION-DYNAMICS",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
-        },
-        {
-          "fact_refs": [
-            "astrology.aspects[0].aspect_type",
-            "astrology.dignities[0].dignity"
-          ],
-          "limitations": [
-            "Aspect interpretation depends on selected orbs and the wider chart.",
-            "No empirical predictive or diagnostic claim is made."
-          ],
-          "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+          "signal_id": "ASTROLOGY-MOON-SIGN-QUALITY",
           "system": "astrology",
-          "traditional_rule_ref": "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
-        },
-        {
-          "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
-          ],
-          "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
-          ],
-          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+          "traditional_rule_ref": "现代西方占星学月亮星座综合法；Stephen Arroyo"
         }
       ],
-      "title": "证据范围"
+      "title": "情绪与安全感"
     },
     {
-      "content": "【八字观察范围】已记录八字来源信号，但本节不扩展具体特质。本节仅记录证据或方法边界，不作人格特质判断。",
-      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
-      "section_id": "standard-audit-02",
+      "content": "结论：太阳的先天尊贵状态用于限定核心功能表达时的条件。（命中依据：尊贵：入庙）。形成机制：尊贵是表达修饰因素，不改写行星位置事实，也不直接转换为人格好坏。常见表现：在展现自信或承担核心角色时，可能感到较顺手或需要更多调整。情境变化：可优先在自我表达、核心角色中观察，不同场景下的具体程度仍需结合对应信号理解。这一结论的把握度：探索性。",
+      "kind": "analysis",
+      "limitation": "不将尊贵转换为道德、能力或命运评分。；传统象意仅作为反思线索，不是实证性诊断。",
+      "section_id": "standard-05",
       "signal_ids": [
-        "BAZI-RELATION-DYNAMICS",
-        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
-        "BAZI-TEN-GOD-EXPRESSION"
+        "ASTROLOGY-SUN-DIGNITY-CONTEXT"
       ],
       "signal_provenance": [
         {
           "fact_refs": [
-            "bazi.relations[0].relation_type",
-            "bazi.hidden_stems[0].stems"
-          ],
-          "limitations": [
-            "Relation facts must be interpreted with the full chart.",
-            "No empirical causal or diagnostic status is claimed."
-          ],
-          "signal_id": "BAZI-RELATION-DYNAMICS",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
-        },
-        {
-          "fact_refs": [
-            "astrology.aspects[0].aspect_type",
             "astrology.dignities[0].dignity"
           ],
           "limitations": [
-            "Aspect interpretation depends on selected orbs and the wider chart.",
-            "No empirical predictive or diagnostic claim is made."
+            "不将尊贵转换为道德、能力或命运评分。"
           ],
-          "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+          "signal_id": "ASTROLOGY-SUN-DIGNITY-CONTEXT",
           "system": "astrology",
-          "traditional_rule_ref": "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
-        },
-        {
-          "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
-          ],
-          "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
-          ],
-          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
+          "traditional_rule_ref": "西方占星学先天尊贵论；William Lilly, Christian Astrology"
         }
       ],
-      "title": "八字观察范围"
-    },
-    {
-      "content": "【占星观察范围】已记录占星来源信号，但本节不扩展具体特质。本节仅记录证据或方法边界，不作人格特质判断。",
-      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
-      "section_id": "standard-audit-03",
-      "signal_ids": [
-        "BAZI-RELATION-DYNAMICS",
-        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
-        "BAZI-TEN-GOD-EXPRESSION"
-      ],
-      "signal_provenance": [
-        {
-          "fact_refs": [
-            "bazi.relations[0].relation_type",
-            "bazi.hidden_stems[0].stems"
-          ],
-          "limitations": [
-            "Relation facts must be interpreted with the full chart.",
-            "No empirical causal or diagnostic status is claimed."
-          ],
-          "signal_id": "BAZI-RELATION-DYNAMICS",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
-        },
-        {
-          "fact_refs": [
-            "astrology.aspects[0].aspect_type",
-            "astrology.dignities[0].dignity"
-          ],
-          "limitations": [
-            "Aspect interpretation depends on selected orbs and the wider chart.",
-            "No empirical predictive or diagnostic claim is made."
-          ],
-          "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
-          "system": "astrology",
-          "traditional_rule_ref": "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
-        },
-        {
-          "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
-          ],
-          "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
-          ],
-          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
-        }
-      ],
-      "title": "占星观察范围"
-    },
-    {
-      "content": "【跨体系覆盖与张力】当前同时有八字与占星信号可供覆盖对照；档案未记录反向信号。本节仅记录证据或方法边界，不作人格特质判断。",
-      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
-      "section_id": "standard-audit-04",
-      "signal_ids": [
-        "BAZI-RELATION-DYNAMICS",
-        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
-        "BAZI-TEN-GOD-EXPRESSION"
-      ],
-      "signal_provenance": [
-        {
-          "fact_refs": [
-            "bazi.relations[0].relation_type",
-            "bazi.hidden_stems[0].stems"
-          ],
-          "limitations": [
-            "Relation facts must be interpreted with the full chart.",
-            "No empirical causal or diagnostic status is claimed."
-          ],
-          "signal_id": "BAZI-RELATION-DYNAMICS",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
-        },
-        {
-          "fact_refs": [
-            "astrology.aspects[0].aspect_type",
-            "astrology.dignities[0].dignity"
-          ],
-          "limitations": [
-            "Aspect interpretation depends on selected orbs and the wider chart.",
-            "No empirical predictive or diagnostic claim is made."
-          ],
-          "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
-          "system": "astrology",
-          "traditional_rule_ref": "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
-        },
-        {
-          "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
-          ],
-          "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
-          ],
-          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
-        }
-      ],
-      "title": "跨体系覆盖与张力"
-    },
-    {
-      "content": "【置信度校准】当前证据主题的置信度标签为：探索性、中等。本节仅记录证据或方法边界，不作人格特质判断。",
-      "limitation": "本节仅记录证据或方法边界，不作人格特质判断。",
-      "section_id": "standard-audit-05",
-      "signal_ids": [
-        "BAZI-RELATION-DYNAMICS",
-        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
-        "BAZI-TEN-GOD-EXPRESSION"
-      ],
-      "signal_provenance": [
-        {
-          "fact_refs": [
-            "bazi.relations[0].relation_type",
-            "bazi.hidden_stems[0].stems"
-          ],
-          "limitations": [
-            "Relation facts must be interpreted with the full chart.",
-            "No empirical causal or diagnostic status is claimed."
-          ],
-          "signal_id": "BAZI-RELATION-DYNAMICS",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
-        },
-        {
-          "fact_refs": [
-            "astrology.aspects[0].aspect_type",
-            "astrology.dignities[0].dignity"
-          ],
-          "limitations": [
-            "Aspect interpretation depends on selected orbs and the wider chart.",
-            "No empirical predictive or diagnostic claim is made."
-          ],
-          "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
-          "system": "astrology",
-          "traditional_rule_ref": "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
-        },
-        {
-          "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
-          ],
-          "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
-          ],
-          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
-        }
-      ],
-      "title": "置信度校准"
-    },
-    {
-      "content": "【出生时间与解读范围】出生时间不可用或存疑；宫位与四轴主张已省略，本报告仅使用不依赖精确出生时间的受控信号。",
-      "limitation": "不推断宫位、上升点、天顶点或其他时间敏感结论。",
-      "section_id": "standard-time-scope",
-      "signal_ids": [
-        "BAZI-RELATION-DYNAMICS",
-        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
-        "BAZI-TEN-GOD-EXPRESSION"
-      ],
-      "signal_provenance": [
-        {
-          "fact_refs": [
-            "bazi.relations[0].relation_type",
-            "bazi.hidden_stems[0].stems"
-          ],
-          "limitations": [
-            "Relation facts must be interpreted with the full chart.",
-            "No empirical causal or diagnostic status is claimed."
-          ],
-          "signal_id": "BAZI-RELATION-DYNAMICS",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), earthly-branch relation method; San Ming Tong Hui (《三命通会》)"
-        },
-        {
-          "fact_refs": [
-            "astrology.aspects[0].aspect_type",
-            "astrology.dignities[0].dignity"
-          ],
-          "limitations": [
-            "Aspect interpretation depends on selected orbs and the wider chart.",
-            "No empirical predictive or diagnostic claim is made."
-          ],
-          "signal_id": "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
-          "system": "astrology",
-          "traditional_rule_ref": "Traditional Western astrology, essential dignity and aspect doctrine; William Lilly, Christian Astrology"
-        },
-        {
-          "fact_refs": [
-            "bazi.ten_gods[0].ten_god",
-            "bazi.year_pillar",
-            "bazi.month_pillar",
-            "bazi.day_pillar"
-          ],
-          "limitations": [
-            "Requires the complete chart context and does not determine behavior.",
-            "Traditional correspondence is not empirical personality assessment."
-          ],
-          "signal_id": "BAZI-TEN-GOD-EXPRESSION",
-          "system": "bazi",
-          "traditional_rule_ref": "Zi Ping Fa (子平法), Ten-God relationship method; Yuan Hai Zi Ping (《渊海子平》)"
-        }
-      ],
-      "title": "出生时间与解读范围"
+      "title": "表达条件"
     }
   ],
   "title": "审计型传统命理解读·标准版"

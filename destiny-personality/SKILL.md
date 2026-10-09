@@ -1,6 +1,6 @@
 ---
 name: destiny-personality
-description: Use when a user requests a Bazi and Western astrology personality portrait (legacy, core, core_concise, or core_standard), deterministic birth-chart facts (facts_only), or review of an existing fact packet or execution report (audit).
+description: Use when a user supplies birth information for a Bazi and Western astrology personality portrait (legacy, core, core_concise, or core_standard), requests deterministic birth-chart facts (facts_only), or requests review of an existing fact packet or execution report (audit).
 ---
 
 # Destiny Personality
@@ -53,6 +53,22 @@ user to restate it. Ask one focused question only for a genuinely ambiguous or
 missing required value. Preserve a supplied sex label, never infer it, and do
 not mistake input normalization for permission to calculate chart facts.
 
+### Run the normal birth-input workflow
+
+Normal users supply birth information only. Keep facts JSON and qualification
+records inside the provider/runtime interface.
+
+1. Validate and normalize the birth input.
+2. Discover an available calculation/qualification provider.
+3. If no suitable provider is available, return `CAPABILITY_GAP` in a stopped
+   Execution Report and name the missing capability.
+4. Invoke the provider with the normalized birth input.
+5. Require a `deterministic-facts-v1` packet and an independently bound
+   `fact-qualification-v1` record before interpretation.
+
+Do not ask the user for facts JSON. Do not free-form calculate, reconstruct, or
+repair chart facts. Never replace an unavailable provider with model knowledge.
+
 ### Audited interpretive production route
 
 Use `audited_interpretive` only after a separate `fact-qualification-v1`
@@ -60,8 +76,13 @@ record validates and fingerprint-binds the `deterministic-facts-v1` packet.
 If no qualified fact packet or calculation provider is available, stop; never
 calculate, repair, or invent chart facts from general model knowledge.
 
-The default report mode is `standard-interpretive-v1`, which renders an
-evidence-dependent 8–12-section report. Use `concise-interpretive-v1` only when
+The published v0.6 contract is: normal complete qualified charts: 7–12 meaningful sections; sparse evidence or missing birth time may produce fewer sections and must visibly state its scope.
+
+The default report mode is `standard-interpretive-v1`, which follows that
+evidence-dependent section-count contract.
+If more than 12 supported topics match, consolidate the remaining conclusions
+into section 12 with their signal provenance and limitations; never silently
+truncate supported evidence. Use `concise-interpretive-v1` only when
 the user asks for a shorter view over the same profile. The legacy CLI aliases
 `standard` and `concise` may be accepted as input, but persisted output must use
 the versioned mode name. Long-form output is not part of this route.
