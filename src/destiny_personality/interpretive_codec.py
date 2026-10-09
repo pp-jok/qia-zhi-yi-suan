@@ -2,6 +2,11 @@
 
 from typing import Dict
 
+from .interpretive_models import (
+    InterpretiveSignalProvenance,
+    InterpretiveSystemProfile,
+    NarrativeSynthesisPacket,
+)
 from .interpretive_report import InterpretiveReport
 
 
@@ -52,3 +57,93 @@ def encode_interpretive_report(report: InterpretiveReport) -> Dict[str, object]:
             ),
         },
     }
+
+
+def encode_narrative_synthesis_packet(
+    packet: NarrativeSynthesisPacket,
+) -> Dict[str, object]:
+    """Encode the bounded synthesis packet as deterministic plain data."""
+
+    if not isinstance(packet, NarrativeSynthesisPacket):
+        raise TypeError("NARRATIVE_SYNTHESIS_PACKET_REQUIRED")
+    return {
+        "bazi_profile": _encode_system_profile(packet.bazi_profile),
+        "astrology_profile": _encode_system_profile(
+            packet.astrology_profile
+        ),
+        "alignments": [
+            {
+                "topic": item.topic,
+                "kind": item.kind,
+                "bazi_signal_ids": list(item.bazi_signal_ids),
+                "astrology_signal_ids": list(item.astrology_signal_ids),
+                "interpretation": item.interpretation,
+                "confidence": item.confidence,
+                "limitations": list(item.limitations),
+                "signal_provenance": _encode_provenance(
+                    item.signal_provenance
+                ),
+            }
+            for item in packet.alignments
+        ],
+        "tensions": [
+            {
+                "topic": item.topic,
+                "left_pole": item.left_pole,
+                "right_pole": item.right_pole,
+                "contexts": list(item.contexts),
+                "integration": item.integration,
+                "bazi_signal_ids": list(item.bazi_signal_ids),
+                "astrology_signal_ids": list(item.astrology_signal_ids),
+                "limitations": list(item.limitations),
+                "signal_provenance": _encode_provenance(
+                    item.signal_provenance
+                ),
+            }
+            for item in packet.tensions
+        ],
+        "limitations": list(packet.limitations),
+        "audit_refs": list(packet.audit_refs),
+    }
+
+
+def _encode_system_profile(
+    profile: InterpretiveSystemProfile,
+) -> Dict[str, object]:
+    return {
+        "system": profile.system,
+        "signal_ids": list(profile.signal_ids),
+        "topics": [
+            {
+                "topic": topic.topic,
+                "directions": list(topic.directions),
+                "signal_ids": list(topic.signal_ids),
+                "interpretations": list(topic.interpretations),
+                "mechanisms": list(topic.mechanisms),
+                "likely_expressions": list(topic.likely_expressions),
+                "contexts": list(topic.contexts),
+                "limitations": list(topic.limitations),
+                "signal_provenance": _encode_provenance(
+                    topic.signal_provenance
+                ),
+            }
+            for topic in profile.topics
+        ],
+        "limitations": list(profile.limitations),
+        "audit_refs": list(profile.audit_refs),
+    }
+
+
+def _encode_provenance(
+    items: tuple[InterpretiveSignalProvenance, ...],
+) -> list[Dict[str, object]]:
+    return [
+        {
+            "signal_id": item.signal_id,
+            "system": item.system,
+            "fact_refs": list(item.fact_refs),
+            "traditional_rule_ref": item.traditional_rule_ref,
+            "limitations": list(item.limitations),
+        }
+        for item in items
+    ]

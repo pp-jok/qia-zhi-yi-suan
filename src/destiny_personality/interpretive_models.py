@@ -5,6 +5,16 @@ from typing import FrozenSet, Literal, Optional, Tuple
 
 
 InterpretiveConfidence = Literal["high", "moderate", "exploratory", "insufficient"]
+InterpretiveSystem = Literal["bazi", "astrology"]
+InterpretiveRelationshipKind = Literal[
+    "validation",
+    "complement",
+    "contextualization",
+    "tension",
+    "correction",
+    "unresolved",
+    "non_comparable",
+]
 
 
 @dataclass(frozen=True)
@@ -90,6 +100,73 @@ class InterpretiveConclusion:
 
 
 @dataclass(frozen=True)
+class InterpretiveSystemTopic:
+    """One system's independently derived evidence for an exact topic."""
+
+    topic: str
+    directions: Tuple[str, ...]
+    signal_ids: Tuple[str, ...]
+    interpretations: Tuple[str, ...]
+    mechanisms: Tuple[str, ...]
+    likely_expressions: Tuple[str, ...]
+    contexts: Tuple[str, ...]
+    limitations: Tuple[str, ...]
+    signal_provenance: Tuple[InterpretiveSignalProvenance, ...]
+
+
+@dataclass(frozen=True)
+class InterpretiveSystemProfile:
+    """Topic-bound matched signals from one interpretive system only."""
+
+    system: InterpretiveSystem
+    topics: Tuple[InterpretiveSystemTopic, ...]
+    signal_ids: Tuple[str, ...]
+    limitations: Tuple[str, ...]
+    audit_refs: Tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class InterpretiveSynthesisRelationship:
+    """A bounded comparison that never substitutes for its source signals."""
+
+    topic: str
+    kind: InterpretiveRelationshipKind
+    bazi_signal_ids: Tuple[str, ...]
+    astrology_signal_ids: Tuple[str, ...]
+    interpretation: str
+    confidence: InterpretiveConfidence
+    limitations: Tuple[str, ...]
+    signal_provenance: Tuple[InterpretiveSignalProvenance, ...]
+
+
+@dataclass(frozen=True)
+class InterpretiveTension:
+    """A concrete cross-system tension with two poles and bounded integration."""
+
+    topic: str
+    left_pole: str
+    right_pole: str
+    contexts: Tuple[str, ...]
+    integration: str
+    bazi_signal_ids: Tuple[str, ...]
+    astrology_signal_ids: Tuple[str, ...]
+    limitations: Tuple[str, ...]
+    signal_provenance: Tuple[InterpretiveSignalProvenance, ...]
+
+
+@dataclass(frozen=True)
+class NarrativeSynthesisPacket:
+    """Independent system profiles plus their auditable bounded comparisons."""
+
+    bazi_profile: InterpretiveSystemProfile
+    astrology_profile: InterpretiveSystemProfile
+    alignments: Tuple[InterpretiveSynthesisRelationship, ...]
+    tensions: Tuple[InterpretiveTension, ...]
+    limitations: Tuple[str, ...]
+    audit_refs: Tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class InterpretiveCoreProfile:
     """Controlled synthesis of matched audited-interpretive signals."""
 
@@ -101,3 +178,4 @@ class InterpretiveCoreProfile:
     birth_time_status: str = "available"
     time_sensitivity_reasons: Tuple[str, ...] = ()
     omitted_time_sensitive_claims: Tuple[str, ...] = ()
+    synthesis_packet: Optional[NarrativeSynthesisPacket] = None
