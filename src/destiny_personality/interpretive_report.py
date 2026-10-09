@@ -424,22 +424,26 @@ def _narrative_evidence(
     )
     return (
         _unique(
-            value
+            provenance.mechanism
             for topic in matched_topics
-            for value in topic.mechanisms
-            if _has_chinese(value)
+            for provenance in topic.signal_provenance
+            if provenance.signal_id in signal_ids
+            and _has_chinese(provenance.mechanism)
         ),
         _unique(
-            value
+            provenance.likely_expression
             for topic in matched_topics
-            for value in topic.likely_expressions
-            if _has_chinese(value)
+            for provenance in topic.signal_provenance
+            if provenance.signal_id in signal_ids
+            and _has_chinese(provenance.likely_expression)
         ),
         _unique(
-            value
+            context
             for topic in matched_topics
-            for value in topic.contexts
-            if _has_chinese(value)
+            for provenance in topic.signal_provenance
+            if provenance.signal_id in signal_ids
+            for context in provenance.contexts
+            if _has_chinese(context)
         ),
     )
 

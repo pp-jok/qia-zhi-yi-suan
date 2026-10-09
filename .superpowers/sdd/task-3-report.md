@@ -86,3 +86,28 @@
   birth-time audit fields remain serialized.
 - Existing strict/candidate/primitive behavior is covered by the full green
   suite.
+
+## Repair follow-up: same-system narrative isolation
+
+### RED evidence
+
+`python3 -m pytest tests/test_interpretive_report.py -q -k same_system_claim`
+
+Result: `1 failed, 24 deselected`. A same-system outward conclusion rendered
+the reflective mechanism, expression, and context because topic-level
+narrative fields were selected after only any-signal overlap.
+
+### GREEN evidence
+
+- `python3 -m pytest tests/test_interpretive_report.py -q -k same_system_claim`
+  Result: `1 passed, 24 deselected`.
+- `python3 -m pytest tests/test_interpretive_report.py tests/test_interpretive_cli.py -q`
+  Result: `42 passed in 4.11s`.
+- `python3 -m pytest tests/test_interpretive_*.py -q`
+  Result: `82 passed in 12.27s`.
+- `git diff --check`
+  Result: clean.
+
+The system-topic provenance now preserves each signal's mechanism, likely
+expression, and contexts. Report claims select those values strictly by their
+`supporting_signal_ids`; countervailing signal narrative remains excluded.

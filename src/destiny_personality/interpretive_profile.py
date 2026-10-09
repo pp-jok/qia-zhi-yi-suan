@@ -149,6 +149,9 @@ def _signal_provenance(
         fact_refs=signal.fact_refs,
         traditional_rule_ref=signal.traditional_rule_ref,
         limitations=signal.limitations,
+        mechanism=signal.mechanism,
+        likely_expression=signal.likely_expression,
+        contexts=signal.contexts,
     )
 
 

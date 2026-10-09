@@ -83,6 +83,9 @@ class InterpretiveSignalProvenance:
     fact_refs: Tuple[str, ...]
     traditional_rule_ref: str
     limitations: Tuple[str, ...]
+    mechanism: str = ""
+    likely_expression: str = ""
+    contexts: Tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

@@ -159,6 +159,9 @@ def _encode_provenance(
             "fact_refs": list(item.fact_refs),
             "traditional_rule_ref": item.traditional_rule_ref,
             "limitations": list(item.limitations),
+            "mechanism": item.mechanism,
+            "likely_expression": item.likely_expression,
+            "contexts": list(item.contexts),
         }
         for item in items
     ]

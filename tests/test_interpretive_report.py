@@ -8,6 +8,9 @@ from destiny_personality.interpretive_models import (
     InterpretiveConclusion,
     InterpretiveCoreProfile,
     InterpretiveSignalProvenance,
+    InterpretiveSystemProfile,
+    InterpretiveSystemTopic,
+    NarrativeSynthesisPacket,
 )
 from destiny_personality.interpretive_profile import build_interpretive_core_profile
 from destiny_personality.interpretive_report import (
@@ -481,6 +484,102 @@ def test_each_claim_uses_only_its_supporting_mechanism(rich_facts):
     assert "通过接收信息" not in outward_mechanism
     assert "通过接收信息" in reflective_mechanism
     assert "核心意志借由" not in reflective_mechanism
+
+
+def test_same_system_claim_uses_only_its_exact_supporting_narrative_evidence():
+    supporting = (
+        InterpretiveSignalProvenance(
+            signal_id="SIG-OUTWARD",
+            system="bazi",
+            fact_refs=("bazi.test[0].value",),
+            traditional_rule_ref="tradition:SIG-OUTWARD",
+            limitations=("仅作为传统象意的反思线索。",),
+            mechanism="外向机制。",
+            likely_expression="外向表现。",
+            contexts=("公开场景",),
+        ),
+        InterpretiveSignalProvenance(
+            signal_id="SIG-REFLECTIVE",
+            system="bazi",
+            fact_refs=("bazi.test[1].value",),
+            traditional_rule_ref="tradition:SIG-REFLECTIVE",
+            limitations=("仅作为传统象意的反思线索。",),
+            mechanism="反思机制。",
+            likely_expression="反思表现。",
+            contexts=("独处场景",),
+        ),
+    )
+    outward_provenance = supporting
+    reflective_provenance = tuple(reversed(supporting))
+    shared_topic = InterpretiveSystemTopic(
+        topic="style of expression",
+        directions=("outward", "reflective"),
+        signal_ids=("SIG-OUTWARD", "SIG-REFLECTIVE"),
+        interpretations=("外向表达。", "反思表达。"),
+        mechanisms=("外向机制。", "反思机制。"),
+        likely_expressions=("外向表现。", "反思表现。"),
+        contexts=("公开场景", "独处场景"),
+        limitations=("仅作为传统象意的反思线索。",),
+        signal_provenance=supporting,
+    )
+    packet = NarrativeSynthesisPacket(
+        bazi_profile=InterpretiveSystemProfile(
+            system="bazi",
+            topics=(shared_topic,),
+            signal_ids=("SIG-OUTWARD", "SIG-REFLECTIVE"),
+            limitations=(),
+        ),
+        astrology_profile=InterpretiveSystemProfile(
+            system="astrology", topics=(), signal_ids=(), limitations=()
+        ),
+        alignments=(),
+        tensions=(),
+        limitations=(),
+        audit_refs=(),
+    )
+    profile = InterpretiveCoreProfile(
+        mode="audited_interpretive",
+        conclusions=(
+            InterpretiveConclusion(
+                topic="style of expression",
+                direction="outward",
+                interpretation="外向表达。",
+                supporting_signal_ids=("SIG-OUTWARD",),
+                countervailing_signal_ids=("SIG-REFLECTIVE",),
+                confidence="exploratory",
+                limitations=("仅作为传统象意的反思线索。",),
+                signal_provenance=outward_provenance,
+            ),
+            InterpretiveConclusion(
+                topic="style of expression",
+                direction="reflective",
+                interpretation="反思表达。",
+                supporting_signal_ids=("SIG-REFLECTIVE",),
+                countervailing_signal_ids=("SIG-OUTWARD",),
+                confidence="exploratory",
+                limitations=("仅作为传统象意的反思线索。",),
+                signal_provenance=reflective_provenance,
+            ),
+        ),
+        limitations=(),
+        audit_refs=(
+            "deterministic-facts:same-system",
+            "fact-qualification:same-system",
+            "interpretive-rules:audited-interpretive-rules-v2",
+        ),
+        synthesis_packet=packet,
+    )
+
+    claims = _render_interpretive_report(profile, "standard").sections[0].content.splitlines()
+
+    assert "外向机制" in claims[0]
+    assert "反思机制" not in claims[0]
+    assert "外向表现" in claims[0]
+    assert "反思表现" not in claims[0]
+    assert "公开场景" in claims[0]
+    assert "独处场景" not in claims[0]
+    assert "反思机制" in claims[1]
+    assert "外向机制" not in claims[1]
 
 
 def test_reader_body_keeps_audit_terms_out_of_narrative(rich_facts):
