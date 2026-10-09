@@ -9,7 +9,8 @@
 - Explicit `CAPABILITY_GAP` termination when the required provider is absent;
   facts JSON remains an internal interface and free-form chart calculation is
   forbidden.
-- Reusable v2 interpretive rule families, synthesis-aware profiles, deeper
+- Reusable v3 interpretive rule families with bounded element/modality
+  narratives, synthesis-aware profiles, deeper
   reader reports, 12 qualification-bound product fixtures, and reproducible
   v0.6.0 demos.
 - A machine-readable product-readiness summary and v0.6.0 release notes.
@@ -19,6 +20,9 @@
 - Package metadata is version `0.6.0`.
 - The normal `audited_interpretive` route now starts from user birth input and
   makes provider discovery and qualification explicit.
+- Standard reports consolidate supported overflow topics into section 12
+  without discarding conclusions or provenance, and the official agreement
+  fixture now carries an exact-topic, same-direction cross-system validation.
 
 ### Compatibility and boundary
 

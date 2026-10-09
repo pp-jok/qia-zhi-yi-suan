@@ -64,6 +64,19 @@ class InterpretiveSignal:
 
 
 @dataclass(frozen=True)
+class InterpretiveValueNarrative:
+    """Reusable reader semantics selected by one bounded matched value."""
+
+    fact_ref: str
+    value: str
+    interpretation: str
+    mechanism: str
+    likely_expression: str
+    contexts: Tuple[str, ...]
+    direction: str = ""
+
+
+@dataclass(frozen=True)
 class InterpretiveRuleBundle:
     """Versioned collection of non-diagnostic interpretive signals."""
 
@@ -72,6 +85,7 @@ class InterpretiveRuleBundle:
     limitations: Tuple[str, ...]
     covered_ten_gods: FrozenSet[str] = frozenset()
     covered_planets: FrozenSet[str] = frozenset()
+    value_narratives: Tuple[InterpretiveValueNarrative, ...] = ()
 
 
 @dataclass(frozen=True)

@@ -10,18 +10,33 @@ from .interpretive_models import (
     InterpretiveMatchedValue,
     InterpretiveRuleBundle,
     InterpretiveSignal,
+    InterpretiveValueNarrative,
     InterpretiveValuePredicate,
 )
 from .deterministic_facts_codec import QualifiedFacts, require_qualified_facts
 from .calculation.models import DeterministicChartFacts, FactMode
 
 
-BUNDLE_VERSION = "audited-interpretive-rules-v2"
-PREDICATE_VERSION = "audited-interpretive-value-predicates-v2"
+BUNDLE_VERSION = "audited-interpretive-rules-v3"
+PREDICATE_VERSION = "audited-interpretive-value-predicates-v3"
 RULE_FILE = "interpretive_rules_v1.yaml"
 CONFIDENCES = {"high", "moderate", "exploratory", "insufficient"}
 SYSTEMS = {"bazi", "astrology"}
-ROOT_KEYS = {"bundle_version", "predicate_version", "limitations", "rules"}
+ROOT_KEYS = {
+    "bundle_version",
+    "predicate_version",
+    "limitations",
+    "value_narratives",
+    "rules",
+}
+VALUE_NARRATIVE_KEYS = {
+    "fact_ref",
+    "value",
+    "interpretation",
+    "mechanism",
+    "likely_expression",
+    "contexts",
+}
 RULE_KEYS = {
     "signal_id",
     "family",
@@ -297,6 +312,71 @@ def _rule(value: Any) -> InterpretiveSignal:
     )
 
 
+def _value_narratives(value: Any) -> Tuple[InterpretiveValueNarrative, ...]:
+    if not isinstance(value, list) or not value:
+        raise _invalid("INTERPRETIVE_VALUE_NARRATIVE_INVALID")
+    narratives = []
+    for item in value:
+        if not isinstance(item, dict):
+            raise _invalid("INTERPRETIVE_VALUE_NARRATIVE_INVALID")
+        keys = set(item)
+        if not VALUE_NARRATIVE_KEYS <= keys <= VALUE_NARRATIVE_KEYS | {"direction"}:
+            raise _invalid("INTERPRETIVE_VALUE_NARRATIVE_INVALID")
+        fact_ref = _string(
+            item["fact_ref"], "INTERPRETIVE_VALUE_NARRATIVE_INVALID"
+        )
+        if fact_ref not in {
+            "astrology.sign_element",
+            "astrology.sign_modality",
+        }:
+            raise _invalid("INTERPRETIVE_VALUE_NARRATIVE_INVALID")
+        narrative_value = _string(
+            item["value"], "INTERPRETIVE_VALUE_NARRATIVE_INVALID"
+        )
+        if narrative_value not in PREDICATE_VALUE_DOMAINS[fact_ref]:
+            raise _invalid("INTERPRETIVE_VALUE_NARRATIVE_INVALID")
+        narratives.append(
+            InterpretiveValueNarrative(
+                fact_ref=fact_ref,
+                value=narrative_value,
+                interpretation=_string(
+                    item["interpretation"],
+                    "INTERPRETIVE_VALUE_NARRATIVE_INVALID",
+                ),
+                mechanism=_string(
+                    item["mechanism"], "INTERPRETIVE_VALUE_NARRATIVE_INVALID"
+                ),
+                likely_expression=_string(
+                    item["likely_expression"],
+                    "INTERPRETIVE_VALUE_NARRATIVE_INVALID",
+                ),
+                contexts=_strings(
+                    item["contexts"], "INTERPRETIVE_VALUE_NARRATIVE_INVALID"
+                ),
+                direction=(
+                    _string(
+                        item["direction"],
+                        "INTERPRETIVE_VALUE_NARRATIVE_INVALID",
+                    )
+                    if "direction" in item
+                    else ""
+                ),
+            )
+        )
+    expected = {
+        (fact_ref, narrative_value)
+        for fact_ref in (
+            "astrology.sign_element",
+            "astrology.sign_modality",
+        )
+        for narrative_value in PREDICATE_VALUE_DOMAINS[fact_ref]
+    }
+    actual = {(item.fact_ref, item.value) for item in narratives}
+    if actual != expected or len(actual) != len(narratives):
+        raise _invalid("INTERPRETIVE_VALUE_NARRATIVE_INVALID")
+    return tuple(narratives)
+
+
 def _requires_exact_demo_chart(
     predicates: Tuple[InterpretiveValuePredicate, ...],
 ) -> bool:
@@ -349,6 +429,7 @@ def load_interpretive_rule_bundle(
     if payload["predicate_version"] != PREDICATE_VERSION:
         raise _invalid("INTERPRETIVE_RULE_INVALID_PREDICATE_VERSION")
     limitations = _strings(payload["limitations"], "INTERPRETIVE_RULE_INVALID")
+    value_narratives = _value_narratives(payload["value_narratives"])
     raw_rules = payload["rules"]
     if not isinstance(raw_rules, list) or not raw_rules:
         raise _invalid("INTERPRETIVE_RULE_INVALID")
@@ -377,6 +458,7 @@ def load_interpretive_rule_bundle(
         limitations,
         covered_ten_gods,
         covered_planets,
+        value_narratives,
     )
 
 
@@ -388,10 +470,17 @@ def extract_interpretive_signals(
 
     facts = require_qualified_facts(qualified_facts).facts
     active_bundle = bundle if bundle is not None else load_interpretive_rule_bundle()
+    value_narratives = {
+        (item.fact_ref, item.value): item
+        for item in active_bundle.value_narratives
+    }
     signals = []
     for rule in active_bundle.rules:
         matched_values = _matching_values(rule, facts)
         if matched_values:
+            selected_narratives = _selected_value_narratives(
+                matched_values, value_narratives
+            )
             fact_refs = tuple(
                 dict.fromkeys(match.fact_path for match in matched_values)
             )
@@ -400,8 +489,44 @@ def extract_interpretive_signals(
                     rule,
                     fact_refs=fact_refs,
                     matched_values=matched_values,
+                    direction=next(
+                        (
+                            narrative.direction
+                            for narrative in selected_narratives
+                            if narrative.direction
+                        ),
+                        rule.direction,
+                    ),
                     interpretation=_reader_visible_interpretation(
-                        rule.interpretation, matched_values
+                        _merge_narrative_text(
+                            rule.interpretation,
+                            tuple(
+                                item.interpretation
+                                for item in selected_narratives
+                            ),
+                        ),
+                        matched_values,
+                    ),
+                    mechanism=_merge_narrative_text(
+                        rule.mechanism,
+                        tuple(item.mechanism for item in selected_narratives),
+                    ),
+                    likely_expression=_merge_narrative_text(
+                        rule.likely_expression,
+                        tuple(
+                            item.likely_expression
+                            for item in selected_narratives
+                        ),
+                    ),
+                    contexts=tuple(
+                        dict.fromkeys(
+                            rule.contexts
+                            + tuple(
+                                context
+                                for item in selected_narratives
+                                for context in item.contexts
+                            )
+                        )
                     ),
                 )
             )
@@ -443,6 +568,24 @@ def _reader_visible_interpretation(
         )
     )
     return f"{interpretation}（命中依据：{'；'.join(visible_values)}）"
+
+
+def _selected_value_narratives(
+    matched_values: Tuple[InterpretiveMatchedValue, ...],
+    narratives: dict[tuple[str, str], InterpretiveValueNarrative],
+) -> Tuple[InterpretiveValueNarrative, ...]:
+    return tuple(
+        dict.fromkeys(
+            narratives[(match.fact_ref, match.value)]
+            for match in matched_values
+            if (match.fact_ref, match.value) in narratives
+        )
+    )
+
+
+def _merge_narrative_text(base: str, additions: Tuple[str, ...]) -> str:
+    values = tuple(dict.fromkeys((base,) + additions))
+    return "".join(f"{value.rstrip('。')}。" for value in values)
 
 
 def _reader_visible_value(match: InterpretiveMatchedValue) -> str:

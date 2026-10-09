@@ -133,6 +133,20 @@ def test_normal_chart_has_real_contributions_from_both_systems(
     assert systems == {"bazi", "astrology"}
 
 
+@pytest.mark.parametrize("name", NORMAL_COMPLETE_NAMES)
+def test_standard_report_keeps_every_supported_signal(name: str) -> None:
+    report_signal_ids = {
+        signal_id
+        for section in _report_payload(name)["sections"]
+        for signal_id in section["signal_ids"]
+    }
+    extracted_signal_ids = {
+        signal.signal_id for signal in extract_interpretive_signals(_qualified(name))
+    }
+
+    assert report_signal_ids == extracted_signal_ids
+
+
 def test_reports_are_reader_semantically_distinct(product_fixtures) -> None:
     texts = [core_reader_text(item) for item in product_fixtures.values()]
     assert len(set(texts)) == len(product_fixtures)
@@ -155,15 +169,36 @@ def test_product_matrix_contains_the_five_required_reader_semantics() -> None:
         item.system == "bazi" for item in astrology
     )
 
-    agreement = _report_payload("cross-system-agreement")
+    agreement_report = _report_payload("cross-system-agreement")
     expression = next(
-        section for section in agreement["sections"]
+        section for section in agreement_report["sections"]
         if section["title"] == "表达与创造"
     )
     assert {
         "BAZI-TEN-GOD-OUTPUT",
         "ASTROLOGY-PLANET-SIGN-EXPRESSION",
     } <= set(expression["signal_ids"])
+    agreement_packet = build_narrative_synthesis_packet(
+        _qualified("cross-system-agreement")
+    )
+    agreement = next(
+        (
+            item
+            for item in agreement_packet.alignments
+            if item.kind == "validation"
+            and item.bazi_signal_ids == ("BAZI-TEN-GOD-OUTPUT",)
+            and item.astrology_signal_ids
+            == ("ASTROLOGY-PLANET-SIGN-EXPRESSION",)
+        ),
+        None,
+    )
+    assert agreement is not None
+    assert agreement.topic == "style of expression"
+    assert {item.system for item in agreement.signal_provenance} == {
+        "bazi",
+        "astrology",
+    }
+    assert all(item.fact_refs for item in agreement.signal_provenance)
 
     tension = build_narrative_synthesis_packet(
         _qualified("cross-system-tension")

@@ -2,6 +2,7 @@ from dataclasses import replace
 from decimal import Decimal
 import json
 from pathlib import Path
+import re
 
 import pytest
 import yaml
@@ -237,7 +238,7 @@ def reversed_aspect_interpretive_facts(qualified_facts, tmp_path, extraction_cas
 def test_rule_bundle_is_versioned_and_contains_both_systems():
     bundle = load_interpretive_rule_bundle()
 
-    assert bundle.bundle_version == "audited-interpretive-rules-v2"
+    assert bundle.bundle_version == "audited-interpretive-rules-v3"
     assert {rule.system for rule in bundle.rules} == {"bazi", "astrology"}
 
 
@@ -289,6 +290,25 @@ def test_v060_rule_families_expose_bounded_selectors_and_chinese_narrative_field
         and any("\u4e00" <= character <= "\u9fff" for character in rule.mechanism)
         and any("\u4e00" <= character <= "\u9fff" for character in rule.likely_expression)
         for rule in bundle.rules
+    )
+
+
+def test_astrology_quality_narratives_cover_each_bounded_reusable_value():
+    bundle = load_interpretive_rule_bundle()
+
+    assert {
+        (narrative.fact_ref, narrative.value)
+        for narrative in bundle.value_narratives
+    } == {
+        *(('astrology.sign_element', value) for value in ('fire', 'earth', 'air', 'water')),
+        *(('astrology.sign_modality', value) for value in ('cardinal', 'fixed', 'mutable')),
+    }
+    assert all(
+        narrative.interpretation
+        and narrative.mechanism
+        and narrative.likely_expression
+        and narrative.contexts
+        for narrative in bundle.value_narratives
     )
 
 
@@ -393,6 +413,29 @@ def test_extraction_makes_matched_astrology_values_reader_visible(
     assert "入庙" in known["ASTROLOGY-SUN-DIGNITY-CONTEXT"]
     assert "对冲" in changed["ASTROLOGY-ASPECT-DIGNITY-CONTEXT"]
     assert "失势" in changed["ASTROLOGY-SUN-DIGNITY-CONTEXT"]
+
+
+def test_astrology_quality_values_change_reader_semantics_beyond_evidence_labels(
+    qualified_interpretive_facts,
+    non_matching_interpretive_facts,
+):
+    def semantics(qualified):
+        signal = next(
+            item
+            for item in extract_interpretive_signals(qualified)
+            if item.signal_id == "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+        )
+        return (
+            re.sub(r"（命中依据：.*?）", "", signal.interpretation),
+            signal.direction,
+            signal.mechanism,
+            signal.likely_expression,
+            signal.contexts,
+        )
+
+    assert semantics(qualified_interpretive_facts) != semantics(
+        non_matching_interpretive_facts
+    )
 
 
 def test_qualified_facts_pipeline_keeps_changed_family_evidence_reader_visible(

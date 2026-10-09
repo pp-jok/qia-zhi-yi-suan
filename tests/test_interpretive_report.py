@@ -1,3 +1,4 @@
+from dataclasses import replace
 import json
 from pathlib import Path
 
@@ -107,6 +108,50 @@ def test_standard_report_contains_the_eight_named_topics(profile):
     )
     assert report.sections[6].signal_ids == ("SIG-07", "COUNTER-07")
     assert report.sections[-1].title == "决策节奏"
+
+
+def test_standard_report_consolidates_supported_topics_beyond_twelve(profile):
+    extra_conclusions = tuple(
+        InterpretiveConclusion(
+            topic=f"supported extra topic {index}",
+            direction="bounded",
+            interpretation=f"额外受支持结论 {index}。",
+            supporting_signal_ids=(f"EXTRA-{index:02d}",),
+            countervailing_signal_ids=(),
+            confidence="moderate",
+            limitations=("仅作为传统象意的反思线索。",),
+            signal_provenance=_provenance(f"EXTRA-{index:02d}"),
+        )
+        for index in range(10, 14)
+    )
+    expanded = replace(
+        profile,
+        conclusions=profile.conclusions + extra_conclusions,
+    )
+
+    report = _render_interpretive_report(expanded, "standard")
+
+    expected_signal_ids = {
+        signal_id
+        for conclusion in expanded.conclusions
+        for signal_id in (
+            conclusion.supporting_signal_ids
+            + conclusion.countervailing_signal_ids
+        )
+    }
+    rendered_signal_ids = {
+        signal_id
+        for section in report.sections
+        for signal_id in section.signal_ids
+    }
+    assert len(report.sections) == 12
+    assert rendered_signal_ids == expected_signal_ids
+    assert all(
+        tuple(item.signal_id for item in section.signal_provenance)
+        == section.signal_ids
+        for section in report.sections
+    )
+    assert "额外受支持结论 13" in report.sections[-1].content
 
 
 def test_concise_report_is_shorter_than_standard(profile):

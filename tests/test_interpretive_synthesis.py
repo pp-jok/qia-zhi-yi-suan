@@ -66,17 +66,20 @@ def test_serialized_alignment_keeps_the_compared_source_content_per_side():
     assert astrology_source["signal_ids"] == [
         "ASTROLOGY-PLANET-SIGN-EXPRESSION"
     ]
-    assert astrology_source["interpretations"] == [
-        "太阳所在星座的元素与模式，提供核心意志如何定义和表达自我的象征语言。"
-        "（命中依据：元素：火象；模式：开创）"
+    assert len(astrology_source["interpretations"]) == 1
+    assert "火象取向会以直接投入" in astrology_source["interpretations"][0]
+    assert "开创模式更重视发起" in astrology_source["interpretations"][0]
+    assert "命中依据：元素：火象；模式：开创" in astrology_source[
+        "interpretations"
+    ][0]
+    assert "火象通过热度、意愿与即时反馈" in astrology_source["mechanisms"][0]
+    assert "命中开创模式时" in astrology_source["likely_expressions"][0]
+    assert astrology_source["contexts"] == [
+        "自我表达",
+        "启动任务",
+        "需要迅速投入的情境",
+        "新任务与转换阶段",
     ]
-    assert astrology_source["mechanisms"] == [
-        "核心意志借由实际命中的元素取向选择表达材料，并按命中模式调整推进节奏。"
-    ]
-    assert astrology_source["likely_expressions"] == [
-        "在需要表态或承担核心角色时，可能按实际命中的元素与模式展现不同的强调方式。"
-    ]
-    assert astrology_source["contexts"] == ["自我表达", "启动任务"]
 
 
 def test_each_serialized_alignment_keeps_or_explicitly_omits_each_side_source():
@@ -107,7 +110,12 @@ def test_tension_explains_poles_context_and_integration():
     assert tension.integration
     assert tension.why_coexist
     assert tension.left_contexts == ("学习", "沟通")
-    assert tension.right_contexts == ("自我表达", "启动任务")
+    assert tension.right_contexts == (
+        "自我表达",
+        "启动任务",
+        "需要迅速投入的情境",
+        "新任务与转换阶段",
+    )
     assert "bazi.ten_gods[0].ten_god" in tension.why_coexist
     assert "astrology.placements[0].sign" in tension.why_coexist
     assert "先听、先理解，再给出经过组织的回应" in tension.integration
@@ -125,7 +133,12 @@ def test_tension_explains_poles_context_and_integration():
     encoded_tension = encode_narrative_synthesis_packet(packet)["tensions"][0]
     assert encoded_tension["why_coexist"] == tension.why_coexist
     assert encoded_tension["left_contexts"] == ["学习", "沟通"]
-    assert encoded_tension["right_contexts"] == ["自我表达", "启动任务"]
+    assert encoded_tension["right_contexts"] == [
+        "自我表达",
+        "启动任务",
+        "需要迅速投入的情境",
+        "新任务与转换阶段",
+    ]
 
 
 def test_unmatched_topics_never_become_unsupported_agreement():

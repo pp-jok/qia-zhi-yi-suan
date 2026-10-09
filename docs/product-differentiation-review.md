@@ -23,18 +23,18 @@ paths in the separate signal provenance records.
 
 | Fixture | Reader-body SHA-256 prefix | Distinct reader semantics |
 | --- | --- | --- |
-| bazi-dominated | `561bf69b47dc` | Reflection, autonomy, output, resources, responsibility, repetition and relational dynamics lead. |
-| astrology-dominated | `36cbc25be736` | Seven planetary functions, life arena, aspect and dignity lead. |
-| cross-system-agreement | `aecc68c831ad` | Food-god creative output and fire/fixed solar expression converge on visible creation. |
-| cross-system-tension | `acb11f407dbe` | Seal reflection and fire/cardinal solar outwardness remain named as coexisting poles. |
-| missing-time | `c7d8adfcfa3f` | House/angle claims disappear and the boundary notice is shown without suppressing stable topics. |
-| practical-builder | `4ede1d610514` | Resource handling, standards, peer agency and earth-sign pacing foreground self-directed delivery. |
-| relational-connector | `ee7f52736df2` | Peer agency, branch dynamics and relationship-oriented placements foreground reciprocity. |
-| expressive-creator | `6c45f8c70f87` | Output and fire-sign evidence foreground public making, expression and momentum. |
-| structured-steward | `4091f592d3c2` | Authority and earth-sign evidence foreground boundaries, duty and sustained mastery. |
-| reflective-scholar | `212609893c39` | Seal and water-sign evidence foreground absorption, emotional processing and contemplation. |
-| adaptive-explorer | `174b0ba633bb` | Peer/output and air/mutable evidence foreground experimentation and flexible learning. |
-| boundary-mentor | `daf06c503625` | Authority, resources and fixed-water relational evidence foreground standards with care. |
+| bazi-dominated | `a36d75d25bd3` | Reflection, autonomy, output, resources, responsibility, repetition and relational dynamics lead. |
+| astrology-dominated | `e37a4e2136bd` | Seven planetary functions, life arena, aspect and dignity lead. |
+| cross-system-agreement | `b078ee09d2d1` | Food-god output and fire/fixed solar expression independently support the same outward expression direction. |
+| cross-system-tension | `08ebe16d9b0d` | Seal reflection and fire/cardinal solar outwardness remain named as coexisting poles. |
+| missing-time | `6e2787c4453b` | House/angle claims disappear and the boundary notice is shown without suppressing stable topics. |
+| practical-builder | `cad73a2e50e6` | Resource handling, standards, peer agency and earth-sign pacing foreground self-directed delivery. |
+| relational-connector | `832ba1b47079` | Peer agency, branch dynamics and relationship-oriented placements foreground reciprocity. |
+| expressive-creator | `cce50f391798` | Output and fire-sign evidence foreground public making, expression and momentum. |
+| structured-steward | `30114f7e8959` | Authority and earth-sign evidence foreground boundaries, duty and sustained mastery. |
+| reflective-scholar | `cb308b1cf8b4` | Seal and water-sign evidence foreground absorption, emotional processing and contemplation. |
+| adaptive-explorer | `991f08176455` | Peer/output and air/mutable evidence foreground experimentation and flexible learning. |
+| boundary-mentor | `372da5f741bc` | Authority, resources and fixed-water relational evidence foreground standards with care. |
 
 The hash prefixes are review aids, not runtime contracts. Automated tests make
 the stronger assertion that all 12 normalized reader semantic signatures are
@@ -44,10 +44,12 @@ unique.
 
 - `bazi-dominated`: seven Bazi signals versus two astrology signals; both remain visible.
 - `astrology-dominated`: ten astrology signals versus one Bazi signal; the Bazi anchor is not erased.
-- `cross-system-agreement`: reader-level convergence is shown in one “表达与创造” section by
-  `BAZI-TEN-GOD-OUTPUT` and `ASTROLOGY-PLANET-SIGN-EXPRESSION`. The exact-topic
-  synthesis layer correctly keeps them non-comparable rather than fabricating a
-  formal validation relationship.
+- `cross-system-agreement`: `BAZI-TEN-GOD-OUTPUT` and
+  `ASTROLOGY-PLANET-SIGN-EXPRESSION` independently match the exact
+  `style of expression` topic and `outward` direction. The synthesis packet
+  therefore records a formal `validation` relationship with both systems'
+  qualified fact paths and rule provenance; visual co-location alone is not
+  accepted by the product gate.
 - `cross-system-tension`: the shared exact topic `style of expression` produces
   a formal tension between reflective and outward directions, retaining both
   systems' contexts and evidence.
@@ -64,6 +66,12 @@ peer-agency signal, yielding a reader-visible `自主与协作` section and a di
 topic/conclusion/mechanism/likely-expression/context signature. The gate
 rejects equality after evidence normalization; shuffled signal IDs, different
 fingerprints, or synonym-only metadata cannot satisfy it.
+
+The v3 reusable value-narrative table also changes conclusion, mechanism,
+likely-expression, direction and context semantics for all bounded fire,
+earth, air, water, cardinal, fixed and mutable matches. This variation remains
+after `命中依据` is normalized and is shared across charts rather than keyed
+to fixture configurations.
 
 The review also found no raw calculation path in reader content. Exact paths
 such as qualified placement and ten-god references remain available only in

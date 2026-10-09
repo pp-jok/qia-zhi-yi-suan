@@ -26,11 +26,16 @@ the rule YAML. A topic counts only when it becomes a reader-visible section.
 | 表达条件 | — | 太阳先天尊贵 |
 | 反复主题 | 同一十神复见 | — |
 
-Across the suite every v2 rule family is exercised: all five Bazi ten-god
+Across the suite every v3 rule family is exercised: all five Bazi ten-god
 families, repetition, branch relations, all seven core-planet sign families,
 Sun house, Sun–Moon major aspect, and Sun dignity. The dash means that the
 current audited bundle has no rule for that exact system/topic pair; it is not
 treated as negative evidence.
+
+The sign-quality families share one bounded value-narrative registry covering
+all four elements and all three modalities. Those matched values alter reader
+conclusions, mechanisms, likely expressions, directions, and contexts rather
+than only appearing in an evidence label.
 
 ## Fixture coverage
 
@@ -38,7 +43,7 @@ treated as negative evidence.
 | --- | ---: | ---: | ---: | --- |
 | bazi-dominated | 7 | 7 | 2 | Five ten-god families, repetition and relation lead; Sun evidence remains visible. |
 | astrology-dominated | 11 | 1 | 10 | Seven planets plus house, aspect and dignity lead; wealth evidence anchors Bazi. |
-| cross-system-agreement | 10 | 1 | 10 | Food-god output and solar outward expression converge in the reader's expression section. |
+| cross-system-agreement | 10 | 1 | 10 | Food-god output and solar expression independently support the exact `style of expression` / `outward` relationship. |
 | cross-system-tension | 11 | 3 | 10 | Reflective seal evidence and outward solar evidence form an explicit two-pole tension. |
 | missing-time | 10 | 3 | 9 | Stable-only report omits the Sun-house signal and displays the omission boundary. |
 | practical-builder | 12 | 4 | 10 | Wealth/authority, peer agency and earth-sign practical pacing make a delivery-focused but self-directed profile. |
@@ -52,3 +57,5 @@ treated as negative evidence.
 Every normal complete fixture has at least six reader topics and includes
 traceable signals from both systems. The missing-time fixture is intentionally
 excluded from the complete-chart gate but still carries both systems.
+When more than 12 supported topics match, the final standard section merges
+the overflow conclusions while retaining every signal and provenance record.

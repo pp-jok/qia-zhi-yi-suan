@@ -256,15 +256,28 @@ def _build_standard_sections(
     ordered_titles = tuple(
         title for title in _STANDARD_TOPIC_ORDER if title in grouped
     ) + tuple(title for title in grouped if title not in _STANDARD_TOPIC_ORDER)
+    visible_titles = ordered_titles[:12]
+    consolidated_conclusions: Tuple[InterpretiveConclusion, ...] = ()
+    if len(ordered_titles) > 12:
+        visible_titles = ordered_titles[:11] + ("其他有据主题（合并展示）",)
+        consolidated_conclusions = tuple(
+            conclusion
+            for title in ordered_titles[11:]
+            for conclusion in grouped[title]
+        )
     sections = [
         _section(
             section_id=f"standard-{index:02d}",
             title=title,
-            conclusions=tuple(grouped[title]),
+            conclusions=(
+                consolidated_conclusions
+                if consolidated_conclusions and index == 12
+                else tuple(grouped[title])
+            ),
             profile_limitations=profile_limitations,
             synthesis_packet=synthesis_packet,
         )
-        for index, title in enumerate(ordered_titles[:12], start=1)
+        for index, title in enumerate(visible_titles, start=1)
     ]
     return tuple(sections)
 

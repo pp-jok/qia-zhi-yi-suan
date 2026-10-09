@@ -1,5 +1,52 @@
-bundle_version: audited-interpretive-rules-v2
-predicate_version: audited-interpretive-value-predicates-v2
+bundle_version: audited-interpretive-rules-v3
+predicate_version: audited-interpretive-value-predicates-v3
+value_narratives:
+  - fact_ref: astrology.sign_element
+    value: fire
+    direction: outward
+    interpretation: 火象取向会以直接投入、激发行动来承载该行星功能。
+    mechanism: 火象通过热度、意愿与即时反馈推动该功能向外展开。
+    likely_expression: 命中火象时，可观察是否倾向先表明意愿，再在行动中校正。
+    contexts: [需要迅速投入的情境]
+  - fact_ref: astrology.sign_element
+    value: earth
+    direction: grounded
+    interpretation: 土象取向会以具体条件、稳定结果来承载该行星功能。
+    mechanism: 土象通过可验证的步骤与现实资源让该功能落地。
+    likely_expression: 命中土象时，可观察是否先确认可行性、成本与交付标准。
+    contexts: [需要落地与持续投入的情境]
+  - fact_ref: astrology.sign_element
+    value: air
+    direction: conceptual
+    interpretation: 风象取向会以信息交换、观点连接来承载该行星功能。
+    mechanism: 风象通过命名、比较与对话组织该功能的运作。
+    likely_expression: 命中风象时，可观察是否倾向先交换信息，再形成判断或行动。
+    contexts: [需要协商与信息交换的情境]
+  - fact_ref: astrology.sign_element
+    value: water
+    direction: attuned
+    interpretation: 水象取向会以感受线索、关系氛围来承载该行星功能。
+    mechanism: 水象通过对情绪与隐含信息的感受让该功能调整深度。
+    likely_expression: 命中水象时，可观察是否先感受环境与关系反馈，再选择回应。
+    contexts: [需要情绪调频与关系感受的情境]
+  - fact_ref: astrology.sign_modality
+    value: cardinal
+    interpretation: 开创模式更重视发起、设定方向与启动新阶段。
+    mechanism: 开创模式通过率先做出反应来建立推进节奏。
+    likely_expression: 命中开创模式时，可观察是否在开局阶段更容易承担发起作用。
+    contexts: [新任务与转换阶段]
+  - fact_ref: astrology.sign_modality
+    value: fixed
+    interpretation: 固定模式更重视延续、稳定投入与保持已定方向。
+    mechanism: 固定模式通过维持一致性来积累力量，改变通常需要更明确理由。
+    likely_expression: 命中固定模式时，可观察是否在中段维持和长期投入中更容易展现力量。
+    contexts: [需要稳定维持的情境]
+  - fact_ref: astrology.sign_modality
+    value: mutable
+    interpretation: 变动模式更重视调整、转译与回应已变化的条件。
+    mechanism: 变动模式通过修正路径与重新组织信息来维持进展。
+    likely_expression: 命中变动模式时，可观察是否在过渡、多任务或反馈变化中更容易调整。
+    contexts: [过渡与需要应变的情境]
 limitations:
   - 这些内容是传统象征解读，不是经验科学的人格诊断。
   - 任何单一信号都不能独立确定人格、健康或人生结果。
@@ -57,8 +104,8 @@ rules:
         source_kinds: [visible_stem, hidden_stem, unknown]
         minimum_occurrences: 1
     traditional_rule_ref: "子平法十神法；《渊海子平》"
-    topic: creative output
-    direction: expressive
+    topic: style of expression
+    direction: outward
     interpretation: 食伤信号将重点放在输出、表达与对既有规则的个人化处理。
     mechanism: 内在资源向外转化，使创作、说明或改造成为主要通道。
     likely_expression: 可能通过作品、语言或方法改进来表达自己的理解。

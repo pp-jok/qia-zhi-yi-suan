@@ -77,7 +77,10 @@ If no qualified fact packet or calculation provider is available, stop; never
 calculate, repair, or invent chart facts from general model knowledge.
 
 The default report mode is `standard-interpretive-v1`, which renders an
-evidence-dependent 8–12-section report. Use `concise-interpretive-v1` only when
+evidence-dependent 8–12-section report when evidence is sufficiently broad.
+If more than 12 supported topics match, consolidate the remaining conclusions
+into section 12 with their signal provenance and limitations; never silently
+truncate supported evidence. Use `concise-interpretive-v1` only when
 the user asks for a shorter view over the same profile. The legacy CLI aliases
 `standard` and `concise` may be accepted as input, but persisted output must use
 the versioned mode name. Long-form output is not part of this route.
