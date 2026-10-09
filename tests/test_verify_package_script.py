@@ -80,7 +80,7 @@ def test_release_metadata_declares_version_readme_license_and_assets() -> None:
     root = Path(__file__).resolve().parents[1]
     pyproject = (root / "pyproject.toml").read_text(encoding="utf-8")
 
-    assert 'version = "0.5.0"' in pyproject
+    assert 'version = "0.6.0"' in pyproject
     assert 'readme = "README.md"' in pyproject
     assert 'license = {file = "LICENSE"}' in pyproject
     assert '"interpretive_assets/v1/*.yaml"' in pyproject
@@ -109,7 +109,7 @@ def test_release_documentation_and_notices_are_present() -> None:
     root = Path(__file__).resolve().parents[1]
     expected = {
         "README.md": (
-            "0.5.0",
+            "0.6.0",
             "audited_interpretive",
             "standard-interpretive-v1",
             "concise-interpretive-v1",
@@ -119,7 +119,7 @@ def test_release_documentation_and_notices_are_present() -> None:
             "insufficient",
             "出生时间缺失",
         ),
-        "CHANGELOG.md": ("0.5.0", "audited_interpretive"),
+        "CHANGELOG.md": ("0.6.0", "audited_interpretive"),
         "THIRD_PARTY_NOTICES.md": ("PyYAML", "pytest", "Swiss Ephemeris"),
         "docs/architecture/autonomous-release-architecture.md": ("Facts", "Core Destiny Profile", "Report Plan"),
         "docs/release/v0.4.2-release-readiness.md": ("0.4.2", "unknown", "wheel"),

@@ -1128,6 +1128,27 @@ def test_failure_policy_distinguishes_controlled_limitations_from_fatal_gaps() -
     assert "controlled profile" in runtime
 
 
+def test_v060_release_metadata_and_user_docs_are_present() -> None:
+    pyproject = (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    changelog = (PROJECT_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    release_notes = (
+        PROJECT_ROOT / "docs" / "release" / "v0.6.0-release-notes.md"
+    ).read_text(encoding="utf-8")
+
+    assert 'version = "0.6.0"' in pyproject
+    assert "v0.6.0 Internal Test Product" in readme
+    assert "## 0.6.0 - 2026-10-09" in changelog
+    for phrase in (
+        "internal test product",
+        "CAPABILITY_GAP",
+        "standard-interpretive-v1",
+        "strict",
+        "wheel",
+    ):
+        assert phrase.casefold() in release_notes.casefold()
+
+
 def test_business_test_checklist_defines_cross_agent_quality_gate() -> None:
     skill = read_skill_file("SKILL.md")
     checklist = read_skill_file("checklists/business-test.md")

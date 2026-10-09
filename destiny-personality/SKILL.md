@@ -1,6 +1,6 @@
 ---
 name: destiny-personality
-description: Use when a user requests a Bazi and Western astrology personality portrait (legacy, core, core_concise, or core_standard), deterministic birth-chart facts (facts_only), or review of an existing fact packet or execution report (audit).
+description: Use when a user supplies birth information for a Bazi and Western astrology personality portrait (legacy, core, core_concise, or core_standard), requests deterministic birth-chart facts (facts_only), or requests review of an existing fact packet or execution report (audit).
 ---
 
 # Destiny Personality
@@ -52,6 +52,22 @@ under `compact-or-structured-birth-input-v1`. A line such as
 user to restate it. Ask one focused question only for a genuinely ambiguous or
 missing required value. Preserve a supplied sex label, never infer it, and do
 not mistake input normalization for permission to calculate chart facts.
+
+### Run the normal birth-input workflow
+
+Normal users supply birth information only. Keep facts JSON and qualification
+records inside the provider/runtime interface.
+
+1. Validate and normalize the birth input.
+2. Discover an available calculation/qualification provider.
+3. If no suitable provider is available, return `CAPABILITY_GAP` in a stopped
+   Execution Report and name the missing capability.
+4. Invoke the provider with the normalized birth input.
+5. Require a `deterministic-facts-v1` packet and an independently bound
+   `fact-qualification-v1` record before interpretation.
+
+Do not ask the user for facts JSON. Do not free-form calculate, reconstruct, or
+repair chart facts. Never replace an unavailable provider with model knowledge.
 
 ### Audited interpretive production route
 
