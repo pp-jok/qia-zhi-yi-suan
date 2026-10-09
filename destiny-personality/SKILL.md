@@ -76,8 +76,10 @@ record validates and fingerprint-binds the `deterministic-facts-v1` packet.
 If no qualified fact packet or calculation provider is available, stop; never
 calculate, repair, or invent chart facts from general model knowledge.
 
-The default report mode is `standard-interpretive-v1`, which renders an
-evidence-dependent 8–12-section report when evidence is sufficiently broad.
+The published v0.6 contract is: normal complete qualified charts: 7–12 meaningful sections; sparse evidence or missing birth time may produce fewer sections and must visibly state its scope.
+
+The default report mode is `standard-interpretive-v1`, which follows that
+evidence-dependent section-count contract.
 If more than 12 supported topics match, consolidate the remaining conclusions
 into section 12 with their signal provenance and limitations; never silently
 truncate supported evidence. Use `concise-interpretive-v1` only when

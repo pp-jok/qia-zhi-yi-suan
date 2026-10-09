@@ -97,7 +97,9 @@ destiny-personality-reference-validate build-interpretive-report FACTS.json \
 
 ## 审计式解释报告
 
-`standard-interpretive-v1` 是默认模式，证据充分时生成 8–12 个用户可读章节。当受支持主题超过 12 个时，第 12 节合并展示其余结论，并保留每条信号的 provenance 与局限，不静默截断。`concise-interpretive-v1` 是同一受控结论集的短版视图。公开报告入口只接受指纹绑定的 `QualifiedFacts`；调用方自行构造的 profile 或原始事实不能进入审计报告路径。CLI 仍接受 `standard` 和 `concise` 作为兼容别名，但持久化的 `report_mode` 始终使用带版本的正式名称。
+发布契约：normal complete qualified charts: 7–12 meaningful sections; sparse evidence or missing birth time may produce fewer sections and must visibly state its scope。
+
+`standard-interpretive-v1` 是默认模式，符合条件的普通完整命盘生成 7–12 个有意义的用户可读章节；证据稀疏或出生时间缺失时可以更短，但必须明确展示其适用范围与限制。当受支持主题超过 12 个时，第 12 节合并展示其余结论，并保留每条信号的 provenance 与局限，不静默截断。`concise-interpretive-v1` 是同一受控结论集的短版视图。公开报告入口只接受指纹绑定的 `QualifiedFacts`；调用方自行构造的 profile 或原始事实不能进入审计报告路径。CLI 仍接受 `standard` 和 `concise` 作为兼容别名，但持久化的 `report_mode` 始终使用带版本的正式名称。
 
 置信标签不是科学准确率，而是对当前规则与证据范围的受控表达：
 

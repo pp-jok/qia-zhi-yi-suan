@@ -246,6 +246,24 @@ def test_skill_router_encodes_modes_gates_and_hard_stops() -> None:
     assert "Do not calculate, infer, or repair" in text
 
 
+def test_v060_published_section_count_contract_is_consistent() -> None:
+    documents = (
+        PROJECT_ROOT / "destiny-personality/SKILL.md",
+        PROJECT_ROOT / "README.md",
+        PROJECT_ROOT / "docs/v0.6.0-product-readiness.md",
+        PROJECT_ROOT / "docs/release/v0.6.0-release-notes.md",
+    )
+    normal_complete_contract = "normal complete qualified charts: 7–12 meaningful sections"
+    sparse_or_missing_time_exception = (
+        "sparse evidence or missing birth time may produce fewer sections and must visibly state its scope"
+    )
+
+    for document in documents:
+        text = document.read_text(encoding="utf-8")
+        assert normal_complete_contract in text, document
+        assert sparse_or_missing_time_exception in text, document
+
+
 def test_skill_routes_formal_candidate_legacy_and_failure_paths() -> None:
     skill = read_skill_file("SKILL.md")
 
