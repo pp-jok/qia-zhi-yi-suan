@@ -60,32 +60,21 @@ def build_audited_profile_report_plan(
         raise TypeError("AUDITED_CORE_PROFILE_REQUIRED")
     items = _item_index(profile)
     sections = []
-    signature_topics = set()
-    dynamic_topics = set()
-    sections.append(
-        _section("core-profile", "核心画像", tuple(item.item_id for item in profile.dominant_signatures[:2]), "core-profile", "highest-salience-signatures")
-    )
-    signature_topics.update(item.topic for item in profile.dominant_signatures[:2])
-    for dynamic in profile.core_dynamics:
-        reason = "cross-system-tension" if dynamic.kind == "tension" else "cross-system-relationship"
-        sections.append(_section("dynamic-" + dynamic.topic, dynamic.title, (dynamic.item_id,), "dynamic:" + dynamic.topic, reason))
-        dynamic_topics.add(dynamic.topic)
-        break
-    for signature in profile.dominant_signatures:
-        if signature.topic in signature_topics or signature.topic in dynamic_topics:
-            continue
-        sections.append(_section("signature-" + signature.topic, signature.title, (signature.item_id,), "signature:" + signature.topic, "additional-supported-signature"))
-        signature_topics.add(signature.topic)
-        if len(signature_topics) >= 3:
-            break
-    for item in profile.shadow_mature_forms:
-        if item.topic in signature_topics:
-            sections.append(_section("shadow-mature-" + item.topic, item.title, (item.item_id,), "shadow-mature:" + item.topic, "reflective-counterweight"))
-            break
-    for item in profile.fate_themes:
-        if item.topic not in signature_topics and item.topic not in dynamic_topics:
-            sections.append(_section("theme-" + item.topic, item.title, (item.item_id,), "theme:" + item.topic, "distinct-supported-theme"))
-            break
+    observations = _candidate_observations(profile)
+    core_items = profile.dominant_signatures[:2]
+    if core_items and len(core_items) < 2:
+        core_items = core_items + observations[:1]
+    if not core_items:
+        core_items = observations[:2]
+    if core_items:
+        title = "核心主轴" if profile.dominant_signatures else "当前可支持观察"
+        sections.append(_section("core-profile", title, tuple(item.item_id for item in core_items), "core-profile", "evidence-ranked-core"))
+    for dynamic in profile.core_dynamics[:2]:
+        sections.append(_section("dynamic-" + dynamic.item_id, dynamic.title, (dynamic.item_id,), "dynamic:" + dynamic.item_id, "mechanism-bearing-dynamic"))
+    for item in profile.shadow_mature_forms[:2]:
+        sections.append(_section("shadow-mature-" + item.item_id, item.title, (item.item_id,), "shadow-mature:" + item.item_id, "dynamic-derived-regulation"))
+    for item in profile.fate_themes[:2]:
+        sections.append(_section("theme-" + item.item_id, item.title, (item.item_id,), "theme:" + item.item_id, "recurring-dynamic-pattern"))
     if profile.archetype is not None:
         sections.append(_section("archetype", profile.archetype.title, (profile.archetype.item_id,), "archetype", "profile-index"))
     sections = [
@@ -94,8 +83,6 @@ def build_audited_profile_report_plan(
     ]
     selected_ids = {item_id for section in sections for item_id in section.item_ids}
     omitted = tuple(item_id for item_id in sorted(items) if item_id not in selected_ids)
-    if not 4 <= len(sections) <= 8:
-        raise ValueError("AUDITED_PROFILE_PLAN_SECTION_BOUND_VIOLATION")
     if len({section.deduplication_key for section in sections}) != len(sections):
         raise ValueError("AUDITED_PROFILE_PLAN_DUPLICATE_SECTION")
     return AuditedProfileReportPlan(
@@ -142,13 +129,34 @@ def _section(
 
 def _item_index(profile: AuditedCoreProfile) -> Dict[str, AuditedProfileItem]:
     items = (
-        profile.dominant_signatures
+        _candidate_observations(profile)
+        + profile.dominant_signatures
         + profile.core_dynamics
         + profile.shadow_mature_forms
         + profile.fate_themes
         + (() if profile.archetype is None else (profile.archetype,))
     )
     return {item.item_id: item for item in items}
+
+
+def _candidate_observations(profile: AuditedCoreProfile) -> Tuple[AuditedProfileItem, ...]:
+    observations = []
+    for candidate in profile.bazi_candidates + profile.astrology_candidates:
+        observations.append(AuditedProfileItem(
+            item_id="observation:" + candidate.candidate_id,
+            topic=candidate.topic,
+            title="可支持观察：" + candidate.topic,
+            statement="{}体系的已限定线索显示：{}".format("八字" if candidate.system == "bazi" else "占星", " ".join(candidate.interpretations)),
+            signal_ids=candidate.signal_ids,
+            rule_refs=candidate.rule_refs,
+            fact_refs=candidate.fact_refs,
+            limitations=candidate.limitations,
+            salience=1,
+            source_item_ids=(candidate.candidate_id,),
+            activation_contexts=candidate.contexts,
+            interaction_mechanism="；".join(candidate.mechanisms),
+        ))
+    return tuple(sorted(observations, key=lambda item: (item.topic, item.item_id)))
 
 
 def _render_section(
@@ -158,13 +166,29 @@ def _render_section(
     return AuditedProfileReportSection(
         section_id=section.section_id,
         title=section.title,
-        content="\n\n".join(item.statement for item in selected),
+        content="\n\n".join(_narrative(item) for item in selected),
         item_ids=section.item_ids,
         signal_ids=_unique(signal_id for item in selected for signal_id in item.signal_ids),
         rule_refs=_unique(rule_ref for item in selected for rule_ref in item.rule_refs),
         fact_refs=_unique(fact_ref for item in selected for fact_ref in item.fact_refs),
         limitations=_unique(limitation for item in selected for limitation in item.limitations),
     )
+
+
+def _narrative(item: AuditedProfileItem) -> str:
+    parts = [item.statement]
+    if item.kind == "shadow_mature":
+        parts.append("这是一条由前述内在节奏导出的待验证反思，不是对实际行为的断言。")
+        return "\n".join(parts)
+    if item.interaction_mechanism:
+        parts.append("形成机制：" + item.interaction_mechanism.replace("。；", "；"))
+    if item.activation_contexts:
+        parts.append("较适合观察的情境：" + "、".join(item.activation_contexts))
+    if item.pressure_pattern:
+        parts.append("压力下的可能失衡：" + item.pressure_pattern)
+    if item.integration_pattern:
+        parts.append("整合方向：" + item.integration_pattern)
+    return "\n".join(parts)
 
 
 def _section_evidence_fingerprint(

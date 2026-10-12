@@ -41,7 +41,7 @@ def test_default_birth_report_persists_audited_core_profile_artifacts(tmp_path):
     assert profile["schema_version"] == "audited-interpretive-cdp-v1"
     assert plan["schema_version"] == "audited-profile-report-plan-v1"
     assert audit["core_profile_id"] == profile["core_profile_id"]
-    assert 4 <= result["section_count"] <= 8
+    assert 1 <= result["section_count"] <= 7
 
 
 @pytest.mark.parametrize("value", ("bad input", "1992年7月14日 15:30，杭州，女"))

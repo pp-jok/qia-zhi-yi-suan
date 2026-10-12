@@ -1,0 +1,155 @@
+{
+  "astrology": {
+    "ascendant": null,
+    "aspects": [
+      {
+        "body_a": "Sun",
+        "body_b": "Moon",
+        "aspect_type": "square",
+        "orb": "2"
+      }
+    ],
+    "dignities": [
+      {
+        "body": "Sun",
+        "dignity": "detriment"
+      }
+    ],
+    "house_cusps": [],
+    "mc": null,
+    "methodology_version": "western-tropical-v1.0",
+    "placements": [
+      {
+        "body": "Sun",
+        "longitude": "10",
+        "sign": "Libra",
+        "degree_in_sign": "10",
+        "house": null
+      },
+      {
+        "body": "Moon",
+        "longitude": "53",
+        "sign": "Cancer",
+        "degree_in_sign": "17",
+        "house": null
+      },
+      {
+        "body": "Mercury",
+        "longitude": "96",
+        "sign": "Virgo",
+        "degree_in_sign": "24",
+        "house": null
+      },
+      {
+        "body": "Venus",
+        "longitude": "139",
+        "sign": "Scorpio",
+        "degree_in_sign": "1",
+        "house": null
+      },
+      {
+        "body": "Mars",
+        "longitude": "182",
+        "sign": "Gemini",
+        "degree_in_sign": "8",
+        "house": null
+      },
+      {
+        "body": "Jupiter",
+        "longitude": "225",
+        "sign": "Pisces",
+        "degree_in_sign": "15",
+        "house": null
+      },
+      {
+        "body": "Saturn",
+        "longitude": "268",
+        "sign": "Aquarius",
+        "degree_in_sign": "22",
+        "house": null
+      }
+    ]
+  },
+  "bazi": {
+    "day_pillar": {
+      "earthly_branch": "午",
+      "heavenly_stem": "庚"
+    },
+    "hidden_stems": [
+      {
+        "pillar": "year",
+        "stems": [
+          "癸"
+        ]
+      }
+    ],
+    "hour_pillar": null,
+    "methodology_version": "bazi-core-v1.0",
+    "month_pillar": {
+      "earthly_branch": "辰",
+      "heavenly_stem": "戊"
+    },
+    "relations": [
+      {
+        "relation_type": "harm",
+        "participant_refs": [
+          "year.branch",
+          "month.branch"
+        ],
+        "source_pillars": [
+          "year",
+          "month"
+        ],
+        "rule_version": "v060-fixture-v1"
+      }
+    ],
+    "ten_gods": [
+      {
+        "subject_ref": "day_master",
+        "ten_god": "正财",
+        "source_pillars": [
+          "year"
+        ],
+        "source_kind": "visible_stem"
+      },
+      {
+        "subject_ref": "day_master",
+        "ten_god": "食神",
+        "source_pillars": [
+          "month"
+        ],
+        "source_kind": "hidden_stem"
+      }
+    ],
+    "year_pillar": {
+      "earthly_branch": "子",
+      "heavenly_stem": "甲"
+    }
+  },
+  "fact_mode": "stable_only",
+  "methodology_versions": {
+    "astrology": "western-tropical-v1.0",
+    "bazi": "bazi-core-v1.0"
+  },
+  "normalized_time": {
+    "birth_date": "1994-05-05",
+    "dst_was_applied": null,
+    "fact_mode": "stable_only",
+    "historical_civil_time": null,
+    "local_standard_time": null,
+    "sensitivity_reasons": [
+      "birth_time_unknown"
+    ],
+    "time_basis": "true_solar_time",
+    "timezone_name": "Asia/Shanghai",
+    "true_solar_time": null,
+    "utc_time": null
+  },
+  "provenance_refs": [
+    "fixture:v060:missing-time"
+  ],
+  "schema_version": "deterministic-facts-v1",
+  "validation_summary": {
+    "structure": "passed"
+  }
+}

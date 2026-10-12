@@ -1,0 +1,38 @@
+{
+  "audit_trail": [
+    "deterministic-facts:7ae471150638bd6e4cb0b0694940953027e48aec29cdaf71373a26adb1e93cea",
+    "fact-qualification:7c917e2ef6a7cb6880e482696b8fb0e6111bb871f720fb4de3f7c0ecb250c22a",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only",
+    "report_planner:audited-profile-report-plan-v1"
+  ],
+  "core_profile_id": "audited-cdp-29ff117e075df284",
+  "omitted_item_ids": [
+    "observation:astrology:emotional processing",
+    "observation:astrology:expression conditions",
+    "observation:astrology:growth orientation",
+    "observation:astrology:interacting tendencies",
+    "observation:astrology:relating and values",
+    "observation:astrology:style of expression",
+    "observation:astrology:thinking and communication",
+    "observation:bazi:contextual dynamics",
+    "observation:bazi:resource handling",
+    "observation:bazi:style of expression"
+  ],
+  "profile_fingerprint": "40bff1abeb80a3567e946153e25a9ff5bfb9be535412c7099d33e517891eabc8",
+  "schema_version": "audited-profile-report-plan-v1",
+  "sections": [
+    {
+      "deduplication_key": "core-profile",
+      "evidence_fingerprint": "fdef6a5a0d3eabb920fef713d3eefa342188b41ef28a6aae766bd640c893fa85",
+      "item_ids": [
+        "observation:astrology:action style",
+        "observation:astrology:boundaries and mastery"
+      ],
+      "reason": "evidence-ranked-core",
+      "section_id": "core-profile",
+      "title": "当前可支持观察"
+    }
+  ]
+}

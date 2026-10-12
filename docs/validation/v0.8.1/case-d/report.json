@@ -1,0 +1,50 @@
+{
+  "audit_refs": [
+    "deterministic-facts:7ae471150638bd6e4cb0b0694940953027e48aec29cdaf71373a26adb1e93cea",
+    "fact-qualification:7c917e2ef6a7cb6880e482696b8fb0e6111bb871f720fb4de3f7c0ecb250c22a",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only",
+    "report_planner:audited-profile-report-plan-v1"
+  ],
+  "boundary_statement": "本报告基于传统命理与占星象意的已审计规则生成，用于反思，不是实证人格测量、医疗或心理诊断，也不应代替重大生活决策。",
+  "core_profile_id": "audited-cdp-29ff117e075df284",
+  "limitations": [
+    "formal primitive coverage is not asserted",
+    "candidate mapping assets are not read by this product profile",
+    "traditional interpretive synthesis is reflective, non-diagnostic, and non-predictive",
+    "Cross-system relationships compare exact matched topics only.",
+    "Unmatched evidence remains non-comparable and never implies agreement.",
+    "Traditional interpretive synthesis is non-diagnostic and non-predictive."
+  ],
+  "mode": "core-profile-v1",
+  "schema_version": "audited-profile-report-v1",
+  "sections": [
+    {
+      "content": "占星体系的已限定线索显示：火星的元素与模式描述行动如何启动、持续与面对阻力。风象取向会以信息交换、观点连接来承载该行星功能。变动模式更重视调整、转译与回应已变化的条件。（命中依据：元素：风象；模式：变动）\n形成机制：驱动力选择与元素相应的路径，并按模式分配行动节奏。风象通过命名、比较与对话组织该功能的运作。变动模式通过修正路径与重新组织信息来维持进展。\n较适合观察的情境：行动、冲突处理、需要协商与信息交换的情境、过渡与需要应变的情境\n\n占星体系的已限定线索显示：土星的元素与模式描述边界、责任与长期掌握的象征途径。风象取向会以信息交换、观点连接来承载该行星功能。固定模式更重视延续、稳定投入与保持已定方向。（命中依据：元素：风象；模式：固定）\n形成机制：对限制的感知通过元素被具体化，并按模式逐步建立结构。风象通过命名、比较与对话组织该功能的运作。固定模式通过维持一致性来积累力量，改变通常需要更明确理由。\n较适合观察的情境：长期任务、边界建立、需要协商与信息交换的情境、需要稳定维持的情境",
+      "fact_refs": [
+        "astrology.placements[4].sign",
+        "astrology.placements[6].sign"
+      ],
+      "item_ids": [
+        "observation:astrology:action style",
+        "observation:astrology:boundaries and mastery"
+      ],
+      "limitations": [
+        "不代表攻击性或执行能力评分。",
+        "不用于诊断压抑、焦虑或生活困难。"
+      ],
+      "rule_refs": [
+        "现代西方占星学火星星座综合法；Stephen Arroyo",
+        "现代西方占星学土星星座综合法；Stephen Arroyo"
+      ],
+      "section_id": "core-profile",
+      "signal_ids": [
+        "ASTROLOGY-MARS-SIGN-QUALITY",
+        "ASTROLOGY-SATURN-SIGN-QUALITY"
+      ],
+      "title": "当前可支持观察"
+    }
+  ],
+  "title": "审计型命格人格画像"
+}

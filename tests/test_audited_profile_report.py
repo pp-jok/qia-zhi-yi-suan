@@ -29,7 +29,7 @@ def test_plan_selects_a_bounded_non_repetitive_reader_path():
     plan = build_audited_profile_report_plan(profile)
     report = render_audited_profile_report(profile, plan)
 
-    assert 4 <= len(plan.sections) <= 8
+    assert 1 <= len(plan.sections) <= 7
     assert plan.core_profile_id == profile.core_profile_id
     assert len({section.deduplication_key for section in plan.sections}) == len(plan.sections)
     assert report.sections
