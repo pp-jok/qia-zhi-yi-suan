@@ -21,6 +21,11 @@ _INTERPRETIVE_REPORT_MODE_ALIASES = {
     "standard": "standard-interpretive-v1",
     "concise": "concise-interpretive-v1",
 }
+_BIRTH_REPORT_MODES = (
+    "core-profile-v1",
+    "standard-interpretive-v1",
+    "concise-interpretive-v1",
+)
 
 
 def _canonical_interpretive_report_mode(value: str) -> str:
@@ -106,7 +111,7 @@ def _build_parser() -> argparse.ArgumentParser:
     birth_report.add_argument("birth", help="e.g. 1992年7月14日 15:30，上海，女")
     birth_report.add_argument("--output", type=Path, required=True)
     birth_report.add_argument("--artifacts-dir", type=Path, required=True)
-    birth_report.add_argument("--mode", choices=tuple(_INTERPRETIVE_REPORT_MODES), type=_canonical_interpretive_report_mode, default="standard-interpretive-v1")
+    birth_report.add_argument("--mode", choices=_BIRTH_REPORT_MODES, type=_canonical_interpretive_report_mode, default="core-profile-v1")
     semantic_build = subparsers.add_parser("build-semantic-core")
     semantic_build.add_argument("project_root", type=Path)
     semantic_build.add_argument("profile_ref")

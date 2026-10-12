@@ -1,0 +1,149 @@
+{
+  "audit_refs": [
+    "deterministic-facts:9fbdcbce85fe08f5f5df75653f1dfe530bbe57c4c8c7dfc3aa9d2340c2bd9b61",
+    "fact-qualification:34672c52182de95575d02b24cedd52e9cb731438255731dc14e98520a0968431",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only",
+    "report_planner:audited-profile-report-plan-v1"
+  ],
+  "boundary_statement": "本报告基于传统命理与占星象意的已审计规则生成，用于反思，不是实证人格测量、医疗或心理诊断，也不应代替重大生活决策。",
+  "core_profile_id": "audited-cdp-950d830526a879ff",
+  "core_profile_ref": "docs/validation/v0.8.0/case-b/artifacts/core_profile.json",
+  "limitations": [
+    "formal primitive coverage is not asserted",
+    "candidate mapping assets are not read by this product profile",
+    "traditional interpretive synthesis is reflective, non-diagnostic, and non-predictive",
+    "Cross-system relationships compare exact matched topics only.",
+    "Unmatched evidence remains non-comparable and never implies agreement.",
+    "Traditional interpretive synthesis is non-diagnostic and non-predictive."
+  ],
+  "mode": "core-profile-v1",
+  "report_audit_ref": "docs/validation/v0.8.0/case-b/artifacts/report_audit.json",
+  "report_plan_ref": "docs/validation/v0.8.0/case-b/artifacts/report_plan.json",
+  "schema_version": "audited-profile-report-v1",
+  "sections": [
+    {
+      "content": "该主题目前由占星体系的已限定信号支持：日月主要相位用于观察自我意志与情绪需求如何互动。（命中依据：相位：对冲）\n\n该主题目前由占星体系的已限定信号支持：太阳宫位将核心表达限定在一个可核查的生活领域中。（命中依据：宫位：第2宫）",
+      "fact_refs": [
+        "astrology.aspects[0].aspect_type",
+        "astrology.placements[0].house"
+      ],
+      "item_ids": [
+        "signature:astrology:interacting tendencies",
+        "signature:astrology:life arena"
+      ],
+      "limitations": [
+        "相位解读依赖容许度和全盘，不是事件预测。",
+        "出生时间不可用时必须完全省略。"
+      ],
+      "rule_refs": [
+        "西方占星学主要相位论；William Lilly, Christian Astrology",
+        "西方占星学宫位论；William Lilly, Christian Astrology"
+      ],
+      "section_id": "core-profile",
+      "signal_ids": [
+        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+        "ASTROLOGY-SUN-HOUSE-CONTEXT"
+      ],
+      "title": "核心画像"
+    },
+    {
+      "content": "两个体系在 style of expression 主题上命中了不同方向，保留为需按情境理解的张力，不互相抵消。",
+      "fact_refs": [
+        "bazi.ten_gods[6].ten_god",
+        "bazi.ten_gods[7].ten_god",
+        "bazi.ten_gods[13].ten_god",
+        "bazi.ten_gods[0].ten_god",
+        "bazi.ten_gods[5].ten_god",
+        "bazi.ten_gods[12].ten_god",
+        "astrology.placements[0].sign"
+      ],
+      "item_ids": [
+        "dynamic:style of expression"
+      ],
+      "limitations": [
+        "需与全局其他十神与关系合看。",
+        "不等同于才华水平或职业成就。",
+        "行星星座象征不是人格测量。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》",
+        "现代西方占星学行星星座综合法；Stephen Arroyo"
+      ],
+      "section_id": "dynamic-style of expression",
+      "signal_ids": [
+        "BAZI-TEN-GOD-EXPRESSION",
+        "BAZI-TEN-GOD-OUTPUT",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "title": "张力与调节：reflective × outward × attuned"
+    },
+    {
+      "content": "该主题目前由占星体系的已限定信号支持：火星的元素与模式描述行动如何启动、持续与面对阻力。土象取向会以具体条件、稳定结果来承载该行星功能。固定模式更重视延续、稳定投入与保持已定方向。（命中依据：元素：土象；模式：固定）",
+      "fact_refs": [
+        "astrology.placements[4].sign"
+      ],
+      "item_ids": [
+        "signature:astrology:action style"
+      ],
+      "limitations": [
+        "不代表攻击性或执行能力评分。"
+      ],
+      "rule_refs": [
+        "现代西方占星学火星星座综合法；Stephen Arroyo"
+      ],
+      "section_id": "signature-action style",
+      "signal_ids": [
+        "ASTROLOGY-MARS-SIGN-QUALITY"
+      ],
+      "title": "核心倾向：action style（grounded）"
+    },
+    {
+      "content": "若把这一倾向单独放大，容易忽略与它并存的条件；较成熟的用法，是把它放回具体情境，与其他已命中线索一并观察。",
+      "fact_refs": [
+        "astrology.aspects[0].aspect_type"
+      ],
+      "item_ids": [
+        "shadow-mature:interacting tendencies"
+      ],
+      "limitations": [
+        "相位解读依赖容许度和全盘，不是事件预测。",
+        "这是反思性表达，不是行为预测。"
+      ],
+      "rule_refs": [
+        "西方占星学主要相位论；William Lilly, Christian Astrology"
+      ],
+      "section_id": "shadow-mature-interacting tendencies",
+      "signal_ids": [
+        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT"
+      ],
+      "title": "影子与成熟表达：interacting tendencies"
+    },
+    {
+      "content": "可将当前画像暂称为“围绕interacting tendencies与life arena展开的整合者”；这只是对已命中主题的阅读索引。",
+      "fact_refs": [
+        "astrology.aspects[0].aspect_type",
+        "astrology.placements[0].house"
+      ],
+      "item_ids": [
+        "archetype:profile"
+      ],
+      "limitations": [
+        "相位解读依赖容许度和全盘，不是事件预测。",
+        "原型不是分类诊断，也不取代个体自我理解。"
+      ],
+      "rule_refs": [
+        "西方占星学主要相位论；William Lilly, Christian Astrology",
+        "西方占星学宫位论；William Lilly, Christian Astrology"
+      ],
+      "section_id": "archetype",
+      "signal_ids": [
+        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT",
+        "ASTROLOGY-SUN-HOUSE-CONTEXT"
+      ],
+      "title": "画像原型"
+    }
+  ],
+  "title": "审计型命格人格画像"
+}

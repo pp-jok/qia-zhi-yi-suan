@@ -1,0 +1,92 @@
+{
+  "audit_trail": [
+    "deterministic-facts:3d722d36079f14b04bd3cca83c876a6fe55359a5cca70900f70645067dd56a57",
+    "fact-qualification:f906c56491948a08d6cd1ca5de5de2fc94f0cdb285707d32efa4fc755c9061a4",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only",
+    "report_planner:audited-profile-report-plan-v1"
+  ],
+  "core_profile_id": "audited-cdp-9dba67f16573b3cc",
+  "omitted_item_ids": [
+    "shadow-mature:action style",
+    "shadow-mature:style of expression",
+    "signature:astrology:boundaries and mastery",
+    "signature:astrology:emotional processing",
+    "signature:astrology:growth orientation",
+    "signature:astrology:relating and values",
+    "signature:astrology:thinking and communication",
+    "signature:bazi:agency",
+    "signature:bazi:recurring emphasis",
+    "signature:bazi:resource handling",
+    "signature:bazi:structure and pressure",
+    "theme:action style",
+    "theme:life arena",
+    "theme:style of expression"
+  ],
+  "profile_fingerprint": "38f59937a1790e342e8b1e8a6a1162f17043c7aa4d9f9274fea6211a96fd75c2",
+  "schema_version": "audited-profile-report-plan-v1",
+  "sections": [
+    {
+      "deduplication_key": "core-profile",
+      "evidence_fingerprint": "c5f9ab4349dbd27b1b13896f84c9b1120e046682e5c4f82d310e802d6fd6b67c",
+      "item_ids": [
+        "signature:astrology:life arena",
+        "signature:style of expression"
+      ],
+      "reason": "highest-salience-signatures",
+      "section_id": "core-profile",
+      "title": "核心画像"
+    },
+    {
+      "deduplication_key": "dynamic:style of expression",
+      "evidence_fingerprint": "34b3fb53980b9d104da11f174428f2f22e93708fac8fefe6d2b241b7c53921b1",
+      "item_ids": [
+        "dynamic:style of expression"
+      ],
+      "reason": "cross-system-tension",
+      "section_id": "dynamic-style of expression",
+      "title": "张力与调节：reflective × grounded"
+    },
+    {
+      "deduplication_key": "signature:action style",
+      "evidence_fingerprint": "b46e379b9691cf98c7f687a56c07bafcb2089605f55679b9b6a6a0b860b3a568",
+      "item_ids": [
+        "signature:astrology:action style"
+      ],
+      "reason": "additional-supported-signature",
+      "section_id": "signature-action style",
+      "title": "核心倾向：action style（conceptual）"
+    },
+    {
+      "deduplication_key": "shadow-mature:life arena",
+      "evidence_fingerprint": "2de5dfcb46cd836febed89677d24443768ed2d1d39fd6427ed119f9bc6554042",
+      "item_ids": [
+        "shadow-mature:life arena"
+      ],
+      "reason": "reflective-counterweight",
+      "section_id": "shadow-mature-life arena",
+      "title": "影子与成熟表达：life arena"
+    },
+    {
+      "deduplication_key": "theme:agency",
+      "evidence_fingerprint": "54ff5f6af135ca7052b1ae01e4c97e536669f10bf0767fa2d1f6fc87feee0d3a",
+      "item_ids": [
+        "theme:agency"
+      ],
+      "reason": "distinct-supported-theme",
+      "section_id": "theme-agency",
+      "title": "生命主题：agency"
+    },
+    {
+      "deduplication_key": "archetype",
+      "evidence_fingerprint": "4b9d54f1b61db50819d17f546095493f542c142eb9a5ea88a4442da49dae8111",
+      "item_ids": [
+        "archetype:profile"
+      ],
+      "reason": "profile-index",
+      "section_id": "archetype",
+      "title": "画像原型"
+    }
+  ]
+}

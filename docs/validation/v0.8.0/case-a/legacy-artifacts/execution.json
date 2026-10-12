@@ -1,0 +1,24 @@
+{
+  "artifacts": {
+    "facts": "docs/validation/v0.8.0/case-a/legacy-artifacts/facts.json",
+    "qualification": "docs/validation/v0.8.0/case-a/legacy-artifacts/qualification.json"
+  },
+  "fact_fingerprint": "3d722d36079f14b04bd3cca83c876a6fe55359a5cca70900f70645067dd56a57",
+  "facts_path": "docs/validation/v0.8.0/case-a/legacy-artifacts/facts.json",
+  "input": {
+    "birth_text": "2000年1月1日 00:30，上海，女",
+    "birthplace": "上海",
+    "gender": "女"
+  },
+  "mode": "standard-interpretive-v1",
+  "provider_id": "local-mit-chart-provider-v1",
+  "provider_versions": {
+    "astronomy_engine": "2.1.19",
+    "lunar_python": "1.4.8"
+  },
+  "qualification_fingerprint": "f906c56491948a08d6cd1ca5de5de2fc94f0cdb285707d32efa4fc755c9061a4",
+  "qualification_path": "docs/validation/v0.8.0/case-a/legacy-artifacts/qualification.json",
+  "report_path": "docs/validation/v0.8.0/case-a/legacy-report.json",
+  "schema_version": "birth-report-execution-v2",
+  "status": "passed"
+}
