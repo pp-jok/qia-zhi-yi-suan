@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0 - 2026-10-12
+
+- Add a deterministic local birth-input calculation, qualification, and report path.
+- Declare the packaged Western method as tropical whole-sign and record provider provenance.
+
 ## 0.6.0 - 2026-10-09
 
 ### Added

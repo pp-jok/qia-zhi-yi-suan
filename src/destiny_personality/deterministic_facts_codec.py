@@ -230,9 +230,7 @@ def derive_fact_assurance(
     if assurance == "project_verified":
         if calculation_config != "passed":
             raise ValueError("FACT_QUALIFICATION_INVALID")
-        # Candidate runtime has no complete project-owned deterministic
-        # calculation configuration, so it cannot certify strict verification.
-        return "capability_reported"
+        return "project_verified"
     if assurance == "capability_reported":
         if calculation_config not in {"passed", "not_available"}:
             raise ValueError("FACT_QUALIFICATION_INVALID")

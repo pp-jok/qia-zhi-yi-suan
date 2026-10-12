@@ -33,7 +33,7 @@ CONFIG_FILENAMES = (
 @pytest.fixture
 def valid_config_dir(tmp_path: Path) -> Path:
     project_root = Path(__file__).resolve().parents[1]
-    source = project_root / "destiny_personality_skill_docs_v2_2"
+    source = project_root / "destiny-personality" / "configs"
     for filename in CONFIG_FILENAMES:
         shutil.copyfile(source / filename, tmp_path / filename)
     return tmp_path
@@ -120,7 +120,7 @@ def astrology_facts(runtime_config) -> AstrologyChartFacts:
         for house in range(1, 13)
     )
     return AstrologyChartFacts(
-        methodology_version="western-tropical-v1.0",
+        methodology_version="western-tropical-whole-sign-v1.0",
         placements=placements,
         aspects=(),
         ascendant=Decimal("5"),

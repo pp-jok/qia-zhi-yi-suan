@@ -11,7 +11,7 @@ def test_project_v2_2_configuration_is_loadable() -> None:
     config = load_runtime_config(config_dir)
 
     assert config.bazi.methodology_version == "bazi-core-v1.0"
-    assert config.astrology.methodology_version == "western-tropical-v1.0"
+    assert config.astrology.methodology_version == "western-tropical-whole-sign-v1.0"
     assert config.score_model.score_model_version == "2.2"
     assert config.relation_graph.relation_graph_version == "1.0"
     assert len(config.relation_graph.relations) == 5

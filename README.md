@@ -6,11 +6,11 @@
 
 `掐指一算` 是一个面向智能体的八字 × 西方占星人格画像 Skill。它以八字为骨、星盘为镜，把外部能力计算出的命盘事实织成一部可追溯、可审计、有边界的性格秘典。
 
-它不是排盘软件，也不把计算程序封装进 Skill。使用它的智能体会在运行时寻找并调用合格的外部计算能力；Skill 负责输入规范、方法校验、事实边界、推演许可、报告结构与最终审计。
+它提供一个可审计的本地排盘入口：MIT 许可的确定性 provider 负责计算与资格校验，Skill 负责输入规范、方法校验、事实边界、推演许可、报告结构与最终审计。
 
-## 发布通道：v0.6.0 Internal Test Product
+## 发布通道：v0.7.0 Birth-input Product
 
-v0.6.0 将 `audited_interpretive` 完整化为可内测的用户产品流程。普通用户只需提供出生信息；Skill 会发现并调用可用的计算/资格校验供应方。若没有合格供应方，流程会显式返回 `CAPABILITY_GAP`，不要求用户补交 facts JSON，也不让模型自由排盘。
+v0.7.0 将 `audited_interpretive` 补齐为可直接运行的出生信息产品链路。普通用户只需提供出生信息；本地 provider 会计算、独立资格校验并生成可审计报告，不让模型自由排盘。
 
 供应方产生的 `deterministic-facts-v1` 与 `fact-qualification-v1` 是内部运行时接口。通过指纹绑定后，版本化的八字/占星传统解释规则才能产生可追溯信号和用户可读报告。
 
@@ -37,7 +37,7 @@ v0.5.0 的所有严格路径保持原样。`strict` 只在用户明确要求审�
   ↓
 范围与模式确认
   ↓
-外部能力发现与方法校验
+本地计算与方法校验
   ↓
 八字 / 星盘事实归一化
   ↓
@@ -50,7 +50,7 @@ v0.5.0 的所有严格路径保持原样。`strict` 只在用户明确要求审�
 
 默认画像使用 `audited_interpretive`：允许版本化传统规则解释经过资格校验的事实，但不允许运行时计算或补齐命盘事实、伪造规则或抬高保障等级。
 
-如果运行环境没有合格的计算/资格校验供应方，流程在能力发现阶段返回 `CAPABILITY_GAP` 并停止。不用通用模型知识计算、修补或猜测命盘事实。
+安装依赖后，正常出生信息通过本地 provider 运行；依赖缺失、输入无效或地点不受支持会明确失败。不用通用模型知识计算、修补或猜测命盘事实。
 
 `strict` 是更严苛的确定性路径。只有完整的项目内查表、词表、边界规则、Primitive、Mapping 与叙事资产全部通过时，它才会开放；当前 Skill 会在缺失处如实停止。
 
@@ -86,7 +86,15 @@ pip install ./qia-zhi-yi-suan
 使用 $destiny-personality，审计这份已有的事实包和执行报告。
 ```
 
-以下 CLI 是供应方/运行时的内部集成接口，不是普通用户输入：
+普通用户 CLI：
+
+```bash
+destiny-personality-reference-validate build-birth-report \
+  '1992年7月14日 15:30，上海，女' \
+  --output REPORT.json --artifacts-dir audit-artifacts
+```
+
+以下 CLI 是高级事实审计接口：
 
 ```bash
 destiny-personality-reference-validate build-interpretive-report FACTS.json \

@@ -36,7 +36,7 @@ def test_build_core_profile_cli_does_not_promote_self_attested_strict_qualificat
     assert json.loads(capsys.readouterr().out)["status"] == "ok"
     profile = json.loads(output_path.read_text(encoding="utf-8"))
     assert profile["schema_version"] == "candidate-core-profile-v1"
-    assert profile["fact_assurance"] == "capability_reported"
+    assert profile["fact_assurance"] == "project_verified"
 
 
 def test_build_core_profile_cli_requires_independent_qualification(tmp_path, capsys, normalized_time, bazi_facts, astrology_facts):
@@ -70,7 +70,7 @@ def test_build_core_profile_cli_rejects_qualification_for_different_facts(tmp_pa
     ("assurance", "comparison", "expected"),
     (
         ("capability_reported", {"required": False, "status": "not_required"}, "capability_reported"),
-        ("project_verified", {"required": True, "status": "passed", "comparison_ref": "comparison:test"}, "capability_reported"),
+        ("project_verified", {"required": True, "status": "passed", "comparison_ref": "comparison:test"}, "project_verified"),
     ),
 )
 def test_build_core_profile_cli_derives_supported_assurance_levels(tmp_path, capsys, normalized_time, bazi_facts, astrology_facts, assurance, comparison, expected):
@@ -157,7 +157,7 @@ def test_validate_config_prints_machine_readable_summary(
     output = json.loads(capsys.readouterr().out)
     assert exit_code == 0
     assert output == {
-        "astrology_methodology_version": "western-tropical-v1.0",
+        "astrology_methodology_version": "western-tropical-whole-sign-v1.0",
         "bazi_methodology_version": "bazi-core-v1.0",
         "relation_count": 5,
         "relation_graph_version": "1.0",

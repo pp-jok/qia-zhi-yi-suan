@@ -33,7 +33,7 @@ def _data() -> dict:
         "vocabulary_version": "TEST_ONLY_VOCABULARY_V1",
         "methodology_versions": {
             "bazi": "bazi-core-v1.0",
-            "astrology": "western-tropical-v1.0",
+            "astrology": "western-tropical-whole-sign-v1.0",
         },
         "categories": {
             category: {
@@ -66,7 +66,7 @@ def test_loads_immutable_canonical_fact_vocabulary(
     assert vocabulary.schema_version == "canonical-fact-vocabulary-v1"
     assert vocabulary.vocabulary_version == "TEST_ONLY_VOCABULARY_V1"
     assert vocabulary.bazi_methodology_version == "bazi-core-v1.0"
-    assert vocabulary.astrology_methodology_version == "western-tropical-v1.0"
+    assert vocabulary.astrology_methodology_version == "western-tropical-whole-sign-v1.0"
     assert tuple(item.category_id for item in vocabulary.categories) == CATEGORIES
     assert vocabulary.categories[0].entries[0].canonical_id == "TEST_ONLY_BAZI_STEM"
     assert vocabulary.categories[0].entries[0].aliases == (
