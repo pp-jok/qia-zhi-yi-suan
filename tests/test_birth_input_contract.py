@@ -70,7 +70,7 @@ def test_calculation_models_are_immutable_and_use_stable_wire_values() -> None:
         ),
     )
     astrology = AstrologyChartFacts(
-        methodology_version="western-tropical-v1.0",
+        methodology_version="western-tropical-whole-sign-v1.0",
         placements=(
             AstrologyPlacement(
                 "Sun", Decimal("281.0"), "Capricorn", Decimal("11.0"), 2

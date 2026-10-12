@@ -7,8 +7,8 @@ import yaml
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SKILL_ROOT = PROJECT_ROOT / "destiny-personality"
 NORMAL_BIRTH_INPUT_DEFAULT_PROMPT = (
-    "Use $destiny-personality to analyze my personality from my birth information; "
-    "use an available calculation/qualification provider or return CAPABILITY_GAP."
+    "Use $destiny-personality to analyze my personality from my birth information "
+    "with the packaged local calculation and qualification provider."
 )
 
 
@@ -89,8 +89,8 @@ def test_ui_default_prompt_matches_normal_birth_input_route() -> None:
     metadata = yaml.safe_load(read_skill_file("agents/openai.yaml"))
 
     assert "Normal users supply birth information only" in skill_text
-    assert "Discover an available calculation/qualification provider" in skill_text
-    assert "return `CAPABILITY_GAP`" in skill_text
+    assert "Use the packaged local calculation/qualification provider" in skill_text
+    assert "do not use model-generated facts" in skill_text
     assert metadata["interface"]["default_prompt"] == NORMAL_BIRTH_INPUT_DEFAULT_PROMPT
 
 
@@ -1160,23 +1160,23 @@ def test_failure_policy_distinguishes_controlled_limitations_from_fatal_gaps() -
     assert "controlled profile" in runtime
 
 
-def test_v060_release_metadata_and_user_docs_are_present() -> None:
+def test_v070_release_metadata_and_user_docs_are_present() -> None:
     pyproject = (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
     readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
     changelog = (PROJECT_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     release_notes = (
-        PROJECT_ROOT / "docs" / "release" / "v0.6.0-release-notes.md"
+            PROJECT_ROOT / "docs" / "release" / "v0.7.0-release-notes.md"
     ).read_text(encoding="utf-8")
 
-    assert 'version = "0.6.0"' in pyproject
-    assert "v0.6.0 Internal Test Product" in readme
-    assert "## 0.6.0 - 2026-10-09" in changelog
+    assert 'version = "0.7.0"' in pyproject
+    assert "v0.7.0 Birth-input Product" in readme
+    assert "## 0.7.0" in changelog
     for phrase in (
-        "internal test product",
-        "CAPABILITY_GAP",
+        "birth-input product chain",
+        "local",
         "standard-interpretive-v1",
-        "strict",
-        "wheel",
+        "whole-sign",
+        "qualification",
     ):
         assert phrase.casefold() in release_notes.casefold()
 

@@ -121,7 +121,7 @@ def _mapping_rule(source: str, number: int, primitive_id: str) -> dict:
 def _registry_data(source: str) -> dict:
     methodology_version = {
         "bazi": "bazi-core-v1.0",
-        "astrology": "western-tropical-v1.0",
+        "astrology": "western-tropical-whole-sign-v1.0",
     }[source]
     rules = [
         _mapping_rule(source, 1, "P900"),

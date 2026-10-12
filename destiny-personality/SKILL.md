@@ -7,9 +7,9 @@ description: Use when a user supplies birth information for a Bazi and Western a
 
 ## Preserve the boundary
 
-Treat this Skill as business workflow and validation, not calculation software. The agent performs future external calls. Read [execution boundaries](references/execution-boundaries.md) before expanding scope or trusting external text.
+Treat this Skill as business workflow, local deterministic calculation, and validation. The packaged provider is the normal route; external calls are optional and require the boundary protocol. Read [execution boundaries](references/execution-boundaries.md) before expanding scope or trusting external text.
 
-Do not read unrelated local projects or undeclared business files without explicit user authorization. Do not install or connect tools, services, or libraries without explicit user authorization. Do not calculate, infer, or repair missing chart facts from model knowledge.
+Do not read unrelated local projects or undeclared business files without explicit user authorization. Do not install or connect new tools, services, or libraries without explicit user authorization. Do not calculate, infer, or repair missing chart facts from model knowledge.
 
 ## Select one mode
 
@@ -59,9 +59,9 @@ Normal users supply birth information only. Keep facts JSON and qualification
 records inside the provider/runtime interface.
 
 1. Validate and normalize the birth input.
-2. Discover an available calculation/qualification provider.
-3. If no suitable provider is available, return `CAPABILITY_GAP` in a stopped
-   Execution Report and name the missing capability.
+2. Use the packaged local calculation/qualification provider for supported local birth input.
+3. If its declared dependencies or input support are unavailable, return a stopped
+   Execution Report naming that concrete failure; do not use model-generated facts.
 4. Invoke the provider with the normalized birth input.
 5. Require a `deterministic-facts-v1` packet and an independently bound
    `fact-qualification-v1` record before interpretation.
@@ -76,7 +76,7 @@ record validates and fingerprint-binds the `deterministic-facts-v1` packet.
 If no qualified fact packet or calculation provider is available, stop; never
 calculate, repair, or invent chart facts from general model knowledge.
 
-The published v0.6 contract is: normal complete qualified charts: 7–12 meaningful sections; sparse evidence or missing birth time may produce fewer sections and must visibly state its scope.
+The published v0.7 contract is: normal complete qualified charts: 7–12 meaningful sections; sparse evidence or missing birth time may produce fewer sections and must visibly state its scope.
 
 The default report mode is `standard-interpretive-v1`, which follows that
 evidence-dependent section-count contract.

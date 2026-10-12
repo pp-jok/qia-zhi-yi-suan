@@ -11,7 +11,7 @@ def test_loads_frozen_v2_2_runtime_config(valid_config_dir: Path) -> None:
 
     assert config.bazi.methodology_version == "bazi-core-v1.0"
     assert config.bazi.calendar.day_boundary == "00:00"
-    assert config.astrology.methodology_version == "western-tropical-v1.0"
+    assert config.astrology.methodology_version == "western-tropical-whole-sign-v1.0"
     assert config.astrology.core.zodiac == "tropical"
     assert config.astrology.core.true_node is True
     assert config.score_model.score_model_version == "2.2"

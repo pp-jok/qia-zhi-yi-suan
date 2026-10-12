@@ -102,6 +102,11 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     interpretive_report.add_argument("--output", type=Path, required=True)
+    birth_report = subparsers.add_parser("build-birth-report", help="calculate, qualify, and render a report from birth input")
+    birth_report.add_argument("birth", help="e.g. 1992年7月14日 15:30，上海，女")
+    birth_report.add_argument("--output", type=Path, required=True)
+    birth_report.add_argument("--artifacts-dir", type=Path, required=True)
+    birth_report.add_argument("--mode", choices=tuple(_INTERPRETIVE_REPORT_MODES), type=_canonical_interpretive_report_mode, default="standard-interpretive-v1")
     semantic_build = subparsers.add_parser("build-semantic-core")
     semantic_build.add_argument("project_root", type=Path)
     semantic_build.add_argument("profile_ref")
@@ -400,6 +405,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 "mode": "audited_interpretive",
                 "report_mode": args.mode,
             }
+        elif args.command == "build-birth-report":
+            from .birth_report import build_birth_report
+            summary = build_birth_report(args.birth, args.output, args.artifacts_dir, args.mode)
         elif args.command == "build-semantic-core":
             from .mapping_v2 import compile_mapping_v2_from_repository
             from .semantic_pipeline import build_semantic_core_from_approved_mapping, load_enabled_formation_policies

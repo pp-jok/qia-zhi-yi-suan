@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qia-zhi-yi-suan-candidate"
-version = "0.6.0"
-description = "Audited interpretive personality reports for the Qia Zhi Yi Suan agent skill"
+version = "0.7.0"
+description = "Audited birth-input personality reports for the Qia Zhi Yi Suan agent skill"
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.9"
-dependencies = ["PyYAML>=6,<7"]
+dependencies = ["PyYAML>=6,<7", "lunar_python==1.4.8", "astronomy-engine==2.1.19"]
 
 [project.optional-dependencies]
 test = ["pytest>=8,<9"]

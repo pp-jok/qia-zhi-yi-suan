@@ -88,11 +88,11 @@ EXPECTED_BAZI = {
 }
 
 EXPECTED_ASTROLOGY = {
-    "methodology_version": "western-tropical-v1.0",
+    "methodology_version": "western-tropical-whole-sign-v1.0",
     "core": {
         "zodiac": "tropical",
         "reference": "geocentric",
-        "house_system": "placidus",
+        "house_system": "whole_sign",
         "node": True,
     },
     "bodies": {
@@ -289,7 +289,7 @@ def _parse_bazi(data: Dict[str, Any]) -> BaziMethodologyConfig:
 
 def _parse_astrology(data: Dict[str, Any]) -> AstrologyMethodologyConfig:
     _validate_version(
-        data, "methodology_version", "western-tropical-v1.0", ASTROLOGY_FILE
+        data, "methodology_version", "western-tropical-whole-sign-v1.0", ASTROLOGY_FILE
     )
     _validate_exact(data, EXPECTED_ASTROLOGY, ASTROLOGY_FILE)
     salience = data["salience_by_orb"]

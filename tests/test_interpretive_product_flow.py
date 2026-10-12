@@ -29,14 +29,14 @@ def load_readiness_summary() -> dict:
     return summary
 
 
-def test_birth_input_uses_provider_or_returns_capability_gap() -> None:
+def test_birth_input_uses_packaged_provider() -> None:
     flow = skill_product_flow()
 
     required_steps = (
         "Normal users supply birth information only",
-        "Discover an available calculation/qualification provider",
+        "Use the packaged local calculation/qualification provider",
         "Invoke the provider with the normalized birth input",
-        "return `CAPABILITY_GAP`",
+        "do not use model-generated facts",
     )
     assert all(step in flow for step in required_steps)
     assert flow.index(required_steps[0]) < flow.index(required_steps[1])

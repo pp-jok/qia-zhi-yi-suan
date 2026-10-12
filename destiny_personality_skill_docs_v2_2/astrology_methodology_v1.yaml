@@ -1,9 +1,9 @@
-methodology_version: "western-tropical-v1.0"
+methodology_version: "western-tropical-whole-sign-v1.0"
 
 core:
   zodiac: tropical
   reference: geocentric
-  house_system: placidus
+  house_system: whole_sign
   node: true
 
 bodies:

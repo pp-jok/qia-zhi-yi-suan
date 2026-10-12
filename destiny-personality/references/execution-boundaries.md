@@ -6,7 +6,7 @@ Read only this Skill artifact, the current user input, and outputs from explicit
 
 ## Runtime ownership
 
-The Skill defines workflow and validation. The agent discovers and invokes future external capabilities. The Skill contains no calculator, executable adapter, Python runtime, binary asset, or fixed provider dependency.
+The Skill defines workflow and validation. The packaged v0.7 local provider supplies deterministic calculation and independent contract qualification for supported birth input. Remote capabilities remain optional and require execution-scoped authorization.
 
 Prefer capabilities already available in the environment. Before sending case data to any remote capability in the current execution, obtain execution-scoped authorization for that recipient and send only the minimum necessary input fields. Existing connection is not consent. Obtain explicit user authorization before installing software, connecting a new service, or expanding filesystem access.
 
