@@ -62,4 +62,3 @@
 - [ ] Run `python -m pytest tests/test_v080_product_quality.py -q`; expect failure.
 - [ ] Generate versioned case artifacts and comparison documentation from the implemented path.
 - [ ] Run targeted and full test suites; expect pass.
-

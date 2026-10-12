@@ -29,4 +29,3 @@
 ## 验收
 
 三组完整出生输入均生成 facts、qualification、CDP、plan、report、audit；报告章节数及主题集合可变；每个展示条目可回溯至画像和信号；旧测试保持通过。
-
