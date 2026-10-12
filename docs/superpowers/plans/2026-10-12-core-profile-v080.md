@@ -23,10 +23,10 @@
 - Create: `src/destiny_personality/audited_core_profile.py`
 - Test: `tests/test_audited_core_profile.py`
 
-- [ ] Write failing tests asserting that a qualified fixture produces an `audited-interpretive-cdp-v1` with two source candidate sets, traceable profile items, and no formal assurance label.
-- [ ] Run `python -m pytest tests/test_audited_core_profile.py -q`; expect import failure.
-- [ ] Implement frozen dataclasses plus `build_audited_interpretive_core_profile(qualified_facts)` from extracted signals and existing narrative synthesis.
-- [ ] Run the test; expect pass.
+- [x] Write failing tests asserting that a qualified fixture produces an `audited-interpretive-cdp-v1` with two source candidate sets, traceable profile items, and no formal assurance label.
+- [x] Run `python -m pytest tests/test_audited_core_profile.py -q`; expect import failure.
+- [x] Implement frozen dataclasses plus `build_audited_interpretive_core_profile(qualified_facts)` from extracted signals and existing narrative synthesis.
+- [x] Run the test; expect pass.
 
 ### Task 2: Dynamic planner and contained renderer
 
@@ -34,10 +34,10 @@
 - Create: `src/destiny_personality/audited_profile_report.py`
 - Test: `tests/test_audited_profile_report.py`
 
-- [ ] Write failing tests for bounded dynamic section selection, no duplicate evidence identities, and renderer containment.
-- [ ] Run `python -m pytest tests/test_audited_profile_report.py -q`; expect import failure.
-- [ ] Implement `build_audited_profile_report_plan(profile)` and `render_audited_profile_report(profile, plan)` with profile-only inputs.
-- [ ] Run the test; expect pass.
+- [x] Write failing tests for bounded dynamic section selection, no duplicate evidence identities, and renderer containment.
+- [x] Run `python -m pytest tests/test_audited_profile_report.py -q`; expect import failure.
+- [x] Implement `build_audited_profile_report_plan(profile)` and `render_audited_profile_report(profile, plan)` with profile-only inputs.
+- [x] Run the test; expect pass.
 
 ### Task 3: Birth entry point and artifacts
 
@@ -46,10 +46,10 @@
 - Modify: `src/destiny_personality/cli.py`
 - Test: `tests/test_birth_report.py`
 
-- [ ] Write failing tests proving the default produces CDP, plan and audit artifacts while explicit legacy mode remains unchanged.
-- [ ] Run `python -m pytest tests/test_birth_report.py -q`; expect failure.
-- [ ] Wire `core-profile-v1` as the default and keep legacy renderer branch intact.
-- [ ] Run the test; expect pass.
+- [x] Write failing tests proving the default produces CDP, plan and audit artifacts while explicit legacy mode remains unchanged.
+- [x] Run `python -m pytest tests/test_birth_report.py -q`; expect failure.
+- [x] Wire `core-profile-v1` as the default and keep legacy renderer branch intact.
+- [x] Run the test; expect pass.
 
 ### Task 4: Multi-case evidence and quality acceptance
 
@@ -58,7 +58,7 @@
 - Create: `docs/v0.8.0-report-quality-comparison.md`
 - Test: `tests/test_v080_product_quality.py`
 
-- [ ] Write failing tests asserting three real local calculations differ in plan identity, every selected entry has traceable evidence, and the default output is not the old fixed section set.
-- [ ] Run `python -m pytest tests/test_v080_product_quality.py -q`; expect failure.
-- [ ] Generate versioned case artifacts and comparison documentation from the implemented path.
-- [ ] Run targeted and full test suites; expect pass.
+- [x] Write failing tests asserting three real local calculations differ in plan identity, every selected entry has traceable evidence, and the default output is not the old fixed section set.
+- [x] Run `python -m pytest tests/test_v080_product_quality.py -q`; expect failure.
+- [x] Generate versioned case artifacts and comparison documentation from the implemented path.
+- [x] Run targeted and full test suites; expect pass.
