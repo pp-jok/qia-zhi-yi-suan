@@ -60,6 +60,14 @@ class AuditedProfileItem:
     limitations: Tuple[str, ...]
     salience: int
     kind: str = ""
+    source_item_ids: Tuple[str, ...] = ()
+    relationship_type: str = ""
+    activation_contexts: Tuple[str, ...] = ()
+    interaction_mechanism: str = ""
+    pressure_pattern: str = ""
+    integration_pattern: str = ""
+    counter_evidence: Tuple[str, ...] = ()
+    derivation_level: str = "rule_matched"
 
 
 @dataclass(frozen=True)
@@ -96,10 +104,10 @@ def build_audited_interpretive_core_profile(
         raise ValueError("TRACEABLE_INTERPRETIVE_SIGNAL_REQUIRED")
     alignments = _alignments(packet)
     signatures = _signatures(alignments, bazi_candidates, astrology_candidates)
-    dynamics = _dynamics(alignments)
-    shadow_mature = _shadow_mature(signatures)
-    themes = _themes(signatures)
-    archetype = _archetype(signatures)
+    dynamics = _dynamics(bazi_candidates, astrology_candidates)
+    shadow_mature = _shadow_mature(dynamics)
+    themes = _themes(dynamics)
+    archetype = _archetype(themes, dynamics)
     profile_seed = "|".join(
         (qualified.fact_fingerprint, qualified.qualification_fingerprint)
         + tuple(item.item_id for item in signatures)
@@ -193,7 +201,7 @@ def _signatures(
 ) -> Tuple[AuditedProfileItem, ...]:
     items = []
     for alignment in alignments:
-        if alignment.kind in {"validation", "tension", "unresolved"}:
+        if alignment.kind == "validation":
             items.append(
                 AuditedProfileItem(
                     item_id="signature:" + alignment.topic,
@@ -205,11 +213,14 @@ def _signatures(
                     fact_refs=alignment.fact_refs,
                     limitations=alignment.limitations,
                     salience={"validation": 3, "tension": 2, "unresolved": 1}[alignment.kind],
+                    source_item_ids=(alignment.alignment_id,),
+                    relationship_type="cross_system_validation",
+                    derivation_level="controlled_synthesis",
                 )
             )
     aligned_topics = {item.topic for item in items}
     for candidate in bazi_candidates + astrology_candidates:
-        if candidate.topic not in aligned_topics:
+        if candidate.topic not in aligned_topics and len(candidate.directions) >= 2 and len(candidate.mechanisms) >= 2:
             items.append(
                 AuditedProfileItem(
                     item_id="signature:" + candidate.candidate_id,
@@ -225,86 +236,127 @@ def _signatures(
                     rule_refs=candidate.rule_refs,
                     fact_refs=candidate.fact_refs,
                     limitations=candidate.limitations,
-                    salience=2 if candidate.topic in {"interacting tendencies", "life arena"} else 1,
+                    salience=2,
+                    source_item_ids=(candidate.candidate_id,),
+                    activation_contexts=candidate.contexts,
+                    interaction_mechanism="；".join(candidate.mechanisms),
+                    derivation_level="controlled_synthesis",
                 )
             )
     return tuple(sorted(items, key=lambda item: (-item.salience, item.topic, item.item_id)))
 
 
 def _dynamics(
-    alignments: Tuple[AuditedCrossSystemAlignment, ...],
+    bazi_candidates: Tuple[AuditedProfileCandidate, ...],
+    astrology_candidates: Tuple[AuditedProfileCandidate, ...],
 ) -> Tuple[AuditedProfileItem, ...]:
-    return tuple(
-        AuditedProfileItem(
-            item_id="dynamic:" + alignment.topic,
-            topic=alignment.topic,
-            title=("张力与调节：" if alignment.kind == "tension" else "双重线索：") + " × ".join(alignment.directions),
-            statement=alignment.interpretation,
-            signal_ids=alignment.signal_ids,
-            rule_refs=alignment.rule_refs,
-            fact_refs=alignment.fact_refs,
-            limitations=alignment.limitations,
-            salience=2 if alignment.kind == "tension" else 1,
-            kind=alignment.kind,
-        )
-        for alignment in alignments
-        if alignment.kind in {"tension", "validation", "unresolved"}
-    )
+    """Form only a mechanism-bearing multi-direction candidate dynamic.
+
+    An alignment is comparative evidence, not interaction evidence.  A single
+    candidate with multiple directions and mechanisms can instead support a
+    bounded sequence: absorb/organize one tendency before expressing another.
+    """
+    items = []
+    for candidate in bazi_candidates + astrology_candidates:
+        if len(candidate.directions) < 2 or len(candidate.mechanisms) < 2:
+            continue
+        items.append(AuditedProfileItem(
+            item_id="dynamic:" + candidate.candidate_id,
+            topic=candidate.topic,
+            title="内在节奏：" + candidate.topic,
+            statement="这一主题同时包含{}两种已命中方向；规则机制显示它们可按情境形成先后或配合，而非自动构成冲突。".format("与".join(candidate.directions)),
+            signal_ids=candidate.signal_ids,
+            rule_refs=candidate.rule_refs,
+            fact_refs=candidate.fact_refs,
+            limitations=candidate.limitations + ("这是基于同一候选机制的受控综合，需要由读者在真实情境中验证。",),
+            salience=2,
+            kind="contextual_sequence",
+            source_item_ids=(candidate.candidate_id,),
+            relationship_type="contextual_sequence",
+            activation_contexts=candidate.contexts,
+            interaction_mechanism="；".join(candidate.mechanisms),
+            pressure_pattern="当需要立刻回应而尚未完成前一阶段时，可能只使用其中一个方向，令节奏失衡。",
+            integration_pattern="较成熟的使用方式是先辨认当前情境，再为吸收、组织与表达保留相应步骤。",
+            derivation_level="controlled_synthesis",
+        ))
+    return tuple(sorted(items, key=lambda item: (item.topic, item.item_id))[:7])
 
 
-def _shadow_mature(signatures: Tuple[AuditedProfileItem, ...]) -> Tuple[AuditedProfileItem, ...]:
+def _shadow_mature(dynamics: Tuple[AuditedProfileItem, ...]) -> Tuple[AuditedProfileItem, ...]:
     return tuple(
         AuditedProfileItem(
-            item_id="shadow-mature:" + signature.topic,
-            topic=signature.topic,
-            title="影子与成熟表达：" + signature.topic,
+            item_id="shadow-mature:" + dynamic.item_id,
+            topic=dynamic.topic,
+            title="压力与成熟调节：" + dynamic.topic,
             statement=(
-                "若把这一倾向单独放大，容易忽略与它并存的条件；"
-                "较成熟的用法，是把它放回具体情境，与其他已命中线索一并观察。"
-            ),
-            signal_ids=signature.signal_ids,
-            rule_refs=signature.rule_refs,
-            fact_refs=signature.fact_refs,
-            limitations=signature.limitations + ("这是反思性表达，不是行为预测。",),
-            salience=signature.salience,
+                "压力下，{}；成熟整合时，{}"
+            ).format(dynamic.pressure_pattern, dynamic.integration_pattern),
+            signal_ids=dynamic.signal_ids,
+            rule_refs=dynamic.rule_refs,
+            fact_refs=dynamic.fact_refs,
+            limitations=dynamic.limitations + ("这是需要读者自行验证的反思性假设，不是行为预测。",),
+            salience=dynamic.salience,
+            kind="shadow_mature",
+            source_item_ids=(dynamic.item_id,),
+            relationship_type=dynamic.relationship_type,
+            activation_contexts=dynamic.activation_contexts,
+            interaction_mechanism=dynamic.interaction_mechanism,
+            pressure_pattern=dynamic.pressure_pattern,
+            integration_pattern=dynamic.integration_pattern,
+            derivation_level="controlled_synthesis",
         )
-        for signature in signatures[:3]
+        for dynamic in dynamics
     )
 
 
-def _themes(signatures: Tuple[AuditedProfileItem, ...]) -> Tuple[AuditedProfileItem, ...]:
-    return tuple(
-        AuditedProfileItem(
-            item_id="theme:" + signature.topic,
-            topic=signature.topic,
-            title="生命主题：" + signature.topic,
-            statement="这一主题在当前画像中具有较高的证据密度：" + signature.statement,
-            signal_ids=signature.signal_ids,
-            rule_refs=signature.rule_refs,
-            fact_refs=signature.fact_refs,
-            limitations=signature.limitations,
-            salience=signature.salience,
-        )
-        for signature in signatures[:4]
-    )
+def _themes(dynamics: Tuple[AuditedProfileItem, ...]) -> Tuple[AuditedProfileItem, ...]:
+    """A recurring theme needs two independently formed dynamics."""
+    by_context = {}
+    for dynamic in dynamics:
+        for context in dynamic.activation_contexts:
+            by_context.setdefault(context, []).append(dynamic)
+    themes = []
+    for context, supporting in sorted(by_context.items()):
+        if len(supporting) < 2:
+            continue
+        refs = tuple(item.item_id for item in supporting)
+        themes.append(AuditedProfileItem(
+            item_id="theme:" + context,
+            topic=context,
+            title="反复调节主题：" + context,
+            statement="至少两条独立的已形成动态都涉及“{}”，因此它可作为需要持续观察的调节主题，而不是预言的人生事件。".format(context),
+            signal_ids=_unique(signal for item in supporting for signal in item.signal_ids),
+            rule_refs=_unique(rule for item in supporting for rule in item.rule_refs),
+            fact_refs=_unique(ref for item in supporting for ref in item.fact_refs),
+            limitations=("主题来自已形成动态的共同情境，不表示必然发生。",),
+            salience=1,
+            kind="recurring_pattern",
+            source_item_ids=refs,
+            activation_contexts=(context,),
+            derivation_level="controlled_synthesis",
+        ))
+    return tuple(themes)
 
 
-def _archetype(signatures: Tuple[AuditedProfileItem, ...]) -> Optional[AuditedProfileItem]:
-    if not signatures:
+def _archetype(
+    themes: Tuple[AuditedProfileItem, ...], dynamics: Tuple[AuditedProfileItem, ...]
+) -> Optional[AuditedProfileItem]:
+    if not themes or len(dynamics) < 2:
         return None
-    primary = signatures[0]
-    companion = signatures[1].topic if len(signatures) > 1 else None
-    topics = primary.topic if companion is None else primary.topic + "与" + companion
+    theme = themes[0]
     return AuditedProfileItem(
         item_id="archetype:profile",
-        topic=primary.topic,
+        topic=theme.topic,
         title="画像原型",
-        statement="可将当前画像暂称为“围绕{}展开的整合者”；这只是对已命中主题的阅读索引。".format(topics),
-        signal_ids=primary.signal_ids + (() if companion is None else signatures[1].signal_ids),
-        rule_refs=primary.rule_refs + (() if companion is None else signatures[1].rule_refs),
-        fact_refs=primary.fact_refs + (() if companion is None else signatures[1].fact_refs),
-        limitations=primary.limitations + ("原型不是分类诊断，也不取代个体自我理解。",),
-        salience=primary.salience,
+        statement="当前证据可暂时汇聚为“情境调节者”：其主轴是识别不同情境中的表达与行动节奏，并把反复出现的调节主题转化为更有意识的选择。",
+        signal_ids=_unique(signal for item in dynamics for signal in item.signal_ids),
+        rule_refs=_unique(rule for item in dynamics for rule in item.rule_refs),
+        fact_refs=_unique(ref for item in dynamics for ref in item.fact_refs),
+        limitations=("原型只在多个动态和反复主题同时存在时生成，不是人格分类。",),
+        salience=1,
+        kind="archetype",
+        source_item_ids=tuple(item.item_id for item in themes + dynamics),
+        derivation_level="controlled_synthesis",
     )
 
 

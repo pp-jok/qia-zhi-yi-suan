@@ -1,0 +1,61 @@
+{
+  "audit_trail": [
+    "deterministic-facts:9fbdcbce85fe08f5f5df75653f1dfe530bbe57c4c8c7dfc3aa9d2340c2bd9b61",
+    "fact-qualification:34672c52182de95575d02b24cedd52e9cb731438255731dc14e98520a0968431",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only",
+    "report_planner:audited-profile-report-plan-v1"
+  ],
+  "core_profile_id": "audited-cdp-10d170ee930a0881",
+  "omitted_item_ids": [
+    "observation:astrology:boundaries and mastery",
+    "observation:astrology:emotional processing",
+    "observation:astrology:growth orientation",
+    "observation:astrology:interacting tendencies",
+    "observation:astrology:life arena",
+    "observation:astrology:relating and values",
+    "observation:astrology:style of expression",
+    "observation:astrology:thinking and communication",
+    "observation:bazi:agency",
+    "observation:bazi:recurring emphasis",
+    "observation:bazi:resource handling",
+    "observation:bazi:structure and pressure",
+    "observation:bazi:style of expression"
+  ],
+  "profile_fingerprint": "5d57e5e51d2de6b98707011426363418a65a4f0ea47e1ea8de0bdc642e0bf459",
+  "schema_version": "audited-profile-report-plan-v1",
+  "sections": [
+    {
+      "deduplication_key": "core-profile",
+      "evidence_fingerprint": "2913e929e1eec060ec7ca06a6404642706686a79b78596c714c5aba855c03dfe",
+      "item_ids": [
+        "signature:bazi:style of expression",
+        "observation:astrology:action style"
+      ],
+      "reason": "evidence-ranked-core",
+      "section_id": "core-profile",
+      "title": "核心主轴"
+    },
+    {
+      "deduplication_key": "dynamic:dynamic:bazi:style of expression",
+      "evidence_fingerprint": "ee743ebf660caf0039942017e3be529a9b0261e6dce99b1520a1b38c1bf81113",
+      "item_ids": [
+        "dynamic:bazi:style of expression"
+      ],
+      "reason": "mechanism-bearing-dynamic",
+      "section_id": "dynamic-dynamic:bazi:style of expression",
+      "title": "内在节奏：style of expression"
+    },
+    {
+      "deduplication_key": "shadow-mature:shadow-mature:dynamic:bazi:style of expression",
+      "evidence_fingerprint": "fbca162c24980d84f34cbde3239afc3fe82bd34b27aad056b4cae2fafdb4f1e0",
+      "item_ids": [
+        "shadow-mature:dynamic:bazi:style of expression"
+      ],
+      "reason": "dynamic-derived-regulation",
+      "section_id": "shadow-mature-shadow-mature:dynamic:bazi:style of expression",
+      "title": "压力与成熟调节：style of expression"
+    }
+  ]
+}

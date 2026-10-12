@@ -36,8 +36,8 @@ def test_audited_profile_keeps_cross_system_relationships_bounded():
     profile = build_audited_interpretive_core_profile(_qualified("cross-system-tension"))
 
     assert any(item.kind == "tension" for item in profile.cross_system_alignments)
-    assert any(item.kind == "tension" for item in profile.core_dynamics)
     assert all(item.signal_ids for item in profile.cross_system_alignments)
-    assert all(item.signal_ids for item in profile.core_dynamics)
-    assert profile.shadow_mature_forms
-    assert profile.archetype is not None
+    assert all(item.kind != "tension" for item in profile.core_dynamics)
+    assert all(item.signal_ids and item.interaction_mechanism for item in profile.core_dynamics)
+    assert all(item.source_item_ids for item in profile.shadow_mature_forms)
+    assert profile.archetype is None

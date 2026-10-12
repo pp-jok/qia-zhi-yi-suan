@@ -8,9 +8,9 @@
 
 它提供一个可审计的本地排盘入口：MIT 许可的确定性 provider 负责计算与资格校验，Skill 负责输入规范、方法校验、事实边界、推演许可、报告结构与最终审计。
 
-## 发布通道：v0.8.0 Core Profile Product
+## 发布通道：v0.8.1 Core Profile Product
 
-v0.8.0 将默认出生信息入口升级为 `core-profile-v1`：本地 provider 计算并独立资格校验，再由已审计解释信号构建可追溯的核心画像、动态章节计划和报告。普通用户只需提供出生信息；模型不自由排盘。
+v0.8.1 保留 `core-profile-v1` 默认入口，并收紧深层综合：Alignment 不自动成为 Dynamic；证据不足时 Shadow/Mature、Theme、Archetype 与章节可以为空。普通用户只需提供出生信息；模型不自由排盘。
 
 供应方产生的 `deterministic-facts-v1` 与 `fact-qualification-v1` 是内部运行时接口。通过指纹绑定后，版本化的八字/占星传统解释规则才能产生可追溯信号和用户可读报告。
 

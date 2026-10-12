@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.1 - 2026-10-12
+
+- Require mechanism-bearing evidence for audited core dynamics.
+- Derive shadow/mature only from dynamics; allow themes and archetypes to remain absent.
+- Replace fixed minimum report length with evidence-limited planning and narrative rendering.
+
 ## 0.8.0 - 2026-10-12
 
 - Make `core-profile-v1` the default birth-input report mode.

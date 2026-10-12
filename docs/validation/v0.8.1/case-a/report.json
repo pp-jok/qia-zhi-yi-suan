@@ -1,0 +1,55 @@
+{
+  "audit_refs": [
+    "deterministic-facts:3d722d36079f14b04bd3cca83c876a6fe55359a5cca70900f70645067dd56a57",
+    "fact-qualification:f906c56491948a08d6cd1ca5de5de2fc94f0cdb285707d32efa4fc755c9061a4",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only",
+    "report_planner:audited-profile-report-plan-v1"
+  ],
+  "boundary_statement": "本报告基于传统命理与占星象意的已审计规则生成，用于反思，不是实证人格测量、医疗或心理诊断，也不应代替重大生活决策。",
+  "core_profile_id": "audited-cdp-3507e6aa9d9d13e0",
+  "core_profile_ref": "docs/validation/v0.8.1/case-a/artifacts/core_profile.json",
+  "limitations": [
+    "formal primitive coverage is not asserted",
+    "candidate mapping assets are not read by this product profile",
+    "traditional interpretive synthesis is reflective, non-diagnostic, and non-predictive",
+    "Cross-system relationships compare exact matched topics only.",
+    "Unmatched evidence remains non-comparable and never implies agreement.",
+    "Traditional interpretive synthesis is non-diagnostic and non-predictive."
+  ],
+  "mode": "core-profile-v1",
+  "report_audit_ref": "docs/validation/v0.8.1/case-a/artifacts/report_audit.json",
+  "report_plan_ref": "docs/validation/v0.8.1/case-a/artifacts/report_plan.json",
+  "schema_version": "audited-profile-report-v1",
+  "sections": [
+    {
+      "content": "占星体系的已限定线索显示：火星的元素与模式描述行动如何启动、持续与面对阻力。风象取向会以信息交换、观点连接来承载该行星功能。固定模式更重视延续、稳定投入与保持已定方向。（命中依据：元素：风象；模式：固定）\n形成机制：驱动力选择与元素相应的路径，并按模式分配行动节奏。风象通过命名、比较与对话组织该功能的运作。固定模式通过维持一致性来积累力量，改变通常需要更明确理由。\n较适合观察的情境：行动、冲突处理、需要协商与信息交换的情境、需要稳定维持的情境\n\n八字体系的已限定线索显示：比劫信号强调自我立场、同辈互动与资源边界。（命中依据：劫财；比肩）\n形成机制：通过相同或相近力量的并置，使自主与竞合成为显著议题。\n较适合观察的情境：协作、资源分配",
+      "fact_refs": [
+        "astrology.placements[4].sign",
+        "bazi.ten_gods[0].ten_god",
+        "bazi.ten_gods[2].ten_god",
+        "bazi.ten_gods[7].ten_god"
+      ],
+      "item_ids": [
+        "observation:astrology:action style",
+        "observation:bazi:agency"
+      ],
+      "limitations": [
+        "不代表攻击性或执行能力评分。",
+        "不能由此推定一个人自私或好竞争。"
+      ],
+      "rule_refs": [
+        "现代西方占星学火星星座综合法；Stephen Arroyo",
+        "子平法十神法；《渊海子平》"
+      ],
+      "section_id": "core-profile",
+      "signal_ids": [
+        "ASTROLOGY-MARS-SIGN-QUALITY",
+        "BAZI-TEN-GOD-PEER"
+      ],
+      "title": "当前可支持观察"
+    }
+  ],
+  "title": "审计型命格人格画像"
+}
