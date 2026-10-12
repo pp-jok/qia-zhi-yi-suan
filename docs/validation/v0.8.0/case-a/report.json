@@ -1,0 +1,174 @@
+{
+  "audit_refs": [
+    "deterministic-facts:3d722d36079f14b04bd3cca83c876a6fe55359a5cca70900f70645067dd56a57",
+    "fact-qualification:f906c56491948a08d6cd1ca5de5de2fc94f0cdb285707d32efa4fc755c9061a4",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only",
+    "report_planner:audited-profile-report-plan-v1"
+  ],
+  "boundary_statement": "本报告基于传统命理与占星象意的已审计规则生成，用于反思，不是实证人格测量、医疗或心理诊断，也不应代替重大生活决策。",
+  "core_profile_id": "audited-cdp-9dba67f16573b3cc",
+  "core_profile_ref": "docs/validation/v0.8.0/case-a/artifacts/core_profile.json",
+  "limitations": [
+    "formal primitive coverage is not asserted",
+    "candidate mapping assets are not read by this product profile",
+    "traditional interpretive synthesis is reflective, non-diagnostic, and non-predictive",
+    "Cross-system relationships compare exact matched topics only.",
+    "Unmatched evidence remains non-comparable and never implies agreement.",
+    "Traditional interpretive synthesis is non-diagnostic and non-predictive."
+  ],
+  "mode": "core-profile-v1",
+  "report_audit_ref": "docs/validation/v0.8.0/case-a/artifacts/report_audit.json",
+  "report_plan_ref": "docs/validation/v0.8.0/case-a/artifacts/report_plan.json",
+  "schema_version": "audited-profile-report-v1",
+  "sections": [
+    {
+      "content": "该主题目前由占星体系的已限定信号支持：太阳宫位将核心表达限定在一个可核查的生活领域中。（命中依据：宫位：第10宫）\n\n两个体系在 style of expression 主题上命中了不同方向，保留为需按情境理解的张力，不互相抵消。",
+      "fact_refs": [
+        "astrology.placements[0].house",
+        "bazi.ten_gods[1].ten_god",
+        "bazi.ten_gods[6].ten_god",
+        "astrology.placements[0].sign"
+      ],
+      "item_ids": [
+        "signature:astrology:life arena",
+        "signature:style of expression"
+      ],
+      "limitations": [
+        "出生时间不可用时必须完全省略。",
+        "需与全局其他十神与关系合看。",
+        "行星星座象征不是人格测量。"
+      ],
+      "rule_refs": [
+        "西方占星学宫位论；William Lilly, Christian Astrology",
+        "子平法十神法；《渊海子平》",
+        "现代西方占星学行星星座综合法；Stephen Arroyo"
+      ],
+      "section_id": "core-profile",
+      "signal_ids": [
+        "ASTROLOGY-SUN-HOUSE-CONTEXT",
+        "BAZI-TEN-GOD-EXPRESSION",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "title": "核心画像"
+    },
+    {
+      "content": "两个体系在 style of expression 主题上命中了不同方向，保留为需按情境理解的张力，不互相抵消。",
+      "fact_refs": [
+        "bazi.ten_gods[1].ten_god",
+        "bazi.ten_gods[6].ten_god",
+        "astrology.placements[0].sign"
+      ],
+      "item_ids": [
+        "dynamic:style of expression"
+      ],
+      "limitations": [
+        "需与全局其他十神与关系合看。",
+        "行星星座象征不是人格测量。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》",
+        "现代西方占星学行星星座综合法；Stephen Arroyo"
+      ],
+      "section_id": "dynamic-style of expression",
+      "signal_ids": [
+        "BAZI-TEN-GOD-EXPRESSION",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "title": "张力与调节：reflective × grounded"
+    },
+    {
+      "content": "该主题目前由占星体系的已限定信号支持：火星的元素与模式描述行动如何启动、持续与面对阻力。风象取向会以信息交换、观点连接来承载该行星功能。固定模式更重视延续、稳定投入与保持已定方向。（命中依据：元素：风象；模式：固定）",
+      "fact_refs": [
+        "astrology.placements[4].sign"
+      ],
+      "item_ids": [
+        "signature:astrology:action style"
+      ],
+      "limitations": [
+        "不代表攻击性或执行能力评分。"
+      ],
+      "rule_refs": [
+        "现代西方占星学火星星座综合法；Stephen Arroyo"
+      ],
+      "section_id": "signature-action style",
+      "signal_ids": [
+        "ASTROLOGY-MARS-SIGN-QUALITY"
+      ],
+      "title": "核心倾向：action style（conceptual）"
+    },
+    {
+      "content": "若把这一倾向单独放大，容易忽略与它并存的条件；较成熟的用法，是把它放回具体情境，与其他已命中线索一并观察。",
+      "fact_refs": [
+        "astrology.placements[0].house"
+      ],
+      "item_ids": [
+        "shadow-mature:life arena"
+      ],
+      "limitations": [
+        "出生时间不可用时必须完全省略。",
+        "这是反思性表达，不是行为预测。"
+      ],
+      "rule_refs": [
+        "西方占星学宫位论；William Lilly, Christian Astrology"
+      ],
+      "section_id": "shadow-mature-life arena",
+      "signal_ids": [
+        "ASTROLOGY-SUN-HOUSE-CONTEXT"
+      ],
+      "title": "影子与成熟表达：life arena"
+    },
+    {
+      "content": "这一主题在当前画像中具有较高的证据密度：该主题目前由八字体系的已限定信号支持：比劫信号强调自我立场、同辈互动与资源边界。（命中依据：劫财；比肩）",
+      "fact_refs": [
+        "bazi.ten_gods[0].ten_god",
+        "bazi.ten_gods[2].ten_god",
+        "bazi.ten_gods[7].ten_god"
+      ],
+      "item_ids": [
+        "theme:agency"
+      ],
+      "limitations": [
+        "不能由此推定一个人自私或好竞争。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》"
+      ],
+      "section_id": "theme-agency",
+      "signal_ids": [
+        "BAZI-TEN-GOD-PEER"
+      ],
+      "title": "生命主题：agency"
+    },
+    {
+      "content": "可将当前画像暂称为“围绕life arena与style of expression展开的整合者”；这只是对已命中主题的阅读索引。",
+      "fact_refs": [
+        "astrology.placements[0].house",
+        "bazi.ten_gods[1].ten_god",
+        "bazi.ten_gods[6].ten_god",
+        "astrology.placements[0].sign"
+      ],
+      "item_ids": [
+        "archetype:profile"
+      ],
+      "limitations": [
+        "出生时间不可用时必须完全省略。",
+        "原型不是分类诊断，也不取代个体自我理解。"
+      ],
+      "rule_refs": [
+        "西方占星学宫位论；William Lilly, Christian Astrology",
+        "子平法十神法；《渊海子平》",
+        "现代西方占星学行星星座综合法；Stephen Arroyo"
+      ],
+      "section_id": "archetype",
+      "signal_ids": [
+        "ASTROLOGY-SUN-HOUSE-CONTEXT",
+        "BAZI-TEN-GOD-EXPRESSION",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "title": "画像原型"
+    }
+  ],
+  "title": "审计型命格人格画像"
+}

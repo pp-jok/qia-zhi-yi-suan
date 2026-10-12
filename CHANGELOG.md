@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.0 - 2026-10-12
+
+- Make `core-profile-v1` the default birth-input report mode.
+- Add `audited-interpretive-cdp-v1`, an evidence-bounded product IR built only from qualified facts and matched versioned interpretive rules.
+- Add dynamic report planning, per-section evidence fingerprints, and persisted CDP/plan/audit artifacts.
+- Preserve `standard-interpretive-v1`, `concise-interpretive-v1`, and the formal primitive limited-coverage release path.
+
 ## 0.7.0 - 2026-10-12
 
 - Add a deterministic local birth-input calculation, qualification, and report path.

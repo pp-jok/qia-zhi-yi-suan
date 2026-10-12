@@ -1,0 +1,24 @@
+{
+  "audit_refs": [
+    "deterministic-facts:3d722d36079f14b04bd3cca83c876a6fe55359a5cca70900f70645067dd56a57",
+    "fact-qualification:f906c56491948a08d6cd1ca5de5de2fc94f0cdb285707d32efa4fc755c9061a4",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only",
+    "report_planner:audited-profile-report-plan-v1"
+  ],
+  "core_profile_id": "audited-cdp-9dba67f16573b3cc",
+  "fact_fingerprint": "3d722d36079f14b04bd3cca83c876a6fe55359a5cca70900f70645067dd56a57",
+  "limitations": [
+    "formal primitive coverage is not asserted",
+    "candidate mapping assets are not read by this product profile",
+    "traditional interpretive synthesis is reflective, non-diagnostic, and non-predictive",
+    "Cross-system relationships compare exact matched topics only.",
+    "Unmatched evidence remains non-comparable and never implies agreement.",
+    "Traditional interpretive synthesis is non-diagnostic and non-predictive."
+  ],
+  "qualification_fingerprint": "f906c56491948a08d6cd1ca5de5de2fc94f0cdb285707d32efa4fc755c9061a4",
+  "report_mode": "core-profile-v1",
+  "report_plan_ref": "docs/validation/v0.8.0/case-a/artifacts/report_plan.json",
+  "schema_version": "audited-profile-report-audit-v1"
+}

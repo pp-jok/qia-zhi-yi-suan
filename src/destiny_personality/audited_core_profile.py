@@ -41,6 +41,7 @@ class AuditedCrossSystemAlignment:
     topic: str
     kind: str
     interpretation: str
+    directions: Tuple[str, ...]
     signal_ids: Tuple[str, ...]
     rule_refs: Tuple[str, ...]
     fact_refs: Tuple[str, ...]
@@ -170,6 +171,12 @@ def _alignments(packet: NarrativeSynthesisPacket) -> Tuple[AuditedCrossSystemAli
                 topic=relationship.topic,
                 kind=relationship.kind,
                 interpretation=relationship.interpretation,
+                directions=_unique(
+                    direction
+                    for source in (relationship.bazi_source, relationship.astrology_source)
+                    if source is not None
+                    for direction in source.directions
+                ),
                 signal_ids=relationship.bazi_signal_ids + relationship.astrology_signal_ids,
                 rule_refs=_unique(item.traditional_rule_ref for item in provenance),
                 fact_refs=_unique(ref for item in provenance for ref in item.fact_refs),
@@ -200,13 +207,16 @@ def _signatures(
                     salience={"validation": 3, "tension": 2, "unresolved": 1}[alignment.kind],
                 )
             )
-    if not items:
-        for candidate in bazi_candidates + astrology_candidates:
+    aligned_topics = {item.topic for item in items}
+    for candidate in bazi_candidates + astrology_candidates:
+        if candidate.topic not in aligned_topics:
             items.append(
                 AuditedProfileItem(
                     item_id="signature:" + candidate.candidate_id,
                     topic=candidate.topic,
-                    title="核心倾向：" + candidate.topic,
+                    title="核心倾向：{}（{}）".format(
+                        candidate.topic, " / ".join(candidate.directions)
+                    ),
                     statement="该主题目前由{}体系的已限定信号支持：{}".format(
                         "八字" if candidate.system == "bazi" else "占星",
                         " ".join(candidate.interpretations),
@@ -215,7 +225,7 @@ def _signatures(
                     rule_refs=candidate.rule_refs,
                     fact_refs=candidate.fact_refs,
                     limitations=candidate.limitations,
-                    salience=1,
+                    salience=2 if candidate.topic in {"interacting tendencies", "life arena"} else 1,
                 )
             )
     return tuple(sorted(items, key=lambda item: (-item.salience, item.topic, item.item_id)))
@@ -228,7 +238,7 @@ def _dynamics(
         AuditedProfileItem(
             item_id="dynamic:" + alignment.topic,
             topic=alignment.topic,
-            title=("张力与调节：" if alignment.kind == "tension" else "双重线索：") + alignment.topic,
+            title=("张力与调节：" if alignment.kind == "tension" else "双重线索：") + " × ".join(alignment.directions),
             statement=alignment.interpretation,
             signal_ids=alignment.signal_ids,
             rule_refs=alignment.rule_refs,

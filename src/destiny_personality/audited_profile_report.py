@@ -1,6 +1,6 @@
 """Dynamic, contained report planning for ``audited-interpretive-cdp-v1``."""
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from hashlib import sha256
 from typing import Dict, Iterable, Tuple
 
@@ -14,6 +14,7 @@ class AuditedProfilePlannedSection:
     item_ids: Tuple[str, ...]
     deduplication_key: str
     reason: str
+    evidence_fingerprint: str
 
 
 @dataclass(frozen=True)
@@ -87,6 +88,10 @@ def build_audited_profile_report_plan(
             break
     if profile.archetype is not None:
         sections.append(_section("archetype", profile.archetype.title, (profile.archetype.item_id,), "archetype", "profile-index"))
+    sections = [
+        replace(section, evidence_fingerprint=_section_evidence_fingerprint(section, items))
+        for section in sections
+    ]
     selected_ids = {item_id for section in sections for item_id in section.item_ids}
     omitted = tuple(item_id for item_id in sorted(items) if item_id not in selected_ids)
     if not 4 <= len(sections) <= 8:
@@ -132,7 +137,7 @@ def render_audited_profile_report(
 def _section(
     section_id: str, title: str, item_ids: Tuple[str, ...], deduplication_key: str, reason: str
 ) -> AuditedProfilePlannedSection:
-    return AuditedProfilePlannedSection(section_id, title, item_ids, deduplication_key, reason)
+    return AuditedProfilePlannedSection(section_id, title, item_ids, deduplication_key, reason, "")
 
 
 def _item_index(profile: AuditedCoreProfile) -> Dict[str, AuditedProfileItem]:
@@ -160,6 +165,22 @@ def _render_section(
         fact_refs=_unique(fact_ref for item in selected for fact_ref in item.fact_refs),
         limitations=_unique(limitation for item in selected for limitation in item.limitations),
     )
+
+
+def _section_evidence_fingerprint(
+    section: AuditedProfilePlannedSection, items: Dict[str, AuditedProfileItem]
+) -> str:
+    evidence = tuple(
+        (
+            item.item_id,
+            item.statement,
+            item.signal_ids,
+            item.rule_refs,
+            item.fact_refs,
+        )
+        for item in (items[item_id] for item_id in section.item_ids)
+    )
+    return sha256(repr(evidence).encode("utf-8")).hexdigest()
 
 
 def _profile_fingerprint(profile: AuditedCoreProfile) -> str:

@@ -8,9 +8,9 @@
 
 它提供一个可审计的本地排盘入口：MIT 许可的确定性 provider 负责计算与资格校验，Skill 负责输入规范、方法校验、事实边界、推演许可、报告结构与最终审计。
 
-## 发布通道：v0.7.0 Birth-input Product
+## 发布通道：v0.8.0 Core Profile Product
 
-v0.7.0 将 `audited_interpretive` 补齐为可直接运行的出生信息产品链路。普通用户只需提供出生信息；本地 provider 会计算、独立资格校验并生成可审计报告，不让模型自由排盘。
+v0.8.0 将默认出生信息入口升级为 `core-profile-v1`：本地 provider 计算并独立资格校验，再由已审计解释信号构建可追溯的核心画像、动态章节计划和报告。普通用户只需提供出生信息；模型不自由排盘。
 
 供应方产生的 `deterministic-facts-v1` 与 `fact-qualification-v1` 是内部运行时接口。通过指纹绑定后，版本化的八字/占星传统解释规则才能产生可追溯信号和用户可读报告。
 
@@ -23,7 +23,7 @@ v0.5.0 的所有严格路径保持原样。`strict` 只在用户明确要求审�
 - 接受结构化出生资料或紧凑输入，例如：`2000.1.1.00:00 上海 未指定`
 - 校验外部八字与西方占星计算能力的方法、版本与来源
 - 严格区分命盘事实、传统解释和智能体推演
-- 默认从合格事实生成 `standard-interpretive-v1` 审计式解释报告
+- 默认从合格事实生成 `core-profile-v1` 审计型核心画像报告
 - 在结论、信号、事实、规则、资格与指纹之间保留审计链
 - 在出生时间缺失时移除时柱、宫位、上升点与角度结论，并显式降级
 - 对无匹配规则的主题使用 `insufficient`，不用套话填补空白
@@ -45,10 +45,10 @@ v0.5.0 的所有严格路径保持原样。`strict` 只在用户明确要求审�
   ↓
 版本化传统解释规则与信号综合
   ↓
-用户报告与审计元数据
+审计型核心画像 → 动态报告计划 → 用户报告与审计元数据
 ```
 
-默认画像使用 `audited_interpretive`：允许版本化传统规则解释经过资格校验的事实，但不允许运行时计算或补齐命盘事实、伪造规则或抬高保障等级。
+默认画像使用 `audited-interpretive-cdp-v1`：允许版本化传统规则解释经过资格校验的事实，但不允许运行时计算或补齐命盘事实、伪造规则、读取 candidate mapping 或抬高保障等级。它不同于 limited-coverage 的 formal primitive CDP，绝不声称 formal primitive coverage。
 
 安装依赖后，正常出生信息通过本地 provider 运行；依赖缺失、输入无效或地点不受支持会明确失败。不用通用模型知识计算、修补或猜测命盘事实。
 
@@ -107,7 +107,7 @@ destiny-personality-reference-validate build-interpretive-report FACTS.json \
 
 发布契约：normal complete qualified charts: 7–12 meaningful sections; sparse evidence or missing birth time may produce fewer sections and must visibly state its scope。
 
-`standard-interpretive-v1` 是默认模式，符合条件的普通完整命盘生成 7–12 个有意义的用户可读章节；证据稀疏或出生时间缺失时可以更短，但必须明确展示其适用范围与限制。当受支持主题超过 12 个时，第 12 节合并展示其余结论，并保留每条信号的 provenance 与局限，不静默截断。`concise-interpretive-v1` 是同一受控结论集的短版视图。公开报告入口只接受指纹绑定的 `QualifiedFacts`；调用方自行构造的 profile 或原始事实不能进入审计报告路径。CLI 仍接受 `standard` 和 `concise` 作为兼容别名，但持久化的 `report_mode` 始终使用带版本的正式名称。
+`core-profile-v1` 是出生输入 CLI 的默认模式。它生成 4–8 个由实际画像证据选择的章节，并同时写入 `core_profile.json`、`report_plan.json` 与 `report_audit.json`。每个计划章节带 evidence fingerprint，保证同名主题不能跨个案静默复用。`standard-interpretive-v1` 和 `concise-interpretive-v1` 仍是完整兼容模式；前者仍按原有受控标题生成 7–12 个章节。公开报告入口只接受指纹绑定的 `QualifiedFacts`；调用方自行构造的 profile 或原始事实不能进入审计报告路径。CLI 仍接受 `standard` 和 `concise` 作为兼容别名，但持久化的 `report_mode` 始终使用带版本的正式名称。
 
 置信标签不是科学准确率，而是对当前规则与证据范围的受控表达：
 

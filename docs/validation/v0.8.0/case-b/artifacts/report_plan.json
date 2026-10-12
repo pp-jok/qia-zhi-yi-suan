@@ -1,0 +1,84 @@
+{
+  "audit_trail": [
+    "deterministic-facts:9fbdcbce85fe08f5f5df75653f1dfe530bbe57c4c8c7dfc3aa9d2340c2bd9b61",
+    "fact-qualification:34672c52182de95575d02b24cedd52e9cb731438255731dc14e98520a0968431",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only",
+    "report_planner:audited-profile-report-plan-v1"
+  ],
+  "core_profile_id": "audited-cdp-950d830526a879ff",
+  "omitted_item_ids": [
+    "shadow-mature:life arena",
+    "shadow-mature:style of expression",
+    "signature:astrology:boundaries and mastery",
+    "signature:astrology:emotional processing",
+    "signature:astrology:growth orientation",
+    "signature:astrology:relating and values",
+    "signature:astrology:thinking and communication",
+    "signature:bazi:agency",
+    "signature:bazi:recurring emphasis",
+    "signature:bazi:resource handling",
+    "signature:bazi:structure and pressure",
+    "signature:style of expression",
+    "theme:action style",
+    "theme:interacting tendencies",
+    "theme:life arena",
+    "theme:style of expression"
+  ],
+  "profile_fingerprint": "7e24f1739359da59f5978cdad52e81eb0ee5b1d4e6798a70b97292d072b917b8",
+  "schema_version": "audited-profile-report-plan-v1",
+  "sections": [
+    {
+      "deduplication_key": "core-profile",
+      "evidence_fingerprint": "d6511c09ac6681067c3fc7340bfbfb34a26b9f6fea6e871424bf7376d29b96ed",
+      "item_ids": [
+        "signature:astrology:interacting tendencies",
+        "signature:astrology:life arena"
+      ],
+      "reason": "highest-salience-signatures",
+      "section_id": "core-profile",
+      "title": "核心画像"
+    },
+    {
+      "deduplication_key": "dynamic:style of expression",
+      "evidence_fingerprint": "c6702163bc69f60b784d26386b4b4664225977c67cbd5be704b238d2cd4b5da9",
+      "item_ids": [
+        "dynamic:style of expression"
+      ],
+      "reason": "cross-system-tension",
+      "section_id": "dynamic-style of expression",
+      "title": "张力与调节：reflective × outward × attuned"
+    },
+    {
+      "deduplication_key": "signature:action style",
+      "evidence_fingerprint": "44c7e35ffda7b74d5f6ba32d313eedeca97078e9ed924d675c1a99c97bf207e4",
+      "item_ids": [
+        "signature:astrology:action style"
+      ],
+      "reason": "additional-supported-signature",
+      "section_id": "signature-action style",
+      "title": "核心倾向：action style（grounded）"
+    },
+    {
+      "deduplication_key": "shadow-mature:interacting tendencies",
+      "evidence_fingerprint": "fd52826c4c8485aca6c77b6408d1d85317368942a84b82e749b50e686ad4151d",
+      "item_ids": [
+        "shadow-mature:interacting tendencies"
+      ],
+      "reason": "reflective-counterweight",
+      "section_id": "shadow-mature-interacting tendencies",
+      "title": "影子与成熟表达：interacting tendencies"
+    },
+    {
+      "deduplication_key": "archetype",
+      "evidence_fingerprint": "a8159d86a7822462c130d626034fe40726c03f7d60b68b3ddbc4fe7a6cf74848",
+      "item_ids": [
+        "archetype:profile"
+      ],
+      "reason": "profile-index",
+      "section_id": "archetype",
+      "title": "画像原型"
+    }
+  ]
+}

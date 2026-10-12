@@ -1,0 +1,1319 @@
+{
+  "archetype": {
+    "fact_refs": [
+      "astrology.placements[0].house",
+      "bazi.ten_gods[0].ten_god",
+      "bazi.ten_gods[5].ten_god",
+      "bazi.ten_gods[7].ten_god",
+      "bazi.ten_gods[10].ten_god",
+      "bazi.ten_gods[13].ten_god",
+      "bazi.ten_gods[9].ten_god",
+      "bazi.ten_gods[12].ten_god",
+      "bazi.ten_gods[15].ten_god",
+      "astrology.placements[0].sign"
+    ],
+    "item_id": "archetype:profile",
+    "kind": "",
+    "limitations": [
+      "出生时间不可用时必须完全省略。",
+      "原型不是分类诊断，也不取代个体自我理解。"
+    ],
+    "rule_refs": [
+      "西方占星学宫位论；William Lilly, Christian Astrology",
+      "子平法十神法；《渊海子平》",
+      "现代西方占星学行星星座综合法；Stephen Arroyo"
+    ],
+    "salience": 2,
+    "signal_ids": [
+      "ASTROLOGY-SUN-HOUSE-CONTEXT",
+      "BAZI-TEN-GOD-EXPRESSION",
+      "BAZI-TEN-GOD-OUTPUT",
+      "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+    ],
+    "statement": "可将当前画像暂称为“围绕life arena与style of expression展开的整合者”；这只是对已命中主题的阅读索引。",
+    "title": "画像原型",
+    "topic": "life arena"
+  },
+  "astrology_candidates": [
+    {
+      "candidate_id": "astrology:action style",
+      "contexts": [
+        "行动",
+        "冲突处理",
+        "需要落地与持续投入的情境",
+        "新任务与转换阶段"
+      ],
+      "directions": [
+        "grounded"
+      ],
+      "fact_refs": [
+        "astrology.placements[4].sign"
+      ],
+      "interpretations": [
+        "火星的元素与模式描述行动如何启动、持续与面对阻力。土象取向会以具体条件、稳定结果来承载该行星功能。开创模式更重视发起、设定方向与启动新阶段。（命中依据：元素：土象；模式：开创）"
+      ],
+      "likely_expressions": [
+        "面对竞争或紧急任务时，可能展现特定的发力与持续方式。命中土象时，可观察是否先确认可行性、成本与交付标准。命中开创模式时，可观察是否在开局阶段更容易承担发起作用。"
+      ],
+      "limitations": [
+        "不代表攻击性或执行能力评分。"
+      ],
+      "mechanisms": [
+        "驱动力选择与元素相应的路径，并按模式分配行动节奏。土象通过可验证的步骤与现实资源让该功能落地。开创模式通过率先做出反应来建立推进节奏。"
+      ],
+      "rule_refs": [
+        "现代西方占星学火星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-MARS-SIGN-QUALITY"
+      ],
+      "system": "astrology",
+      "topic": "action style"
+    },
+    {
+      "candidate_id": "astrology:boundaries and mastery",
+      "contexts": [
+        "长期任务",
+        "边界建立",
+        "需要迅速投入的情境",
+        "过渡与需要应变的情境"
+      ],
+      "directions": [
+        "outward"
+      ],
+      "fact_refs": [
+        "astrology.placements[6].sign"
+      ],
+      "interpretations": [
+        "土星的元素与模式描述边界、责任与长期掌握的象征途径。火象取向会以直接投入、激发行动来承载该行星功能。变动模式更重视调整、转译与回应已变化的条件。（命中依据：元素：火象；模式：变动）"
+      ],
+      "likely_expressions": [
+        "面对需要长期投入的事情时，可能以特定节奏建立规则与熟练度。命中火象时，可观察是否倾向先表明意愿，再在行动中校正。命中变动模式时，可观察是否在过渡、多任务或反馈变化中更容易调整。"
+      ],
+      "limitations": [
+        "不用于诊断压抑、焦虑或生活困难。"
+      ],
+      "mechanisms": [
+        "对限制的感知通过元素被具体化，并按模式逐步建立结构。火象通过热度、意愿与即时反馈推动该功能向外展开。变动模式通过修正路径与重新组织信息来维持进展。"
+      ],
+      "rule_refs": [
+        "现代西方占星学土星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-SATURN-SIGN-QUALITY"
+      ],
+      "system": "astrology",
+      "topic": "boundaries and mastery"
+    },
+    {
+      "candidate_id": "astrology:emotional processing",
+      "contexts": [
+        "情绪调节",
+        "亲密关系",
+        "需要迅速投入的情境",
+        "过渡与需要应变的情境"
+      ],
+      "directions": [
+        "outward"
+      ],
+      "fact_refs": [
+        "astrology.placements[1].sign"
+      ],
+      "interpretations": [
+        "月亮所在星座的元素与模式，提供情绪接收和安全感调节的象征语言。火象取向会以直接投入、激发行动来承载该行星功能。变动模式更重视调整、转译与回应已变化的条件。（命中依据：元素：火象；模式：变动）"
+      ],
+      "likely_expressions": [
+        "在压力或亲密关系中，可能展现特定的恢复节奏和回应习惯。命中火象时，可观察是否倾向先表明意愿，再在行动中校正。命中变动模式时，可观察是否在过渡、多任务或反馈变化中更容易调整。"
+      ],
+      "limitations": [
+        "不用于诊断情绪或依恋问题。"
+      ],
+      "mechanisms": [
+        "情绪需求通过对应元素的补给方式和模式节奏被识别。火象通过热度、意愿与即时反馈推动该功能向外展开。变动模式通过修正路径与重新组织信息来维持进展。"
+      ],
+      "rule_refs": [
+        "现代西方占星学月亮星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-MOON-SIGN-QUALITY"
+      ],
+      "system": "astrology",
+      "topic": "emotional processing"
+    },
+    {
+      "candidate_id": "astrology:growth orientation",
+      "contexts": [
+        "学习",
+        "发展选择",
+        "需要情绪调频与关系感受的情境",
+        "过渡与需要应变的情境"
+      ],
+      "directions": [
+        "attuned"
+      ],
+      "fact_refs": [
+        "astrology.placements[5].sign"
+      ],
+      "interpretations": [
+        "木星的元素与模式描述意义感、学习拓展与机会识别的象征路径。水象取向会以感受线索、关系氛围来承载该行星功能。变动模式更重视调整、转译与回应已变化的条件。（命中依据：元素：水象；模式：变动）"
+      ],
+      "likely_expressions": [
+        "在学习或选择发展方向时，可能更容易被某类视野和机会吸引。命中水象时，可观察是否先感受环境与关系反馈，再选择回应。命中变动模式时，可观察是否在过渡、多任务或反馈变化中更容易调整。"
+      ],
+      "limitations": [
+        "不构成运气或成功预测。"
+      ],
+      "mechanisms": [
+        "成长动机通过相应元素寻找空间，并按模式设定扩展节奏。水象通过对情绪与隐含信息的感受让该功能调整深度。变动模式通过修正路径与重新组织信息来维持进展。"
+      ],
+      "rule_refs": [
+        "现代西方占星学木星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-JUPITER-SIGN-QUALITY"
+      ],
+      "system": "astrology",
+      "topic": "growth orientation"
+    },
+    {
+      "candidate_id": "astrology:life arena",
+      "contexts": [
+        "宫位所指生活领域"
+      ],
+      "directions": [
+        "contextual"
+      ],
+      "fact_refs": [
+        "astrology.placements[0].house"
+      ],
+      "interpretations": [
+        "太阳宫位将核心表达限定在一个可核查的生活领域中。（命中依据：宫位：第5宫）"
+      ],
+      "likely_expressions": [
+        "在对应生活领域里，自我定义与被看见的需求可能更明显。"
+      ],
+      "limitations": [
+        "出生时间不可用时必须完全省略。"
+      ],
+      "mechanisms": [
+        "宫位不改变行星功能，而是指定该功能更容易被观察的情境。"
+      ],
+      "rule_refs": [
+        "西方占星学宫位论；William Lilly, Christian Astrology"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-SUN-HOUSE-CONTEXT"
+      ],
+      "system": "astrology",
+      "topic": "life arena"
+    },
+    {
+      "candidate_id": "astrology:relating and values",
+      "contexts": [
+        "关系",
+        "价值选择",
+        "需要情绪调频与关系感受的情境",
+        "新任务与转换阶段"
+      ],
+      "directions": [
+        "attuned"
+      ],
+      "fact_refs": [
+        "astrology.placements[3].sign"
+      ],
+      "interpretations": [
+        "金星的元素与模式描述好感、价值选择与互惠方式。水象取向会以感受线索、关系氛围来承载该行星功能。开创模式更重视发起、设定方向与启动新阶段。（命中依据：元素：水象；模式：开创）"
+      ],
+      "likely_expressions": [
+        "在选择合作方式或美感对象时，可能显示稳定的偏好线索。命中水象时，可观察是否先感受环境与关系反馈，再选择回应。命中开创模式时，可观察是否在开局阶段更容易承担发起作用。"
+      ],
+      "limitations": [
+        "不用于预测关系结果。"
+      ],
+      "mechanisms": [
+        "关系中的吸引和协调借由对应元素表达，并按模式维持。水象通过对情绪与隐含信息的感受让该功能调整深度。开创模式通过率先做出反应来建立推进节奏。"
+      ],
+      "rule_refs": [
+        "现代西方占星学金星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-VENUS-SIGN-QUALITY"
+      ],
+      "system": "astrology",
+      "topic": "relating and values"
+    },
+    {
+      "candidate_id": "astrology:style of expression",
+      "contexts": [
+        "自我表达",
+        "启动任务",
+        "需要协商与信息交换的情境",
+        "过渡与需要应变的情境"
+      ],
+      "directions": [
+        "conceptual"
+      ],
+      "fact_refs": [
+        "astrology.placements[0].sign"
+      ],
+      "interpretations": [
+        "太阳所在星座的元素与模式，提供核心意志如何定义和表达自我的象征语言。风象取向会以信息交换、观点连接来承载该行星功能。变动模式更重视调整、转译与回应已变化的条件。（命中依据：元素：风象；模式：变动）"
+      ],
+      "likely_expressions": [
+        "在需要表态或承担核心角色时，可能按实际命中的元素与模式展现不同的强调方式。命中风象时，可观察是否倾向先交换信息，再形成判断或行动。命中变动模式时，可观察是否在过渡、多任务或反馈变化中更容易调整。"
+      ],
+      "limitations": [
+        "行星星座象征不是人格测量。"
+      ],
+      "mechanisms": [
+        "核心意志借由实际命中的元素取向选择表达材料，并按命中模式调整推进节奏。风象通过命名、比较与对话组织该功能的运作。变动模式通过修正路径与重新组织信息来维持进展。"
+      ],
+      "rule_refs": [
+        "现代西方占星学行星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "system": "astrology",
+      "topic": "style of expression"
+    },
+    {
+      "candidate_id": "astrology:thinking and communication",
+      "contexts": [
+        "学习",
+        "沟通",
+        "需要协商与信息交换的情境",
+        "过渡与需要应变的情境"
+      ],
+      "directions": [
+        "conceptual"
+      ],
+      "fact_refs": [
+        "astrology.placements[2].sign"
+      ],
+      "interpretations": [
+        "水星的元素与模式描述信息如何被注意、组织与交换。风象取向会以信息交换、观点连接来承载该行星功能。变动模式更重视调整、转译与回应已变化的条件。（命中依据：元素：风象；模式：变动）"
+      ],
+      "likely_expressions": [
+        "在学习和讨论中，可能对信息类型与表达速度有明显偏好。命中风象时，可观察是否倾向先交换信息，再形成判断或行动。命中变动模式时，可观察是否在过渡、多任务或反馈变化中更容易调整。"
+      ],
+      "limitations": [
+        "不代表智力高低或沟通能力评分。"
+      ],
+      "mechanisms": [
+        "思维通道按星座元素选择材料，并按模式确定推进节奏。风象通过命名、比较与对话组织该功能的运作。变动模式通过修正路径与重新组织信息来维持进展。"
+      ],
+      "rule_refs": [
+        "现代西方占星学水星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-MERCURY-SIGN-QUALITY"
+      ],
+      "system": "astrology",
+      "topic": "thinking and communication"
+    }
+  ],
+  "audit_trail": [
+    "deterministic-facts:45a0c262899996e871483ab856f6c340e7879a8c73a841325e7792d2b2b400bd",
+    "fact-qualification:303814b68cc23d91f337da669269edc1834c166f7bef4b0e62a00dd4f204bb0b",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only"
+  ],
+  "bazi_candidates": [
+    {
+      "candidate_id": "bazi:agency",
+      "contexts": [
+        "协作",
+        "资源分配"
+      ],
+      "directions": [
+        "self-directed"
+      ],
+      "fact_refs": [
+        "bazi.ten_gods[2].ten_god",
+        "bazi.ten_gods[3].ten_god",
+        "bazi.ten_gods[6].ten_god",
+        "bazi.ten_gods[8].ten_god",
+        "bazi.ten_gods[11].ten_god",
+        "bazi.ten_gods[14].ten_god"
+      ],
+      "interpretations": [
+        "比劫信号强调自我立场、同辈互动与资源边界。（命中依据：比肩；劫财）"
+      ],
+      "likely_expressions": [
+        "在协作中可能更在意对等、自主权与责任分配。"
+      ],
+      "limitations": [
+        "不能由此推定一个人自私或好竞争。"
+      ],
+      "mechanisms": [
+        "通过相同或相近力量的并置，使自主与竞合成为显著议题。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》"
+      ],
+      "signal_ids": [
+        "BAZI-TEN-GOD-PEER"
+      ],
+      "system": "bazi",
+      "topic": "agency"
+    },
+    {
+      "candidate_id": "bazi:recurring emphasis",
+      "contexts": [
+        "跨情境观察"
+      ],
+      "directions": [
+        "reinforced"
+      ],
+      "fact_refs": [
+        "bazi.ten_gods[0].ten_god",
+        "bazi.ten_gods[2].ten_god",
+        "bazi.ten_gods[3].ten_god",
+        "bazi.ten_gods[5].ten_god",
+        "bazi.ten_gods[6].ten_god",
+        "bazi.ten_gods[7].ten_god",
+        "bazi.ten_gods[8].ten_god",
+        "bazi.ten_gods[9].ten_god",
+        "bazi.ten_gods[10].ten_god",
+        "bazi.ten_gods[11].ten_god",
+        "bazi.ten_gods[12].ten_god",
+        "bazi.ten_gods[13].ten_god",
+        "bazi.ten_gods[14].ten_god",
+        "bazi.ten_gods[15].ten_god"
+      ],
+      "interpretations": [
+        "同类十神信号多次出现时，相关议题可能在不同情境中反复被触发。（命中依据：正印；比肩；劫财；伤官）"
+      ],
+      "likely_expressions": [
+        "相同主题可能在学习、工作或关系中以不同形式重现。"
+      ],
+      "limitations": [
+        "需辨别每个实例的柱位和来源，不做强弱判定。"
+      ],
+      "mechanisms": [
+        "重复来源提高了某类关系在全局中的可见度，但不等于线性增强。"
+      ],
+      "rule_refs": [
+        "子平法十神复见观察法；《三命通会》"
+      ],
+      "signal_ids": [
+        "BAZI-TEN-GOD-REPETITION"
+      ],
+      "system": "bazi",
+      "topic": "recurring emphasis"
+    },
+    {
+      "candidate_id": "bazi:resource handling",
+      "contexts": [
+        "工作",
+        "日常管理"
+      ],
+      "directions": [
+        "practical"
+      ],
+      "fact_refs": [
+        "bazi.ten_gods[1].ten_god"
+      ],
+      "interpretations": [
+        "财星信号聚焦可调度的资源、实际成果与投入回报。（命中依据：偏财）"
+      ],
+      "likely_expressions": [
+        "在工作或生活安排中，可能关注时间、成本和结果是否可控。"
+      ],
+      "limitations": [
+        "不代表实际财富或理财能力。"
+      ],
+      "mechanisms": [
+        "通过对外部资源的识别与安排，将意图落到可交付的层面。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》"
+      ],
+      "signal_ids": [
+        "BAZI-TEN-GOD-WEALTH"
+      ],
+      "system": "bazi",
+      "topic": "resource handling"
+    },
+    {
+      "candidate_id": "bazi:structure and pressure",
+      "contexts": [
+        "责任",
+        "压力情境"
+      ],
+      "directions": [
+        "structured"
+      ],
+      "fact_refs": [
+        "bazi.ten_gods[4].ten_god"
+      ],
+      "interpretations": [
+        "官杀信号指向规范、约束、责任与压力的处理方式。（命中依据：正官）"
+      ],
+      "likely_expressions": [
+        "面对任务时可能更先确认责任、标准和风险边界。"
+      ],
+      "limitations": [
+        "不能由此推定职位、权力或事件吉凶。"
+      ],
+      "mechanisms": [
+        "外部要求被内化为行动边界，促使个体在规则与挑战中调整。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》"
+      ],
+      "signal_ids": [
+        "BAZI-TEN-GOD-AUTHORITY"
+      ],
+      "system": "bazi",
+      "topic": "structure and pressure"
+    },
+    {
+      "candidate_id": "bazi:style of expression",
+      "contexts": [
+        "学习",
+        "沟通",
+        "创作",
+        "公开表达"
+      ],
+      "directions": [
+        "reflective",
+        "outward"
+      ],
+      "fact_refs": [
+        "bazi.ten_gods[0].ten_god",
+        "bazi.ten_gods[5].ten_god",
+        "bazi.ten_gods[7].ten_god",
+        "bazi.ten_gods[10].ten_god",
+        "bazi.ten_gods[13].ten_god",
+        "bazi.ten_gods[9].ten_god",
+        "bazi.ten_gods[12].ten_god",
+        "bazi.ten_gods[15].ten_god"
+      ],
+      "interpretations": [
+        "印星信号将注意力引向理解、吸收与内在整理。（命中依据：正印）",
+        "食伤信号将重点放在输出、表达与对既有规则的个人化处理。（命中依据：伤官）"
+      ],
+      "likely_expressions": [
+        "在学习或沟通中，可能先听、先理解，再给出经过组织的回应。",
+        "可能通过作品、语言或方法改进来表达自己的理解。"
+      ],
+      "limitations": [
+        "需与全局其他十神与关系合看。",
+        "不等同于才华水平或职业成就。"
+      ],
+      "mechanisms": [
+        "通过接收信息、建立解释框架后再表达，因而形成偏反思的表达节奏。",
+        "内在资源向外转化，使创作、说明或改造成为主要通道。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》"
+      ],
+      "signal_ids": [
+        "BAZI-TEN-GOD-EXPRESSION",
+        "BAZI-TEN-GOD-OUTPUT"
+      ],
+      "system": "bazi",
+      "topic": "style of expression"
+    }
+  ],
+  "core_dynamics": [
+    {
+      "fact_refs": [
+        "bazi.ten_gods[0].ten_god",
+        "bazi.ten_gods[5].ten_god",
+        "bazi.ten_gods[7].ten_god",
+        "bazi.ten_gods[10].ten_god",
+        "bazi.ten_gods[13].ten_god",
+        "bazi.ten_gods[9].ten_god",
+        "bazi.ten_gods[12].ten_god",
+        "bazi.ten_gods[15].ten_god",
+        "astrology.placements[0].sign"
+      ],
+      "item_id": "dynamic:style of expression",
+      "kind": "tension",
+      "limitations": [
+        "需与全局其他十神与关系合看。",
+        "不等同于才华水平或职业成就。",
+        "行星星座象征不是人格测量。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》",
+        "现代西方占星学行星星座综合法；Stephen Arroyo"
+      ],
+      "salience": 2,
+      "signal_ids": [
+        "BAZI-TEN-GOD-EXPRESSION",
+        "BAZI-TEN-GOD-OUTPUT",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "statement": "两个体系在 style of expression 主题上命中了不同方向，保留为需按情境理解的张力，不互相抵消。",
+      "title": "张力与调节：reflective × outward × conceptual",
+      "topic": "style of expression"
+    }
+  ],
+  "core_profile_id": "audited-cdp-28be3edfc58377b3",
+  "cross_system_alignments": [
+    {
+      "alignment_id": "alignment:action style",
+      "directions": [
+        "grounded"
+      ],
+      "fact_refs": [
+        "astrology.placements[4].sign"
+      ],
+      "interpretation": "action style 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "不代表攻击性或执行能力评分。"
+      ],
+      "rule_refs": [
+        "现代西方占星学火星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-MARS-SIGN-QUALITY"
+      ],
+      "topic": "action style"
+    },
+    {
+      "alignment_id": "alignment:agency",
+      "directions": [
+        "self-directed"
+      ],
+      "fact_refs": [
+        "bazi.ten_gods[2].ten_god",
+        "bazi.ten_gods[3].ten_god",
+        "bazi.ten_gods[6].ten_god",
+        "bazi.ten_gods[8].ten_god",
+        "bazi.ten_gods[11].ten_god",
+        "bazi.ten_gods[14].ten_god"
+      ],
+      "interpretation": "agency 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "不能由此推定一个人自私或好竞争。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》"
+      ],
+      "signal_ids": [
+        "BAZI-TEN-GOD-PEER"
+      ],
+      "topic": "agency"
+    },
+    {
+      "alignment_id": "alignment:boundaries and mastery",
+      "directions": [
+        "outward"
+      ],
+      "fact_refs": [
+        "astrology.placements[6].sign"
+      ],
+      "interpretation": "boundaries and mastery 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "不用于诊断压抑、焦虑或生活困难。"
+      ],
+      "rule_refs": [
+        "现代西方占星学土星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-SATURN-SIGN-QUALITY"
+      ],
+      "topic": "boundaries and mastery"
+    },
+    {
+      "alignment_id": "alignment:emotional processing",
+      "directions": [
+        "outward"
+      ],
+      "fact_refs": [
+        "astrology.placements[1].sign"
+      ],
+      "interpretation": "emotional processing 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "不用于诊断情绪或依恋问题。"
+      ],
+      "rule_refs": [
+        "现代西方占星学月亮星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-MOON-SIGN-QUALITY"
+      ],
+      "topic": "emotional processing"
+    },
+    {
+      "alignment_id": "alignment:growth orientation",
+      "directions": [
+        "attuned"
+      ],
+      "fact_refs": [
+        "astrology.placements[5].sign"
+      ],
+      "interpretation": "growth orientation 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "不构成运气或成功预测。"
+      ],
+      "rule_refs": [
+        "现代西方占星学木星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-JUPITER-SIGN-QUALITY"
+      ],
+      "topic": "growth orientation"
+    },
+    {
+      "alignment_id": "alignment:life arena",
+      "directions": [
+        "contextual"
+      ],
+      "fact_refs": [
+        "astrology.placements[0].house"
+      ],
+      "interpretation": "life arena 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "出生时间不可用时必须完全省略。"
+      ],
+      "rule_refs": [
+        "西方占星学宫位论；William Lilly, Christian Astrology"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-SUN-HOUSE-CONTEXT"
+      ],
+      "topic": "life arena"
+    },
+    {
+      "alignment_id": "alignment:recurring emphasis",
+      "directions": [
+        "reinforced"
+      ],
+      "fact_refs": [
+        "bazi.ten_gods[0].ten_god",
+        "bazi.ten_gods[2].ten_god",
+        "bazi.ten_gods[3].ten_god",
+        "bazi.ten_gods[5].ten_god",
+        "bazi.ten_gods[6].ten_god",
+        "bazi.ten_gods[7].ten_god",
+        "bazi.ten_gods[8].ten_god",
+        "bazi.ten_gods[9].ten_god",
+        "bazi.ten_gods[10].ten_god",
+        "bazi.ten_gods[11].ten_god",
+        "bazi.ten_gods[12].ten_god",
+        "bazi.ten_gods[13].ten_god",
+        "bazi.ten_gods[14].ten_god",
+        "bazi.ten_gods[15].ten_god"
+      ],
+      "interpretation": "recurring emphasis 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "需辨别每个实例的柱位和来源，不做强弱判定。"
+      ],
+      "rule_refs": [
+        "子平法十神复见观察法；《三命通会》"
+      ],
+      "signal_ids": [
+        "BAZI-TEN-GOD-REPETITION"
+      ],
+      "topic": "recurring emphasis"
+    },
+    {
+      "alignment_id": "alignment:relating and values",
+      "directions": [
+        "attuned"
+      ],
+      "fact_refs": [
+        "astrology.placements[3].sign"
+      ],
+      "interpretation": "relating and values 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "不用于预测关系结果。"
+      ],
+      "rule_refs": [
+        "现代西方占星学金星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-VENUS-SIGN-QUALITY"
+      ],
+      "topic": "relating and values"
+    },
+    {
+      "alignment_id": "alignment:resource handling",
+      "directions": [
+        "practical"
+      ],
+      "fact_refs": [
+        "bazi.ten_gods[1].ten_god"
+      ],
+      "interpretation": "resource handling 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "不代表实际财富或理财能力。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》"
+      ],
+      "signal_ids": [
+        "BAZI-TEN-GOD-WEALTH"
+      ],
+      "topic": "resource handling"
+    },
+    {
+      "alignment_id": "alignment:structure and pressure",
+      "directions": [
+        "structured"
+      ],
+      "fact_refs": [
+        "bazi.ten_gods[4].ten_god"
+      ],
+      "interpretation": "structure and pressure 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "不能由此推定职位、权力或事件吉凶。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》"
+      ],
+      "signal_ids": [
+        "BAZI-TEN-GOD-AUTHORITY"
+      ],
+      "topic": "structure and pressure"
+    },
+    {
+      "alignment_id": "alignment:style of expression",
+      "directions": [
+        "reflective",
+        "outward",
+        "conceptual"
+      ],
+      "fact_refs": [
+        "bazi.ten_gods[0].ten_god",
+        "bazi.ten_gods[5].ten_god",
+        "bazi.ten_gods[7].ten_god",
+        "bazi.ten_gods[10].ten_god",
+        "bazi.ten_gods[13].ten_god",
+        "bazi.ten_gods[9].ten_god",
+        "bazi.ten_gods[12].ten_god",
+        "bazi.ten_gods[15].ten_god",
+        "astrology.placements[0].sign"
+      ],
+      "interpretation": "两个体系在 style of expression 主题上命中了不同方向，保留为需按情境理解的张力，不互相抵消。",
+      "kind": "tension",
+      "limitations": [
+        "需与全局其他十神与关系合看。",
+        "不等同于才华水平或职业成就。",
+        "行星星座象征不是人格测量。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》",
+        "现代西方占星学行星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "BAZI-TEN-GOD-EXPRESSION",
+        "BAZI-TEN-GOD-OUTPUT",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "topic": "style of expression"
+    },
+    {
+      "alignment_id": "alignment:thinking and communication",
+      "directions": [
+        "conceptual"
+      ],
+      "fact_refs": [
+        "astrology.placements[2].sign"
+      ],
+      "interpretation": "thinking and communication 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "不代表智力高低或沟通能力评分。"
+      ],
+      "rule_refs": [
+        "现代西方占星学水星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-MERCURY-SIGN-QUALITY"
+      ],
+      "topic": "thinking and communication"
+    }
+  ],
+  "dominant_signatures": [
+    {
+      "fact_refs": [
+        "astrology.placements[0].house"
+      ],
+      "item_id": "signature:astrology:life arena",
+      "kind": "",
+      "limitations": [
+        "出生时间不可用时必须完全省略。"
+      ],
+      "rule_refs": [
+        "西方占星学宫位论；William Lilly, Christian Astrology"
+      ],
+      "salience": 2,
+      "signal_ids": [
+        "ASTROLOGY-SUN-HOUSE-CONTEXT"
+      ],
+      "statement": "该主题目前由占星体系的已限定信号支持：太阳宫位将核心表达限定在一个可核查的生活领域中。（命中依据：宫位：第5宫）",
+      "title": "核心倾向：life arena（contextual）",
+      "topic": "life arena"
+    },
+    {
+      "fact_refs": [
+        "bazi.ten_gods[0].ten_god",
+        "bazi.ten_gods[5].ten_god",
+        "bazi.ten_gods[7].ten_god",
+        "bazi.ten_gods[10].ten_god",
+        "bazi.ten_gods[13].ten_god",
+        "bazi.ten_gods[9].ten_god",
+        "bazi.ten_gods[12].ten_god",
+        "bazi.ten_gods[15].ten_god",
+        "astrology.placements[0].sign"
+      ],
+      "item_id": "signature:style of expression",
+      "kind": "",
+      "limitations": [
+        "需与全局其他十神与关系合看。",
+        "不等同于才华水平或职业成就。",
+        "行星星座象征不是人格测量。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》",
+        "现代西方占星学行星星座综合法；Stephen Arroyo"
+      ],
+      "salience": 2,
+      "signal_ids": [
+        "BAZI-TEN-GOD-EXPRESSION",
+        "BAZI-TEN-GOD-OUTPUT",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "statement": "两个体系在 style of expression 主题上命中了不同方向，保留为需按情境理解的张力，不互相抵消。",
+      "title": "核心倾向：style of expression",
+      "topic": "style of expression"
+    },
+    {
+      "fact_refs": [
+        "astrology.placements[4].sign"
+      ],
+      "item_id": "signature:astrology:action style",
+      "kind": "",
+      "limitations": [
+        "不代表攻击性或执行能力评分。"
+      ],
+      "rule_refs": [
+        "现代西方占星学火星星座综合法；Stephen Arroyo"
+      ],
+      "salience": 1,
+      "signal_ids": [
+        "ASTROLOGY-MARS-SIGN-QUALITY"
+      ],
+      "statement": "该主题目前由占星体系的已限定信号支持：火星的元素与模式描述行动如何启动、持续与面对阻力。土象取向会以具体条件、稳定结果来承载该行星功能。开创模式更重视发起、设定方向与启动新阶段。（命中依据：元素：土象；模式：开创）",
+      "title": "核心倾向：action style（grounded）",
+      "topic": "action style"
+    },
+    {
+      "fact_refs": [
+        "bazi.ten_gods[2].ten_god",
+        "bazi.ten_gods[3].ten_god",
+        "bazi.ten_gods[6].ten_god",
+        "bazi.ten_gods[8].ten_god",
+        "bazi.ten_gods[11].ten_god",
+        "bazi.ten_gods[14].ten_god"
+      ],
+      "item_id": "signature:bazi:agency",
+      "kind": "",
+      "limitations": [
+        "不能由此推定一个人自私或好竞争。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》"
+      ],
+      "salience": 1,
+      "signal_ids": [
+        "BAZI-TEN-GOD-PEER"
+      ],
+      "statement": "该主题目前由八字体系的已限定信号支持：比劫信号强调自我立场、同辈互动与资源边界。（命中依据：比肩；劫财）",
+      "title": "核心倾向：agency（self-directed）",
+      "topic": "agency"
+    },
+    {
+      "fact_refs": [
+        "astrology.placements[6].sign"
+      ],
+      "item_id": "signature:astrology:boundaries and mastery",
+      "kind": "",
+      "limitations": [
+        "不用于诊断压抑、焦虑或生活困难。"
+      ],
+      "rule_refs": [
+        "现代西方占星学土星星座综合法；Stephen Arroyo"
+      ],
+      "salience": 1,
+      "signal_ids": [
+        "ASTROLOGY-SATURN-SIGN-QUALITY"
+      ],
+      "statement": "该主题目前由占星体系的已限定信号支持：土星的元素与模式描述边界、责任与长期掌握的象征途径。火象取向会以直接投入、激发行动来承载该行星功能。变动模式更重视调整、转译与回应已变化的条件。（命中依据：元素：火象；模式：变动）",
+      "title": "核心倾向：boundaries and mastery（outward）",
+      "topic": "boundaries and mastery"
+    },
+    {
+      "fact_refs": [
+        "astrology.placements[1].sign"
+      ],
+      "item_id": "signature:astrology:emotional processing",
+      "kind": "",
+      "limitations": [
+        "不用于诊断情绪或依恋问题。"
+      ],
+      "rule_refs": [
+        "现代西方占星学月亮星座综合法；Stephen Arroyo"
+      ],
+      "salience": 1,
+      "signal_ids": [
+        "ASTROLOGY-MOON-SIGN-QUALITY"
+      ],
+      "statement": "该主题目前由占星体系的已限定信号支持：月亮所在星座的元素与模式，提供情绪接收和安全感调节的象征语言。火象取向会以直接投入、激发行动来承载该行星功能。变动模式更重视调整、转译与回应已变化的条件。（命中依据：元素：火象；模式：变动）",
+      "title": "核心倾向：emotional processing（outward）",
+      "topic": "emotional processing"
+    },
+    {
+      "fact_refs": [
+        "astrology.placements[5].sign"
+      ],
+      "item_id": "signature:astrology:growth orientation",
+      "kind": "",
+      "limitations": [
+        "不构成运气或成功预测。"
+      ],
+      "rule_refs": [
+        "现代西方占星学木星星座综合法；Stephen Arroyo"
+      ],
+      "salience": 1,
+      "signal_ids": [
+        "ASTROLOGY-JUPITER-SIGN-QUALITY"
+      ],
+      "statement": "该主题目前由占星体系的已限定信号支持：木星的元素与模式描述意义感、学习拓展与机会识别的象征路径。水象取向会以感受线索、关系氛围来承载该行星功能。变动模式更重视调整、转译与回应已变化的条件。（命中依据：元素：水象；模式：变动）",
+      "title": "核心倾向：growth orientation（attuned）",
+      "topic": "growth orientation"
+    },
+    {
+      "fact_refs": [
+        "bazi.ten_gods[0].ten_god",
+        "bazi.ten_gods[2].ten_god",
+        "bazi.ten_gods[3].ten_god",
+        "bazi.ten_gods[5].ten_god",
+        "bazi.ten_gods[6].ten_god",
+        "bazi.ten_gods[7].ten_god",
+        "bazi.ten_gods[8].ten_god",
+        "bazi.ten_gods[9].ten_god",
+        "bazi.ten_gods[10].ten_god",
+        "bazi.ten_gods[11].ten_god",
+        "bazi.ten_gods[12].ten_god",
+        "bazi.ten_gods[13].ten_god",
+        "bazi.ten_gods[14].ten_god",
+        "bazi.ten_gods[15].ten_god"
+      ],
+      "item_id": "signature:bazi:recurring emphasis",
+      "kind": "",
+      "limitations": [
+        "需辨别每个实例的柱位和来源，不做强弱判定。"
+      ],
+      "rule_refs": [
+        "子平法十神复见观察法；《三命通会》"
+      ],
+      "salience": 1,
+      "signal_ids": [
+        "BAZI-TEN-GOD-REPETITION"
+      ],
+      "statement": "该主题目前由八字体系的已限定信号支持：同类十神信号多次出现时，相关议题可能在不同情境中反复被触发。（命中依据：正印；比肩；劫财；伤官）",
+      "title": "核心倾向：recurring emphasis（reinforced）",
+      "topic": "recurring emphasis"
+    },
+    {
+      "fact_refs": [
+        "astrology.placements[3].sign"
+      ],
+      "item_id": "signature:astrology:relating and values",
+      "kind": "",
+      "limitations": [
+        "不用于预测关系结果。"
+      ],
+      "rule_refs": [
+        "现代西方占星学金星星座综合法；Stephen Arroyo"
+      ],
+      "salience": 1,
+      "signal_ids": [
+        "ASTROLOGY-VENUS-SIGN-QUALITY"
+      ],
+      "statement": "该主题目前由占星体系的已限定信号支持：金星的元素与模式描述好感、价值选择与互惠方式。水象取向会以感受线索、关系氛围来承载该行星功能。开创模式更重视发起、设定方向与启动新阶段。（命中依据：元素：水象；模式：开创）",
+      "title": "核心倾向：relating and values（attuned）",
+      "topic": "relating and values"
+    },
+    {
+      "fact_refs": [
+        "bazi.ten_gods[1].ten_god"
+      ],
+      "item_id": "signature:bazi:resource handling",
+      "kind": "",
+      "limitations": [
+        "不代表实际财富或理财能力。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》"
+      ],
+      "salience": 1,
+      "signal_ids": [
+        "BAZI-TEN-GOD-WEALTH"
+      ],
+      "statement": "该主题目前由八字体系的已限定信号支持：财星信号聚焦可调度的资源、实际成果与投入回报。（命中依据：偏财）",
+      "title": "核心倾向：resource handling（practical）",
+      "topic": "resource handling"
+    },
+    {
+      "fact_refs": [
+        "bazi.ten_gods[4].ten_god"
+      ],
+      "item_id": "signature:bazi:structure and pressure",
+      "kind": "",
+      "limitations": [
+        "不能由此推定职位、权力或事件吉凶。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》"
+      ],
+      "salience": 1,
+      "signal_ids": [
+        "BAZI-TEN-GOD-AUTHORITY"
+      ],
+      "statement": "该主题目前由八字体系的已限定信号支持：官杀信号指向规范、约束、责任与压力的处理方式。（命中依据：正官）",
+      "title": "核心倾向：structure and pressure（structured）",
+      "topic": "structure and pressure"
+    },
+    {
+      "fact_refs": [
+        "astrology.placements[2].sign"
+      ],
+      "item_id": "signature:astrology:thinking and communication",
+      "kind": "",
+      "limitations": [
+        "不代表智力高低或沟通能力评分。"
+      ],
+      "rule_refs": [
+        "现代西方占星学水星星座综合法；Stephen Arroyo"
+      ],
+      "salience": 1,
+      "signal_ids": [
+        "ASTROLOGY-MERCURY-SIGN-QUALITY"
+      ],
+      "statement": "该主题目前由占星体系的已限定信号支持：水星的元素与模式描述信息如何被注意、组织与交换。风象取向会以信息交换、观点连接来承载该行星功能。变动模式更重视调整、转译与回应已变化的条件。（命中依据：元素：风象；模式：变动）",
+      "title": "核心倾向：thinking and communication（conceptual）",
+      "topic": "thinking and communication"
+    }
+  ],
+  "fact_assurance": "project_verified",
+  "fact_fingerprint": "45a0c262899996e871483ab856f6c340e7879a8c73a841325e7792d2b2b400bd",
+  "fate_themes": [
+    {
+      "fact_refs": [
+        "astrology.placements[0].house"
+      ],
+      "item_id": "theme:life arena",
+      "kind": "",
+      "limitations": [
+        "出生时间不可用时必须完全省略。"
+      ],
+      "rule_refs": [
+        "西方占星学宫位论；William Lilly, Christian Astrology"
+      ],
+      "salience": 2,
+      "signal_ids": [
+        "ASTROLOGY-SUN-HOUSE-CONTEXT"
+      ],
+      "statement": "这一主题在当前画像中具有较高的证据密度：该主题目前由占星体系的已限定信号支持：太阳宫位将核心表达限定在一个可核查的生活领域中。（命中依据：宫位：第5宫）",
+      "title": "生命主题：life arena",
+      "topic": "life arena"
+    },
+    {
+      "fact_refs": [
+        "bazi.ten_gods[0].ten_god",
+        "bazi.ten_gods[5].ten_god",
+        "bazi.ten_gods[7].ten_god",
+        "bazi.ten_gods[10].ten_god",
+        "bazi.ten_gods[13].ten_god",
+        "bazi.ten_gods[9].ten_god",
+        "bazi.ten_gods[12].ten_god",
+        "bazi.ten_gods[15].ten_god",
+        "astrology.placements[0].sign"
+      ],
+      "item_id": "theme:style of expression",
+      "kind": "",
+      "limitations": [
+        "需与全局其他十神与关系合看。",
+        "不等同于才华水平或职业成就。",
+        "行星星座象征不是人格测量。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》",
+        "现代西方占星学行星星座综合法；Stephen Arroyo"
+      ],
+      "salience": 2,
+      "signal_ids": [
+        "BAZI-TEN-GOD-EXPRESSION",
+        "BAZI-TEN-GOD-OUTPUT",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "statement": "这一主题在当前画像中具有较高的证据密度：两个体系在 style of expression 主题上命中了不同方向，保留为需按情境理解的张力，不互相抵消。",
+      "title": "生命主题：style of expression",
+      "topic": "style of expression"
+    },
+    {
+      "fact_refs": [
+        "astrology.placements[4].sign"
+      ],
+      "item_id": "theme:action style",
+      "kind": "",
+      "limitations": [
+        "不代表攻击性或执行能力评分。"
+      ],
+      "rule_refs": [
+        "现代西方占星学火星星座综合法；Stephen Arroyo"
+      ],
+      "salience": 1,
+      "signal_ids": [
+        "ASTROLOGY-MARS-SIGN-QUALITY"
+      ],
+      "statement": "这一主题在当前画像中具有较高的证据密度：该主题目前由占星体系的已限定信号支持：火星的元素与模式描述行动如何启动、持续与面对阻力。土象取向会以具体条件、稳定结果来承载该行星功能。开创模式更重视发起、设定方向与启动新阶段。（命中依据：元素：土象；模式：开创）",
+      "title": "生命主题：action style",
+      "topic": "action style"
+    },
+    {
+      "fact_refs": [
+        "bazi.ten_gods[2].ten_god",
+        "bazi.ten_gods[3].ten_god",
+        "bazi.ten_gods[6].ten_god",
+        "bazi.ten_gods[8].ten_god",
+        "bazi.ten_gods[11].ten_god",
+        "bazi.ten_gods[14].ten_god"
+      ],
+      "item_id": "theme:agency",
+      "kind": "",
+      "limitations": [
+        "不能由此推定一个人自私或好竞争。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》"
+      ],
+      "salience": 1,
+      "signal_ids": [
+        "BAZI-TEN-GOD-PEER"
+      ],
+      "statement": "这一主题在当前画像中具有较高的证据密度：该主题目前由八字体系的已限定信号支持：比劫信号强调自我立场、同辈互动与资源边界。（命中依据：比肩；劫财）",
+      "title": "生命主题：agency",
+      "topic": "agency"
+    }
+  ],
+  "limitations": [
+    "formal primitive coverage is not asserted",
+    "candidate mapping assets are not read by this product profile",
+    "traditional interpretive synthesis is reflective, non-diagnostic, and non-predictive",
+    "Cross-system relationships compare exact matched topics only.",
+    "Unmatched evidence remains non-comparable and never implies agreement.",
+    "Traditional interpretive synthesis is non-diagnostic and non-predictive."
+  ],
+  "qualification_fingerprint": "303814b68cc23d91f337da669269edc1834c166f7bef4b0e62a00dd4f204bb0b",
+  "schema_version": "audited-interpretive-cdp-v1",
+  "semantic_model_assurance": "audited_interpretive_rule_derived",
+  "semantic_model_versions": [
+    [
+      "interpretive_rules",
+      "interpretive-rules-v1"
+    ],
+    [
+      "cross_system_synthesis",
+      "narrative-synthesis-v1"
+    ]
+  ],
+  "shadow_mature_forms": [
+    {
+      "fact_refs": [
+        "astrology.placements[0].house"
+      ],
+      "item_id": "shadow-mature:life arena",
+      "kind": "",
+      "limitations": [
+        "出生时间不可用时必须完全省略。",
+        "这是反思性表达，不是行为预测。"
+      ],
+      "rule_refs": [
+        "西方占星学宫位论；William Lilly, Christian Astrology"
+      ],
+      "salience": 2,
+      "signal_ids": [
+        "ASTROLOGY-SUN-HOUSE-CONTEXT"
+      ],
+      "statement": "若把这一倾向单独放大，容易忽略与它并存的条件；较成熟的用法，是把它放回具体情境，与其他已命中线索一并观察。",
+      "title": "影子与成熟表达：life arena",
+      "topic": "life arena"
+    },
+    {
+      "fact_refs": [
+        "bazi.ten_gods[0].ten_god",
+        "bazi.ten_gods[5].ten_god",
+        "bazi.ten_gods[7].ten_god",
+        "bazi.ten_gods[10].ten_god",
+        "bazi.ten_gods[13].ten_god",
+        "bazi.ten_gods[9].ten_god",
+        "bazi.ten_gods[12].ten_god",
+        "bazi.ten_gods[15].ten_god",
+        "astrology.placements[0].sign"
+      ],
+      "item_id": "shadow-mature:style of expression",
+      "kind": "",
+      "limitations": [
+        "需与全局其他十神与关系合看。",
+        "不等同于才华水平或职业成就。",
+        "行星星座象征不是人格测量。",
+        "这是反思性表达，不是行为预测。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》",
+        "现代西方占星学行星星座综合法；Stephen Arroyo"
+      ],
+      "salience": 2,
+      "signal_ids": [
+        "BAZI-TEN-GOD-EXPRESSION",
+        "BAZI-TEN-GOD-OUTPUT",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "statement": "若把这一倾向单独放大，容易忽略与它并存的条件；较成熟的用法，是把它放回具体情境，与其他已命中线索一并观察。",
+      "title": "影子与成熟表达：style of expression",
+      "topic": "style of expression"
+    },
+    {
+      "fact_refs": [
+        "astrology.placements[4].sign"
+      ],
+      "item_id": "shadow-mature:action style",
+      "kind": "",
+      "limitations": [
+        "不代表攻击性或执行能力评分。",
+        "这是反思性表达，不是行为预测。"
+      ],
+      "rule_refs": [
+        "现代西方占星学火星星座综合法；Stephen Arroyo"
+      ],
+      "salience": 1,
+      "signal_ids": [
+        "ASTROLOGY-MARS-SIGN-QUALITY"
+      ],
+      "statement": "若把这一倾向单独放大，容易忽略与它并存的条件；较成熟的用法，是把它放回具体情境，与其他已命中线索一并观察。",
+      "title": "影子与成熟表达：action style",
+      "topic": "action style"
+    }
+  ]
+}

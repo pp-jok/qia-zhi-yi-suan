@@ -37,6 +37,7 @@ def test_default_birth_report_persists_audited_core_profile_artifacts(tmp_path):
     audit = json.loads((tmp_path / "artifacts" / "report_audit.json").read_text())
     assert result["mode"] == "core-profile-v1"
     assert report["mode"] == "core-profile-v1"
+    assert report["report_plan_ref"] == str(tmp_path / "artifacts" / "report_plan.json")
     assert profile["schema_version"] == "audited-interpretive-cdp-v1"
     assert plan["schema_version"] == "audited-profile-report-plan-v1"
     assert audit["core_profile_id"] == profile["core_profile_id"]

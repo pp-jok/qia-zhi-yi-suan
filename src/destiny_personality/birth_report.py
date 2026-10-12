@@ -52,6 +52,7 @@ def build_birth_report(text: str, output: Path, artifacts_dir: Path, mode: str =
         core_profile_path = artifacts_dir / "core_profile.json"
         report_plan_path = artifacts_dir / "report_plan.json"
         report_audit_path = artifacts_dir / "report_audit.json"
+        report.update({"core_profile_ref": str(core_profile_path), "report_plan_ref": str(report_plan_path), "report_audit_ref": str(report_audit_path)})
         _write_json(core_profile_path, asdict(profile))
         _write_json(report_plan_path, asdict(plan))
         _write_json(report_audit_path, {"schema_version": "audited-profile-report-audit-v1", "core_profile_id": profile.core_profile_id, "fact_fingerprint": fingerprint, "qualification_fingerprint": qualified.qualification_fingerprint, "report_plan_ref": str(report_plan_path), "report_mode": mode, "audit_refs": list(rendered_report.audit_refs), "limitations": list(rendered_report.limitations)})
