@@ -1,0 +1,468 @@
+{
+  "astrology": {
+    "ascendant": "255.224009",
+    "aspects": [
+      {
+        "aspect_type": "conjunction",
+        "body_a": "Sun",
+        "body_b": "Mars",
+        "orb": "5.928161"
+      },
+      {
+        "aspect_type": "conjunction",
+        "body_a": "Sun",
+        "body_b": "Saturn",
+        "orb": "3.848723"
+      },
+      {
+        "aspect_type": "square",
+        "body_a": "Sun",
+        "body_b": "Neptune",
+        "orb": "4.324187"
+      },
+      {
+        "aspect_type": "square",
+        "body_a": "Moon",
+        "body_b": "Mercury",
+        "orb": "4.209607"
+      },
+      {
+        "aspect_type": "trine",
+        "body_a": "Moon",
+        "body_b": "Mars",
+        "orb": "2.117148"
+      },
+      {
+        "aspect_type": "sextile",
+        "body_a": "Mercury",
+        "body_b": "Uranus",
+        "orb": "2.359783"
+      },
+      {
+        "aspect_type": "trine",
+        "body_a": "Mercury",
+        "body_b": "Pluto",
+        "orb": "2.339930"
+      },
+      {
+        "aspect_type": "conjunction",
+        "body_a": "Venus",
+        "body_b": "Jupiter",
+        "orb": "4.395630"
+      },
+      {
+        "aspect_type": "square",
+        "body_a": "Venus",
+        "body_b": "Pluto",
+        "orb": "4.832906"
+      },
+      {
+        "aspect_type": "square",
+        "body_a": "Venus",
+        "body_b": "Ascendant",
+        "orb": "2.709566"
+      },
+      {
+        "aspect_type": "square",
+        "body_a": "Mars",
+        "body_b": "Neptune",
+        "orb": "1.603974"
+      },
+      {
+        "aspect_type": "square",
+        "body_a": "Jupiter",
+        "body_b": "Ascendant",
+        "orb": "1.686064"
+      },
+      {
+        "aspect_type": "sextile",
+        "body_a": "Uranus",
+        "body_b": "Pluto",
+        "orb": "4.699713"
+      }
+    ],
+    "dignities": [
+      {
+        "body": "Sun",
+        "dignity": "exaltation"
+      },
+      {
+        "body": "Moon",
+        "dignity": "detriment"
+      },
+      {
+        "body": "Venus",
+        "dignity": "exaltation"
+      },
+      {
+        "body": "Mars",
+        "dignity": "detriment"
+      },
+      {
+        "body": "Jupiter",
+        "dignity": "domicile"
+      },
+      {
+        "body": "Saturn",
+        "dignity": "fall"
+      },
+      {
+        "body": "Uranus",
+        "dignity": "domicile"
+      }
+    ],
+    "house_cusps": [
+      {
+        "house": 1,
+        "longitude": "240.000000"
+      },
+      {
+        "house": 2,
+        "longitude": "270.000000"
+      },
+      {
+        "house": 3,
+        "longitude": "300.000000"
+      },
+      {
+        "house": 4,
+        "longitude": "330.000000"
+      },
+      {
+        "house": 5,
+        "longitude": "0.000000"
+      },
+      {
+        "house": 6,
+        "longitude": "30.000000"
+      },
+      {
+        "house": 7,
+        "longitude": "60.000000"
+      },
+      {
+        "house": 8,
+        "longitude": "90.000000"
+      },
+      {
+        "house": 9,
+        "longitude": "120.000000"
+      },
+      {
+        "house": 10,
+        "longitude": "150.000000"
+      },
+      {
+        "house": 11,
+        "longitude": "180.000000"
+      },
+      {
+        "house": 12,
+        "longitude": "210.000000"
+      }
+    ],
+    "mc": "325.893883",
+    "methodology_version": "western-tropical-whole-sign-v1.0",
+    "placements": [
+      {
+        "body": "Sun",
+        "degree_in_sign": "27.766552",
+        "house": 5,
+        "longitude": "27.766552",
+        "sign": "Aries"
+      },
+      {
+        "body": "Moon",
+        "degree_in_sign": "5.811861",
+        "house": 2,
+        "longitude": "275.811861",
+        "sign": "Capricorn"
+      },
+      {
+        "body": "Mercury",
+        "degree_in_sign": "10.021468",
+        "house": 5,
+        "longitude": "10.021468",
+        "sign": "Aries"
+      },
+      {
+        "body": "Venus",
+        "degree_in_sign": "12.514444",
+        "house": 4,
+        "longitude": "342.514444",
+        "sign": "Pisces"
+      },
+      {
+        "body": "Mars",
+        "degree_in_sign": "3.694714",
+        "house": 6,
+        "longitude": "33.694714",
+        "sign": "Taurus"
+      },
+      {
+        "body": "Jupiter",
+        "degree_in_sign": "16.910074",
+        "house": 4,
+        "longitude": "346.910074",
+        "sign": "Pisces"
+      },
+      {
+        "body": "Saturn",
+        "degree_in_sign": "23.917829",
+        "house": 5,
+        "longitude": "23.917829",
+        "sign": "Aries"
+      },
+      {
+        "body": "Uranus",
+        "degree_in_sign": "12.381251",
+        "house": 3,
+        "longitude": "312.381251",
+        "sign": "Aquarius"
+      },
+      {
+        "body": "Neptune",
+        "degree_in_sign": "2.090739",
+        "house": 3,
+        "longitude": "302.090739",
+        "sign": "Aquarius"
+      },
+      {
+        "body": "Pluto",
+        "degree_in_sign": "7.681538",
+        "house": 1,
+        "longitude": "247.681538",
+        "sign": "Sagittarius"
+      }
+    ]
+  },
+  "bazi": {
+    "day_pillar": {
+      "earthly_branch": "未",
+      "heavenly_stem": "乙"
+    },
+    "hidden_stems": [
+      {
+        "pillar": "year",
+        "stems": [
+          "甲",
+          "丙",
+          "戊"
+        ]
+      },
+      {
+        "pillar": "month",
+        "stems": [
+          "戊",
+          "乙",
+          "癸"
+        ]
+      },
+      {
+        "pillar": "day",
+        "stems": [
+          "己",
+          "丁",
+          "乙"
+        ]
+      },
+      {
+        "pillar": "hour",
+        "stems": [
+          "戊",
+          "乙",
+          "癸"
+        ]
+      }
+    ],
+    "hour_pillar": {
+      "earthly_branch": "辰",
+      "heavenly_stem": "庚"
+    },
+    "methodology_version": "bazi-core-v1.0",
+    "month_pillar": {
+      "earthly_branch": "辰",
+      "heavenly_stem": "丙"
+    },
+    "relations": [],
+    "ten_gods": [
+      {
+        "source_kind": "visible_stem",
+        "source_pillars": [
+          "year",
+          "day"
+        ],
+        "subject_ref": "year.stem",
+        "ten_god": "正财"
+      },
+      {
+        "source_kind": "visible_stem",
+        "source_pillars": [
+          "month",
+          "day"
+        ],
+        "subject_ref": "month.stem",
+        "ten_god": "伤官"
+      },
+      {
+        "source_kind": "visible_stem",
+        "source_pillars": [
+          "day"
+        ],
+        "subject_ref": "day.stem",
+        "ten_god": "比肩"
+      },
+      {
+        "source_kind": "visible_stem",
+        "source_pillars": [
+          "hour",
+          "day"
+        ],
+        "subject_ref": "hour.stem",
+        "ten_god": "正官"
+      },
+      {
+        "source_kind": "hidden_stem",
+        "source_pillars": [
+          "year",
+          "day"
+        ],
+        "subject_ref": "year.hidden_stem.0",
+        "ten_god": "劫财"
+      },
+      {
+        "source_kind": "hidden_stem",
+        "source_pillars": [
+          "year",
+          "day"
+        ],
+        "subject_ref": "year.hidden_stem.1",
+        "ten_god": "伤官"
+      },
+      {
+        "source_kind": "hidden_stem",
+        "source_pillars": [
+          "year",
+          "day"
+        ],
+        "subject_ref": "year.hidden_stem.2",
+        "ten_god": "正财"
+      },
+      {
+        "source_kind": "hidden_stem",
+        "source_pillars": [
+          "month",
+          "day"
+        ],
+        "subject_ref": "month.hidden_stem.0",
+        "ten_god": "正财"
+      },
+      {
+        "source_kind": "hidden_stem",
+        "source_pillars": [
+          "month",
+          "day"
+        ],
+        "subject_ref": "month.hidden_stem.1",
+        "ten_god": "比肩"
+      },
+      {
+        "source_kind": "hidden_stem",
+        "source_pillars": [
+          "month",
+          "day"
+        ],
+        "subject_ref": "month.hidden_stem.2",
+        "ten_god": "偏印"
+      },
+      {
+        "source_kind": "hidden_stem",
+        "source_pillars": [
+          "day"
+        ],
+        "subject_ref": "day.hidden_stem.0",
+        "ten_god": "偏财"
+      },
+      {
+        "source_kind": "hidden_stem",
+        "source_pillars": [
+          "day"
+        ],
+        "subject_ref": "day.hidden_stem.1",
+        "ten_god": "食神"
+      },
+      {
+        "source_kind": "hidden_stem",
+        "source_pillars": [
+          "day"
+        ],
+        "subject_ref": "day.hidden_stem.2",
+        "ten_god": "比肩"
+      },
+      {
+        "source_kind": "hidden_stem",
+        "source_pillars": [
+          "hour",
+          "day"
+        ],
+        "subject_ref": "hour.hidden_stem.0",
+        "ten_god": "正财"
+      },
+      {
+        "source_kind": "hidden_stem",
+        "source_pillars": [
+          "hour",
+          "day"
+        ],
+        "subject_ref": "hour.hidden_stem.1",
+        "ten_god": "比肩"
+      },
+      {
+        "source_kind": "hidden_stem",
+        "source_pillars": [
+          "hour",
+          "day"
+        ],
+        "subject_ref": "hour.hidden_stem.2",
+        "ten_god": "偏印"
+      }
+    ],
+    "year_pillar": {
+      "earthly_branch": "寅",
+      "heavenly_stem": "戊"
+    }
+  },
+  "fact_mode": "time_sensitive",
+  "methodology_versions": {
+    "astrology": "western-tropical-whole-sign-v1.0",
+    "bazi": "bazi-core-v1.0"
+  },
+  "normalized_time": {
+    "birth_date": "1998-04-18",
+    "dst_was_applied": false,
+    "fact_mode": "time_sensitive",
+    "historical_civil_time": "1998-04-18T08:05:00",
+    "local_standard_time": "1998-04-18T08:05:00",
+    "sensitivity_reasons": [
+      "true_solar_time_approximation"
+    ],
+    "time_basis": "true_solar_time",
+    "timezone_name": "Asia/Shanghai",
+    "true_solar_time": "1998-04-18T07:51:09.188289",
+    "utc_time": "1998-04-18T00:05:00+00:00"
+  },
+  "provenance_refs": [
+    "provider:local-mit-chart-provider-v1",
+    "provider-version:lunar_python-1.4.8",
+    "provider-version:astronomy-engine-2.1.19"
+  ],
+  "schema_version": "deterministic-facts-v1",
+  "validation_summary": {
+    "calculation_config": "passed",
+    "internal_consistency": "passed",
+    "methodology": "passed",
+    "provenance": "passed",
+    "structure": "passed",
+    "time_scope": "passed"
+  }
+}

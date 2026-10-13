@@ -8,9 +8,9 @@
 
 它提供一个可审计的本地排盘入口：MIT 许可的确定性 provider 负责计算与资格校验，Skill 负责输入规范、方法校验、事实边界、推演许可、报告结构与最终审计。
 
-## 发布通道：v0.8.1 Core Profile Product
+## 发布通道：v0.8.2 Core Profile Product
 
-v0.8.1 保留 `core-profile-v1` 默认入口，并收紧深层综合：Alignment 不自动成为 Dynamic；证据不足时 Shadow/Mature、Theme、Archetype 与章节可以为空。普通用户只需提供出生信息；模型不自由排盘。
+v0.8.2 保留 `core-profile-v1` 默认入口，并以版本化关系规则形成深层综合：Alignment 不自动成为 Dynamic，信号数量也不能自动形成 Dynamic；证据不足时 Shadow/Mature、Theme、Archetype 与章节可以为空。普通用户只需提供出生信息；模型不自由排盘。
 
 供应方产生的 `deterministic-facts-v1` 与 `fact-qualification-v1` 是内部运行时接口。通过指纹绑定后，版本化的八字/占星传统解释规则才能产生可追溯信号和用户可读报告。
 
@@ -105,9 +105,11 @@ destiny-personality-reference-validate build-interpretive-report FACTS.json \
 
 ## 审计式解释报告
 
-发布契约：normal complete qualified charts: 7–12 meaningful sections; sparse evidence or missing birth time may produce fewer sections and must visibly state its scope。
+发布契约：完整且合格的命盘会按实际命中的 Signature 与关系规则生成必要章节；证据稀疏或出生时间缺失时可以只有一章，并必须可见地说明其范围。章节数量不是质量配额。
 
-`core-profile-v1` 是出生输入 CLI 的默认模式。它生成 4–8 个由实际画像证据选择的章节，并同时写入 `core_profile.json`、`report_plan.json` 与 `report_audit.json`。每个计划章节带 evidence fingerprint，保证同名主题不能跨个案静默复用。`standard-interpretive-v1` 和 `concise-interpretive-v1` 仍是完整兼容模式；前者仍按原有受控标题生成 7–12 个章节。公开报告入口只接受指纹绑定的 `QualifiedFacts`；调用方自行构造的 profile 或原始事实不能进入审计报告路径。CLI 仍接受 `standard` 和 `concise` 作为兼容别名，但持久化的 `report_mode` 始终使用带版本的正式名称。
+历史说明：v0.6/v0.7 曾使用“normal complete qualified charts: 7–12 meaningful sections; sparse evidence or missing birth time may produce fewer sections and must visibly state its scope”的兼容长报告契约；该表述仅适用于当时的 `standard-interpretive-v1` 路径，不能替代当前 `core-profile-v1` 的证据限定章节策略。
+
+`core-profile-v1` 是出生输入 CLI 的默认模式。它生成由实际画像证据选择的 1–7 个章节，并同时写入 `core_profile.json`、`report_plan.json` 与 `report_audit.json`。每个计划章节带 evidence fingerprint，保证同名主题不能跨个案静默复用。`standard-interpretive-v1` 和 `concise-interpretive-v1` 仍是完整兼容模式；前者仍按原有受控标题生成 7–12 个章节。公开报告入口只接受指纹绑定的 `QualifiedFacts`；调用方自行构造的 profile 或原始事实不能进入审计报告路径。CLI 仍接受 `standard` 和 `concise` 作为兼容别名，但持久化的 `report_mode` 始终使用带版本的正式名称。
 
 置信标签不是科学准确率，而是对当前规则与证据范围的受控表达：
 

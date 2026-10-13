@@ -17,6 +17,11 @@ from .interpretive_models import (
     NarrativeSynthesisPacket,
 )
 from .interpretive_synthesis import build_narrative_synthesis_packet
+from .interpretive_rules import extract_interpretive_signals
+from .interpretive_relationships import (
+    MatchedInterpretiveRelationship,
+    match_interpretive_relationships,
+)
 
 
 @dataclass(frozen=True)
@@ -104,7 +109,8 @@ def build_audited_interpretive_core_profile(
         raise ValueError("TRACEABLE_INTERPRETIVE_SIGNAL_REQUIRED")
     alignments = _alignments(packet)
     signatures = _signatures(alignments, bazi_candidates, astrology_candidates)
-    dynamics = _dynamics(bazi_candidates, astrology_candidates)
+    relationships = match_interpretive_relationships(extract_interpretive_signals(qualified))
+    dynamics = _dynamics(relationships)
     shadow_mature = _shadow_mature(dynamics)
     themes = _themes(dynamics)
     archetype = _archetype(themes, dynamics)
@@ -121,6 +127,7 @@ def build_audited_interpretive_core_profile(
         semantic_model_assurance="audited_interpretive_rule_derived",
         semantic_model_versions=(
             ("interpretive_rules", "interpretive-rules-v1"),
+            ("interpretive_relationships", "audited-interpretive-relationships-v1"),
             ("cross_system_synthesis", "narrative-synthesis-v1"),
         ),
         bazi_candidates=bazi_candidates,
@@ -220,7 +227,11 @@ def _signatures(
             )
     aligned_topics = {item.topic for item in items}
     for candidate in bazi_candidates + astrology_candidates:
-        if candidate.topic not in aligned_topics and len(candidate.directions) >= 2 and len(candidate.mechanisms) >= 2:
+        if (
+            candidate.topic not in aligned_topics
+            and len(candidate.signal_ids) >= 2
+            and len(candidate.fact_refs) >= 2
+        ):
             items.append(
                 AuditedProfileItem(
                     item_id="signature:" + candidate.candidate_id,
@@ -247,37 +258,35 @@ def _signatures(
 
 
 def _dynamics(
-    bazi_candidates: Tuple[AuditedProfileCandidate, ...],
-    astrology_candidates: Tuple[AuditedProfileCandidate, ...],
+    relationships: Tuple[MatchedInterpretiveRelationship, ...],
 ) -> Tuple[AuditedProfileItem, ...]:
-    """Form only a mechanism-bearing multi-direction candidate dynamic.
-
-    An alignment is comparative evidence, not interaction evidence.  A single
-    candidate with multiple directions and mechanisms can instead support a
-    bounded sequence: absorb/organize one tendency before expressing another.
-    """
+    """Form Dynamics only from fully matched, versioned relationship rules."""
     items = []
-    for candidate in bazi_candidates + astrology_candidates:
-        if len(candidate.directions) < 2 or len(candidate.mechanisms) < 2:
-            continue
+    for relationship in relationships:
         items.append(AuditedProfileItem(
-            item_id="dynamic:" + candidate.candidate_id,
-            topic=candidate.topic,
-            title="内在节奏：" + candidate.topic,
-            statement="这一主题同时包含{}两种已命中方向；规则机制显示它们可按情境形成先后或配合，而非自动构成冲突。".format("与".join(candidate.directions)),
-            signal_ids=candidate.signal_ids,
-            rule_refs=candidate.rule_refs,
-            fact_refs=candidate.fact_refs,
-            limitations=candidate.limitations + ("这是基于同一候选机制的受控综合，需要由读者在真实情境中验证。",),
+            item_id="dynamic:relationship:" + relationship.relationship_rule_id,
+            topic="{} / {}".format(relationship.pole_a, relationship.pole_b),
+            title="关键互动：{}与{}".format(relationship.pole_a, relationship.pole_b),
+            statement=(
+                "已命中的关系规则将“{}”与“{}”限定为{}；"
+                "它不是由关键词或信号数量自动推得。"
+            ).format(relationship.pole_a, relationship.pole_b, relationship.relationship_type),
+            signal_ids=relationship.signal_ids,
+            rule_refs=relationship.rule_refs,
+            fact_refs=relationship.fact_refs,
+            limitations=relationship.limitations + (
+                "这是基于已匹配传统关系规则的反思线索，不是行为或事件预测。",
+            ),
             salience=2,
-            kind="contextual_sequence",
-            source_item_ids=(candidate.candidate_id,),
-            relationship_type="contextual_sequence",
-            activation_contexts=candidate.contexts,
-            interaction_mechanism="；".join(candidate.mechanisms),
-            pressure_pattern="当需要立刻回应而尚未完成前一阶段时，可能只使用其中一个方向，令节奏失衡。",
-            integration_pattern="较成熟的使用方式是先辨认当前情境，再为吸收、组织与表达保留相应步骤。",
-            derivation_level="controlled_synthesis",
+            kind=relationship.relationship_type,
+            source_item_ids=("relationship:" + relationship.relationship_rule_id,),
+            relationship_type=relationship.relationship_type,
+            activation_contexts=relationship.activation_contexts,
+            interaction_mechanism=relationship.interaction_mechanism,
+            pressure_pattern=relationship.pressure_hypothesis,
+            integration_pattern=relationship.integration_hypothesis,
+            counter_evidence=relationship.counter_conditions,
+            derivation_level="relationship_rule_derived",
         ))
     return tuple(sorted(items, key=lambda item: (item.topic, item.item_id))[:7])
 
@@ -310,25 +319,25 @@ def _shadow_mature(dynamics: Tuple[AuditedProfileItem, ...]) -> Tuple[AuditedPro
 
 
 def _themes(dynamics: Tuple[AuditedProfileItem, ...]) -> Tuple[AuditedProfileItem, ...]:
-    """A recurring theme needs two independently formed dynamics."""
+    """A theme needs repeated relationship structure plus shared context."""
     by_context = {}
     for dynamic in dynamics:
         for context in dynamic.activation_contexts:
-            by_context.setdefault(context, []).append(dynamic)
+            by_context.setdefault((dynamic.relationship_type, context), []).append(dynamic)
     themes = []
-    for context, supporting in sorted(by_context.items()):
+    for (relationship_type, context), supporting in sorted(by_context.items()):
         if len(supporting) < 2:
             continue
         refs = tuple(item.item_id for item in supporting)
         themes.append(AuditedProfileItem(
-            item_id="theme:" + context,
+            item_id="theme:{}:{}".format(relationship_type, context),
             topic=context,
             title="反复调节主题：" + context,
-            statement="至少两条独立的已形成动态都涉及“{}”，因此它可作为需要持续观察的调节主题，而不是预言的人生事件。".format(context),
+            statement="至少两条由{}关系规则形成的动态都涉及“{}”，因此它可作为需要持续观察的结构主题，而不是预言的人生事件。".format(relationship_type, context),
             signal_ids=_unique(signal for item in supporting for signal in item.signal_ids),
             rule_refs=_unique(rule for item in supporting for rule in item.rule_refs),
             fact_refs=_unique(ref for item in supporting for ref in item.fact_refs),
-            limitations=("主题来自已形成动态的共同情境，不表示必然发生。",),
+            limitations=("主题来自重复的关系结构与共同情境，不表示必然发生。",),
             salience=1,
             kind="recurring_pattern",
             source_item_ids=refs,
@@ -348,7 +357,7 @@ def _archetype(
         item_id="archetype:profile",
         topic=theme.topic,
         title="画像原型",
-        statement="当前证据可暂时汇聚为“情境调节者”：其主轴是识别不同情境中的表达与行动节奏，并把反复出现的调节主题转化为更有意识的选择。",
+        statement="当前证据可暂时汇聚为“{}中的{}调节”：其主轴来自多条已匹配关系规则，而不是固定人格分类。".format(theme.topic, theme.relationship_type or "结构性"),
         signal_ids=_unique(signal for item in dynamics for signal in item.signal_ids),
         rule_refs=_unique(rule for item in dynamics for rule in item.rule_refs),
         fact_refs=_unique(ref for item in dynamics for ref in item.fact_refs),

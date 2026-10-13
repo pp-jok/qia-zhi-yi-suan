@@ -1,0 +1,47 @@
+bundle_version: audited-interpretive-relationships-v1
+rules:
+  - relationship_rule_id: REL-BAZI-EXPRESSION-SEQUENCE
+    source_signal_conditions:
+      - {signal_id: BAZI-TEN-GOD-EXPRESSION, direction: reflective}
+      - {signal_id: BAZI-TEN-GOD-OUTPUT, direction: outward}
+    relationship_type: contextual_sequence
+    pole_a: 先理解与整理
+    pole_b: 向外表达与转化
+    activation_contexts: [学习与沟通, 创作与公开表达]
+    interaction_mechanism: 印星的吸收整理与食伤的向外转化同时命中；二者构成先组织再输出的传统十神观察，而非互相抵消。
+    pressure_hypothesis: 若外部要求立刻表态，可能在尚未完成整理时过早输出，或因反复整理而延迟表达。
+    integration_hypothesis: 先给信息和感受留出整理步骤，再设定明确的表达或交付节点。
+    counter_conditions: [未同时命中印星与食伤信号, 仅有单一十神来源, 实际情境不涉及学习沟通或表达]
+    limitations: [十神关系仅提供传统象征性的反思线索，不说明能力水平或现实成就。]
+    traditional_rule_ref: "子平法十神生化关系；《渊海子平》《三命通会》"
+
+  - relationship_rule_id: REL-BAZI-RESOURCE-STRUCTURE
+    source_signal_conditions:
+      - {signal_id: BAZI-TEN-GOD-WEALTH, direction: practical}
+      - {signal_id: BAZI-TEN-GOD-AUTHORITY, direction: structured}
+    relationship_type: reinforcement
+    pole_a: 资源与结果的安排
+    pole_b: 责任与标准的确认
+    activation_contexts: [工作与日常管理, 责任与压力情境]
+    interaction_mechanism: 财星关注可调度资源，官杀关注规范与边界；两类信号共同命中时，传统观察聚焦于把资源安排放入责任和标准之内。
+    pressure_hypothesis: 在资源紧张或标准不清时，可能反复核算条件，或把可交付要求看得过重。
+    integration_hypothesis: 先区分不可协商的责任边界，再为资源、成本和步骤保留可调整空间。
+    counter_conditions: [未同时命中财星与官杀, 缺乏资源或责任相关情境, 不能从信号推断职位或财富]
+    limitations: [该关系不代表职业地位、财富多寡或压力事件。]
+    traditional_rule_ref: "子平法财官关系观察；《三命通会》"
+
+  - relationship_rule_id: REL-ASTROLOGY-SUN-MOON-COORDINATION
+    source_signal_conditions:
+      - {signal_id: ASTROLOGY-PLANET-SIGN-EXPRESSION, direction: outward}
+      - {signal_id: ASTROLOGY-MOON-SIGN-QUALITY, direction: receptive}
+      - {signal_id: ASTROLOGY-ASPECT-DIGNITY-CONTEXT, direction: integrative}
+    relationship_type: contextual_switch
+    pole_a: 自我意志的表达
+    pole_b: 情绪需求的调节
+    activation_contexts: [自我表达与启动任务, 情绪调节与亲密关系, 决策]
+    interaction_mechanism: 太阳与月亮的功能分别经星座质量被限定，且二者存在已计算的主要相位；相位只说明互动通道，具体协调仍需结合情境观察。
+    pressure_hypothesis: 在需要快速决定且情绪需求未被辨认时，可能只以意志推进或只以安全感回避，令两种功能失去协调。
+    integration_hypothesis: 将决定分成“我想如何行动”和“我需要怎样恢复或确认”两个步骤，再安排可执行的回应。
+    counter_conditions: [缺少日月主要相位, 出生时间或事实资格不足, 将相位解读为必然事件]
+    limitations: [日月相位为传统象征性互动线索，不是心理诊断或关系预测。]
+    traditional_rule_ref: "西方占星学日月相位与功能整合法；William Lilly《Christian Astrology》、Stephen Arroyo"

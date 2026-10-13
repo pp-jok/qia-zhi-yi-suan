@@ -1,0 +1,34 @@
+{
+  "calculation_envelope_refs": [
+    "execution.json"
+  ],
+  "comparison": {
+    "required": false,
+    "status": "not_required"
+  },
+  "derived_fact_assurance": "project_verified",
+  "fact_contract_version": "deterministic-facts-v1",
+  "fact_fingerprint": "5b88f70511a7208ad09a25687f328b17fc759f040d3481ad9a913327966d1d9f",
+  "methodology_versions": {
+    "astrology": "western-tropical-whole-sign-v1.0",
+    "bazi": "bazi-core-v1.0"
+  },
+  "provenance_refs": [
+    "provider:local-mit-chart-provider-v1",
+    "provider-version:lunar_python-1.4.8",
+    "provider-version:astronomy-engine-2.1.19"
+  ],
+  "qualification_status": "passed",
+  "schema_version": "fact-qualification-v1",
+  "validation_refs": [
+    "local-qualification-v1:structure-methodology-time"
+  ],
+  "validation_summary": {
+    "calculation_config": "passed",
+    "internal_consistency": "passed",
+    "methodology": "passed",
+    "provenance": "passed",
+    "structure": "passed",
+    "time_scope": "passed"
+  }
+}

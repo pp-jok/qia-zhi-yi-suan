@@ -1,0 +1,32 @@
+{
+  "audit_trail": [
+    "deterministic-facts:a6b34b8f655f07e8bde4e8b87bc5a7e3d3154a871e6be422ec698bd07f3c6944",
+    "fact-qualification:cc1ffc16eb0f2b9b36eb427ca5498ead5031f73fadbfbbc029de71e2f2ca3cba",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only",
+    "report_planner:audited-profile-report-plan-v1"
+  ],
+  "core_profile_id": "audited-cdp-6ab7c34d805036a4",
+  "omitted_item_ids": [
+    "observation:astrology:expression conditions",
+    "observation:astrology:interacting tendencies",
+    "observation:astrology:style of expression",
+    "observation:bazi:style of expression"
+  ],
+  "profile_fingerprint": "cf3c753cf4436404e03100454bf8f6b1914e1f5e7726f6b1fb8f064c089652b4",
+  "schema_version": "audited-profile-report-plan-v1",
+  "sections": [
+    {
+      "deduplication_key": "core-profile",
+      "evidence_fingerprint": "d67bd96325fbd3f679e21f787f34351b1ad0b3abb9ceee82e0929c1a2ed1d388",
+      "item_ids": [
+        "observation:bazi:contextual dynamics",
+        "observation:astrology:emotional processing"
+      ],
+      "reason": "evidence-ranked-core",
+      "section_id": "core-profile",
+      "title": "当前可支持观察"
+    }
+  ]
+}

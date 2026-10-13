@@ -341,6 +341,40 @@ rules:
     confidence: exploratory
     limitations: [出生时间不可用时必须完全省略。]
 
+  - signal_id: ASTROLOGY-MERCURY-HOUSE-CONTEXT
+    family: astrology.house_context
+    system: astrology
+    fact_refs: [astrology.house_placement]
+    value_predicates:
+      - {fact_ref: astrology.house_placement, body: Mercury, values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]}
+    traditional_rule_ref: "西方占星学水星宫位论；William Lilly, Christian Astrology"
+    topic: thinking and communication
+    direction: contextual
+    interpretation: 水星宫位将信息处理、学习和表达的象征功能限定在一个可核查的生活领域中。
+    mechanism: 宫位不改变水星的功能，而是指出思考和沟通更容易在哪类现实场景中被观察。
+    likely_expression: 在对应生活领域里，可能更常通过提问、组织信息或传递观点来参与。
+    contexts: [宫位所指生活领域, 学习, 沟通]
+    modifiers: [依赖出生时间与宫制, 需结合水星相位]
+    confidence: exploratory
+    limitations: [出生时间不可用时必须完全省略。]
+
+  - signal_id: ASTROLOGY-MARS-HOUSE-CONTEXT
+    family: astrology.house_context
+    system: astrology
+    fact_refs: [astrology.house_placement]
+    value_predicates:
+      - {fact_ref: astrology.house_placement, body: Mars, values: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]}
+    traditional_rule_ref: "西方占星学火星宫位论；William Lilly, Christian Astrology"
+    topic: action style
+    direction: contextual
+    interpretation: 火星宫位将行动、竞争和处理阻力的象征功能限定在一个可核查的生活领域中。
+    mechanism: 宫位不改变火星的功能，而是指出驱动力较常在哪类现实场景中被动员或需要调节。
+    likely_expression: 在对应生活领域里，可能更明显地采取推进、争取或处理阻力的方式。
+    contexts: [宫位所指生活领域, 行动, 冲突处理]
+    modifiers: [依赖出生时间与宫制, 需结合火星相位]
+    confidence: exploratory
+    limitations: [出生时间不可用时必须完全省略。]
+
   - signal_id: ASTROLOGY-ASPECT-DIGNITY-CONTEXT
     family: astrology.major_aspect
     system: astrology

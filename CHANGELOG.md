@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.2 - 2026-10-12
+
+- Add versioned, fact-bound interpretive relationship rules; a Dynamic now requires a fully matched relationship rule rather than signal counts.
+- Admit bounded multi-signal, multi-fact single-system signatures without changing formal semantic-core governance.
+- Expand time-sensitive astrology context coverage to Mercury and Mars houses, with explicit missing-time omission.
+- Show relationship counter-conditions in core-profile reports and publish ten-case validation artifacts plus coverage and funnel audits.
+
 ## 0.8.1 - 2026-10-12
 
 - Require mechanism-bearing evidence for audited core dynamics.

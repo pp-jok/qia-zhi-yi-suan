@@ -1,0 +1,52 @@
+{
+  "audit_refs": [
+    "deterministic-facts:a6b34b8f655f07e8bde4e8b87bc5a7e3d3154a871e6be422ec698bd07f3c6944",
+    "fact-qualification:cc1ffc16eb0f2b9b36eb427ca5498ead5031f73fadbfbbc029de71e2f2ca3cba",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only",
+    "report_planner:audited-profile-report-plan-v1"
+  ],
+  "boundary_statement": "本报告基于传统命理与占星象意的已审计规则生成，用于反思，不是实证人格测量、医疗或心理诊断，也不应代替重大生活决策。",
+  "core_profile_id": "audited-cdp-6ab7c34d805036a4",
+  "core_profile_ref": "docs/validation/v0.8.2/case-d/artifacts/core_profile.json",
+  "limitations": [
+    "formal primitive coverage is not asserted",
+    "candidate mapping assets are not read by this product profile",
+    "traditional interpretive synthesis is reflective, non-diagnostic, and non-predictive",
+    "Cross-system relationships compare exact matched topics only.",
+    "Unmatched evidence remains non-comparable and never implies agreement.",
+    "Traditional interpretive synthesis is non-diagnostic and non-predictive."
+  ],
+  "mode": "core-profile-v1",
+  "report_plan_ref": "docs/validation/v0.8.2/case-d/artifacts/report_plan.json",
+  "schema_version": "audited-profile-report-v1",
+  "sections": [
+    {
+      "content": "八字体系的已限定线索显示：地支关系信号用来标记不同生活领域之间的联动、拉扯或制约。（命中依据：地支关系：合）\n形成机制：关系类型连接了具体参与柱位，提供情境间如何互相影响的观察线索。\n较适合观察的情境：家庭、工作、关系\n\n占星体系的已限定线索显示：月亮所在星座的元素与模式，提供情绪接收和安全感调节的象征语言。火象取向会以直接投入、激发行动来承载该行星功能。开创模式更重视发起、设定方向与启动新阶段。（命中依据：元素：火象；模式：开创）\n形成机制：情绪需求通过对应元素的补给方式和模式节奏被识别。火象通过热度、意愿与即时反馈推动该功能向外展开。开创模式通过率先做出反应来建立推进节奏。\n较适合观察的情境：情绪调节、亲密关系、需要迅速投入的情境、新任务与转换阶段",
+      "fact_refs": [
+        "bazi.relations[0].relation_type",
+        "astrology.placements[1].sign"
+      ],
+      "item_ids": [
+        "observation:bazi:contextual dynamics",
+        "observation:astrology:emotional processing"
+      ],
+      "limitations": [
+        "关系事实必须结合全局，不构成事件预测。",
+        "不用于诊断情绪或依恋问题。"
+      ],
+      "rule_refs": [
+        "子平法地支关系法；《三命通会》",
+        "现代西方占星学月亮星座综合法；Stephen Arroyo"
+      ],
+      "section_id": "core-profile",
+      "signal_ids": [
+        "BAZI-RELATION-DYNAMICS",
+        "ASTROLOGY-MOON-SIGN-QUALITY"
+      ],
+      "title": "当前可支持观察"
+    }
+  ],
+  "title": "审计型命格人格画像"
+}

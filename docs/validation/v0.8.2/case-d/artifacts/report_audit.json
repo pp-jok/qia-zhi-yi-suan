@@ -1,0 +1,14 @@
+{
+  "core_profile_id": "audited-cdp-6ab7c34d805036a4",
+  "fixture": "v0.8.1 missing-time fixture",
+  "limitations": [
+    "formal primitive coverage is not asserted",
+    "candidate mapping assets are not read by this product profile",
+    "traditional interpretive synthesis is reflective, non-diagnostic, and non-predictive",
+    "Cross-system relationships compare exact matched topics only.",
+    "Unmatched evidence remains non-comparable and never implies agreement.",
+    "Traditional interpretive synthesis is non-diagnostic and non-predictive."
+  ],
+  "report_mode": "core-profile-v1",
+  "schema_version": "audited-profile-report-audit-v1"
+}
