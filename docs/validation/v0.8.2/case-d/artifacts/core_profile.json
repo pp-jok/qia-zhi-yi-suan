@@ -1,0 +1,361 @@
+{
+  "archetype": null,
+  "astrology_candidates": [
+    {
+      "candidate_id": "astrology:emotional processing",
+      "contexts": [
+        "情绪调节",
+        "亲密关系",
+        "需要迅速投入的情境",
+        "新任务与转换阶段"
+      ],
+      "directions": [
+        "outward"
+      ],
+      "fact_refs": [
+        "astrology.placements[1].sign"
+      ],
+      "interpretations": [
+        "月亮所在星座的元素与模式，提供情绪接收和安全感调节的象征语言。火象取向会以直接投入、激发行动来承载该行星功能。开创模式更重视发起、设定方向与启动新阶段。（命中依据：元素：火象；模式：开创）"
+      ],
+      "likely_expressions": [
+        "在压力或亲密关系中，可能展现特定的恢复节奏和回应习惯。命中火象时，可观察是否倾向先表明意愿，再在行动中校正。命中开创模式时，可观察是否在开局阶段更容易承担发起作用。"
+      ],
+      "limitations": [
+        "不用于诊断情绪或依恋问题。"
+      ],
+      "mechanisms": [
+        "情绪需求通过对应元素的补给方式和模式节奏被识别。火象通过热度、意愿与即时反馈推动该功能向外展开。开创模式通过率先做出反应来建立推进节奏。"
+      ],
+      "rule_refs": [
+        "现代西方占星学月亮星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-MOON-SIGN-QUALITY"
+      ],
+      "system": "astrology",
+      "topic": "emotional processing"
+    },
+    {
+      "candidate_id": "astrology:expression conditions",
+      "contexts": [
+        "自我表达",
+        "核心角色"
+      ],
+      "directions": [
+        "qualified"
+      ],
+      "fact_refs": [
+        "astrology.dignities[0].dignity"
+      ],
+      "interpretations": [
+        "太阳的先天尊贵状态用于限定核心功能表达时的条件。（命中依据：尊贵：入庙）"
+      ],
+      "likely_expressions": [
+        "在展现自信或承担核心角色时，可能感到较顺手或需要更多调整。"
+      ],
+      "limitations": [
+        "不将尊贵转换为道德、能力或命运评分。"
+      ],
+      "mechanisms": [
+        "尊贵是表达修饰因素，不改写行星位置事实，也不直接转换为人格好坏。"
+      ],
+      "rule_refs": [
+        "西方占星学先天尊贵论；William Lilly, Christian Astrology"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-SUN-DIGNITY-CONTEXT"
+      ],
+      "system": "astrology",
+      "topic": "expression conditions"
+    },
+    {
+      "candidate_id": "astrology:interacting tendencies",
+      "contexts": [
+        "决策",
+        "情绪与意志"
+      ],
+      "directions": [
+        "integrative"
+      ],
+      "fact_refs": [
+        "astrology.aspects[0].aspect_type"
+      ],
+      "interpretations": [
+        "日月主要相位用于观察自我意志与情绪需求如何互动。（命中依据：相位：合相）"
+      ],
+      "likely_expressions": [
+        "在作出个人决定时，意志与安全感可能以协同或拉扯的方式同时出现。"
+      ],
+      "limitations": [
+        "相位解读依赖容许度和全盘，不是事件预测。"
+      ],
+      "mechanisms": [
+        "相位类型描述两种功能之间的交流方式，但不单独规定结果。"
+      ],
+      "rule_refs": [
+        "西方占星学主要相位论；William Lilly, Christian Astrology"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT"
+      ],
+      "system": "astrology",
+      "topic": "interacting tendencies"
+    },
+    {
+      "candidate_id": "astrology:style of expression",
+      "contexts": [
+        "自我表达",
+        "启动任务",
+        "需要迅速投入的情境",
+        "新任务与转换阶段"
+      ],
+      "directions": [
+        "outward"
+      ],
+      "fact_refs": [
+        "astrology.placements[0].sign"
+      ],
+      "interpretations": [
+        "太阳所在星座的元素与模式，提供核心意志如何定义和表达自我的象征语言。火象取向会以直接投入、激发行动来承载该行星功能。开创模式更重视发起、设定方向与启动新阶段。（命中依据：元素：火象；模式：开创）"
+      ],
+      "likely_expressions": [
+        "在需要表态或承担核心角色时，可能按实际命中的元素与模式展现不同的强调方式。命中火象时，可观察是否倾向先表明意愿，再在行动中校正。命中开创模式时，可观察是否在开局阶段更容易承担发起作用。"
+      ],
+      "limitations": [
+        "行星星座象征不是人格测量。"
+      ],
+      "mechanisms": [
+        "核心意志借由实际命中的元素取向选择表达材料，并按命中模式调整推进节奏。火象通过热度、意愿与即时反馈推动该功能向外展开。开创模式通过率先做出反应来建立推进节奏。"
+      ],
+      "rule_refs": [
+        "现代西方占星学行星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "system": "astrology",
+      "topic": "style of expression"
+    }
+  ],
+  "audit_trail": [
+    "deterministic-facts:a6b34b8f655f07e8bde4e8b87bc5a7e3d3154a871e6be422ec698bd07f3c6944",
+    "fact-qualification:cc1ffc16eb0f2b9b36eb427ca5498ead5031f73fadbfbbc029de71e2f2ca3cba",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only"
+  ],
+  "bazi_candidates": [
+    {
+      "candidate_id": "bazi:contextual dynamics",
+      "contexts": [
+        "家庭",
+        "工作",
+        "关系"
+      ],
+      "directions": [
+        "relational"
+      ],
+      "fact_refs": [
+        "bazi.relations[0].relation_type"
+      ],
+      "interpretations": [
+        "地支关系信号用来标记不同生活领域之间的联动、拉扯或制约。（命中依据：地支关系：合）"
+      ],
+      "likely_expressions": [
+        "在多重角色同时被激活时，可能感到协同或冲突需要被协调。"
+      ],
+      "limitations": [
+        "关系事实必须结合全局，不构成事件预测。"
+      ],
+      "mechanisms": [
+        "关系类型连接了具体参与柱位，提供情境间如何互相影响的观察线索。"
+      ],
+      "rule_refs": [
+        "子平法地支关系法；《三命通会》"
+      ],
+      "signal_ids": [
+        "BAZI-RELATION-DYNAMICS"
+      ],
+      "system": "bazi",
+      "topic": "contextual dynamics"
+    },
+    {
+      "candidate_id": "bazi:style of expression",
+      "contexts": [
+        "学习",
+        "沟通"
+      ],
+      "directions": [
+        "reflective"
+      ],
+      "fact_refs": [
+        "bazi.ten_gods[0].ten_god"
+      ],
+      "interpretations": [
+        "印星信号将注意力引向理解、吸收与内在整理。（命中依据：正印）"
+      ],
+      "likely_expressions": [
+        "在学习或沟通中，可能先听、先理解，再给出经过组织的回应。"
+      ],
+      "limitations": [
+        "需与全局其他十神与关系合看。"
+      ],
+      "mechanisms": [
+        "通过接收信息、建立解释框架后再表达，因而形成偏反思的表达节奏。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》"
+      ],
+      "signal_ids": [
+        "BAZI-TEN-GOD-EXPRESSION"
+      ],
+      "system": "bazi",
+      "topic": "style of expression"
+    }
+  ],
+  "core_dynamics": [],
+  "core_profile_id": "audited-cdp-6ab7c34d805036a4",
+  "cross_system_alignments": [
+    {
+      "alignment_id": "alignment:contextual dynamics",
+      "directions": [
+        "relational"
+      ],
+      "fact_refs": [
+        "bazi.relations[0].relation_type"
+      ],
+      "interpretation": "contextual dynamics 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "关系事实必须结合全局，不构成事件预测。"
+      ],
+      "rule_refs": [
+        "子平法地支关系法；《三命通会》"
+      ],
+      "signal_ids": [
+        "BAZI-RELATION-DYNAMICS"
+      ],
+      "topic": "contextual dynamics"
+    },
+    {
+      "alignment_id": "alignment:emotional processing",
+      "directions": [
+        "outward"
+      ],
+      "fact_refs": [
+        "astrology.placements[1].sign"
+      ],
+      "interpretation": "emotional processing 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "不用于诊断情绪或依恋问题。"
+      ],
+      "rule_refs": [
+        "现代西方占星学月亮星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-MOON-SIGN-QUALITY"
+      ],
+      "topic": "emotional processing"
+    },
+    {
+      "alignment_id": "alignment:expression conditions",
+      "directions": [
+        "qualified"
+      ],
+      "fact_refs": [
+        "astrology.dignities[0].dignity"
+      ],
+      "interpretation": "expression conditions 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "不将尊贵转换为道德、能力或命运评分。"
+      ],
+      "rule_refs": [
+        "西方占星学先天尊贵论；William Lilly, Christian Astrology"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-SUN-DIGNITY-CONTEXT"
+      ],
+      "topic": "expression conditions"
+    },
+    {
+      "alignment_id": "alignment:interacting tendencies",
+      "directions": [
+        "integrative"
+      ],
+      "fact_refs": [
+        "astrology.aspects[0].aspect_type"
+      ],
+      "interpretation": "interacting tendencies 主题只有一个体系命中信号；另一体系无同主题证据，因此不作一致或冲突判断。",
+      "kind": "non_comparable",
+      "limitations": [
+        "相位解读依赖容许度和全盘，不是事件预测。"
+      ],
+      "rule_refs": [
+        "西方占星学主要相位论；William Lilly, Christian Astrology"
+      ],
+      "signal_ids": [
+        "ASTROLOGY-ASPECT-DIGNITY-CONTEXT"
+      ],
+      "topic": "interacting tendencies"
+    },
+    {
+      "alignment_id": "alignment:style of expression",
+      "directions": [
+        "reflective",
+        "outward"
+      ],
+      "fact_refs": [
+        "bazi.ten_gods[0].ten_god",
+        "astrology.placements[0].sign"
+      ],
+      "interpretation": "两个体系在 style of expression 主题上命中了不同方向，保留为需按情境理解的张力，不互相抵消。",
+      "kind": "tension",
+      "limitations": [
+        "需与全局其他十神与关系合看。",
+        "行星星座象征不是人格测量。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》",
+        "现代西方占星学行星星座综合法；Stephen Arroyo"
+      ],
+      "signal_ids": [
+        "BAZI-TEN-GOD-EXPRESSION",
+        "ASTROLOGY-PLANET-SIGN-EXPRESSION"
+      ],
+      "topic": "style of expression"
+    }
+  ],
+  "dominant_signatures": [],
+  "fact_assurance": "capability_reported",
+  "fact_fingerprint": "a6b34b8f655f07e8bde4e8b87bc5a7e3d3154a871e6be422ec698bd07f3c6944",
+  "fate_themes": [],
+  "limitations": [
+    "formal primitive coverage is not asserted",
+    "candidate mapping assets are not read by this product profile",
+    "traditional interpretive synthesis is reflective, non-diagnostic, and non-predictive",
+    "Cross-system relationships compare exact matched topics only.",
+    "Unmatched evidence remains non-comparable and never implies agreement.",
+    "Traditional interpretive synthesis is non-diagnostic and non-predictive."
+  ],
+  "qualification_fingerprint": "cc1ffc16eb0f2b9b36eb427ca5498ead5031f73fadbfbbc029de71e2f2ca3cba",
+  "schema_version": "audited-interpretive-cdp-v1",
+  "semantic_model_assurance": "audited_interpretive_rule_derived",
+  "semantic_model_versions": [
+    [
+      "interpretive_rules",
+      "interpretive-rules-v1"
+    ],
+    [
+      "interpretive_relationships",
+      "audited-interpretive-relationships-v1"
+    ],
+    [
+      "cross_system_synthesis",
+      "narrative-synthesis-v1"
+    ]
+  ],
+  "shadow_mature_forms": []
+}

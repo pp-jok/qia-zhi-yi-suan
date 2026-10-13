@@ -184,6 +184,8 @@ def _narrative(item: AuditedProfileItem) -> str:
         parts.append("形成机制：" + item.interaction_mechanism.replace("。；", "；"))
     if item.activation_contexts:
         parts.append("较适合观察的情境：" + "、".join(item.activation_contexts))
+    if item.counter_evidence:
+        parts.append("不适用或需要收紧的条件：" + "；".join(item.counter_evidence))
     if item.pressure_pattern:
         parts.append("压力下的可能失衡：" + item.pressure_pattern)
     if item.integration_pattern:

@@ -1,0 +1,115 @@
+{
+  "audit_refs": [
+    "deterministic-facts:a0e29aa169490f9ffab7d47505d95b2e8fdee62605457732d403412f4e27a6c3",
+    "fact-qualification:6a94472bf9ae048c39f35aeea13de4d1dbece4208996a613e33b65a8949ec50b",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only",
+    "report_planner:audited-profile-report-plan-v1"
+  ],
+  "boundary_statement": "本报告基于传统命理与占星象意的已审计规则生成，用于反思，不是实证人格测量、医疗或心理诊断，也不应代替重大生活决策。",
+  "core_profile_id": "audited-cdp-c62885467ed20455",
+  "core_profile_ref": "docs/validation/v0.8.2/case-e/artifacts/core_profile.json",
+  "limitations": [
+    "formal primitive coverage is not asserted",
+    "candidate mapping assets are not read by this product profile",
+    "traditional interpretive synthesis is reflective, non-diagnostic, and non-predictive",
+    "Cross-system relationships compare exact matched topics only.",
+    "Unmatched evidence remains non-comparable and never implies agreement.",
+    "Traditional interpretive synthesis is non-diagnostic and non-predictive."
+  ],
+  "mode": "core-profile-v1",
+  "report_audit_ref": "docs/validation/v0.8.2/case-e/artifacts/report_audit.json",
+  "report_plan_ref": "docs/validation/v0.8.2/case-e/artifacts/report_plan.json",
+  "schema_version": "audited-profile-report-v1",
+  "sections": [
+    {
+      "content": "该主题目前由占星体系的已限定信号支持：火星宫位将行动、竞争和处理阻力的象征功能限定在一个可核查的生活领域中。（命中依据：宫位：第8宫） 火星的元素与模式描述行动如何启动、持续与面对阻力。水象取向会以感受线索、关系氛围来承载该行星功能。开创模式更重视发起、设定方向与启动新阶段。（命中依据：元素：水象；模式：开创）\n形成机制：宫位不改变火星的功能，而是指出驱动力较常在哪类现实场景中被动员或需要调节；驱动力选择与元素相应的路径，并按模式分配行动节奏。水象通过对情绪与隐含信息的感受让该功能调整深度。开创模式通过率先做出反应来建立推进节奏。\n较适合观察的情境：宫位所指生活领域、行动、冲突处理、需要情绪调频与关系感受的情境、新任务与转换阶段\n\n该主题目前由占星体系的已限定信号支持：水星宫位将信息处理、学习和表达的象征功能限定在一个可核查的生活领域中。（命中依据：宫位：第4宫） 水星的元素与模式描述信息如何被注意、组织与交换。水象取向会以感受线索、关系氛围来承载该行星功能。变动模式更重视调整、转译与回应已变化的条件。（命中依据：元素：水象；模式：变动）\n形成机制：宫位不改变水星的功能，而是指出思考和沟通更容易在哪类现实场景中被观察；思维通道按星座元素选择材料，并按模式确定推进节奏。水象通过对情绪与隐含信息的感受让该功能调整深度。变动模式通过修正路径与重新组织信息来维持进展。\n较适合观察的情境：宫位所指生活领域、学习、沟通、需要情绪调频与关系感受的情境、过渡与需要应变的情境",
+      "fact_refs": [
+        "astrology.placements[4].house",
+        "astrology.placements[4].sign",
+        "astrology.placements[2].house",
+        "astrology.placements[2].sign"
+      ],
+      "item_ids": [
+        "signature:astrology:action style",
+        "signature:astrology:thinking and communication"
+      ],
+      "limitations": [
+        "出生时间不可用时必须完全省略。",
+        "不代表攻击性或执行能力评分。",
+        "不代表智力高低或沟通能力评分。"
+      ],
+      "rule_refs": [
+        "西方占星学火星宫位论；William Lilly, Christian Astrology",
+        "现代西方占星学火星星座综合法；Stephen Arroyo",
+        "西方占星学水星宫位论；William Lilly, Christian Astrology",
+        "现代西方占星学水星星座综合法；Stephen Arroyo"
+      ],
+      "section_id": "core-profile",
+      "signal_ids": [
+        "ASTROLOGY-MARS-HOUSE-CONTEXT",
+        "ASTROLOGY-MARS-SIGN-QUALITY",
+        "ASTROLOGY-MERCURY-HOUSE-CONTEXT",
+        "ASTROLOGY-MERCURY-SIGN-QUALITY"
+      ],
+      "title": "核心主轴"
+    },
+    {
+      "content": "已命中的关系规则将“资源与结果的安排”与“责任与标准的确认”限定为reinforcement；它不是由关键词或信号数量自动推得。\n形成机制：财星关注可调度资源，官杀关注规范与边界；两类信号共同命中时，传统观察聚焦于把资源安排放入责任和标准之内。\n较适合观察的情境：工作与日常管理、责任与压力情境\n不适用或需要收紧的条件：未同时命中财星与官杀；缺乏资源或责任相关情境；不能从信号推断职位或财富\n压力下的可能失衡：在资源紧张或标准不清时，可能反复核算条件，或把可交付要求看得过重。\n整合方向：先区分不可协商的责任边界，再为资源、成本和步骤保留可调整空间。",
+      "fact_refs": [
+        "bazi.ten_gods[1].ten_god",
+        "bazi.ten_gods[6].ten_god",
+        "bazi.ten_gods[4].ten_god",
+        "bazi.ten_gods[7].ten_god",
+        "bazi.ten_gods[9].ten_god"
+      ],
+      "item_ids": [
+        "dynamic:relationship:REL-BAZI-RESOURCE-STRUCTURE"
+      ],
+      "limitations": [
+        "该关系不代表职业地位、财富多寡或压力事件。",
+        "这是基于已匹配传统关系规则的反思线索，不是行为或事件预测。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》",
+        "子平法财官关系观察；《三命通会》"
+      ],
+      "section_id": "dynamic-dynamic:relationship:REL-BAZI-RESOURCE-STRUCTURE",
+      "signal_ids": [
+        "BAZI-TEN-GOD-WEALTH",
+        "BAZI-TEN-GOD-AUTHORITY"
+      ],
+      "title": "关键互动：资源与结果的安排与责任与标准的确认"
+    },
+    {
+      "content": "压力下，在资源紧张或标准不清时，可能反复核算条件，或把可交付要求看得过重。；成熟整合时，先区分不可协商的责任边界，再为资源、成本和步骤保留可调整空间。\n这是一条由前述内在节奏导出的待验证反思，不是对实际行为的断言。",
+      "fact_refs": [
+        "bazi.ten_gods[1].ten_god",
+        "bazi.ten_gods[6].ten_god",
+        "bazi.ten_gods[4].ten_god",
+        "bazi.ten_gods[7].ten_god",
+        "bazi.ten_gods[9].ten_god"
+      ],
+      "item_ids": [
+        "shadow-mature:dynamic:relationship:REL-BAZI-RESOURCE-STRUCTURE"
+      ],
+      "limitations": [
+        "该关系不代表职业地位、财富多寡或压力事件。",
+        "这是基于已匹配传统关系规则的反思线索，不是行为或事件预测。",
+        "这是需要读者自行验证的反思性假设，不是行为预测。"
+      ],
+      "rule_refs": [
+        "子平法十神法；《渊海子平》",
+        "子平法财官关系观察；《三命通会》"
+      ],
+      "section_id": "shadow-mature-shadow-mature:dynamic:relationship:REL-BAZI-RESOURCE-STRUCTURE",
+      "signal_ids": [
+        "BAZI-TEN-GOD-WEALTH",
+        "BAZI-TEN-GOD-AUTHORITY"
+      ],
+      "title": "压力与成熟调节：资源与结果的安排 / 责任与标准的确认"
+    }
+  ],
+  "title": "审计型命格人格画像"
+}

@@ -1,0 +1,83 @@
+{
+  "audit_trail": [
+    "deterministic-facts:9fbdcbce85fe08f5f5df75653f1dfe530bbe57c4c8c7dfc3aa9d2340c2bd9b61",
+    "fact-qualification:34672c52182de95575d02b24cedd52e9cb731438255731dc14e98520a0968431",
+    "interpretive-rules:audited-interpretive-rules-v3",
+    "profile_builder:audited-interpretive-cdp-v1",
+    "profile_boundary:qualified-facts-and-matched-rules-only",
+    "report_planner:audited-profile-report-plan-v1"
+  ],
+  "core_profile_id": "audited-cdp-3c3e5dd823d3c842",
+  "omitted_item_ids": [
+    "observation:astrology:action style",
+    "observation:astrology:boundaries and mastery",
+    "observation:astrology:emotional processing",
+    "observation:astrology:growth orientation",
+    "observation:astrology:interacting tendencies",
+    "observation:astrology:life arena",
+    "observation:astrology:relating and values",
+    "observation:astrology:style of expression",
+    "observation:astrology:thinking and communication",
+    "observation:bazi:agency",
+    "observation:bazi:recurring emphasis",
+    "observation:bazi:resource handling",
+    "observation:bazi:structure and pressure",
+    "observation:bazi:style of expression",
+    "signature:astrology:thinking and communication"
+  ],
+  "profile_fingerprint": "019504cb04ad795b7c37d538be66d22d486fcd7c8ed8f10c142d4b116675a389",
+  "schema_version": "audited-profile-report-plan-v1",
+  "sections": [
+    {
+      "deduplication_key": "core-profile",
+      "evidence_fingerprint": "e91670ace4bf35d37532e4b680bf43d1164e7f82431382d3121dfce507a69b0c",
+      "item_ids": [
+        "signature:astrology:action style",
+        "signature:bazi:style of expression"
+      ],
+      "reason": "evidence-ranked-core",
+      "section_id": "core-profile",
+      "title": "核心主轴"
+    },
+    {
+      "deduplication_key": "dynamic:dynamic:relationship:REL-BAZI-EXPRESSION-SEQUENCE",
+      "evidence_fingerprint": "acfd0150be54e3cb65f669b63216d769fded883a39c7b74737f6c41bf58bb2cc",
+      "item_ids": [
+        "dynamic:relationship:REL-BAZI-EXPRESSION-SEQUENCE"
+      ],
+      "reason": "mechanism-bearing-dynamic",
+      "section_id": "dynamic-dynamic:relationship:REL-BAZI-EXPRESSION-SEQUENCE",
+      "title": "关键互动：先理解与整理与向外表达与转化"
+    },
+    {
+      "deduplication_key": "dynamic:dynamic:relationship:REL-BAZI-RESOURCE-STRUCTURE",
+      "evidence_fingerprint": "c409950d99ad44883c9e3482ce1a47f49f0a29c48add72c6c7a71d1385766045",
+      "item_ids": [
+        "dynamic:relationship:REL-BAZI-RESOURCE-STRUCTURE"
+      ],
+      "reason": "mechanism-bearing-dynamic",
+      "section_id": "dynamic-dynamic:relationship:REL-BAZI-RESOURCE-STRUCTURE",
+      "title": "关键互动：资源与结果的安排与责任与标准的确认"
+    },
+    {
+      "deduplication_key": "shadow-mature:shadow-mature:dynamic:relationship:REL-BAZI-EXPRESSION-SEQUENCE",
+      "evidence_fingerprint": "95992b26ef74e89d9b7534f8a5eccbeaf2a9d2dbbfebeb90e083b080102d2c93",
+      "item_ids": [
+        "shadow-mature:dynamic:relationship:REL-BAZI-EXPRESSION-SEQUENCE"
+      ],
+      "reason": "dynamic-derived-regulation",
+      "section_id": "shadow-mature-shadow-mature:dynamic:relationship:REL-BAZI-EXPRESSION-SEQUENCE",
+      "title": "压力与成熟调节：先理解与整理 / 向外表达与转化"
+    },
+    {
+      "deduplication_key": "shadow-mature:shadow-mature:dynamic:relationship:REL-BAZI-RESOURCE-STRUCTURE",
+      "evidence_fingerprint": "0a464819866ef354396a4c84eea6d76cb0950e03adeb7e0d64b9d9b5d969e019",
+      "item_ids": [
+        "shadow-mature:dynamic:relationship:REL-BAZI-RESOURCE-STRUCTURE"
+      ],
+      "reason": "dynamic-derived-regulation",
+      "section_id": "shadow-mature-shadow-mature:dynamic:relationship:REL-BAZI-RESOURCE-STRUCTURE",
+      "title": "压力与成熟调节：资源与结果的安排 / 责任与标准的确认"
+    }
+  ]
+}

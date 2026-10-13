@@ -1,0 +1,112 @@
+{
+  "astrology": {
+    "ascendant": null,
+    "aspects": [
+      {
+        "aspect_type": "conjunction",
+        "body_a": "Sun",
+        "body_b": "Moon",
+        "orb": "0"
+      }
+    ],
+    "dignities": [
+      {
+        "body": "Sun",
+        "dignity": "domicile"
+      }
+    ],
+    "house_cusps": [],
+    "mc": null,
+    "methodology_version": "western-tropical-v1.0",
+    "placements": [
+      {
+        "body": "Sun",
+        "degree_in_sign": "10",
+        "house": null,
+        "longitude": "10",
+        "sign": "Aries"
+      },
+      {
+        "body": "Moon",
+        "degree_in_sign": "10",
+        "house": null,
+        "longitude": "10",
+        "sign": "Aries"
+      }
+    ]
+  },
+  "bazi": {
+    "day_pillar": {
+      "earthly_branch": "午",
+      "heavenly_stem": "庚"
+    },
+    "hidden_stems": [
+      {
+        "pillar": "year",
+        "stems": [
+          "癸"
+        ]
+      }
+    ],
+    "hour_pillar": null,
+    "methodology_version": "bazi-core-v1.0",
+    "month_pillar": {
+      "earthly_branch": "午",
+      "heavenly_stem": "庚"
+    },
+    "relations": [
+      {
+        "participant_refs": [
+          "year.branch",
+          "month.branch"
+        ],
+        "relation_type": "combination",
+        "rule_version": "test-rule-v1",
+        "source_pillars": [
+          "year",
+          "month"
+        ]
+      }
+    ],
+    "ten_gods": [
+      {
+        "source_kind": "visible_stem",
+        "source_pillars": [
+          "year"
+        ],
+        "subject_ref": "day_master",
+        "ten_god": "正印"
+      }
+    ],
+    "year_pillar": {
+      "earthly_branch": "午",
+      "heavenly_stem": "庚"
+    }
+  },
+  "fact_mode": "stable_only",
+  "methodology_versions": {
+    "astrology": "western-tropical-v1.0",
+    "bazi": "bazi-core-v1.0"
+  },
+  "normalized_time": {
+    "birth_date": "1990-01-02",
+    "dst_was_applied": null,
+    "fact_mode": "stable_only",
+    "historical_civil_time": null,
+    "local_standard_time": null,
+    "sensitivity_reasons": [
+      "birth_time_unknown"
+    ],
+    "time_basis": "true_solar_time",
+    "timezone_name": "Asia/Shanghai",
+    "true_solar_time": null,
+    "utc_time": null
+  },
+  "provenance_refs": [
+    "fixture:missing_time"
+  ],
+  "schema_version": "deterministic-facts-v1",
+  "validation_summary": {
+    "structure": "passed"
+  }
+}

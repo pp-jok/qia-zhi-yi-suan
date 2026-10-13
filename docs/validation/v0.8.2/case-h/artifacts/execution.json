@@ -1,0 +1,27 @@
+{
+  "artifacts": {
+    "core_profile": "docs/validation/v0.8.2/case-h/artifacts/core_profile.json",
+    "facts": "docs/validation/v0.8.2/case-h/artifacts/facts.json",
+    "qualification": "docs/validation/v0.8.2/case-h/artifacts/qualification.json",
+    "report_audit": "docs/validation/v0.8.2/case-h/artifacts/report_audit.json",
+    "report_plan": "docs/validation/v0.8.2/case-h/artifacts/report_plan.json"
+  },
+  "fact_fingerprint": "3f9abe85000d0dc316308e68feb13e6f80c8e12ae690a869421616a7559ef384",
+  "facts_path": "docs/validation/v0.8.2/case-h/artifacts/facts.json",
+  "input": {
+    "birth_text": "1998年4月18日 08:05，北京，男",
+    "birthplace": "北京",
+    "gender": "男"
+  },
+  "mode": "core-profile-v1",
+  "provider_id": "local-mit-chart-provider-v1",
+  "provider_versions": {
+    "astronomy_engine": "2.1.19",
+    "lunar_python": "1.4.8"
+  },
+  "qualification_fingerprint": "eb2aae5838c7d7218f683d99e9af35e791ff2cbd8eefb78e1729fd5ed348b20a",
+  "qualification_path": "docs/validation/v0.8.2/case-h/artifacts/qualification.json",
+  "report_path": "docs/validation/v0.8.2/case-h/report.json",
+  "schema_version": "birth-report-execution-v2",
+  "status": "passed"
+}

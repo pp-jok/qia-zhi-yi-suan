@@ -1160,23 +1160,24 @@ def test_failure_policy_distinguishes_controlled_limitations_from_fatal_gaps() -
     assert "controlled profile" in runtime
 
 
-def test_v081_release_metadata_and_user_docs_are_present() -> None:
+def test_v082_release_metadata_and_user_docs_are_present() -> None:
     pyproject = (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
     readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
     changelog = (PROJECT_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     release_notes = (
-            PROJECT_ROOT / "docs" / "release" / "v0.8.1-release-notes.md"
+            PROJECT_ROOT / "docs" / "release" / "v0.8.2-release-notes.md"
     ).read_text(encoding="utf-8")
 
-    assert 'version = "0.8.1"' in pyproject
-    assert "v0.8.1 Core Profile Product" in readme
-    assert "## 0.8.1" in changelog
+    assert 'version = "0.8.2"' in pyproject
+    assert "v0.8.2 Core Profile Product" in readme
+    assert "## 0.8.2" in changelog
     for phrase in (
         "dynamic",
         "local",
         "standard-interpretive-v1",
         "whole-sign",
         "qualification",
+        "relationship",
     ):
         assert phrase.casefold() in release_notes.casefold()
 

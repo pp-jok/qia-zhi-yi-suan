@@ -1,0 +1,10 @@
+{
+  "facts_path": "docs/validation/v0.8.2/case-d/artifacts/facts.json",
+  "fixture": "v0.8.1 missing-time qualified fixture",
+  "input_scope": "qualified facts fixture; birth-input parser intentionally requires a time",
+  "mode": "core-profile-v1",
+  "qualification_path": "docs/validation/v0.8.2/case-d/artifacts/qualification.json",
+  "report_path": "docs/validation/v0.8.2/case-d/report.json",
+  "schema_version": "birth-report-execution-v2",
+  "status": "passed"
+}
